@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_prefix", "go_library")
+
+go_prefix("golang.org/x/net")
+
+go_library(
+    name = "context",
+    srcs = [
+        "context/context.go",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "context/ctxhttp",
+    srcs = [
+        "context/ctxhttp/cancelreq.go",
+        "context/ctxhttp/ctxhttp.go",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":context",
+    ],
+)
