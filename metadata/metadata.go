@@ -110,7 +110,7 @@ func FromFile(filename string) (Metadata, error) {
 
 // ToFile writes m to filename as json.
 func (m Metadata) ToFile(filename string) error {
-	bytes, err := json.Marshal(m)
+	bytes, err := json.MarshalIndent(m, "", "  ")
 	if err != nil {
 		return err
 	}

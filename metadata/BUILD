@@ -40,3 +40,14 @@ go_test(
         "//metadata/testdata:chrome-linux.json",
     ]
 )
+
+sh_test(
+    name = "merger_test",
+    srcs = ["merger_test.sh"],
+    data = [
+        ":merger",
+        "//metadata/testdata:android-browser-gingerbread-nexus-s.json",
+        "//metadata/testdata:android-browser-gingerbread-nexus-s_faked_on_chrome-linux.json",
+        "//metadata/testdata:chrome-linux.json",
+    ]
+)
