@@ -1,0 +1,10 @@
+{
+  "capabilities": {},
+  "formFactor": "PHONE",
+  "browserName": "chrome",
+  "environment": "chromeos",
+  "browserLabel": "//testing/web/browsers:figaro",
+  "testLabel": "//testing/web/launcher:tests",
+  "cropScreenshots": true,
+  "recordVideo": "always"
+}

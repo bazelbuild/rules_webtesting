@@ -1,0 +1,5 @@
+{"capabilities": {
+    "browserName": "chrome",
+    "javascriptEnabled": true,
+    "platform": "UNIX"
+}}

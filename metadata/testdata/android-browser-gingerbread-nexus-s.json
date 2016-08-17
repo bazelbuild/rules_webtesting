@@ -1,0 +1,16 @@
+{
+  "formFactor": "PHONE",
+  "browserName": "android browser",
+  "capabilities": {
+    "chromeOptions": {
+      "mobileEmulation": {
+        "userAgent": "Mozilla/5.0 (Linux; U; Android 2.3.7; en-us; Nexus S Build/GRI20) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
+        "deviceMetrics": {
+          "pixelRatio": 2,
+          "height": 400,
+          "width": 240
+        }
+      }
+    }
+  }
+}
