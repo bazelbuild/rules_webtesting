@@ -30,10 +30,10 @@ func TestFromFile(t *testing.T) {
 		BrowserLabel:    "//testing/web/browsers:figaro",
 		TestLabel:       "//testing/web/launcher:tests",
 		CropScreenshots: true,
-		RecordVideo:     "always",
+		RecordVideo:     RecordAlways,
 	}
 
-	if !equals(expected, file) {
+	if !Equals(expected, file) {
 		t.Errorf("Got %+v, expected %+v", file, expected)
 	}
 }
@@ -66,87 +66,98 @@ func TestMergeFromFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	merged := Merge(cl, ab)
-
-	if !equals(merged, fb) {
+	if merged := Merge(cl, ab); !Equals(merged, fb) {
 		t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", cl, ab, merged, fb)
 	}
 }
 
 func TestMerge(t *testing.T) {
-	type testCase struct {
+	testCases := []struct {
+		name   string
 		input1 Metadata
 		input2 Metadata
 		result Metadata
-	}
-
-	testCases := []testCase{
-		testCase{
+	}{
+		{
+			"FormFactor override",
 			Metadata{FormFactor: "PHONE"},
 			Metadata{FormFactor: "TABLET"},
 			Metadata{FormFactor: "TABLET"},
 		},
-		testCase{
+		{
+			"FormFactor no override",
 			Metadata{FormFactor: "PHONE"},
 			Metadata{FormFactor: ""},
 			Metadata{FormFactor: "PHONE"},
 		},
-		testCase{
+		{
+			"BrowserName override",
 			Metadata{BrowserName: "chrome"},
 			Metadata{BrowserName: "firefox"},
 			Metadata{BrowserName: "firefox"},
 		},
-		testCase{
+		{
+			"BrowserName no override",
 			Metadata{BrowserName: "chrome"},
 			Metadata{BrowserName: ""},
 			Metadata{BrowserName: "chrome"},
 		},
-		testCase{
+		{
+			"Environment override",
 			Metadata{Environment: "linux"},
 			Metadata{Environment: "android"},
 			Metadata{Environment: "android"},
 		},
-		testCase{
+		{
+			"Environment no override",
 			Metadata{Environment: "linux"},
 			Metadata{Environment: ""},
 			Metadata{Environment: "linux"},
 		},
-		testCase{
+		{
+			"BrowserLabel override",
 			Metadata{BrowserLabel: "//testing/web/browsers:figaro"},
 			Metadata{BrowserLabel: "//testing/web/browsers:murphy"},
 			Metadata{BrowserLabel: "//testing/web/browsers:murphy"},
 		},
-		testCase{
+		{
+			"BrowserLabel no override",
 			Metadata{BrowserLabel: "//testing/web/browsers:figaro"},
 			Metadata{BrowserLabel: ""},
 			Metadata{BrowserLabel: "//testing/web/browsers:figaro"},
 		},
-		testCase{
+		{
+			"TestLabel override",
 			Metadata{TestLabel: "//testing/web/browsers:figaro"},
 			Metadata{TestLabel: "//testing/web/browsers:murphy"},
 			Metadata{TestLabel: "//testing/web/browsers:murphy"},
 		},
-		testCase{
+		{
+			"TestLabel no override",
 			Metadata{TestLabel: "//testing/web/browsers:figaro"},
 			Metadata{TestLabel: ""},
 			Metadata{TestLabel: "//testing/web/browsers:figaro"},
 		},
-		testCase{
+		{
+			"CropScreenshots override with false",
 			Metadata{CropScreenshots: true},
 			Metadata{CropScreenshots: false},
 			Metadata{CropScreenshots: false},
 		},
-		testCase{
+		{
+			"CropScreenshots override with true",
 			Metadata{CropScreenshots: false},
 			Metadata{CropScreenshots: true},
 			Metadata{CropScreenshots: true},
 		},
-		testCase{
+		{
+			"CropScreenshots no override false",
 			Metadata{CropScreenshots: false},
 			Metadata{CropScreenshots: nil},
 			Metadata{CropScreenshots: false},
 		},
-		testCase{
+		{
+			"CropScreenshots no override true",
 			Metadata{CropScreenshots: true},
 			Metadata{CropScreenshots: nil},
 			Metadata{CropScreenshots: true},
@@ -154,56 +165,143 @@ func TestMerge(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		a := Merge(tc.input1, tc.input2)
-		if !equals(a, tc.result) {
-			t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, a, tc.result)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			a := Merge(tc.input1, tc.input2)
+			if !Equals(a, tc.result) {
+				t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, a, tc.result)
+			}
+		})
 	}
 }
 
-func equals(e, a Metadata) bool {
-	return jsonEquals(e.Capabilities, a.Capabilities) &&
-		e.FormFactor == a.FormFactor &&
-		e.BrowserName == a.BrowserName &&
-		e.Environment == a.Environment &&
-		e.TestLabel == a.TestLabel &&
-		e.CropScreenshots == a.CropScreenshots &&
-		e.RecordVideo == a.RecordVideo
-}
+func TestEquals(t *testing.T) {
+	testCases := []struct {
+		name   string
+		input1 Metadata
+		input2 Metadata
+		result bool
+	}{
+		{
+			"empty",
+			Metadata{},
+			Metadata{},
+			true,
+		},
+		{
+			"FormFactor same",
+			Metadata{FormFactor: "PHONE"},
+			Metadata{FormFactor: "PHONE"},
+			true,
+		},
+		{
+			"FormFactor different",
+			Metadata{FormFactor: "PHONE"},
+			Metadata{FormFactor: "TABLET"},
+			false,
+		},
+		{
+			"BrowserName same",
+			Metadata{BrowserName: "chrome"},
+			Metadata{BrowserName: "chrome"},
+			true,
+		},
+		{
+			"BrowserName different",
+			Metadata{BrowserName: "chrome"},
+			Metadata{BrowserName: "firefox"},
+			false,
+		},
+		{
+			"Environment same",
+			Metadata{Environment: "local"},
+			Metadata{Environment: "local"},
+			true,
+		},
+		{
+			"Environment different",
+			Metadata{Environment: "local"},
+			Metadata{Environment: "running"},
+			false,
+		},
+		{
+			"BrowserLabel same",
+			Metadata{BrowserLabel: "//testing/web/browsers:firefox"},
+			Metadata{BrowserLabel: "//testing/web/browsers:firefox"},
+			true,
+		},
+		{
+			"BrowserLabel different",
+			Metadata{BrowserLabel: "//testing/web/browsers:chrome"},
+			Metadata{BrowserLabel: "//testing/web/browsers:firefox"},
+			false,
+		},
+		{
+			"TestLabel same",
+			Metadata{TestLabel: "//test:test1"},
+			Metadata{TestLabel: "//test:test1"},
+			true,
+		},
+		{
+			"TestLabel different",
+			Metadata{TestLabel: "//test:test1"},
+			Metadata{TestLabel: "//test:test2"},
+			false,
+		},
+		{
+			"CropScreenshots same",
+			Metadata{CropScreenshots: true},
+			Metadata{CropScreenshots: true},
+			true,
+		},
+		{
+			"CropScreenshots different",
+			Metadata{CropScreenshots: nil},
+			Metadata{CropScreenshots: false},
+			false,
+		},
+		{
+			"RecordVideo same",
+			Metadata{RecordVideo: RecordAlways},
+			Metadata{RecordVideo: RecordAlways},
+			true,
+		},
+		{
+			"RecordVideo different",
+			Metadata{RecordVideo: RecordNever},
+			Metadata{RecordVideo: RecordAlways},
+			false,
+		},
+		{
+			"HealthyBeforeTest same",
+			Metadata{HealthyBeforeTest: true},
+			Metadata{HealthyBeforeTest: true},
+			true,
+		},
+		{
+			"HealthyBeforeTest different",
+			Metadata{HealthyBeforeTest: nil},
+			Metadata{HealthyBeforeTest: false},
+			false,
+		},
+		{
+			"Capabilities same",
+			Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
+			Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
+			true,
+		},
+		{
+			"Capabilities different",
+			Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
+			Metadata{Capabilities: map[string]interface{}{"browser": "firefox"}},
+			false,
+		},
+	}
 
-func jsonEquals(e, v interface{}) bool {
-	switch te := e.(type) {
-	case []interface{}:
-		tv, ok := v.([]interface{})
-		return ok && sliceEquals(te, tv)
-	case map[string]interface{}:
-		tv, ok := v.(map[string]interface{})
-		return ok && mapEquals(te, tv)
-	default:
-		return e == v
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if result := Equals(tc.input1, tc.input2); result != tc.result {
+				t.Errorf("Got Equals(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
+			}
+		})
 	}
-}
-
-func sliceEquals(e, v []interface{}) bool {
-	if len(e) != len(v) {
-		return false
-	}
-	for i := 0; i < len(e); i++ {
-		if !jsonEquals(e[i], v[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-func mapEquals(e, v map[string]interface{}) bool {
-	if len(e) != len(v) {
-		return false
-	}
-	for ek, ev := range e {
-		if vv, ok := v[ek]; !ok || !jsonEquals(ev, vv) {
-			return false
-		}
-	}
-	return true
 }

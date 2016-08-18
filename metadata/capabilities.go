@@ -53,3 +53,41 @@ func mergeLists(m1, m2 []interface{}) []interface{} {
 	nl = append(nl, m2...)
 	return nl
 }
+
+// Equals compares two JSON objects, and returns true iff they are the same.
+func Equals(e, v map[string]interface{}) bool {
+	if len(e) != len(v) {
+		return false
+	}
+	for ek, ev := range e {
+		if vv, ok := v[ek]; !ok || !valueEquals(ev, vv) {
+			return false
+		}
+	}
+	return true
+}
+
+func valueEquals(e, v interface{}) bool {
+	switch te := e.(type) {
+	case []interface{}:
+		tv, ok := v.([]interface{})
+		return ok && sliceEquals(te, tv)
+	case map[string]interface{}:
+		tv, ok := v.(map[string]interface{})
+		return ok && Equals(te, tv)
+	default:
+		return e == v
+	}
+}
+
+func sliceEquals(e, v []interface{}) bool {
+	if len(e) != len(v) {
+		return false
+	}
+	for i := 0; i < len(e); i++ {
+		if !valueEquals(e[i], v[i]) {
+			return false
+		}
+	}
+	return true
+}

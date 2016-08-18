@@ -41,6 +41,12 @@ go_test(
     ]
 )
 
+go_test(
+    name = "capabilities_test",
+    srcs = ["capabilities_test.go"],
+    library = ":capabilities",
+)
+
 sh_test(
     name = "merger_test",
     srcs = ["merger_test.sh"],

@@ -116,3 +116,16 @@ func (m Metadata) ToFile(filename string) error {
 	}
 	return ioutil.WriteFile(filename, bytes, 0644)
 }
+
+// Equals compares two Metadata object and return true iff they are the same.
+func Equals(e, a Metadata) bool {
+	return capabilities.Equals(e.Capabilities, a.Capabilities) &&
+		e.FormFactor == a.FormFactor &&
+		e.BrowserName == a.BrowserName &&
+		e.Environment == a.Environment &&
+		e.BrowserLabel == a.BrowserLabel &&
+		e.TestLabel == a.TestLabel &&
+		e.CropScreenshots == a.CropScreenshots &&
+		e.RecordVideo == a.RecordVideo &&
+		e.HealthyBeforeTest == a.HealthyBeforeTest
+}
