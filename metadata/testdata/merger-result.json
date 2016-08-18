@@ -1,0 +1,20 @@
+{
+  "capabilities": {
+    "browserName": "chrome",
+    "chromeOptions": {
+      "mobileEmulation": {
+        "deviceMetrics": {
+          "height": 400,
+          "pixelRatio": 2,
+          "width": 240
+        },
+        "userAgent": "Mozilla/5.0 (Linux; U; Android 2.3.7; en-us; Nexus S Build/GRI20) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"
+      }
+    },
+    "javascriptEnabled": true,
+    "platform": "UNIX"
+  },
+  "formFactor": "PHONE",
+  "browserName": "android browser",
+  "recordVideo": "never"
+}

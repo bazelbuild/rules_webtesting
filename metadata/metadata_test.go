@@ -10,7 +10,7 @@ const (
 	allFields      = "__main__/metadata/testdata/all-fields.json"
 	chromeLinux    = "__main__/metadata/testdata/chrome-linux.json"
 	androidBrowser = "__main__/metadata/testdata/android-browser-gingerbread-nexus-s.json"
-	fakeBrowser    = "__main__/metadata/testdata/android-browser-gingerbread-nexus-s_faked_on_chrome-linux.json"
+	fakeBrowser    = "__main__/metadata/testdata/merge-from-file-result.json"
 )
 
 func TestFromFile(t *testing.T) {

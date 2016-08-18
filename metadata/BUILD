@@ -36,7 +36,7 @@ go_test(
     data = [
         "//metadata/testdata:all-fields.json",
         "//metadata/testdata:android-browser-gingerbread-nexus-s.json",
-        "//metadata/testdata:android-browser-gingerbread-nexus-s_faked_on_chrome-linux.json",
+        "//metadata/testdata:merge-from-file-result.json",
         "//metadata/testdata:chrome-linux.json",
     ]
 )
@@ -47,7 +47,7 @@ sh_test(
     data = [
         ":merger",
         "//metadata/testdata:android-browser-gingerbread-nexus-s.json",
-        "//metadata/testdata:android-browser-gingerbread-nexus-s_faked_on_chrome-linux.json",
+        "//metadata/testdata:merger-result.json",
         "//metadata/testdata:chrome-linux.json",
     ]
 )
