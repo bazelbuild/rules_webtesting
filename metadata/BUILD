@@ -29,16 +29,16 @@ go_library(
 go_test(
     name = "metadata_test",
     srcs = ["metadata_test.go"],
+    data = [
+        "//metadata/testdata:all-fields.json",
+        "//metadata/testdata:android-browser-gingerbread-nexus-s.json",
+        "//metadata/testdata:chrome-linux.json",
+        "//metadata/testdata:merge-from-file-result.json",
+    ],
     library = ":metadata",
     deps = [
         "//util:bazel",
     ],
-    data = [
-        "//metadata/testdata:all-fields.json",
-        "//metadata/testdata:android-browser-gingerbread-nexus-s.json",
-        "//metadata/testdata:merge-from-file-result.json",
-        "//metadata/testdata:chrome-linux.json",
-    ]
 )
 
 go_test(
@@ -53,7 +53,7 @@ sh_test(
     data = [
         ":merger",
         "//metadata/testdata:android-browser-gingerbread-nexus-s.json",
-        "//metadata/testdata:merger-result.json",
         "//metadata/testdata:chrome-linux.json",
-    ]
+        "//metadata/testdata:merger-result.json",
+    ],
 )

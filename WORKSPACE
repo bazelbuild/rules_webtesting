@@ -14,3 +14,23 @@ new_git_repository(
     commit = "f315505cf3349909cdf013ea56690da34e96a451",
     remote = "https://github.com/golang/net.git",
 )
+
+bind(
+	name = "web_test_launcher",
+	actual = "//launcher:main"
+)
+
+bind(
+	name = "web_test_merger",
+	actual = "//metadata:merger"
+)
+
+bind(
+	name = "web_test_default_config",
+	actual = "//rules:default"
+)
+
+http_jar(
+    name = "selenium-server",
+    url = "http://goo.gl/2lZ46z",
+)

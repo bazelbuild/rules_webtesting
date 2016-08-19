@@ -247,7 +247,6 @@ def browser(name,
     visibility: Label List; optional.
   """
   data = _clone_or_init_list(data)
-  data = _ensure_in_list(data, metadata)
 
   browser_alias(
       name=name,
