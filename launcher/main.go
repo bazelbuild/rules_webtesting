@@ -13,6 +13,7 @@ import (
 	"github.com/web_test_launcher/launcher/cmdhelper"
 	"github.com/web_test_launcher/launcher/environments/environment"
 	"github.com/web_test_launcher/launcher/environments/external"
+	"github.com/web_test_launcher/launcher/proxy/proxy"
 	"github.com/web_test_launcher/metadata/metadata"
 	"github.com/web_test_launcher/util/bazel"
 )
@@ -20,6 +21,7 @@ import (
 var (
 	test             = flag.String("test", "", "Test script to launch")
 	metadataFileFlag = flag.String("metadata", "", "metadata file")
+	port             = flag.Int("port", 4445, "port to start proxy on")
 )
 
 func main() {
@@ -58,6 +60,17 @@ func run() int {
 		}
 	}()
 
+	p, err := proxy.New(env, *port)
+	if err != nil {
+		log.Printf("Error creating proxy: %v", err)
+		return 127
+	}
+
+	if err := p.Start(context.Background()); err != nil {
+		log.Printf("Error starting proxy: %v", err)
+		return 127
+	}
+
 	testExe, err := bazel.Runfile(*test)
 	if err != nil {
 		log.Printf("unable to find %s", *test)
@@ -80,10 +93,11 @@ func run() int {
 
 	testCmd := exec.Command(testExe, flag.Args()...)
 	testCmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), map[string]string{
-		"REMOTE_WEBDRIVER_SERVER": env.WDAddress(context.Background()),
-		"TEST_TMPDIR":             tmpDir,
-		"WEB_TEST_TMPDIR":         webTestTmpDir,
-		"WEB_TEST_TARGET":         *test,
+		"WEB_TEST_BROWSER_METADATA": *metadataFileFlag,
+		"REMOTE_WEBDRIVER_SERVER":   p.Address,
+		"TEST_TMPDIR":               tmpDir,
+		"WEB_TEST_TMPDIR":           webTestTmpDir,
+		"WEB_TEST_TARGET":           *test,
 	})
 	testCmd.Stdout = os.Stdout
 	testCmd.Stderr = os.Stderr

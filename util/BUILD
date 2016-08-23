@@ -9,3 +9,8 @@ go_library(
     name = "bazel",
     srcs = ["bazel.go"],
 )
+
+go_library(
+    name = "httphelper",
+    srcs = ["http_helper.go"],
+)

@@ -6,7 +6,7 @@ package(
 load("//web:web.bzl", "browser")
 
 browser(
-	name = "external",
-	browser = "external",
-	metadata = "external.json",
+    name = "external",
+    browser = "external",
+    metadata = "external.json",
 )

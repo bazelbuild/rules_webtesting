@@ -13,6 +13,7 @@ go_binary(
         ":cmdhelper",
         "//launcher/environments:environment",
         "//launcher/environments:external",
+        "//launcher/proxy",
         "//metadata",
         "//util:bazel",
     ],
@@ -49,11 +50,11 @@ go_library(
 
 sh_test(
     name = "example_test",
-    srcs= ["example_test.sh"]
+    srcs = ["example_test.sh"],
 )
 
 web_test(
     name = "test",
-    test = ":example_test",
     browser = "//browsers:external",
+    test = ":example_test",
 )

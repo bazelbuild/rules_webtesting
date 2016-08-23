@@ -4,6 +4,9 @@ go_prefix("github.com/tebeka/selenium")
 
 go_library(
     name = "selenium",
-    srcs = glob(["*.go"], exclude=["*_test.go"]),
+    srcs = glob(
+        ["*.go"],
+        exclude = ["*_test.go"],
+    ),
     visibility = ["//visibility:public"],
 )
