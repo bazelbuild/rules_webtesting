@@ -14,3 +14,8 @@ go_library(
     name = "httphelper",
     srcs = ["http_helper.go"],
 )
+
+go_library(
+    name = "portpicker",
+    srcs = ["port_picker.go"],
+)

@@ -37,7 +37,13 @@ bind(
     actual = "//rules:default",
 )
 
+bind(
+    name = "SeleniumServer",
+    actual = "//java:SeleniumServer",
+)
+
 http_jar(
     name = "selenium_server",
-    url = "http://goo.gl/2lZ46z",
+    sha256 = "df874ce5b9508ac9f4ee0a3f50290836915c837b68975066a3841e839bc39804",
+    url = "http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-server-standalone-3.0.0-beta2.jar",
 )

@@ -1,0 +1,4 @@
+{
+    "environment": "native",
+    "capabilities": {"browserName": "chrome"}
+}

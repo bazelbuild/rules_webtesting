@@ -14,6 +14,7 @@ go_library(
         "//launcher:healthreporter",
         "//launcher/environments:environment",
         "//util:httphelper",
+        "//util:portpicker",
     ],
 )
 

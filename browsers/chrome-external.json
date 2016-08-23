@@ -1,0 +1,4 @@
+{
+    "environment": "external",
+    "capabilities": {"browserName": "chrome"}
+}

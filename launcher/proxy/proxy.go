@@ -17,6 +17,7 @@ import (
 	"github.com/web_test_launcher/launcher/healthreporter"
 	"github.com/web_test_launcher/launcher/proxy/driverhub"
 	"github.com/web_test_launcher/util/httphelper"
+	"github.com/web_test_launcher/util/portpicker"
 )
 
 const (
@@ -33,7 +34,11 @@ type Proxy struct {
 }
 
 // New creates a new Proxy object.
-func New(env environment.Env, port int) (*Proxy, error) {
+func New(env environment.Env) (*Proxy, error) {
+	port, err := portpicker.PickUnusedPort()
+	if err != nil {
+		return nil, errors.New(compName, err)
+	}
 	return &Proxy{
 		env:     env,
 		Address: net.JoinHostPort("localhost", strconv.Itoa(port)),

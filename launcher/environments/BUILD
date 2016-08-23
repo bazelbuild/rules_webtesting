@@ -25,3 +25,13 @@ go_library(
         "//metadata",
     ],
 )
+
+go_library(
+    name = "native",
+    srcs = ["native.go"],
+    deps = [
+        ":environment",
+        "//launcher/services:selenium",
+        "//metadata",
+    ],
+)

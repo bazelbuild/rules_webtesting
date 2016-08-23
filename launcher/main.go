@@ -13,6 +13,7 @@ import (
 	"github.com/web_test_launcher/launcher/cmdhelper"
 	"github.com/web_test_launcher/launcher/environments/environment"
 	"github.com/web_test_launcher/launcher/environments/external"
+	"github.com/web_test_launcher/launcher/environments/native"
 	"github.com/web_test_launcher/launcher/proxy/proxy"
 	"github.com/web_test_launcher/metadata/metadata"
 	"github.com/web_test_launcher/util/bazel"
@@ -21,7 +22,6 @@ import (
 var (
 	test             = flag.String("test", "", "Test script to launch")
 	metadataFileFlag = flag.String("metadata", "", "metadata file")
-	port             = flag.Int("port", 4445, "port to start proxy on")
 )
 
 func main() {
@@ -60,7 +60,7 @@ func run() int {
 		}
 	}()
 
-	p, err := proxy.New(env, *port)
+	p, err := proxy.New(env)
 	if err != nil {
 		log.Printf("Error creating proxy: %v", err)
 		return 127
@@ -119,6 +119,8 @@ func buildEnv(m metadata.Metadata) (environment.Env, error) {
 	switch m.Environment {
 	case "external":
 		return external.NewEnv(m)
+	case "native":
+		return native.NewEnv(m)
 	}
 	return nil, fmt.Errorf("unknown environment: %s", m.Environment)
 }

@@ -32,7 +32,6 @@ func TestProvisionBrowser_NoCaps(t *testing.T) {
 
 func TestProvisionBrowser_WithCaps(t *testing.T) {
 	wd, err := NewSession(selenium.Capabilities{
-		"browserName":              "chrome",
 		"unexpectedAlertBehaviour": "dismiss",
 		"elementScrollBehavior":    1,
 	})
