@@ -6,7 +6,7 @@ java_test(
         "//java/com/google/testing/web",
         "@com_google_truth_truth//jar",
         "@junit_junit//jar",
-        "@org_seleniumhq_selenium//:selenium",
+        "@org_seleniumhq_java//:selenium",
     ],
 )
 
