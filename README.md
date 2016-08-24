@@ -33,12 +33,10 @@ working:
     Binding (only if java = True)
 *   [org_json_json](https://mvnrepository.com/artifact/org.json/json) (only if
     java = True)
-*   [com_google_code_findbugs_jsr305]
-    (https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305) (only
-    if java = True)
-*   [com_google_guava_guava]
-    (https://mvnrepository.com/artifact/com.google.guava/guava) (only if java =
-    True)
+*   [com_google_code_findbugs_jsr305](https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305)
+    (only if java = True)
+*   [com_google_guava_guava](https://mvnrepository.com/artifact/com.google.guava/guava)
+    (only if java = True)
 *   [com_github_tebeka_selenium](https://github.com/tebeka/selenium) (only if
     go = True)
 
