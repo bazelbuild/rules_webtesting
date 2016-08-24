@@ -13,12 +13,13 @@ def merge_files(ctx, merger, output, inputs):
   short_paths = [i.short_path for i in inputs]
   args = ['--output', output.path] + paths
 
-  ctx.action(outputs=[output],
-             inputs=inputs,
-             executable=merger,
-             arguments=args,
-             mnemonic='METADATAMERGER',
-             progress_message='merging %s' % (', '.join(short_paths)))
+  ctx.action(
+      outputs=[output],
+      inputs=inputs,
+      executable=merger,
+      arguments=args,
+      mnemonic='METADATAMERGER',
+      progress_message='merging %s' % (', '.join(short_paths)))
 
 
 def create_file(ctx,

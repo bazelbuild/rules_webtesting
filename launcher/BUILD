@@ -57,6 +57,6 @@ sh_test(
 
 web_test(
     name = "test",
-    browser = "//browsers:external",
+    browser = "//browsers:chrome-external",
     test = ":example_test",
 )

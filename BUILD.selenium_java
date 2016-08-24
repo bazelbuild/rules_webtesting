@@ -1,0 +1,18 @@
+java_import(
+    name = "selenium",
+    jars = glob(["*.jar"]),
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        ":libs",
+        "@com_google_guava_guava//jar",
+    ],
+)
+
+java_import(
+    name = "libs",
+    jars = glob(
+        ["lib/*.jar"],
+        exclude = ["lib/guava*.jar"],
+    ),
+    visibility = ["//visibility:private"],
+)

@@ -16,7 +16,8 @@ def _browser_impl(ctx):
       inputs=[ctx.file.metadata, patch])
 
   return struct(
-      runfiles=ctx.runfiles(collect_default=True, collect_data=True),
+      runfiles=ctx.runfiles(
+          collect_default=True, collect_data=True),
       browser=ctx.attr.browser,
       name=ctx.label.name,
       disabled=ctx.attr.disabled,

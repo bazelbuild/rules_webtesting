@@ -17,7 +17,7 @@ type Selenium struct {
 func New(env map[string]string) (*Selenium, error) {
 	server, err := service.NewServer(
 		"SeleniumServer",
-		"__main__/java/SeleniumServer",
+		"web_test_rules/java/SeleniumServer",
 		"http://%s/wd/hub/status",
 		60*time.Second,
 		env, "-port", "{port}")

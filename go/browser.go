@@ -90,14 +90,5 @@ func NewSession(capabilities selenium.Capabilities) (selenium.WebDriver, error) 
 
 	address := fmt.Sprintf("http://%s/wd/hub", hostport)
 
-	desired := selenium.Capabilities{
-		"google.testRunner": "GO",
-		"google.testType":   "GO",
-	}
-
-	for k, v := range capabilities {
-		desired[k] = v
-	}
-
-	return selenium.NewRemote(desired, address)
+	return selenium.NewRemote(capabilities, address)
 }

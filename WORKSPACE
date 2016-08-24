@@ -1,49 +1,51 @@
-git_repository(
-    name = "io_bazel_rules_go",
-    commit = "ae8ea32be1af991eef77d6347591dc8ba56c40a2",
-    remote = "https://github.com/bazelbuild/rules_go.git",
+workspace(name = "web_test_rules")
+
+load("//web:repositories.bzl", "web_test_repositories")
+
+web_test_repositories(prefix = "")
+
+load("//web:bindings.bzl", "web_test_bindings")
+
+web_test_bindings(
+    default_config = "//rules:default",
+    launcher = "//launcher:main",
+    merger = "//metadata:merger",
 )
-
-load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
-
-go_repositories()
 
 new_git_repository(
     name = "com_github_tebeka_selenium",
-    build_file = "BUILD.selenium",
+    build_file = "BUILD.selenium_go",
     remote = "https://github.com/tebeka/selenium.git",
     tag = "v0.8.5",
 )
 
-new_git_repository(
-    name = "com_github_gorilla_mux",
-    build_file = "BUILD.gorilla_mux",
-    commit = "cf79e51a62d8219d52060dfc1b4e810414ba2d15",
-    remote = "https://github.com/gorilla/mux.git",
+maven_jar(
+    name = "com_google_guava_guava",
+    artifact = "com.google.guava:guava:19.0",
 )
 
-bind(
-    name = "web_test_launcher",
-    actual = "//launcher:main",
+new_http_archive(
+    name = "org_seleniumhq_selenium",
+    build_file = "BUILD.selenium_java",
+    url = "http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-java-3.0.0-beta2.zip",
 )
 
-bind(
-    name = "web_test_merger",
-    actual = "//metadata:merger",
+maven_jar(
+    name = "org_json_json",
+    artifact = "org.json:json:20160810",
 )
 
-bind(
-    name = "web_test_default_config",
-    actual = "//rules:default",
+maven_jar(
+    name = "com_google_code_findbugs_jsr305",
+    artifact = "com.google.code.findbugs:jsr305:3.0.1",
 )
 
-bind(
-    name = "SeleniumServer",
-    actual = "//java:SeleniumServer",
+maven_jar(
+    name = "junit_junit",
+    artifact = "junit:junit:4.12",
 )
 
-http_jar(
-    name = "selenium_server",
-    sha256 = "df874ce5b9508ac9f4ee0a3f50290836915c837b68975066a3841e839bc39804",
-    url = "http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-server-standalone-3.0.0-beta2.jar",
+maven_jar(
+    name = "com_google_truth_truth",
+    artifact = "com.google.truth:truth:0.29",
 )
