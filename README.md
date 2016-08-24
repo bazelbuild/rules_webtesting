@@ -54,7 +54,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.openqa.selenium.WebDriver;
 
-@RunWith(JUnit4.class) public class BrowserTest {
+@RunWith(JUnit4.class)
+public class BrowserTest {
   private WebDriver driver;
 
   @Before public void createDriver() {
