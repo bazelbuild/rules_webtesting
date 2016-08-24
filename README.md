@@ -77,22 +77,24 @@ public class BrowserTest {
 Example Test (Go):
 
 ```go
-import ( "testing"
+import (
+    "testing"
 
     "github.com/tebeka/selenium/selenium"
     "github.com/web_test_launcher/go/browser"
-
 )
 
-func TestWebApp(t *testing.T) { wd, err := NewSession(nil) if err != nil {
-t.Fatal(err) }
+func TestWebApp(t *testing.T) {
+    wd, err := NewSession(nil)
+    if err != nil {
+        t.Fatal(err)
+    }
 
     // your test here
 
     if err := wd.Quit(); err != nil {
         t.Logf("Error quitting webdriver: %v", err)
     }
-
 }
 ```
 
