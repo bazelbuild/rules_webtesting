@@ -5,19 +5,19 @@
 Add the following to your WORKSPACE file:
 
 ```bzl
-local_repository(
-    name = "web_test_rules",
-    path = "/usr/local/google/home/fisherii/git/web_test_launcher",
+git_repository(
+    name = "io_bazel_rules_web",
+    path = "https://github.com/bazelbuild/rules_web.git",
 )
 
-load("@web_test_rules//web:repositories.bzl", "web_test_repositories")
+load("@io_bazel_rules_web//web:repositories.bzl", "web_test_repositories")
 
 web_test_repositories(
     go = True,
     java = True,
 )
 
-load("@web_test_rules//web:bindings.bzl", "web_test_bindings")
+load("@io_bazel_rules_web//web:bindings.bzl", "web_test_bindings")
 
 web_test_bindings()
 ```
@@ -81,11 +81,11 @@ import (
     "testing"
 
     "github.com/tebeka/selenium/selenium"
-    "github.com/web_test_launcher/go/browser"
+    "github.com/bazelbuild/rules_web/go/browser"
 )
 
 func TestWebApp(t *testing.T) {
-    wd, err := NewSession(nil)
+    wd, err := NewSession(selenium.Capabilies{})
     if err != nil {
         t.Fatal(err)
     }
@@ -103,7 +103,7 @@ Then create a web_test_suite that depends on your test target:
 
 ```bzl
 load("@io_bazel_rules_go//go:def.bzl", "go_test")
-load("@web_test_rules//web:web.bzl", "web_test_suite")
+load("@io_bazel_rules_web//web:web.bzl", "web_test_suite")
 
 go_test(
     name = "browser_test_wrapped",
@@ -111,14 +111,14 @@ go_test(
     tags = ["manual"],
     deps = [
         "@com_github_tebeka_selenium//:selenium",
-        "@web_test_rules//go:browser",
+        "@io_bazel_rules_web//go:browser",
     ],
 )
 
 web_test_suite(
     name = "browser_test",
     browsers = [
-        "@web_test_rules//browsers:chrome-native",
+        "@io_bazel_rules_web//browsers:chrome-native",
     ],
     local = 1,
     test = ":browser_test_wrapped",

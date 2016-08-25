@@ -20,7 +20,7 @@ package selenium
 import (
 	"time"
 
-	"github.com/web_test_launcher/launcher/services/service"
+	"github.com/bazelbuild/rules_web/launcher/services/service"
 )
 
 // Selenium is a service that starts GoogleSeleniumServer.
@@ -32,7 +32,7 @@ type Selenium struct {
 func New(env map[string]string) (*Selenium, error) {
 	server, err := service.NewServer(
 		"SeleniumServer",
-		"web_test_rules/java/SeleniumServer",
+		"io_bazel_rules_web/java/SeleniumServer",
 		"http://%s/wd/hub/status",
 		60*time.Second,
 		env, "-port", "{port}")

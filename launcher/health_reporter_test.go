@@ -21,7 +21,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/web_test_launcher/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/errors"
 )
 
 func TestWaitForHealthyTimeout(t *testing.T) {

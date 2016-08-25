@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def web_test_repositories(prefix="@web_test_rules", java=False, go=False):
+
+def web_test_repositories(prefix="@io_bazel_rules_web", java=False, go=False):
   native.git_repository(
       name="io_bazel_rules_go",
       commit="ae8ea32be1af991eef77d6347591dc8ba56c40a2",
@@ -41,25 +42,21 @@ def web_test_repositories(prefix="@web_test_rules", java=False, go=False):
     native.maven_jar(
         name="org_json_json",
         artifact="org.json:json:20160810",
-        sha1="aca5eb39e2a12fddd6c472b240afe9ebea3a6733",
-    )
+        sha1="aca5eb39e2a12fddd6c472b240afe9ebea3a6733",)
 
     native.maven_jar(
         name="com_google_code_findbugs_jsr305",
         artifact="com.google.code.findbugs:jsr305:3.0.1",
-        sha1="f7be08ec23c21485b9b5a1cf1654c2ec8c58168d",
-    )
+        sha1="f7be08ec23c21485b9b5a1cf1654c2ec8c58168d",)
 
     native.maven_jar(
         name="com_google_guava_guava",
         artifact="com.google.guava:guava:19.0",
-        sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9",
-    )
+        sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9",)
 
   if go:
     native.new_git_repository(
         name="com_github_tebeka_selenium",
         build_file=prefix + "//:BUILD.selenium_go",
         remote="https://github.com/tebeka/selenium.git",
-        tag="v0.8.5",
-    )
+        tag="v0.8.5",)

@@ -33,9 +33,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/bazelbuild/rules_web/metadata/metadata"
+	"github.com/bazelbuild/rules_web/util/bazel"
 	"github.com/tebeka/selenium/selenium"
-	"github.com/web_test_launcher/metadata/metadata"
-	"github.com/web_test_launcher/util/bazel"
 )
 
 const (

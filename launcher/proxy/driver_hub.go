@@ -25,12 +25,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bazelbuild/rules_web/launcher/environments/environment"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/healthreporter"
+	"github.com/bazelbuild/rules_web/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_web/util/httphelper"
 	"github.com/gorilla/mux/mux"
-	"github.com/web_test_launcher/launcher/environments/environment"
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/launcher/healthreporter"
-	"github.com/web_test_launcher/launcher/proxy/webdriver"
-	"github.com/web_test_launcher/util/httphelper"
 )
 
 const (

@@ -20,9 +20,9 @@ package native
 import (
 	"context"
 
-	"github.com/web_test_launcher/launcher/environments/environment"
-	"github.com/web_test_launcher/launcher/services/selenium"
-	"github.com/web_test_launcher/metadata/metadata"
+	"github.com/bazelbuild/rules_web/launcher/environments/environment"
+	"github.com/bazelbuild/rules_web/launcher/services/selenium"
+	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
 
 const compName = "native environment"

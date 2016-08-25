@@ -24,10 +24,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/launcher/healthreporter"
-	"github.com/web_test_launcher/util/httphelper"
-	"github.com/web_test_launcher/util/portpicker"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/healthreporter"
+	"github.com/bazelbuild/rules_web/util/httphelper"
+	"github.com/bazelbuild/rules_web/util/portpicker"
 )
 
 // Server is a service that starts an external server.

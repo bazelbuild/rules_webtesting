@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workspace(name = "web_test_rules")
+workspace(name = "io_bazel_rules_web")
 
 load("//web:repositories.bzl", "web_test_repositories")
 

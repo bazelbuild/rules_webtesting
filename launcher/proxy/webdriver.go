@@ -30,8 +30,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/launcher/healthreporter"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/healthreporter"
 )
 
 const compName = "Go WebDriver Client"

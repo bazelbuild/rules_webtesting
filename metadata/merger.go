@@ -21,7 +21,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/web_test_launcher/metadata/metadata"
+	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
 
 const defaultRecordVideo = "never"

@@ -18,14 +18,14 @@ package metadata
 import (
 	"testing"
 
-	"github.com/web_test_launcher/util/bazel"
+	"github.com/bazelbuild/rules_web/util/bazel"
 )
 
 const (
-	allFields      = "__main__/metadata/testdata/all-fields.json"
-	chromeLinux    = "__main__/metadata/testdata/chrome-linux.json"
-	androidBrowser = "__main__/metadata/testdata/android-browser-gingerbread-nexus-s.json"
-	fakeBrowser    = "__main__/metadata/testdata/merge-from-file-result.json"
+	allFields      = "io_bazel_rules_web/metadata/testdata/all-fields.json"
+	chromeLinux    = "io_bazel_rules_web/metadata/testdata/chrome-linux.json"
+	androidBrowser = "io_bazel_rules_web/metadata/testdata/android-browser-gingerbread-nexus-s.json"
+	fakeBrowser    = "io_bazel_rules_web/metadata/testdata/merge-from-file-result.json"
 )
 
 func TestFromFile(t *testing.T) {

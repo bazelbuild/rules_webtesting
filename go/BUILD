@@ -42,6 +42,14 @@ go_test(
 
 web_test_suite(
     name = "browser_test",
+    browser_overrides = {
+        "//browsers:chrome-external": {
+            "tags": ["manual"],
+        },
+        "//browsers:firefox-external": {
+            "tags": ["manual"],
+        },
+    },
     browsers = [
         "//browsers:chrome-external",
         "//browsers:chrome-native",

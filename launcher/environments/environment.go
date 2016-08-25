@@ -21,10 +21,10 @@ import (
 	"context"
 	"sync"
 
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/launcher/healthreporter"
-	"github.com/web_test_launcher/metadata/capabilities"
-	"github.com/web_test_launcher/metadata/metadata"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/healthreporter"
+	"github.com/bazelbuild/rules_web/metadata/capabilities"
+	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
 
 // Env allows web_test environments to be started for controlling a browser

@@ -16,9 +16,9 @@
 
 printenv
 
-$TEST_SRCDIR/__main__/metadata/merger --output $TEST_TMPDIR/out.json \
-	$TEST_SRCDIR/__main__/metadata/testdata/chrome-linux.json \
-	$TEST_SRCDIR/__main__/metadata/testdata/android-browser-gingerbread-nexus-s.json
+$TEST_SRCDIR/$TEST_WORKSPACE/metadata/merger --output $TEST_TMPDIR/out.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/metadata/testdata/chrome-linux.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/metadata/testdata/android-browser-gingerbread-nexus-s.json
 
 diff $TEST_TMPDIR/out.json \
-	$TEST_SRCDIR/__main__/metadata/testdata/merger-result.json
+	$TEST_SRCDIR/$TEST_WORKSPACE/metadata/testdata/merger-result.json

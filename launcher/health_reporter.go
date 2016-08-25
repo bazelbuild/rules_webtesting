@@ -22,7 +22,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/web_test_launcher/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/errors"
 )
 
 const (

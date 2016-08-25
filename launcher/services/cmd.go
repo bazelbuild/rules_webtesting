@@ -24,9 +24,9 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/web_test_launcher/launcher/cmdhelper"
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/util/bazel"
+	"github.com/bazelbuild/rules_web/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/util/bazel"
 )
 
 // Cmd is a service that starts an external executable.

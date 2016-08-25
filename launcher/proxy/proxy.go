@@ -27,12 +27,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/web_test_launcher/launcher/environments/environment"
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/launcher/healthreporter"
-	"github.com/web_test_launcher/launcher/proxy/driverhub"
-	"github.com/web_test_launcher/util/httphelper"
-	"github.com/web_test_launcher/util/portpicker"
+	"github.com/bazelbuild/rules_web/launcher/environments/environment"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/healthreporter"
+	"github.com/bazelbuild/rules_web/launcher/proxy/driverhub"
+	"github.com/bazelbuild/rules_web/util/httphelper"
+	"github.com/bazelbuild/rules_web/util/portpicker"
 )
 
 const (

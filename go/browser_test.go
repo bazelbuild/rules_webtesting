@@ -23,7 +23,7 @@ import (
 )
 
 func TestProvisionBrowser_NoCaps(t *testing.T) {
-	wd, err := NewSession(nil)
+	wd, err := NewSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
 	}

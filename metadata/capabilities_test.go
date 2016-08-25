@@ -117,7 +117,7 @@ func TestEquals(t *testing.T) {
 			"empty",
 			map[string]interface{}{},
 			map[string]interface{}{},
-			false,
+			true,
 		},
 		{
 			"int,nil",

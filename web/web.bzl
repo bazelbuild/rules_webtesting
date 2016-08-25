@@ -11,12 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Public definitions for web_test related build rules."""
 
-load("//rules:browser.bzl", browser_alias="browser")
-load("//rules:web_test.bzl", web_test_alias="web_test")
-load("//rules:web_test_config.bzl", web_test_config_alias="web_test_config")
+load(
+    "//rules:browser.bzl",
+    browser_alias="browser",)
+load(
+    "//rules:web_test.bzl",
+    web_test_alias="web_test",)
+load(
+    "//rules:web_test_config.bzl",
+    web_test_config_alias="web_test_config",)
 
 
 def web_test_suite(name,
@@ -100,7 +105,6 @@ def web_test_suite(name,
 
   native.test_suite(
       name=name, tests=tests, tags=["manual"], visibility=visibility)
-
 
 def web_test(name,
              browser,  # pylint: disable=redefined-outer-name
@@ -191,7 +195,6 @@ def web_test_config(name, configs=None, record=None):
   """
   web_test_config_alias(
       name=name, configs=configs, record=record, testonly=True)
-
 
 def browser(name,
             browser,  # pylint: disable=redefined-outer-name

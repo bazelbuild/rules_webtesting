@@ -26,8 +26,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/bazelbuild/rules_web/launcher/proxy/webdriver"
 	"github.com/gorilla/mux/mux"
-	"github.com/web_test_launcher/launcher/proxy/webdriver"
 )
 
 type handlerFunc func(context.Context, request) (response, error)

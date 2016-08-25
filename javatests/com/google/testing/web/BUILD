@@ -13,9 +13,10 @@
 # limitations under the License.
 
 java_test(
-    name = "BrowserTest",
+    name = "BrowserTest_wrapped",
     srcs = ["BrowserTest.java"],
     tags = ["manual"],
+    test_class = "com.google.testing.web.BrowserTest",
     deps = [
         "//java/com/google/testing/web",
         "@com_google_truth_truth//jar",
@@ -27,7 +28,15 @@ java_test(
 load("//web:web.bzl", "web_test_suite")
 
 web_test_suite(
-    name = "BrowserTest_web",
+    name = "BrowserTest",
+    browser_overrides = {
+        "//browsers:chrome-external": {
+            "tags": ["manual"],
+        },
+        "//browsers:firefox-external": {
+            "tags": ["manual"],
+        },
+    },
     browsers = [
         "//browsers:chrome-external",
         "//browsers:chrome-native",
@@ -35,5 +44,5 @@ web_test_suite(
         "//browsers:firefox-native",
     ],
     local = 1,
-    test = ":BrowserTest",
+    test = ":BrowserTest_wrapped",
 )

@@ -15,9 +15,9 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
 
 
-def web_test_bindings(launcher="@web_test_rules//launcher:main",
-                      merger="@web_test_rules//metadata:merger",
-                      default_config="@web_test_rules//rules:default"):
+def web_test_bindings(launcher="@io_bazel_rules_web//launcher:main",
+                      merger="@io_bazel_rules_web//metadata:merger",
+                      default_config="@io_bazel_rules_web//rules:default"):
   native.bind(
       name="web_test_launcher",
       actual=launcher,)

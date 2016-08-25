@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/web_test_launcher/launcher/environments/environment"
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/metadata/metadata"
+	"github.com/bazelbuild/rules_web/launcher/environments/environment"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
 
 const (

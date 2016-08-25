@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/web_test_launcher/metadata/capabilities"
+	"github.com/bazelbuild/rules_web/metadata/capabilities"
 )
 
 // Values for Metadata.RecordVideo.

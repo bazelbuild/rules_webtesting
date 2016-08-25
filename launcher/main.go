@@ -25,13 +25,13 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/web_test_launcher/launcher/cmdhelper"
-	"github.com/web_test_launcher/launcher/environments/environment"
-	"github.com/web_test_launcher/launcher/environments/external"
-	"github.com/web_test_launcher/launcher/environments/native"
-	"github.com/web_test_launcher/launcher/proxy/proxy"
-	"github.com/web_test_launcher/metadata/metadata"
-	"github.com/web_test_launcher/util/bazel"
+	"github.com/bazelbuild/rules_web/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_web/launcher/environments/environment"
+	"github.com/bazelbuild/rules_web/launcher/environments/external"
+	"github.com/bazelbuild/rules_web/launcher/environments/native"
+	"github.com/bazelbuild/rules_web/launcher/proxy/proxy"
+	"github.com/bazelbuild/rules_web/metadata/metadata"
+	"github.com/bazelbuild/rules_web/util/bazel"
 )
 
 var (

@@ -21,8 +21,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/web_test_launcher/launcher/errors"
-	"github.com/web_test_launcher/launcher/healthreporter"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/healthreporter"
 )
 
 // Service provides is an interface for an individual service. These are usually
