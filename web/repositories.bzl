@@ -35,23 +35,31 @@ def web_test_repositories(prefix="@web_test_rules", java=False, go=False):
         name="org_seleniumhq_java",
         build_file=prefix + "//:BUILD.selenium_java",
         url="http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-java-3.0.0-beta2.zip",
+        sha256="3ee5d714c18e7bbbd3c112961712a825da057854c8f5f7ca12af368ac3270b29",
     )
 
     native.maven_jar(
         name="org_json_json",
-        artifact="org.json:json:20160810",)
+        artifact="org.json:json:20160810",
+        sha1="aca5eb39e2a12fddd6c472b240afe9ebea3a6733",
+    )
 
     native.maven_jar(
         name="com_google_code_findbugs_jsr305",
-        artifact="com.google.code.findbugs:jsr305:3.0.1",)
+        artifact="com.google.code.findbugs:jsr305:3.0.1",
+        sha1="f7be08ec23c21485b9b5a1cf1654c2ec8c58168d",
+    )
 
     native.maven_jar(
         name="com_google_guava_guava",
-        artifact="com.google.guava:guava:19.0",)
+        artifact="com.google.guava:guava:19.0",
+        sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9",
+    )
 
   if go:
     native.new_git_repository(
         name="com_github_tebeka_selenium",
         build_file=prefix + "//:BUILD.selenium_go",
         remote="https://github.com/tebeka/selenium.git",
-        tag="v0.8.5",)
+        tag="v0.8.5",
+    )
