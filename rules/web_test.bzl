@@ -11,18 +11,39 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Implementation of the web_test bazel rule
+
+DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
+"""
 
 
 def _web_test_impl(ctx):
-  """TODO: implement"""
   ctx.file_action(
       content="""#!/bin/bash
 
- printenv
+if [[ -z "$TEST_SRCDIR" ]]; then
+  case "$0" in
+    /*) self="$0" ;;
+    *)  self="$PWD/$0" ;;
+  esac
 
- $TEST_SRCDIR/$TEST_WORKSPACE/%s --metadata=$TEST_WORKSPACE/%s --test=$TEST_WORKSPACE/%s
- """ % (ctx.executable._launcher.short_path, ctx.attr.browser.json.short_path,
-        ctx.executable.test.short_path),
+  if [[ -e "$self.runfiles" ]]; then
+    export TEST_SRCDIR="$self.runfiles"
+  else
+    echo "Unable to determine runfiles location"
+    exit -1
+  fi
+fi
+
+if [[ -z "$TEST_TEMPDIR" ]]; then
+  export TEST_TEMPDIR=$(mktemp -d test_tempdir.XXXXXX)
+fi
+
+printenv
+
+$TEST_SRCDIR/%s --metadata=%s --test=%s
+""" % (_path(ctx, ctx.executable._launcher), _path(ctx, ctx.attr.browser.json),
+       _path(ctx, ctx.executable.test)),
       output=ctx.outputs.executable,
       executable=True)
   return struct(runfiles=ctx.runfiles(
@@ -50,3 +71,10 @@ web_test = rule(
         "_launcher": attr.label(
             executable=True, default=Label("//external:web_test_launcher")),
     },)
+
+
+def _path(ctx, file):
+  if file.owner and file.owner.workspace_root:
+    return file.owner.workspace_root + "/" + file.short_path
+  else:
+    return ctx.workspace_name + "/" + file.short_path

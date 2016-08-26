@@ -47,6 +47,7 @@ go_library(
     srcs = ["native.go"],
     deps = [
         ":environment",
+        "//launcher:cmdhelper",
         "//launcher/services:selenium",
         "//metadata",
     ],

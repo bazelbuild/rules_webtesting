@@ -20,13 +20,18 @@ package native
 
 import (
 	"context"
+	"os"
 
+	"github.com/bazelbuild/rules_web/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_web/launcher/environments/environment"
 	"github.com/bazelbuild/rules_web/launcher/services/selenium"
 	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
 
-const compName = "native environment"
+const (
+	compName     = "native environment"
+	forceXvfbEnv = "FORCE_DEDICATED_X_DISPLAY"
+)
 
 type native struct {
 	*environment.Base
@@ -41,7 +46,7 @@ func NewEnv(m metadata.Metadata) (environment.Env, error) {
 		return nil, err
 	}
 
-	s, err := selenium.New(nil)
+	s, err := selenium.New(useXvfb(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -75,4 +80,8 @@ func (n *native) Healthy(ctx context.Context) error {
 		return err
 	}
 	return n.selenium.Healthy(ctx)
+}
+
+func useXvfb() bool {
+	return os.Getenv("DISPLAY") == "" || cmdhelper.IsTruthyEnv(forceXvfbEnv)
 }

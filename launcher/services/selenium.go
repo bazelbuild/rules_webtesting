@@ -30,11 +30,12 @@ type Selenium struct {
 }
 
 // New creates a new service for starting GoogleSeleniumServer on the host machine.
-func New(env map[string]string) (*Selenium, error) {
+func New(xvfb bool, env map[string]string) (*Selenium, error) {
 	server, err := service.NewServer(
 		"SeleniumServer",
 		"io_bazel_rules_web/java/SeleniumServer",
 		"http://%s/wd/hub/status",
+		xvfb,
 		60*time.Second,
 		env, "-port", "{port}")
 	if err != nil {

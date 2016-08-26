@@ -42,10 +42,14 @@ type Cmd struct {
 }
 
 // NewCmd creates a new service for starting an external server on the host machine.
-func NewCmd(name, exe string, env map[string]string, args ...string) (*Cmd, error) {
+func NewCmd(name, exe string, xvfb bool, env map[string]string, args ...string) (*Cmd, error) {
 	exe, err := bazel.Runfile(exe)
 	if err != nil {
 		return nil, errors.New(name, err)
+	}
+	if xvfb {
+		args = append([]string{exe}, args...)
+		exe = "/usr/bin/xvfb-run"
 	}
 	cmd := exec.Command(exe, args...)
 	if env != nil {

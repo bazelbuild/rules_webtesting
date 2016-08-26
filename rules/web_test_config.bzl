@@ -11,13 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """web_test_config.bzl defines the web_test_config rule.
 
 The web_test_config rules provides configuration information such as
 whether to record video to web_test.
 
-DO NOT load this file. Use //testing/web/build_defs:web.bzl
+DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
 load("//rules:metadata.bzl", "create_file", "merge_files")
