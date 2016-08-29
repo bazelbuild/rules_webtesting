@@ -29,7 +29,7 @@ def _web_test_config_impl(ctx):
   for config in ctx.attr.configs:
     if config.record:
       record = config.record
-    files_to_merge += [config.json]
+    files_to_merge += [config.web_test_metadata]
 
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   create_file(ctx=ctx, output=patch, record_video=ctx.attr.record)
@@ -41,10 +41,10 @@ def _web_test_config_impl(ctx):
   merge_files(
       ctx=ctx,
       merger=ctx.executable._merger,
-      output=ctx.outputs.json,
+      output=ctx.outputs.web_test_metadata,
       inputs=files_to_merge)
 
-  return struct(record=record, json=ctx.outputs.json)
+  return struct(record=record, web_test_metadata=ctx.outputs.web_test_metadata)
 
 
 web_test_config = rule(
@@ -58,4 +58,4 @@ web_test_config = rule(
             cfg=HOST_CFG,
             default=Label("//external:web_test_merger")),
     },
-    outputs={"json": "%{name}.gen.json"},)
+    outputs={"web_test_metadata": "%{name}.gen.json"},)

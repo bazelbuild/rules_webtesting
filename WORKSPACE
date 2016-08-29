@@ -16,20 +16,25 @@
 #
 workspace(name = "io_bazel_rules_web")
 
+git_repository(
+    name = "io_bazel_rules_go",
+    commit = "ae8ea32be1af991eef77d6347591dc8ba56c40a2",
+    remote = "https://github.com/bazelbuild/rules_go.git",
+)
+
+load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
+
+go_repositories()
+
 load("//web:repositories.bzl", "web_test_repositories")
 
 web_test_repositories(
+    default_config = "//rules:default",
     go = True,
     java = True,
-    prefix = "",
-)
-
-load("//web:bindings.bzl", "web_test_bindings")
-
-web_test_bindings(
-    default_config = "//rules:default",
     launcher = "//launcher:main",
     merger = "//metadata:merger",
+    prefix = "",
 )
 
 maven_jar(
@@ -43,3 +48,19 @@ maven_jar(
     artifact = "com.google.truth:truth:0.29",
     sha1 = "b6ad12d98295a7d17b3fe4b8969d0f7905626b30",
 )
+
+git_repository(
+    name = "io_bazel_rules_sass",
+    remote = "https://github.com/bazelbuild/rules_sass.git",
+    tag = "0.0.1",
+)
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_repositories")
+sass_repositories()
+
+git_repository(
+    name = "io_bazel_skydoc",
+    remote = "https://github.com/bazelbuild/skydoc.git",
+    commit = "c57ff682364dbb1ae808b769f9e3add77cdbfad1",
+)
+load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
+skydoc_repositories()

@@ -16,8 +16,67 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
+load("//rules:shared.bzl", "browser_attr", "build_runfiles", "config_attr",
+     "path")
+load("//rules:metadata.bzl", "merge_files")
+
 
 def _web_test_impl(ctx):
+  missing_tags = []
+  for tag in ctx.attr.browser.required_tags:
+    if tag not in ctx.attr.tags:
+      missing_tags.add(tag)
+
+  if missing_tags:
+    fail("Browser %s requires tags %s that are missing." %
+         ctx.attr.browser.label, missing_tags)
+
+  merge_files(
+      ctx=ctx,
+      merger=ctx.executable._merger,
+      output=ctx.outputs.web_test_metadata,
+      inputs=[ctx.attr.browser.web_test_metadata,
+              ctx.attr.config.web_test_metadata])
+
+  if ctx.attr.browser.disabled:
+    return _generate_disabled_test(ctx)
+
+  return _generate_default_test(ctx)
+
+
+def _generate_disabled_test(ctx):
+  ctx.file_action(
+      content="""#!/bin/bash
+
+cat << EOF
+#####################################################################
+This test always passes. Your test was not run.
+
+This dummy test was inserted in place of the web test you intended
+to run because the browser configuration you requested has been
+temporarily disabled.
+
+Disabled browser: {browser}
+
+Why was this browser disabled?
+{message}
+#####################################################################
+EOF
+
+exit 0
+""".format(
+          browser=ctx.attr.browser.label, message=ctx.attr.disabled),
+      output=ctx.outputs.executable,
+      executable=True,)
+
+  return struct()
+
+
+def _generate_default_test(ctx):
+  env_vars = ""
+  for k, v in ctx.attr.browser.environment.items():
+    env_vars += k + "=" + v + "\n"
+
   ctx.file_action(
       content="""#!/bin/bash
 
@@ -39,17 +98,22 @@ if [[ -z "$TEST_TEMPDIR" ]]; then
   export TEST_TEMPDIR=$(mktemp -d test_tempdir.XXXXXX)
 fi
 
+{env_vars}
+
 printenv
 
-$TEST_SRCDIR/%s --metadata=%s --test=%s
-""" % (_path(ctx, ctx.executable._launcher), _path(ctx, ctx.attr.browser.json),
-       _path(ctx, ctx.executable.test)),
+$TEST_SRCDIR/{launcher} --metadata={metadata} --test={test}
+""".format(
+          env_vars=env_vars,
+          launcher=path(ctx, ctx.executable._launcher),
+          metadata=path(ctx, ctx.outputs.web_test_metadata),
+          test=path(ctx, ctx.executable.test)),
       output=ctx.outputs.executable,
       executable=True)
-  return struct(runfiles=ctx.runfiles(
-      files=ctx.files.test + ctx.files._launcher + ctx.files.browser,
-      collect_default=True,
-      collect_data=True))
+  return struct(runfiles=build_runfiles(
+      ctx,
+      files=[ctx.outputs.web_test_metadata],
+      deps_attrs=["_launcher", "browser", "config"]))
 
 
 web_test = rule(
@@ -58,10 +122,8 @@ web_test = rule(
     attrs={
         "test": attr.label(
             executable=True, mandatory=True, cfg=DATA_CFG),
-        "browser": attr.label(
-            mandatory=True, cfg=DATA_CFG),
-        "config": attr.label(
-            default=Label("//external:web_test_default_config"), providers=[]),
+        "browser": browser_attr(mandatory=True),
+        "config": config_attr(),
         "data": attr.label_list(
             allow_files=True, cfg=DATA_CFG),
         "_merger": attr.label(
@@ -70,11 +132,5 @@ web_test = rule(
             default=Label("//external:web_test_merger")),
         "_launcher": attr.label(
             executable=True, default=Label("//external:web_test_launcher")),
-    },)
-
-
-def _path(ctx, file):
-  if file.owner and file.owner.workspace_root:
-    return file.owner.workspace_root + "/" + file.short_path
-  else:
-    return ctx.workspace_name + "/" + file.short_path
+    },
+    outputs={"web_test_metadata": "%{name}.gen.json"},)

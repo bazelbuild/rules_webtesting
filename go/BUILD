@@ -15,7 +15,7 @@
 ################################################################################
 #
 package(
-    default_testonly = 1,
+    default_testonly = True,
     default_visibility = ["//visibility:public"],
 )
 
@@ -58,6 +58,6 @@ web_test_suite(
         "//browsers:firefox-external",
         "//browsers:firefox-native",
     ],
-    local = 1,
+    local = True,
     test = ":browser_test_wrapped",
 )

@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Public definitions for web_test related build rules."""
 
 load(
@@ -197,8 +196,8 @@ def web_test_config(name, configs=None, record=None):
   web_test_config_alias(
       name=name, configs=configs, record=record, testonly=True)
 
+
 def browser(name,
-            browser,  # pylint: disable=redefined-outer-name
             metadata,
             disabled=None,
             data=None,
@@ -210,7 +209,6 @@ def browser(name,
 
   Args:
     name: Name; required. A unique name for this rule.
-    browser: String; required.
     metadata: Label; required.
     disabled: String; optional; default is "". Disables all tests for the
       browser. Tests will pass, but emit warnings (including this attribute
@@ -225,7 +223,6 @@ def browser(name,
 
   browser_alias(
       name=name,
-      browser=browser,
       metadata=metadata,
       data=data,
       disabled=disabled,

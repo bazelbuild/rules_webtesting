@@ -15,6 +15,8 @@
 
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
+
+load("//rules:shared.bzl", "browser_struct", "build_runfiles")
 load("//rules:metadata.bzl", "create_file", "merge_files")
 
 
@@ -25,30 +27,32 @@ def _browser_impl(ctx):
   merge_files(
       ctx=ctx,
       merger=ctx.executable._merger,
-      output=ctx.outputs.json,
+      output=ctx.outputs.web_test_metadata,
       inputs=[ctx.file.metadata, patch])
 
-  return struct(
-      runfiles=ctx.runfiles(
-          collect_default=True, collect_data=True),
-      browser=ctx.attr.browser,
-      name=ctx.label.name,
+  required_tags = set(ctx.attr.required_tags)
+  required_tags += ["browser-" + ctx.label.name]
+
+  return browser_struct(
       disabled=ctx.attr.disabled,
-      json=ctx.outputs.json)
+      required_tags=required_tags,
+      runfiles=build_runfiles(
+          ctx, files=[ctx.outputs.web_test_metadata]),
+      web_test_metadata=ctx.outputs.web_test_metadata,)
 
 
 browser = rule(
     implementation=_browser_impl,
     attrs={
-        "browser": attr.string(mandatory=True),
         "metadata": attr.label(
             mandatory=True, allow_files=True, single_file=True, cfg=DATA_CFG),
         "data": attr.label_list(
             allow_files=True, cfg=DATA_CFG),
         "disabled": attr.string(),
+        "required_tags": attr.string_list(default=[]),
         "_merger": attr.label(
             executable=True,
             cfg=HOST_CFG,
             default=Label("//external:web_test_merger")),
     },
-    outputs={"json": "%{name}.gen.json"},)
+    outputs={"web_test_metadata": "%{name}.gen.json"},)

@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-def web_test_repositories(prefix="@io_bazel_rules_web", java=False, go=False):
-  native.git_repository(
-      name="io_bazel_rules_go",
-      commit="ae8ea32be1af991eef77d6347591dc8ba56c40a2",
-      remote="https://github.com/bazelbuild/rules_go.git",)
-
+def web_test_repositories(
+    prefix="@io_bazel_rules_web",
+    java=False,
+    go=False,
+    launcher="@io_bazel_rules_web//launcher:main",
+    merger="@io_bazel_rules_web//metadata:merger",
+    default_config="@io_bazel_rules_web//rules:default"):
   native.new_git_repository(
       name="com_github_gorilla_mux",
       build_file=prefix + "//:BUILD.gorilla_mux",
@@ -30,6 +30,18 @@ def web_test_repositories(prefix="@io_bazel_rules_web", java=False, go=False):
       sha256="df874ce5b9508ac9f4ee0a3f50290836915c837b68975066a3841e839bc39804",
       url="http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-server-standalone-3.0.0-beta2.jar",
   )
+
+  native.bind(
+      name="web_test_launcher",
+      actual=launcher,)
+
+  native.bind(
+      name="web_test_merger",
+      actual=merger,)
+
+  native.bind(
+      name="web_test_default_config",
+      actual=default_config,)
 
   if java:
     native.new_http_archive(

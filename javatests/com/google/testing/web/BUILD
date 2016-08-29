@@ -45,6 +45,6 @@ web_test_suite(
         "//browsers:firefox-external",
         "//browsers:firefox-native",
     ],
-    local = 1,
+    local = True,
     test = ":BrowserTest_wrapped",
 )

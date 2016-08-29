@@ -17,11 +17,12 @@
 
 def merge_files(ctx, merger, output, inputs):
   """Takes a list of input metadata files, and produces a merged output file.
-    params:
-      ctx: a skylark rule context
-      merger: the WTL metadata merger executable
-      output: a File object for the output file
-      inputs: a list of File objects for the input files
+
+  Args:
+    ctx: a skylark rule context
+    merger: the WTL metadata merger executable
+    output: a File object for the output file
+    inputs: a list of File objects for the input files
   """
   paths = [i.path for i in inputs]
   short_paths = [i.short_path for i in inputs]
