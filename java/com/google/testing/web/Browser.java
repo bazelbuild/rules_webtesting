@@ -16,7 +16,6 @@
 //
 package com.google.testing.web;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.annotation.Nullable;
@@ -43,16 +42,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  *
  * WebDriver driver = new Browser().newSession(capabilities);
  * </pre>
- *
- * <p>Get basic information about the browser defined by the web test environment:
- *
- * <pre class="code">
- * Browser.Info browserInfo = new Browser().getInfo();
- * </pre>
  */
 public class Browser {
-
-  @VisibleForTesting static Info info;
 
   @Nullable private final String address;
 
@@ -79,15 +70,6 @@ public class Browser {
     WebDriver driver = new Augmenter().augment(new RemoteWebDriver(constructUrl(address), desired));
 
     return driver;
-  }
-
-  /** Returns basic information about the browser defined by the web test environment. */
-  public synchronized Info getInfo() {
-    if (info == null) {
-      info = new Info(Metadata.getInstance().get());
-    }
-
-    return info;
   }
 
   private static URL constructUrl(String hostAndPort) {

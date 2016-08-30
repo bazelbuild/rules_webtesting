@@ -40,13 +40,9 @@ func TestFromFile(t *testing.T) {
 	}
 
 	expected := Metadata{
-		FormFactor:      "PHONE",
-		BrowserName:     "chrome",
-		Environment:     "chromeos",
-		BrowserLabel:    "//testing/web/browsers:figaro",
-		TestLabel:       "//testing/web/launcher:tests",
-		CropScreenshots: true,
-		RecordVideo:     RecordAlways,
+		Environment:  "chromeos",
+		BrowserLabel: "//testing/web/browsers:figaro",
+		TestLabel:    "//testing/web/launcher:tests",
 	}
 
 	if !Equals(expected, file) {
@@ -95,30 +91,6 @@ func TestMerge(t *testing.T) {
 		result Metadata
 	}{
 		{
-			"FormFactor override",
-			Metadata{FormFactor: "PHONE"},
-			Metadata{FormFactor: "TABLET"},
-			Metadata{FormFactor: "TABLET"},
-		},
-		{
-			"FormFactor no override",
-			Metadata{FormFactor: "PHONE"},
-			Metadata{FormFactor: ""},
-			Metadata{FormFactor: "PHONE"},
-		},
-		{
-			"BrowserName override",
-			Metadata{BrowserName: "chrome"},
-			Metadata{BrowserName: "firefox"},
-			Metadata{BrowserName: "firefox"},
-		},
-		{
-			"BrowserName no override",
-			Metadata{BrowserName: "chrome"},
-			Metadata{BrowserName: ""},
-			Metadata{BrowserName: "chrome"},
-		},
-		{
 			"Environment override",
 			Metadata{Environment: "linux"},
 			Metadata{Environment: "android"},
@@ -154,30 +126,6 @@ func TestMerge(t *testing.T) {
 			Metadata{TestLabel: ""},
 			Metadata{TestLabel: "//testing/web/browsers:figaro"},
 		},
-		{
-			"CropScreenshots override with false",
-			Metadata{CropScreenshots: true},
-			Metadata{CropScreenshots: false},
-			Metadata{CropScreenshots: false},
-		},
-		{
-			"CropScreenshots override with true",
-			Metadata{CropScreenshots: false},
-			Metadata{CropScreenshots: true},
-			Metadata{CropScreenshots: true},
-		},
-		{
-			"CropScreenshots no override false",
-			Metadata{CropScreenshots: false},
-			Metadata{CropScreenshots: nil},
-			Metadata{CropScreenshots: false},
-		},
-		{
-			"CropScreenshots no override true",
-			Metadata{CropScreenshots: true},
-			Metadata{CropScreenshots: nil},
-			Metadata{CropScreenshots: true},
-		},
 	}
 
 	for _, tc := range testCases {
@@ -202,30 +150,6 @@ func TestEquals(t *testing.T) {
 			Metadata{},
 			Metadata{},
 			true,
-		},
-		{
-			"FormFactor same",
-			Metadata{FormFactor: "PHONE"},
-			Metadata{FormFactor: "PHONE"},
-			true,
-		},
-		{
-			"FormFactor different",
-			Metadata{FormFactor: "PHONE"},
-			Metadata{FormFactor: "TABLET"},
-			false,
-		},
-		{
-			"BrowserName same",
-			Metadata{BrowserName: "chrome"},
-			Metadata{BrowserName: "chrome"},
-			true,
-		},
-		{
-			"BrowserName different",
-			Metadata{BrowserName: "chrome"},
-			Metadata{BrowserName: "firefox"},
-			false,
 		},
 		{
 			"Environment same",
@@ -261,42 +185,6 @@ func TestEquals(t *testing.T) {
 			"TestLabel different",
 			Metadata{TestLabel: "//test:test1"},
 			Metadata{TestLabel: "//test:test2"},
-			false,
-		},
-		{
-			"CropScreenshots same",
-			Metadata{CropScreenshots: true},
-			Metadata{CropScreenshots: true},
-			true,
-		},
-		{
-			"CropScreenshots different",
-			Metadata{CropScreenshots: nil},
-			Metadata{CropScreenshots: false},
-			false,
-		},
-		{
-			"RecordVideo same",
-			Metadata{RecordVideo: RecordAlways},
-			Metadata{RecordVideo: RecordAlways},
-			true,
-		},
-		{
-			"RecordVideo different",
-			Metadata{RecordVideo: RecordNever},
-			Metadata{RecordVideo: RecordAlways},
-			false,
-		},
-		{
-			"HealthyBeforeTest same",
-			Metadata{HealthyBeforeTest: true},
-			Metadata{HealthyBeforeTest: true},
-			true,
-		},
-		{
-			"HealthyBeforeTest different",
-			Metadata{HealthyBeforeTest: nil},
-			Metadata{HealthyBeforeTest: false},
 			false,
 		},
 		{

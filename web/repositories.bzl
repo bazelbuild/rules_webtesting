@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def web_test_repositories(
     prefix="@io_bazel_rules_web",
     java=False,
     go=False,
     launcher="@io_bazel_rules_web//launcher:main",
     merger="@io_bazel_rules_web//metadata:merger",
-    default_config="@io_bazel_rules_web//rules:default"):
+    default_config="@io_bazel_rules_web//web:default_config"):
   native.new_git_repository(
       name="com_github_gorilla_mux",
       build_file=prefix + "//:BUILD.gorilla_mux",

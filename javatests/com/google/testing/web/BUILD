@@ -33,10 +33,22 @@ web_test_suite(
     name = "BrowserTest",
     browser_overrides = {
         "//browsers:chrome-external": {
-            "tags": ["manual"],
+            "tags": [
+                "manual",
+                "requires-network",
+            ],
         },
         "//browsers:firefox-external": {
-            "tags": ["manual"],
+            "tags": [
+                "manual",
+                "requires-network",
+            ],
+        },
+        "//browsers:chrome-native": {
+            "local": True,
+        },
+        "//browsers:firefox-native": {
+            "local": True,
         },
     },
     browsers = [
@@ -45,6 +57,5 @@ web_test_suite(
         "//browsers:firefox-external",
         "//browsers:firefox-native",
     ],
-    local = True,
     test = ":BrowserTest_wrapped",
 )

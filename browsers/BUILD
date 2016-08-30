@@ -24,11 +24,13 @@ load("//web:web.bzl", "browser")
 browser(
     name = "firefox-external",
     metadata = "firefox-external.json",
+    required_tags = ["requires-network"],
 )
 
 browser(
     name = "chrome-external",
     metadata = "chrome-external.json",
+    required_tags = ["requires-network"],
 )
 
 browser(

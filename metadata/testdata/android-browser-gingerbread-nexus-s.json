@@ -1,6 +1,4 @@
 {
-  "formFactor": "PHONE",
-  "browserName": "android browser",
   "capabilities": {
     "chromeOptions": {
       "mobileEmulation": {

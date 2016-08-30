@@ -25,22 +25,12 @@ import (
 	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
 
-const defaultRecordVideo = "never"
-
-var (
-	output       = flag.String("output", "", "output file for generated metadata")
-	testLabel    = flag.String("test_label", "", "test label for generated metadata")
-	browserLabel = flag.String("browser_label", "", "browser label for generated metadata")
-)
+var output = flag.String("output", "", "output file for generated metadata")
 
 func main() {
 	flag.Parse()
 
-	data := metadata.Metadata{
-		TestLabel:    *testLabel,
-		BrowserLabel: *browserLabel,
-		RecordVideo:  defaultRecordVideo,
-	}
+	data := metadata.Metadata{}
 
 	for _, file := range flag.Args() {
 		m, err := metadata.FromFile(file)

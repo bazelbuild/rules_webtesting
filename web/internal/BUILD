@@ -16,9 +16,18 @@
 #
 package(default_testonly = True)
 
-load("//rules:web_test_config.bzl", "web_test_config")
+load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_doc", "skylark_library")
 
-web_test_config(
-    name = "default",
-    visibility = ["//visibility:public"],
+skylark_library(
+    name = "web_test_rules",
+    srcs = glob(["*.bzl"]),
 )
+
+skylark_doc(
+    name = "web_test_docs",
+    format = "markdown",
+    tags = ["manual"],
+    deps = [":web_test_rules"],
+)
+
+exports_files(glob(["*.bzl"]))

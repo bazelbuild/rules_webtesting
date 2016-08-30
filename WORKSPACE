@@ -29,7 +29,7 @@ go_repositories()
 load("//web:repositories.bzl", "web_test_repositories")
 
 web_test_repositories(
-    default_config = "//rules:default",
+    default_config = "//web:default_config",
     go = True,
     java = True,
     launcher = "//launcher:main",
@@ -54,13 +54,17 @@ git_repository(
     remote = "https://github.com/bazelbuild/rules_sass.git",
     tag = "0.0.1",
 )
+
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_repositories")
+
 sass_repositories()
 
 git_repository(
     name = "io_bazel_skydoc",
-    remote = "https://github.com/bazelbuild/skydoc.git",
     commit = "c57ff682364dbb1ae808b769f9e3add77cdbfad1",
+    remote = "https://github.com/bazelbuild/skydoc.git",
 )
+
 load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
+
 skydoc_repositories()

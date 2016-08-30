@@ -13,8 +13,5 @@
     },
     "javascriptEnabled": true,
     "platform": "UNIX"
-  },
-  "formFactor": "PHONE",
-  "browserName": "android browser",
-  "recordVideo": "never"
+  }
 }

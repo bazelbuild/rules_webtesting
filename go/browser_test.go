@@ -17,7 +17,6 @@
 package browser
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/tebeka/selenium/selenium"
@@ -69,22 +68,5 @@ func TestProvisionBrowser_WithCaps(t *testing.T) {
 
 	if err := wd.Quit(); err != nil {
 		t.Error(err)
-	}
-}
-
-func TestGetInfo(t *testing.T) {
-	i, err := GetInfo()
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if strings.HasSuffix(i.TargetBrowserName, "linux") {
-		if i.Environment != "native" {
-			t.Errorf(`got Environment = %q, expected "native"`, i.Environment)
-		}
-		if i.FormFactor != "DESKTOP" {
-			t.Errorf(`got FormFactor = %q, expected "DESKTOP"`, i.FormFactor)
-		}
 	}
 }

@@ -16,32 +16,25 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//rules:shared.bzl", "browser_attr", "build_runfiles", "config_attr",
-     "path")
-load("//rules:metadata.bzl", "merge_files")
+load("//web/internal:shared.bzl", "build_runfiles", "get_metadata_files",
+     "merge_metadata_files", "path")
 
 
 def _web_test_impl(ctx):
-  missing_tags = []
-  for tag in ctx.attr.browser.required_tags:
-    if tag not in ctx.attr.tags:
-      missing_tags.add(tag)
+  missing_tags = [tag for tag in ctx.attr.browser.required_tags
+                  if tag not in ctx.attr.tags]
 
   if missing_tags:
-    fail("Browser %s requires tags %s that are missing." %
-         ctx.attr.browser.label, missing_tags)
+    fail("Browser {browser} requires tags {tags} that are missing.".format(
+        browser=ctx.attr.browser.label, tags=missing_tags))
 
-  metadata_files = []
-  for dep in ctx.attr.data:
-    if hasattr(dep, "web_test_metadata"):
-      metadata_files += [dep.web_test_metadata]
+  metadata_files = get_metadata_files(ctx, ["data", "browser", "config"])
 
-  merge_files(
+  merge_metadata_files(
       ctx=ctx,
       merger=ctx.executable._merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files + [ctx.attr.browser.web_test_metadata,
-                               ctx.attr.config.web_test_metadata])
+      inputs=metadata_files,)
 
   if ctx.attr.browser.disabled:
     return _generate_disabled_test(ctx)
@@ -118,7 +111,7 @@ $TEST_SRCDIR/{launcher} --metadata={metadata} --test={test}
   return struct(runfiles=build_runfiles(
       ctx,
       files=[ctx.outputs.web_test_metadata],
-      deps_attrs=["_launcher", "browser", "config"]))
+      deps_attrs=["_launcher", "browser", "config", "test"]))
 
 
 web_test = rule(
@@ -127,8 +120,21 @@ web_test = rule(
     attrs={
         "test": attr.label(
             executable=True, mandatory=True, cfg=DATA_CFG),
-        "browser": browser_attr(mandatory=True),
-        "config": config_attr(),
+        "browser": attr.label(
+            mandatory=True,
+            cfg=DATA_CFG,
+            providers=[
+                "disabled",
+                "environment",
+                "required_tags",
+                "web_test_metadata",
+            ],),
+        "config": attr.label(
+            cfg=DATA_CFG,
+            default=Label("//external:web_test_default_config"),
+            providers=[
+                "web_test_metadata",
+            ],),
         "data": attr.label_list(
             allow_files=True, cfg=DATA_CFG),
         "_merger": attr.label(
@@ -139,3 +145,12 @@ web_test = rule(
             executable=True, default=Label("//external:web_test_launcher")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
+"""Runs a provided test against a provided browser configuration.
+
+Args:
+  test: The test that will be run against the provided browser.
+  browser: A browser configuration that defines the type of browser used for
+    this test.
+  config: Additional configuration that overrides the configuration in browser.
+  data: Additional runtime dependencies for the test.
+"""

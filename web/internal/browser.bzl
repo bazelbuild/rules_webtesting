@@ -16,32 +16,31 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//rules:shared.bzl", "browser_struct", "build_runfiles")
-load("//rules:metadata.bzl", "create_file", "merge_files")
+load("//web/internal:shared.bzl",
+     "build_runfiles",
+     "create_metadata_file",
+     "get_metadata_files",
+     "merge_metadata_files",)
 
 
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  create_file(ctx=ctx, output=patch, browser_label=ctx.label)
+  create_metadata_file(ctx=ctx, output=patch, browser_label=ctx.label)
 
-  metadata_files = []
-  for dep in ctx.attr.data:
-    if hasattr(dep, "web_test_metadata"):
-      metadata_files += [dep.web_test_metadata]
+  metadata_files = get_metadata_files(ctx,
+                                      ["data"]) + [ctx.file.metadata, patch]
 
-  merge_files(
+  merge_metadata_files(
       ctx=ctx,
       merger=ctx.executable._merger,
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files + [ctx.file.metadata, patch])
 
-  required_tags = set(ctx.attr.required_tags)
-  required_tags += ["browser-" + ctx.label.name]
-
-  return browser_struct(
+  return struct(
       disabled=ctx.attr.disabled,
-      required_tags=required_tags,
+      environment=ctx.attr.environment,
+      required_tags=ctx.attr.required_tags,
       runfiles=build_runfiles(
           ctx, files=[ctx.outputs.web_test_metadata]),
       web_test_metadata=ctx.outputs.web_test_metadata,)
@@ -51,10 +50,11 @@ browser = rule(
     implementation=_browser_impl,
     attrs={
         "metadata": attr.label(
-            mandatory=True, allow_files=True, single_file=True, cfg=DATA_CFG),
+            mandatory=True, allow_single_file=True, cfg=DATA_CFG),
         "data": attr.label_list(
             allow_files=True, cfg=DATA_CFG),
         "disabled": attr.string(),
+        "environment": attr.string_dict(default={}),
         "required_tags": attr.string_list(default=[]),
         "_merger": attr.label(
             executable=True,
@@ -62,3 +62,15 @@ browser = rule(
             default=Label("//external:web_test_merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
+"""Defines a browser configuration for use with web_test.
+
+Args:
+  metadata: The web_test metadata file that defines how this browser
+    is launched and default capabilities for this browser.
+  data: Runtime dependencies needed for this browser.
+  disabled: If set, then a no-op test will be run for all tests using
+    this browser.
+  environment: Map of environment variables-values to set for this browser.
+  required_tags: A list of tags that all web_tests using this browser
+    should have. Examples include "requires-network", "local", etc.
+"""

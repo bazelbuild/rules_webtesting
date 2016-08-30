@@ -19,7 +19,7 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
-load("//rules:web_test_named_executable.bzl", "web_test_named_executable")
+load("//web:web.bzl", "web_test_named_executable")
 
 java_binary(
     name = "SeleniumServer",

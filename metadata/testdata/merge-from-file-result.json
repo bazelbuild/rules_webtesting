@@ -1,6 +1,4 @@
 {
-  "formFactor": "PHONE",
-  "browserName": "android browser",
   "capabilities": {
     "browserName": "chrome",
     "javascriptEnabled": true,

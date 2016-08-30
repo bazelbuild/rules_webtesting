@@ -14,10 +14,22 @@
 #
 ################################################################################
 #
+package(default_testonly = True)
 
 load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_doc")
+load(":web.bzl", "web_test_config")
 
 skylark_doc(
     name = "web-docs",
     srcs = glob(["*.bzl"]),
+)
+
+web_test_config(
+    name = "default_config",
+    visibility = ["//visibility:public"],
+)
+
+exports_files(
+    glob(["*.bzl"]),
+    visibility = ["//visibility:public"],
 )
