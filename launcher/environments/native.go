@@ -21,10 +21,12 @@ package native
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/bazelbuild/rules_web/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_web/launcher/environments/environment"
-	"github.com/bazelbuild/rules_web/launcher/services/selenium"
+	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/services/service"
 	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
 
@@ -35,7 +37,7 @@ const (
 
 type native struct {
 	*environment.Base
-	selenium *selenium.Selenium
+	selenium *service.Server
 }
 
 // NewEnv creates a new environment for launching a browser locally using
@@ -45,8 +47,17 @@ func NewEnv(m metadata.Metadata) (environment.Env, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	s, err := selenium.New(useXvfb(), nil)
+	seleniumPath, err := m.GetExecutablePath("SELENIUM_SERVER")
+	if err != nil {
+		return nil, errors.New("SeleniumServer", err)
+	}
+	s, err := service.NewServer(
+		"SeleniumServer",
+		seleniumPath,
+		"http://%s/wd/hub/status",
+		useXvfb(),
+		60*time.Second,
+		nil, "-port", "{port}")
 	if err != nil {
 		return nil, err
 	}

@@ -30,7 +30,6 @@ go_binary(
         "//launcher/environments:external",
         "//launcher/environments:native",
         "//launcher/proxy",
-        "//launcher/services:selenium",
         "//metadata",
         "//util:bazel",
     ],

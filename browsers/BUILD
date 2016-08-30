@@ -33,12 +33,12 @@ browser(
 
 browser(
     name = "firefox-native",
-    data = ["//java:SeleniumServer"],
+    data = ["//java:SELENIUM_SERVER"],
     metadata = "firefox-native.json",
 )
 
 browser(
     name = "chrome-native",
-    data = ["//java:SeleniumServer"],
+    data = ["//java:SELENIUM_SERVER"],
     metadata = "chrome-native.json",
 )

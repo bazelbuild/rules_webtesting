@@ -27,7 +27,6 @@ import (
 
 	"github.com/bazelbuild/rules_web/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_web/launcher/errors"
-	"github.com/bazelbuild/rules_web/util/bazel"
 )
 
 // Cmd is a service that starts an external executable.
@@ -43,10 +42,6 @@ type Cmd struct {
 
 // NewCmd creates a new service for starting an external server on the host machine.
 func NewCmd(name, exe string, xvfb bool, env map[string]string, args ...string) (*Cmd, error) {
-	exe, err := bazel.Runfile(exe)
-	if err != nil {
-		return nil, errors.New(name, err)
-	}
 	if xvfb {
 		args = append([]string{exe}, args...)
 		exe = "/usr/bin/xvfb-run"

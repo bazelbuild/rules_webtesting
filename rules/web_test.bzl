@@ -31,12 +31,17 @@ def _web_test_impl(ctx):
     fail("Browser %s requires tags %s that are missing." %
          ctx.attr.browser.label, missing_tags)
 
+  metadata_files = []
+  for dep in ctx.attr.data:
+    if hasattr(dep, "web_test_metadata"):
+      metadata_files += [dep.web_test_metadata]
+
   merge_files(
       ctx=ctx,
       merger=ctx.executable._merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=[ctx.attr.browser.web_test_metadata,
-              ctx.attr.config.web_test_metadata])
+      inputs=metadata_files + [ctx.attr.browser.web_test_metadata,
+                               ctx.attr.config.web_test_metadata])
 
   if ctx.attr.browser.disabled:
     return _generate_disabled_test(ctx)

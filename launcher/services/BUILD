@@ -32,14 +32,7 @@ go_library(
         "//launcher:cmdhelper",
         "//launcher:errors",
         "//launcher:healthreporter",
-        "//util:bazel",
         "//util:httphelper",
         "//util:portpicker",
     ],
-)
-
-go_library(
-    name = "selenium",
-    srcs = ["selenium.go"],
-    deps = [":service"],
 )

@@ -19,10 +19,17 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
+load("//rules:web_test_named_executable.bzl", "web_test_named_executable")
+
 java_binary(
     name = "SeleniumServer",
     main_class = "org.openqa.grid.selenium.GridLauncherV3",
     runtime_deps = [
         "@org_seleniumhq_server//jar",
     ],
+)
+
+web_test_named_executable(
+    name = "SELENIUM_SERVER",
+    executable = ":SeleniumServer",
 )

@@ -193,8 +193,7 @@ def web_test_config(name, configs=None, record=None):
       or record video only if a test fails. Valid values are "", "never",
       "failed", "always".
   """
-  web_test_config_alias(
-      name=name, configs=configs, record=record, testonly=True)
+  web_test_config_alias(name=name, configs=configs, testonly=True)
 
 
 def browser(name,

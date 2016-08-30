@@ -24,35 +24,34 @@ load("//rules:metadata.bzl", "create_file", "merge_files")
 
 def _web_test_config_impl(ctx):
   """Implementation of the web_test_config rule."""
-  files_to_merge = []
-  record = ""
+
+  metadata_files = []
+  for dep in ctx.attr.data:
+    if hasattr(dep, "web_test_metadata"):
+      metadata_files += [dep.web_test_metadata]
+
   for config in ctx.attr.configs:
-    if config.record:
-      record = config.record
-    files_to_merge += [config.web_test_metadata]
+    metadata_files += [config.web_test_metadata]
 
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  create_file(ctx=ctx, output=patch, record_video=ctx.attr.record)
-  files_to_merge += [patch]
-
-  if ctx.attr.record:
-    record = ctx.attr.record
+  create_file(ctx=ctx, output=patch)
+  metadata_files += [patch]
 
   merge_files(
       ctx=ctx,
       merger=ctx.executable._merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=files_to_merge)
+      inputs=metadata_files)
 
-  return struct(record=record, web_test_metadata=ctx.outputs.web_test_metadata)
+  return struct(web_test_metadata=ctx.outputs.web_test_metadata)
 
 
 web_test_config = rule(
     implementation=_web_test_config_impl,
     attrs={
         "configs": attr.label_list(providers=["json", "record"]),
-        "record": attr.string(
-            default="", values=["", "never", "failed", "always"]),
+        "data": attr.label_list(
+            allow_files=True, cfg=DATA_CFG),
         "_merger": attr.label(
             executable=True,
             cfg=HOST_CFG,

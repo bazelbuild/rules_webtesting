@@ -19,9 +19,11 @@ package metadata
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/bazelbuild/rules_web/metadata/capabilities"
+	"github.com/bazelbuild/rules_web/util/bazel"
 )
 
 // Values for Metadata.RecordVideo.
@@ -50,7 +52,8 @@ type Metadata struct {
 	// Whether to record and keep videos. One of "always", "failed", "never".
 	RecordVideo string `json:"recordVideo,omitempty"`
 	// Whether to wait for the environment to be healthy before the test starts.
-	HealthyBeforeTest interface{} `json:"healthyBeforeTest,omitempty"`
+	HealthyBeforeTest interface{}       `json:"healthyBeforeTest,omitempty"`
+	NamedExecutables  map[string]string `json:"NamedExecutables,omitempty"`
 }
 
 // Merge takes two Metadata objects and merges them into a new Metadata object.
@@ -97,6 +100,9 @@ func Merge(m1, m2 Metadata) Metadata {
 		healthyBeforeTest = m2.HealthyBeforeTest
 	}
 
+	// TODO(fisherii): propagate merge error
+	namedExecutables, _ := mergeNamedExecutables(m1.NamedExecutables, m2.NamedExecutables)
+
 	return Metadata{
 		Capabilities:      capabilities,
 		FormFactor:        formFactor,
@@ -107,6 +113,7 @@ func Merge(m1, m2 Metadata) Metadata {
 		CropScreenshots:   cropScreenshots,
 		RecordVideo:       recordVideo,
 		HealthyBeforeTest: healthyBeforeTest,
+		NamedExecutables:  namedExecutables,
 	}
 }
 
@@ -143,5 +150,42 @@ func Equals(e, a Metadata) bool {
 		e.TestLabel == a.TestLabel &&
 		e.CropScreenshots == a.CropScreenshots &&
 		e.RecordVideo == a.RecordVideo &&
-		e.HealthyBeforeTest == a.HealthyBeforeTest
+		e.HealthyBeforeTest == a.HealthyBeforeTest &&
+		mapEquals(e.NamedExecutables, a.NamedExecutables)
+}
+
+func mergeNamedExecutables(n1, n2 map[string]string) (map[string]string, error) {
+	result := map[string]string{}
+
+	for k, v := range n1 {
+		result[k] = v
+	}
+
+	for k, v2 := range n2 {
+		if v1, ok := result[k]; ok && v1 != v2 {
+			return nil, fmt.Errorf("key %q exists in both NamedFiles with different values", k)
+		}
+		result[k] = v2
+	}
+	return result, nil
+}
+
+func mapEquals(e, a map[string]string) bool {
+	if len(e) != len(a) {
+		return false
+	}
+	for k, ev := range e {
+		if av, ok := a[k]; !ok || ev != av {
+			return false
+		}
+	}
+	return true
+}
+
+func (m Metadata) GetExecutablePath(name string) (string, error) {
+	filename, ok := m.NamedExecutables[name]
+	if !ok {
+		return "", fmt.Errorf("no named executable %q", name)
+	}
+	return bazel.Runfile(filename)
 }

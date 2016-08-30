@@ -24,11 +24,17 @@ def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   create_file(ctx=ctx, output=patch, browser_label=ctx.label)
+
+  metadata_files = []
+  for dep in ctx.attr.data:
+    if hasattr(dep, "web_test_metadata"):
+      metadata_files += [dep.web_test_metadata]
+
   merge_files(
       ctx=ctx,
       merger=ctx.executable._merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=[ctx.file.metadata, patch])
+      inputs=metadata_files + [ctx.file.metadata, patch])
 
   required_tags = set(ctx.attr.required_tags)
   required_tags += ["browser-" + ctx.label.name]

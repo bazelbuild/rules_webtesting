@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A library of functions for working with web_test metadata files."""
+
+load('//rules:shared.bzl', 'path')
 
 
 def merge_files(ctx, merger, output, inputs):
@@ -46,7 +47,8 @@ def create_file(ctx,
                 browser_label=None,
                 test_label=None,
                 crop_screenshots=None,
-                record_video=None):
+                record_video=None,
+                named_executables=None):
   """Generates a web_test metadata file with specified contents."""
   content = '{\n  "_comment": "generated file for %s"' % ctx.label
   if capabilities:
@@ -67,6 +69,16 @@ def create_file(ctx,
     content += ',\n  "cropScreenshots": false'
   if record_video:
     content += ',\n  "recordVideo": "' + record_video + '"'
+  if named_executables:
+    first = True
+    content += ',\n  "namedExecutables": {'
+    for k, v in named_executables.items():
+      if first:
+        first = False
+      else:
+        content += ','
+      content += '\n    "' + k + '"' + ': "' + path(ctx, v) + '"'
+    content += '\n  }'
   content += '\n}\n'
 
   ctx.file_action(output=output, content=content, executable=False)

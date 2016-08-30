@@ -34,6 +34,7 @@ go_library(
     srcs = ["metadata.go"],
     deps = [
         ":capabilities",
+        "//util:bazel",
     ],
 )
 

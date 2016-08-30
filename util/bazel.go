@@ -25,10 +25,15 @@ import (
 const runfileEnv = "TEST_SRCDIR"
 
 // Runfile returns an absolute path to the specified file in the runfiles directory of the running target.
+// Returns an error if TEST_SRCDIR is not set or if the file does not exist.
 func Runfile(path string) (string, error) {
 	runfileDir, ok := os.LookupEnv(runfileEnv)
 	if !ok {
 		return "", fmt.Errorf("environment variable %q is not defined, are you running with bazel test", runfileEnv)
 	}
-	return filepath.Join(runfileDir, path), nil
+	filename := filepath.Join(runfileDir, path)
+	if _, err := os.Stat(filename); err != nil {
+		return "", err
+	}
+	return filename, nil
 }
