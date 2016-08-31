@@ -48,7 +48,7 @@ go_library(
     deps = [
         ":environment",
         "//launcher:cmdhelper",
-        "//launcher:errors",
+        "//launcher/services:selenium",
         "//launcher/services:service",
         "//metadata",
     ],

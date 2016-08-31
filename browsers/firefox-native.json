@@ -1,4 +1,6 @@
 {
     "environment": "native",
-    "capabilities": {"browserName": "firefox"}
+    "capabilities": {
+        "browserName": "firefox"
+    }
 }

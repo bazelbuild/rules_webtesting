@@ -21,11 +21,10 @@ package native
 import (
 	"context"
 	"os"
-	"time"
 
 	"github.com/bazelbuild/rules_web/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_web/launcher/environments/environment"
-	"github.com/bazelbuild/rules_web/launcher/errors"
+	"github.com/bazelbuild/rules_web/launcher/services/selenium"
 	"github.com/bazelbuild/rules_web/launcher/services/service"
 	"github.com/bazelbuild/rules_web/metadata/metadata"
 )
@@ -47,17 +46,7 @@ func NewEnv(m metadata.Metadata) (environment.Env, error) {
 	if err != nil {
 		return nil, err
 	}
-	seleniumPath, err := m.GetExecutablePath("SELENIUM_SERVER")
-	if err != nil {
-		return nil, errors.New("SeleniumServer", err)
-	}
-	s, err := service.NewServer(
-		"SeleniumServer",
-		seleniumPath,
-		"http://%s/wd/hub/status",
-		useXvfb(),
-		60*time.Second,
-		nil, "-port", "{port}")
+	s, err := selenium.NewSelenium(m, useXvfb())
 	if err != nil {
 		return nil, err
 	}

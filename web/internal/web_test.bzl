@@ -21,8 +21,10 @@ load("//web/internal:shared.bzl", "build_runfiles", "get_metadata_files",
 
 
 def _web_test_impl(ctx):
-  missing_tags = [tag for tag in ctx.attr.browser.required_tags
-                  if tag not in ctx.attr.tags]
+  missing_tags = [
+      tag for tag in ctx.attr.browser.required_tags
+      if (tag not in ctx.attr.tags) and (tag != "local" or not ctx.attr.local)
+  ]
 
   if missing_tags:
     fail("Browser {browser} requires tags {tags} that are missing.".format(
@@ -94,6 +96,10 @@ fi
 
 if [[ -z "$TEST_TEMPDIR" ]]; then
   export TEST_TEMPDIR=$(mktemp -d test_tempdir.XXXXXX)
+fi
+
+if [ ! -e "/dev/shm" ]; then
+  mkdir /dev/shm
 fi
 
 {env_vars}

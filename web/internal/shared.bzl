@@ -61,10 +61,17 @@ def _get_transitive_files(attr_val):
 
 
 def path(ctx, file):
+  """Constructs a path relative to TEST_SRCDIR for accessing the file."""
+  if file.short_path[:3] == '../':
+    # sometimes a file's short_path is ../<workspace_root>/<file_path>
+    # then we just need to trim the ../
+    return file.short_path[3:]
   if file.owner and file.owner.workspace_root:
+    # if the file has an owner and that owner has a workspace_root,
+    # prepend it.
     return file.owner.workspace_root + '/' + file.short_path
-  else:
-    return ctx.workspace_name + '/' + file.short_path
+  # otherwise assume the file is in the same workspace as the current rule.
+  return ctx.workspace_name + '/' + file.short_path
 
 
 def get_metadata_files(ctx, attr_names):

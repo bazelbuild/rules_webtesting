@@ -19,7 +19,29 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
-load("//web:web.bzl", "browser")
+load("//web:web.bzl", "browser", "web_test_named_executable")
+
+web_test_named_executable(
+    name = "CHROMEDRIVER",
+    executable = "@org_chromium_chromedriver//:chromedriver",
+)
+
+web_test_named_executable(
+    name = "CHROME",
+    data = ["@com_google_chrome//:deps"],
+    executable = "@com_google_chrome//:chrome-precise64/chrome",
+)
+
+web_test_named_executable(
+    name = "FIREFOX",
+    data = ["@org_mozilla_firefox//:deps"],
+    executable = "@org_mozilla_firefox//:firefox-sdk/bin/firefox",
+)
+
+web_test_named_executable(
+    name = "GECKODRIVER",
+    executable = "@org_mozilla_geckodriver//:geckodriver",
+)
 
 browser(
     name = "firefox-external",
@@ -35,12 +57,24 @@ browser(
 
 browser(
     name = "firefox-native",
-    data = ["//java:SELENIUM_SERVER"],
+    data = [
+        ":FIREFOX",
+        ":GECKODRIVER",
+        "//java:SELENIUM_SERVER",
+    ],
     metadata = "firefox-native.json",
+    # if not tagged local, then bazel does not exit cleanly
+    required_tags = ["local"],
 )
 
 browser(
     name = "chrome-native",
-    data = ["//java:SELENIUM_SERVER"],
+    data = [
+        ":CHROME",
+        ":CHROMEDRIVER",
+        "//java:SELENIUM_SERVER",
+    ],
     metadata = "chrome-native.json",
+    # if not tagged local, then bazel does not exit cleanly
+    required_tags = ["local"],
 )

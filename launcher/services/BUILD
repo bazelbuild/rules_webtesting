@@ -36,3 +36,13 @@ go_library(
         "//util:portpicker",
     ],
 )
+
+go_library(
+    name = "selenium",
+    srcs = ["selenium.go"],
+    deps = [
+        ":service",
+        "//launcher:errors",
+        "//metadata",
+    ],
+)

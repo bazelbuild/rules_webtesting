@@ -1,4 +1,9 @@
 {
     "environment": "native",
-    "capabilities": {"browserName": "chrome"}
+    "capabilities": {
+        "browserName": "chrome",
+        "chromeOptions": {
+            "args": ["--no-sandbox"]
+        }
+    }
 }

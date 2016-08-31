@@ -90,6 +90,19 @@ func (b *Base) StartSession(ctx context.Context, id int, caps map[string]interfa
 		return nil, err
 	}
 	updated := capabilities.Merge(b.metadata.Capabilities, caps)
+	// TODO: Figure out a general mechanism for this.
+	if chrome, err := b.metadata.GetExecutablePath("CHROME"); err == nil {
+		updated = capabilities.Merge(updated, map[string]interface{}{
+			"chromeOptions": map[string]interface{}{
+				"binary": chrome,
+			},
+		})
+	}
+	if firefox, err := b.metadata.GetExecutablePath("FIREFOX"); err == nil {
+		updated = capabilities.Merge(updated, map[string]interface{}{
+			"firefox_binary": firefox,
+		})
+	}
 	return updated, nil
 }
 
