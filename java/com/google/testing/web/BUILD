@@ -14,14 +14,12 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = 1,
-    default_visibility = ["//visibility:public"],
-)
+package(default_testonly = 1)
 
 java_library(
     name = "web",
     srcs = glob(["*.java"]),
+    visibility = ["//visibility:public"],
     deps = [
         "//java/com/google/testing/util",
         "@com_google_code_findbugs_jsr305//jar",

@@ -14,6 +14,8 @@
 #
 ################################################################################
 #
+package(default_testonly = True)
+
 java_test(
     name = "BrowserTest_wrapped",
     srcs = ["BrowserTest.java"],

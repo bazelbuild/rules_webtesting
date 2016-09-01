@@ -14,10 +14,7 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = 1,
-    default_visibility = ["//visibility:public"],
-)
+package(default_testonly = 1)
 
 load("//web:web.bzl", "browser", "web_test_named_executable")
 
@@ -47,12 +44,14 @@ browser(
     name = "firefox-external",
     metadata = "firefox-external.json",
     required_tags = ["requires-network"],
+    visibility = ["//visibility:public"],
 )
 
 browser(
     name = "chrome-external",
     metadata = "chrome-external.json",
     required_tags = ["requires-network"],
+    visibility = ["//visibility:public"],
 )
 
 browser(
@@ -65,6 +64,7 @@ browser(
     metadata = "firefox-native.json",
     # if not tagged local, then bazel does not exit cleanly
     required_tags = ["local"],
+    visibility = ["//visibility:public"],
 )
 
 browser(
@@ -77,4 +77,5 @@ browser(
     metadata = "chrome-native.json",
     # if not tagged local, then bazel does not exit cleanly
     required_tags = ["local"],
+    visibility = ["//visibility:public"],
 )

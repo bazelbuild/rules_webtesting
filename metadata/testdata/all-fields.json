@@ -1,7 +1,0 @@
-{
-  "capabilities": {},
-  "environment": "chromeos",
-  "browserLabel": "//testing/web/browsers:figaro",
-  "testLabel": "//testing/web/launcher:tests",
-  "namedExecutables": {}
-}

@@ -14,23 +14,22 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
+licenses(["notice"])  # Apache 2
 
-load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_doc", "skylark_library")
-
-skylark_library(
-    name = "web_test_rules",
-    srcs = glob(["*.bzl"]),
+java_import(
+    name = "selenium",
+    jars = glob(["*.jar"]),
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        ":libs",
+        "@com_google_guava_guava//jar",
+    ],
 )
 
-skylark_doc(
-    name = "web_test_docs",
-    format = "markdown",
-    tags = ["manual"],
-    deps = [":web_test_rules"],
-)
-
-exports_files(
-    glob(["*.bzl"]),
-    visibility = ["//web:__subpackages__"],
+java_import(
+    name = "libs",
+    jars = glob(
+        ["lib/*.jar"],
+        exclude = ["lib/guava*.jar"],
+    ),
 )

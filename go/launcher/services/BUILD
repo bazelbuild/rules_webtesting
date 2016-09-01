@@ -14,23 +14,34 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
+package(default_testonly = 1)
 
-load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_doc", "skylark_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
-skylark_library(
-    name = "web_test_rules",
-    srcs = glob(["*.bzl"]),
+go_library(
+    name = "service",
+    srcs = [
+        "cmd.go",
+        "server.go",
+        "service.go",
+    ],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        "//go/launcher:cmdhelper",
+        "//go/launcher:errors",
+        "//go/launcher:healthreporter",
+        "//go/util:httphelper",
+        "//go/util:portpicker",
+    ],
 )
 
-skylark_doc(
-    name = "web_test_docs",
-    format = "markdown",
-    tags = ["manual"],
-    deps = [":web_test_rules"],
-)
-
-exports_files(
-    glob(["*.bzl"]),
-    visibility = ["//web:__subpackages__"],
+go_library(
+    name = "selenium",
+    srcs = ["selenium.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":service",
+        "//go/launcher:errors",
+        "//go/metadata",
+    ],
 )

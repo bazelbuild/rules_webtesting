@@ -14,10 +14,7 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = True,
-    default_visibility = ["//visibility:public"],
-)
+package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("//web:web.bzl", "web_test_suite")
@@ -25,6 +22,7 @@ load("//web:web.bzl", "web_test_suite")
 go_library(
     name = "browser",
     srcs = ["browser.go"],
+    visibility = ["//visibility:public"],
     deps = [
         "@com_github_tebeka_selenium//:selenium",
     ],

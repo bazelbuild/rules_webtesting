@@ -17,12 +17,12 @@ def web_test_repositories(
     prefix="@io_bazel_rules_web",
     java=False,
     go=False,
-    launcher="@io_bazel_rules_web//launcher:main",
-    merger="@io_bazel_rules_web//metadata:merger",
+    launcher="@io_bazel_rules_web//go/launcher:main",
+    merger="@io_bazel_rules_web//go/metadata:merger",
     default_config="@io_bazel_rules_web//web:default_config"):
   native.new_git_repository(
       name="com_github_gorilla_mux",
-      build_file=prefix + "//:BUILD.gorilla_mux",
+      build_file=prefix + "//build_files:BUILD.gorilla_mux",
       commit="cf79e51a62d8219d52060dfc1b4e810414ba2d15",
       remote="https://github.com/gorilla/mux.git",)
 
@@ -47,7 +47,7 @@ def web_test_repositories(
   if java:
     native.new_http_archive(
         name="org_seleniumhq_java",
-        build_file=prefix + "//:BUILD.selenium_java",
+        build_file=prefix + "//build_files:BUILD.selenium_java",
         url="http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-java-3.0.0-beta2.zip",
         sha256="3ee5d714c18e7bbbd3c112961712a825da057854c8f5f7ca12af368ac3270b29",
     )
@@ -70,6 +70,6 @@ def web_test_repositories(
   if go:
     native.new_git_repository(
         name="com_github_tebeka_selenium",
-        build_file=prefix + "//:BUILD.selenium_go",
+        build_file=prefix + "//build_files:BUILD.selenium_go",
         remote="https://github.com/tebeka/selenium.git",
         tag="v0.8.5",)

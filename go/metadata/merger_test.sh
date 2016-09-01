@@ -1,3 +1,5 @@
+#!/bin/bash -eu
+#
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,23 +16,11 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
+printenv
 
-load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_doc", "skylark_library")
+$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/chrome-linux.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/android-browser-gingerbread-nexus-s.json
 
-skylark_library(
-    name = "web_test_rules",
-    srcs = glob(["*.bzl"]),
-)
-
-skylark_doc(
-    name = "web_test_docs",
-    format = "markdown",
-    tags = ["manual"],
-    deps = [":web_test_rules"],
-)
-
-exports_files(
-    glob(["*.bzl"]),
-    visibility = ["//web:__subpackages__"],
-)
+diff $TEST_TMPDIR/out.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/merger-result.json
