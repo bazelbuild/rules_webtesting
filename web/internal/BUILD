@@ -16,21 +16,10 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_doc", "skylark_library")
-
-skylark_library(
-    name = "web_test_rules",
-    srcs = glob(["*.bzl"]),
-)
-
-skylark_doc(
-    name = "web_test_docs",
-    format = "markdown",
-    tags = ["manual"],
-    deps = [":web_test_rules"],
-)
-
 exports_files(
     glob(["*.bzl"]),
-    visibility = ["//web:__subpackages__"],
+    visibility = [
+        "//doc:__subpackages__",
+        "//web:__subpackages__",
+    ],
 )

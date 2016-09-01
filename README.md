@@ -7,7 +7,6 @@
 Add the following to your WORKSPACE file:
 
 ```bzl
-
 git_repository(
     name = "io_bazel_rules_go",
     # need a version with Go1.7 support
@@ -21,7 +20,7 @@ go_repositories()
 
 git_repository(
     name = "io_bazel_rules_web",
-    path = "https://github.com/bazelbuild/rules_web.git",
+    remote = "https://github.com/bazelbuild/rules_web.git",
     tag = "",
 )
 
@@ -96,7 +95,7 @@ import (
 )
 
 func TestWebApp(t *testing.T) {
-    wd, err := NewSession(selenium.Capabilies{})
+    wd, err := NewSession(selenium.Capabilities{})
     if err != nil {
         t.Fatal(err)
     }
