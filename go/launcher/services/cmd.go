@@ -43,7 +43,7 @@ type Cmd struct {
 // NewCmd creates a new service for starting an external server on the host machine.
 func NewCmd(name, exe string, xvfb bool, env map[string]string, args ...string) (*Cmd, error) {
 	if xvfb {
-		args = append([]string{exe}, args...)
+		args = append([]string{"-a", exe}, args...)
 		exe = "/usr/bin/xvfb-run"
 	}
 	cmd := exec.Command(exe, args...)
