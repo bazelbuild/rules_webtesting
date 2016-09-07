@@ -9,9 +9,8 @@ Add the following to your WORKSPACE file:
 ```bzl
 git_repository(
     name = "io_bazel_rules_go",
-    # need a version with Go1.7 support
-    commit = "ae8ea32be1af991eef77d6347591dc8ba56c40a2",
     remote = "https://github.com/bazelbuild/rules_go.git",
+    tag = "0.1.0",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")

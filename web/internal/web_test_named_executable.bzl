@@ -56,12 +56,12 @@ web_test_named_executable = rule(
     attrs={
         "alt_name": attr.string(),
         "executable": attr.label(
-            allow_files=True, executable=True, cfg=DATA_CFG, mandatory=True),
+            allow_files=True, executable=True, cfg="data", mandatory=True),
         "data": attr.label_list(
-            allow_files=True, cfg=DATA_CFG),
+            allow_files=True, cfg="data"),
         "_merger": attr.label(
             executable=True,
-            cfg=HOST_CFG,
+            cfg="host",
             default=Label("//external:web_test_merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)

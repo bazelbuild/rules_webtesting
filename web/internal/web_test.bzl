@@ -125,10 +125,10 @@ web_test = rule(
     test=True,
     attrs={
         "test": attr.label(
-            executable=True, mandatory=True, cfg=DATA_CFG),
+            executable=True, mandatory=True, cfg="data"),
         "browser": attr.label(
             mandatory=True,
-            cfg=DATA_CFG,
+            cfg="data",
             providers=[
                 "disabled",
                 "environment",
@@ -136,16 +136,16 @@ web_test = rule(
                 "web_test_metadata",
             ],),
         "config": attr.label(
-            cfg=DATA_CFG,
+            cfg="data",
             default=Label("//external:web_test_default_config"),
             providers=[
                 "web_test_metadata",
             ],),
         "data": attr.label_list(
-            allow_files=True, cfg=DATA_CFG),
+            allow_files=True, cfg="data"),
         "_merger": attr.label(
             executable=True,
-            cfg=HOST_CFG,
+            cfg="host",
             default=Label("//external:web_test_merger")),
         "_launcher": attr.label(
             executable=True, default=Label("//external:web_test_launcher")),

@@ -28,8 +28,8 @@ def web_test_repositories(
 
   native.http_jar(
       name="org_seleniumhq_server",
-      sha256="df874ce5b9508ac9f4ee0a3f50290836915c837b68975066a3841e839bc39804",
-      url="http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-server-standalone-3.0.0-beta2.jar",
+      sha256="f5ada04a651ba7ec70fcbc68bd4a59342a928ef7dce858ec594a8d5c49576ace",
+      url="http://selenium-release.storage.googleapis.com/3.0-beta3/selenium-server-standalone-3.0.0-beta3.jar",
   )
 
   native.bind(
@@ -48,8 +48,8 @@ def web_test_repositories(
     native.new_http_archive(
         name="org_seleniumhq_java",
         build_file=prefix + "//build_files:BUILD.selenium_java",
-        url="http://selenium-release.storage.googleapis.com/3.0-beta2/selenium-java-3.0.0-beta2.zip",
-        sha256="3ee5d714c18e7bbbd3c112961712a825da057854c8f5f7ca12af368ac3270b29",
+        sha256="a26a449388abd46d1e152771e3641859ac4acee9c0ea24a101ca369048a81ecb",
+        url="http://selenium-release.storage.googleapis.com/3.0-beta3/selenium-java-3.0.0-beta3.zip",
     )
 
     native.maven_jar(

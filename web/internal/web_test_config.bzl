@@ -52,10 +52,10 @@ web_test_config = rule(
         "configs": attr.label_list(providers=["web_test_metadata"]),
         "metadata": attr.label(allow_single_file=True),
         "data": attr.label_list(
-            allow_files=True, cfg=DATA_CFG),
+            allow_files=True, cfg="data"),
         "_merger": attr.label(
             executable=True,
-            cfg=HOST_CFG,
+            cfg="host",
             default=Label("//external:web_test_merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)

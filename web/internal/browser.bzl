@@ -51,15 +51,15 @@ browser = rule(
     implementation=_browser_impl,
     attrs={
         "metadata": attr.label(
-            mandatory=True, allow_single_file=True, cfg=DATA_CFG),
+            mandatory=True, allow_single_file=True, cfg="data"),
         "data": attr.label_list(
-            allow_files=True, cfg=DATA_CFG),
+            allow_files=True, cfg="data"),
         "disabled": attr.string(),
         "environment": attr.string_dict(default={}),
         "required_tags": attr.string_list(default=[]),
         "_merger": attr.label(
             executable=True,
-            cfg=HOST_CFG,
+            cfg="host",
             default=Label("//external:web_test_merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
