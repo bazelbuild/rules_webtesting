@@ -100,7 +100,9 @@ func (b *Base) StartSession(ctx context.Context, id int, caps map[string]interfa
 	}
 	if firefox, err := b.metadata.GetExecutablePath("FIREFOX"); err == nil {
 		updated = capabilities.Merge(updated, map[string]interface{}{
-			"firefox_binary": firefox,
+			"firefoxOptions": map[string]interface{}{
+				"binary": firefox,
+			},
 		})
 	}
 	return updated, nil
