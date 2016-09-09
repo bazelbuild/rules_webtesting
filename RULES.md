@@ -1,7 +1,5 @@
 # Rules reference
 
-[TOC]
-
 <a name="web_test_suite"></a>
 ## web_test_suite
 
