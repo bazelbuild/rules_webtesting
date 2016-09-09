@@ -1,6 +1,6 @@
 # Bazel Web Testing Rules
 
-[TOC]
+Bazel rules and supporting code to allow testing against a browser with WebDriver.
 
 ## Configure your Bazel project
 
