@@ -67,4 +67,5 @@ web_test_suite(
         "//browsers:firefox-native",
     ],
     test = ":browser_test_wrapped",
+    tags = ["noci"],
 )
