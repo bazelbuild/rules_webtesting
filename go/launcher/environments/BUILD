@@ -21,7 +21,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "environment",
     srcs = ["environment.go"],
-    visibility = ["//go:__subpackages__"],
+    visibility = ["//go/launcher:__subpackages__"],
     deps = [
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
@@ -33,7 +33,7 @@ go_library(
 go_library(
     name = "external",
     srcs = ["external.go"],
-    visibility = ["//go:__subpackages__"],
+    visibility = ["//go/launcher:__subpackages__"],
     deps = [
         ":environment",
         "//go/launcher:errors",
@@ -44,12 +44,25 @@ go_library(
 go_library(
     name = "native",
     srcs = ["native.go"],
-    visibility = ["//go:__subpackages__"],
+    visibility = ["//go/launcher:__subpackages__"],
     deps = [
         ":environment",
         "//go/launcher:cmdhelper",
         "//go/launcher/services:selenium",
         "//go/launcher/services:service",
         "//go/metadata",
+    ],
+)
+
+go_library(
+    name = "phantomjs",
+    srcs = ["phantomjs.go"],
+    visibility = ["//go/launcher:__subpackages__"],
+    deps = [
+        ":environment",
+        "//go/launcher/services:selenium",
+        "//go/launcher/services:service",
+        "//go/metadata",
+        "//go/metadata:capabilities",
     ],
 )

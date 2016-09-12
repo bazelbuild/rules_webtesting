@@ -1,0 +1,6 @@
+{
+    "environment": "phantomjs",
+    "capabilities": {
+        "browserName": "phantomjs"
+    }
+}

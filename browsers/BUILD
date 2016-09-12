@@ -40,6 +40,12 @@ web_test_named_executable(
     executable = "@org_mozilla_geckodriver//:geckodriver",
 )
 
+web_test_named_executable(
+    name = "PHANTOMJS",
+    data = ["@org_phantomjs//:deps"],
+    executable = "@org_phantomjs//:phantomjs-2.1.1-linux-x86_64/bin/phantomjs",
+)
+
 browser(
     name = "firefox-external",
     metadata = "firefox-external.json",
@@ -77,5 +83,15 @@ browser(
     metadata = "chrome-native.json",
     # if not tagged local, then bazel does not exit cleanly
     required_tags = ["local"],
+    visibility = ["//visibility:public"],
+)
+
+browser(
+    name = "phantomjs",
+    data = [
+        ":PHANTOMJS",
+        "//java:SELENIUM_SERVER",
+    ],
+    metadata = "phantomjs.json",
     visibility = ["//visibility:public"],
 )
