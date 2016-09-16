@@ -54,6 +54,9 @@ web_test_suite(
             "local": True,
             "tags": ["noci"],
         },
+        "//browsers:phantomjs": {
+            "tags": ["noci"],
+        },
     },
     browsers = [
         "//browsers:chrome-external",
