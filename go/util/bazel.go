@@ -18,11 +18,15 @@ package bazel
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
-const runfileEnv = "TEST_SRCDIR"
+const (
+	runfileEnv = "TEST_SRCDIR"
+	tmpDirEnv  = "TEST_TMPDIR"
+)
 
 // Runfile returns an absolute path to the specified file in the runfiles directory of the running target.
 // Returns an error if TEST_SRCDIR is not set or if the file does not exist.
@@ -36,4 +40,20 @@ func Runfile(path string) (string, error) {
 		return "", err
 	}
 	return filename, nil
+}
+
+func NewTmpDir(prefix string) (string, error) {
+	testTmpDir, err := TestTmpDir()
+	if err != nil {
+		return "", err
+	}
+	return ioutil.TempDir(testTmpDir, prefix)
+}
+
+func TestTmpDir() (string, error) {
+	testTmpDir, ok := os.LookupEnv(tmpDirEnv)
+	if !ok {
+		return "", fmt.Errorf("environment variable %q is not defined, are you running with bazel test", tmpDirEnv)
+	}
+	return testTmpDir, nil
 }

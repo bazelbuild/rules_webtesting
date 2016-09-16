@@ -37,7 +37,7 @@ type external struct {
 }
 
 // NewEnv creates a new environment that uses an externally started Selenium Server.
-func NewEnv(m metadata.Metadata) (environment.Env, error) {
+func NewEnv(m *metadata.Metadata) (environment.Env, error) {
 	address, ok := os.LookupEnv(address_env_var)
 	if !ok {
 		return nil, errors.New(name, fmt.Errorf("environment variable %q not set", address_env_var))

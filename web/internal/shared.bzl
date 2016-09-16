@@ -120,8 +120,7 @@ def create_metadata_file(ctx,
                          capabilities=None,
                          environment=None,
                          browser_label=None,
-                         test_label=None,
-                         named_executables=None):
+                         test_label=None,):
   """Generates a web_test metadata file with specified contents."""
   content = '{\n  "_comment": "generated file for %s"' % ctx.label
   if capabilities:
@@ -132,16 +131,6 @@ def create_metadata_file(ctx,
     content += ',\n  "browserLabel": "%s"' % browser_label
   if test_label:
     content += ',\n  "testLabel": "%s"' % test_label
-  if named_executables:
-    first = True
-    content += ',\n  "namedExecutables": {'
-    for k, v in named_executables.items():
-      if first:
-        first = False
-      else:
-        content += ','
-      content += '\n    "' + k + '"' + ': "' + path(ctx, v) + '"'
-    content += '\n  }'
   content += '\n}\n'
 
   ctx.file_action(output=output, content=content, executable=False)

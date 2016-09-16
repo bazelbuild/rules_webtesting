@@ -10,20 +10,20 @@ import (
 	"github.com/bazelbuild/rules_web/go/metadata/metadata"
 )
 
-func NewSelenium(m metadata.Metadata, xvfb bool) (*service.Server, error) {
-	seleniumPath, err := m.GetExecutablePath("SELENIUM_SERVER")
+func NewSelenium(m *metadata.Metadata, xvfb bool) (*service.Server, error) {
+	seleniumPath, err := m.GetFilePath("SELENIUM_SERVER")
 	if err != nil {
 		return nil, errors.New("SeleniumServer", err)
 	}
 
 	args := []string{}
 
-	if chromedriverPath, err := m.GetExecutablePath("CHROMEDRIVER"); err == nil {
+	if chromedriverPath, err := m.GetFilePath("CHROMEDRIVER"); err == nil {
 		log.Printf("ChromeDriver found at: %q", chromedriverPath)
 		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.chrome.driver=%s", chromedriverPath))
 	}
 
-	if geckodriverPath, err := m.GetExecutablePath("GECKODRIVER"); err == nil {
+	if geckodriverPath, err := m.GetFilePath("GECKODRIVER"); err == nil {
 		log.Printf("GeckoDriver found at: %q", geckodriverPath)
 		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.gecko.driver=%s", geckodriverPath))
 	}

@@ -40,7 +40,7 @@ type phantomJS struct {
 
 // NewEnv creates a new environment for launching a browser locally using
 // GoogleSeleniumServer.
-func NewEnv(m metadata.Metadata) (environment.Env, error) {
+func NewEnv(m *metadata.Metadata) (environment.Env, error) {
 	base, err := environment.NewBase(compName, m)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (p *phantomJS) StartSession(ctx context.Context, id int, caps map[string]in
 		return nil, err
 	}
 	// TODO: Figure out a general mechanism for this.
-	if phantomJS, err := p.Metadata.GetExecutablePath("PHANTOMJS"); err == nil {
+	if phantomJS, err := p.Metadata.GetFilePath("PHANTOMJS"); err == nil {
 		updated = capabilities.Merge(updated, map[string]interface{}{
 			binaryCap: phantomJS,
 		})

@@ -16,34 +16,46 @@
 #
 package(default_testonly = 1)
 
-load("//web:web.bzl", "browser", "web_test_named_executable")
+load("//web:web.bzl", "browser", "web_test_archive", "web_test_named_executable")
 
-web_test_named_executable(
-    name = "CHROMEDRIVER",
-    executable = "@org_chromium_chromedriver//:chromedriver",
+web_test_archive(
+    name = "chromedriver",
+    archive = "@org_chromium_chromedriver//file",
+    named_files = {
+        "CHROMEDRIVER": "chromedriver",
+    },
 )
 
-web_test_named_executable(
-    name = "CHROME",
-    data = ["@com_google_chrome//:deps"],
-    executable = "@com_google_chrome//:chrome-precise64/chrome",
+web_test_archive(
+    name = "chrome",
+    archive = "@com_google_chrome//file",
+    named_files = {
+        "CHROME": "chrome-precise64/chrome",
+    },
 )
 
-web_test_named_executable(
-    name = "FIREFOX",
-    data = ["@org_mozilla_firefox//:deps"],
-    executable = "@org_mozilla_firefox//:firefox-sdk/bin/firefox",
+web_test_archive(
+    name = "firefox",
+    archive = "@org_mozilla_firefox//file",
+    named_files = {
+        "FIREFOX": "firefox-sdk/bin/firefox",
+    },
 )
 
-web_test_named_executable(
-    name = "GECKODRIVER",
-    executable = "@org_mozilla_geckodriver//:geckodriver",
+web_test_archive(
+    name = "geckodriver",
+    archive = "@org_mozilla_geckodriver//file",
+    named_files = {
+        "GECKODRIVER": "geckodriver",
+    },
 )
 
-web_test_named_executable(
-    name = "PHANTOMJS",
-    data = ["@org_phantomjs//:deps"],
-    executable = "@org_phantomjs//:phantomjs-2.1.1-linux-x86_64/bin/phantomjs",
+web_test_archive(
+    name = "phantomjs_bin",
+    archive = "@org_phantomjs//file",
+    named_files = {
+        "PHANTOMJS": "phantomjs-2.1.1-linux-x86_64/bin/phantomjs",
+    },
 )
 
 browser(
@@ -63,8 +75,8 @@ browser(
 browser(
     name = "firefox-native",
     data = [
-        ":FIREFOX",
-        ":GECKODRIVER",
+        ":firefox",
+        ":geckodriver",
         "//java:SELENIUM_SERVER",
     ],
     metadata = "firefox-native.json",
@@ -76,8 +88,8 @@ browser(
 browser(
     name = "chrome-native",
     data = [
-        ":CHROME",
-        ":CHROMEDRIVER",
+        ":chrome",
+        ":chromedriver",
         "//java:SELENIUM_SERVER",
     ],
     metadata = "chrome-native.json",
@@ -89,7 +101,7 @@ browser(
 browser(
     name = "phantomjs",
     data = [
-        ":PHANTOMJS",
+        ":phantomjs_bin",
         "//java:SELENIUM_SERVER",
     ],
     metadata = "phantomjs.json",

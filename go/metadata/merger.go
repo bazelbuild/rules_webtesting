@@ -30,7 +30,7 @@ var output = flag.String("output", "", "output file for generated metadata")
 func main() {
 	flag.Parse()
 
-	data := metadata.Metadata{}
+	data := &metadata.Metadata{}
 
 	for _, file := range flag.Args() {
 		m, err := metadata.FromFile(file)

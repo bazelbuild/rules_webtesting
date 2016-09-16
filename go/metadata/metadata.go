@@ -21,6 +21,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"sync"
 
 	"github.com/bazelbuild/rules_web/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_web/go/util/bazel"
@@ -45,11 +50,26 @@ type Metadata struct {
 	TestLabel string `json:"testLabel,omitempty"`
 	// A map of names to TEST_SRCDIR-relative file paths.
 	// Prefer using GetExecutablePath instead of accessing this map directly.
-	NamedExecutables map[string]string `json:"NamedExecutables,omitempty"`
+	NamedFiles map[string]string `json:"namedFiles,omitempty"`
+	// A list of archive files with named files in them.
+	// Note: An archive will only be extracted if GetExecutablePath is called
+	// with one of the named files.
+	Archives []*Archive `json:"archives,omitempty"`
+}
+
+// Archive is an archice file and the associated set of named file mappings as
+// defined by a web_test_archive rule.
+type Archive struct {
+	Path       string            `json:"path"`
+	NamedFiles map[string]string `json:"namedFiles"`
+
+	mu            sync.Mutex
+	extractedPath string
 }
 
 // Merge takes two Metadata objects and merges them into a new Metadata object.
-func Merge(m1, m2 Metadata) Metadata {
+// TODO(DrMarcII): If the same name maps to multiple files, return an error.
+func Merge(m1, m2 *Metadata) *Metadata {
 	capabilities := capabilities.Merge(m1.Capabilities, m2.Capabilities)
 
 	environment := m1.Environment
@@ -67,34 +87,38 @@ func Merge(m1, m2 Metadata) Metadata {
 		testLabel = m2.TestLabel
 	}
 
-	// TODO(fisherii): propagate merge error
-	namedExecutables, _ := mergeNamedExecutables(m1.NamedExecutables, m2.NamedExecutables)
+	namedFiles, _ := mergeNamedFiles(m1.NamedFiles, m2.NamedFiles)
 
-	return Metadata{
-		Capabilities:     capabilities,
-		Environment:      environment,
-		BrowserLabel:     browserLabel,
-		TestLabel:        testLabel,
-		NamedExecutables: namedExecutables,
+	archives := []*Archive{}
+	archives = append(archives, m1.Archives...)
+	archives = append(archives, m2.Archives...)
+
+	return &Metadata{
+		Capabilities: capabilities,
+		Environment:  environment,
+		BrowserLabel: browserLabel,
+		TestLabel:    testLabel,
+		NamedFiles:   namedFiles,
+		Archives:     archives,
 	}
 }
 
 // FromFile reads a Metadata object from a json file.
-func FromFile(filename string) (Metadata, error) {
-	metadata := Metadata{}
+func FromFile(filename string) (*Metadata, error) {
+	metadata := &Metadata{}
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return metadata, err
 	}
 
-	if err := json.Unmarshal(bytes, &metadata); err != nil {
+	if err := json.Unmarshal(bytes, metadata); err != nil {
 		return metadata, err
 	}
 	return metadata, nil
 }
 
 // ToFile writes m to filename as json.
-func (m Metadata) ToFile(filename string) error {
+func (m *Metadata) ToFile(filename string) error {
 	bytes, err := json.MarshalIndent(m, "", "  ")
 	if err != nil {
 		return err
@@ -103,15 +127,15 @@ func (m Metadata) ToFile(filename string) error {
 }
 
 // Equals compares two Metadata object and return true iff they are the same.
-func Equals(e, a Metadata) bool {
+func Equals(e, a *Metadata) bool {
 	return capabilities.Equals(e.Capabilities, a.Capabilities) &&
 		e.Environment == a.Environment &&
 		e.BrowserLabel == a.BrowserLabel &&
 		e.TestLabel == a.TestLabel &&
-		mapEquals(e.NamedExecutables, a.NamedExecutables)
+		mapEquals(e.NamedFiles, a.NamedFiles)
 }
 
-func mergeNamedExecutables(n1, n2 map[string]string) (map[string]string, error) {
+func mergeNamedFiles(n1, n2 map[string]string) (map[string]string, error) {
 	result := map[string]string{}
 
 	for k, v := range n1 {
@@ -139,10 +163,76 @@ func mapEquals(e, a map[string]string) bool {
 	return true
 }
 
-func (m Metadata) GetExecutablePath(name string) (string, error) {
-	filename, ok := m.NamedExecutables[name]
-	if !ok {
-		return "", fmt.Errorf("no named executable %q", name)
+// GetFilePath returns the path to a file specified by web_test_archive,
+// web_test_named_executable, or web_test_named_file.
+func (m *Metadata) GetFilePath(name string) (string, error) {
+	log.Printf("searching for name: %s", name)
+	if filename, ok := m.NamedFiles[name]; ok {
+		return bazel.Runfile(filename)
 	}
-	return bazel.Runfile(filename)
+	for _, a := range m.Archives {
+		filename, err := a.getFilePath(name)
+		if err != nil {
+			return "", err
+		}
+		if filename != "" {
+			return filename, nil
+		}
+	}
+	return "", fmt.Errorf("no named file %q", name)
+}
+
+func (a *Archive) getFilePath(name string) (string, error) {
+	log.Printf("searching for name: %s in %+v", name, a)
+	filename, ok := a.NamedFiles[name]
+	if !ok {
+		return "", nil
+	}
+
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if a.extractedPath == "" {
+		if err := a.extract(); err != nil {
+			return "", err
+		}
+	}
+	return filepath.Join(a.extractedPath, filename), nil
+}
+
+func (a *Archive) extract() error {
+	log.Printf("extracting %+v", a)
+	filename, err := bazel.Runfile(a.Path)
+	if err != nil {
+		return err
+	}
+
+	extractPath, err := bazel.NewTmpDir(filepath.Base(filename))
+	if err != nil {
+		return err
+	}
+
+	var c *exec.Cmd
+	switch {
+	case strings.HasSuffix(filename, ".tar"):
+		c = exec.Command("tar", "xf", filename, "-C", extractPath)
+	case strings.HasSuffix(filename, ".tar.gz") || strings.HasSuffix(filename, ".tgz"):
+		c = exec.Command("tar", "xzf", filename, "-C", extractPath)
+	case strings.HasSuffix(filename, ".tar.bz2") || strings.HasSuffix(filename, ".tbz2"):
+		c = exec.Command("tar", "xjf", filename, "-C", extractPath)
+	case strings.HasSuffix(filename, ".tar.Z"):
+		c = exec.Command("tar", "xZf", filename, "-C", extractPath)
+	case strings.HasSuffix(filename, ".zip"):
+		c = exec.Command("unzip", filename, "-d", extractPath)
+	default:
+		return fmt.Errorf("unknown archive type: %s", filename)
+	}
+
+	log.Printf("extracting %+v to %s", a, extractPath)
+
+	if err := c.Run(); err != nil {
+		return err
+	}
+
+	a.extractedPath = extractPath
+	return nil
 }

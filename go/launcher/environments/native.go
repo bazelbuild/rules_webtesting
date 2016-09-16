@@ -41,7 +41,7 @@ type native struct {
 
 // NewEnv creates a new environment for launching a browser locally using
 // GoogleSeleniumServer.
-func NewEnv(m metadata.Metadata) (environment.Env, error) {
+func NewEnv(m *metadata.Metadata) (environment.Env, error) {
 	base, err := environment.NewBase(compName, m)
 	if err != nil {
 		return nil, err

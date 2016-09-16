@@ -19,7 +19,7 @@ load("//web/internal:shared.bzl",
      "path",)
 
 
-def _web_test_named_executable_impl(ctx):
+def _web_test_named_file_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
   metadata_files = get_metadata_files(ctx, ["data"])
@@ -31,7 +31,7 @@ def _web_test_named_executable_impl(ctx):
 
   content = """{
   "namedFiles": {"%s": "%s"}
-}""" % (name, path(ctx, ctx.executable.executable))
+}""" % (name, path(ctx, ctx.file.file))
 
   ctx.file_action(output=patch, content=content, executable=False)
 
@@ -47,16 +47,16 @@ def _web_test_named_executable_impl(ctx):
       runfiles=build_runfiles(
           ctx=ctx,
           files=[ctx.outputs.web_test_metadata],
-          deps_attrs=["executable"],),
+          deps_attrs=["file"],),
       web_test_metadata=ctx.outputs.web_test_metadata,)
 
 
-web_test_named_executable = rule(
-    implementation=_web_test_named_executable_impl,
+web_test_named_file = rule(
+    implementation=_web_test_named_file_impl,
     attrs={
         "alt_name": attr.string(),
-        "executable": attr.label(
-            allow_files=True, executable=True, cfg="data", mandatory=True),
+        "file": attr.label(
+            allow_single_file=True, cfg="data", mandatory=True),
         "data": attr.label_list(
             allow_files=True, cfg="data"),
         "_merger": attr.label(
@@ -68,7 +68,7 @@ web_test_named_executable = rule(
 """Defines a executable that can be located by name.
 
 Args:
-  alt_name: If supplied, is used instead of name to lookup the executable.
-  executable: The executable that will be returned for name or alt_name.
-  data: Runtime dependencies for the executable.
+  alt_name: If supplied, is used instead of name to lookup the file.
+  file: The file that will be returned for name or alt_name.
+  data: Runtime dependencies for the file.
 """
