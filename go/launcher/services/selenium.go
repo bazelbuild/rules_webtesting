@@ -27,7 +27,10 @@ func NewSelenium(m *metadata.Metadata, xvfb bool) (*service.Server, error) {
 		log.Printf("GeckoDriver found at: %q", geckodriverPath)
 		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.gecko.driver=%s", geckodriverPath))
 	}
-
+	if firefoxPath, err := m.GetFilePath("FIREFOX"); err == nil {
+		log.Printf("Firefox found at: %q", firefoxPath)
+		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.firefox.bin=%s", firefoxPath))
+	}
 	args = append(args, "-port", "{port}")
 	return service.NewServer(
 		"SeleniumServer",

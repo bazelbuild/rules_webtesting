@@ -75,7 +75,7 @@ exit 0
 def _generate_default_test(ctx):
   env_vars = ""
   for k, v in ctx.attr.browser.environment.items():
-    env_vars += k + "=" + v + "\n"
+    env_vars += "export %s=%s\n" % (k, v)
 
   ctx.file_action(
       content="""#!/bin/bash
