@@ -56,7 +56,7 @@ type Env interface {
 // implementations of Env.
 type Base struct {
 	name     string
-	metadata metadata.Metadata
+	Metadata *metadata.Metadata
 
 	mu      sync.RWMutex
 	started bool
@@ -64,10 +64,10 @@ type Base struct {
 }
 
 // NewBase creates a new Base environment with the given component name.
-func NewBase(name string, m metadata.Metadata) (*Base, error) {
+func NewBase(name string, m *metadata.Metadata) (*Base, error) {
 	return &Base{
 		name:     name,
-		metadata: m,
+		Metadata: m,
 	}, nil
 }
 
@@ -82,23 +82,23 @@ func (b *Base) SetUp(ctx context.Context) error {
 	return nil
 }
 
-// StartSession merges the passed in caps with b.metadata.caps and returns the merged
+// StartSession merges the passed in caps with b.Metadata.caps and returns the merged
 // capabilities that should be used when calling new session on the WebDriver
 // server.
 func (b *Base) StartSession(ctx context.Context, id int, caps map[string]interface{}) (map[string]interface{}, error) {
 	if err := b.Healthy(ctx); err != nil {
 		return nil, err
 	}
-	updated := capabilities.Merge(b.metadata.Capabilities, caps)
+	updated := capabilities.Merge(b.Metadata.Capabilities, caps)
 	// TODO: Figure out a general mechanism for this.
-	if chrome, err := b.metadata.GetExecutablePath("CHROME"); err == nil {
+	if chrome, err := b.Metadata.GetFilePath("CHROME"); err == nil {
 		updated = capabilities.Merge(updated, map[string]interface{}{
 			"chromeOptions": map[string]interface{}{
 				"binary": chrome,
 			},
 		})
 	}
-	if firefox, err := b.metadata.GetExecutablePath("FIREFOX"); err == nil {
+	if firefox, err := b.Metadata.GetFilePath("FIREFOX"); err == nil {
 		updated = capabilities.Merge(updated, map[string]interface{}{
 			"firefoxOptions": map[string]interface{}{
 				"binary": firefox,

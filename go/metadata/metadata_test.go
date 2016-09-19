@@ -39,7 +39,7 @@ func TestFromFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := Metadata{
+	expected := &Metadata{
 		Environment:  "chromeos",
 		BrowserLabel: "//browsers:figaro",
 		TestLabel:    "//go/launcher:tests",
@@ -86,45 +86,45 @@ func TestMergeFromFile(t *testing.T) {
 func TestMerge(t *testing.T) {
 	testCases := []struct {
 		name   string
-		input1 Metadata
-		input2 Metadata
-		result Metadata
+		input1 *Metadata
+		input2 *Metadata
+		result *Metadata
 	}{
 		{
 			"Environment override",
-			Metadata{Environment: "linux"},
-			Metadata{Environment: "android"},
-			Metadata{Environment: "android"},
+			&Metadata{Environment: "linux"},
+			&Metadata{Environment: "android"},
+			&Metadata{Environment: "android"},
 		},
 		{
 			"Environment no override",
-			Metadata{Environment: "linux"},
-			Metadata{Environment: ""},
-			Metadata{Environment: "linux"},
+			&Metadata{Environment: "linux"},
+			&Metadata{Environment: ""},
+			&Metadata{Environment: "linux"},
 		},
 		{
 			"BrowserLabel override",
-			Metadata{BrowserLabel: "//browsers:figaro"},
-			Metadata{BrowserLabel: "//browsers:murphy"},
-			Metadata{BrowserLabel: "//browsers:murphy"},
+			&Metadata{BrowserLabel: "//browsers:figaro"},
+			&Metadata{BrowserLabel: "//browsers:murphy"},
+			&Metadata{BrowserLabel: "//browsers:murphy"},
 		},
 		{
 			"BrowserLabel no override",
-			Metadata{BrowserLabel: "//browsers:figaro"},
-			Metadata{BrowserLabel: ""},
-			Metadata{BrowserLabel: "//browsers:figaro"},
+			&Metadata{BrowserLabel: "//browsers:figaro"},
+			&Metadata{BrowserLabel: ""},
+			&Metadata{BrowserLabel: "//browsers:figaro"},
 		},
 		{
 			"TestLabel override",
-			Metadata{TestLabel: "//browsers:figaro"},
-			Metadata{TestLabel: "//browsers:murphy"},
-			Metadata{TestLabel: "//browsers:murphy"},
+			&Metadata{TestLabel: "//browsers:figaro"},
+			&Metadata{TestLabel: "//browsers:murphy"},
+			&Metadata{TestLabel: "//browsers:murphy"},
 		},
 		{
 			"TestLabel no override",
-			Metadata{TestLabel: "//browsers:figaro"},
-			Metadata{TestLabel: ""},
-			Metadata{TestLabel: "//browsers:figaro"},
+			&Metadata{TestLabel: "//browsers:figaro"},
+			&Metadata{TestLabel: ""},
+			&Metadata{TestLabel: "//browsers:figaro"},
 		},
 	}
 
@@ -141,62 +141,62 @@ func TestMerge(t *testing.T) {
 func TestEquals(t *testing.T) {
 	testCases := []struct {
 		name   string
-		input1 Metadata
-		input2 Metadata
+		input1 *Metadata
+		input2 *Metadata
 		result bool
 	}{
 		{
 			"empty",
-			Metadata{},
-			Metadata{},
+			&Metadata{},
+			&Metadata{},
 			true,
 		},
 		{
 			"Environment same",
-			Metadata{Environment: "local"},
-			Metadata{Environment: "local"},
+			&Metadata{Environment: "local"},
+			&Metadata{Environment: "local"},
 			true,
 		},
 		{
 			"Environment different",
-			Metadata{Environment: "local"},
-			Metadata{Environment: "running"},
+			&Metadata{Environment: "local"},
+			&Metadata{Environment: "running"},
 			false,
 		},
 		{
 			"BrowserLabel same",
-			Metadata{BrowserLabel: "//browsers:firefox"},
-			Metadata{BrowserLabel: "//browsers:firefox"},
+			&Metadata{BrowserLabel: "//browsers:firefox"},
+			&Metadata{BrowserLabel: "//browsers:firefox"},
 			true,
 		},
 		{
 			"BrowserLabel different",
-			Metadata{BrowserLabel: "//browsers:chrome"},
-			Metadata{BrowserLabel: "//browsers:firefox"},
+			&Metadata{BrowserLabel: "//browsers:chrome"},
+			&Metadata{BrowserLabel: "//browsers:firefox"},
 			false,
 		},
 		{
 			"TestLabel same",
-			Metadata{TestLabel: "//test:test1"},
-			Metadata{TestLabel: "//test:test1"},
+			&Metadata{TestLabel: "//test:test1"},
+			&Metadata{TestLabel: "//test:test1"},
 			true,
 		},
 		{
 			"TestLabel different",
-			Metadata{TestLabel: "//test:test1"},
-			Metadata{TestLabel: "//test:test2"},
+			&Metadata{TestLabel: "//test:test1"},
+			&Metadata{TestLabel: "//test:test2"},
 			false,
 		},
 		{
 			"Capabilities same",
-			Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
-			Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
+			&Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
+			&Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
 			true,
 		},
 		{
 			"Capabilities different",
-			Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
-			Metadata{Capabilities: map[string]interface{}{"browser": "firefox"}},
+			&Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
+			&Metadata{Capabilities: map[string]interface{}{"browser": "firefox"}},
 			false,
 		},
 	}

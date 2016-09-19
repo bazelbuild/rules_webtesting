@@ -28,6 +28,7 @@ go_binary(
         "//go/launcher/environments:environment",
         "//go/launcher/environments:external",
         "//go/launcher/environments:native",
+        "//go/launcher/environments:phantomjs",
         "//go/launcher/proxy",
         "//go/metadata",
         "//go/util:bazel",

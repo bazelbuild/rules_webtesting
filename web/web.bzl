@@ -27,6 +27,12 @@ load(
 load(
     "//web/internal:web_test_named_executable.bzl",
     web_test_named_executable_alias="web_test_named_executable")
+load(
+    "//web/internal:web_test_named_file.bzl",
+    web_test_named_file_alias="web_test_named_file")
+load(
+    "//web/internal:web_test_archive.bzl",
+    web_test_archive_alias="web_test_archive")
 
 
 def web_test_suite(name,
@@ -70,7 +76,6 @@ def web_test_suite(name,
     visibility: Label List; optional.
     local: Boolean; optional.
   """
-  # pylint: disable=unidiomatic-typecheck
   if not is_list_like(browsers):
     fail("expected value of type 'list' or 'tuple' for attribute 'browsers' " +
          "but got '%s'" % type(browsers))
@@ -196,3 +201,29 @@ def web_test_named_executable(testonly=True, **kwargs):
   if testonly == None:
     testonly = True
   web_test_named_executable_alias(testonly=testonly, **kwargs)
+
+
+def web_test_named_file(testonly=True, **kwargs):
+  """Wrapper around web_test_named_file to correctly set defaults.
+
+  Args:
+    testonly: default = True
+    **kwargs: see web_test_named_file in 
+      //web/internal:web_test_named_file.bzl
+  """
+  if testonly == None:
+    testonly = True
+  web_test_named_file_alias(testonly=testonly, **kwargs)
+
+
+def web_test_archive(testonly=True, **kwargs):
+  """Wrapper around web_test_archive to correctly set defaults.
+
+  Args:
+    testonly: default = True
+    **kwargs: see web_test_archive in 
+      //web/internal:web_test_archive.bzl
+  """
+  if testonly == None:
+    testonly = True
+  web_test_archive_alias(testonly=testonly, **kwargs)

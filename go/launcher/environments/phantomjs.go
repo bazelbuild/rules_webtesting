@@ -14,27 +14,26 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Package native provides an Env for launching a browser locally using
+// Package phantomjs provides an Env for launching phantomjs locally using
 // GoogleSeleniumServer.
-package native
+package phantomjs
 
 import (
 	"context"
-	"os"
 
-	"github.com/bazelbuild/rules_web/go/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_web/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_web/go/launcher/services/selenium"
 	"github.com/bazelbuild/rules_web/go/launcher/services/service"
+	"github.com/bazelbuild/rules_web/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_web/go/metadata/metadata"
 )
 
 const (
-	compName     = "native environment"
-	forceXvfbEnv = "FORCE_DEDICATED_X_DISPLAY"
+	compName  = "PhantomJS environment"
+	binaryCap = "phantomjs.binary.path"
 )
 
-type native struct {
+type phantomJS struct {
 	*environment.Base
 	selenium *service.Server
 }
@@ -46,42 +45,55 @@ func NewEnv(m *metadata.Metadata) (environment.Env, error) {
 	if err != nil {
 		return nil, err
 	}
-	s, err := selenium.NewSelenium(m, useXvfb())
+	s, err := selenium.NewSelenium(m, false)
 	if err != nil {
 		return nil, err
 	}
 
-	return &native{
+	return &phantomJS{
 		Base:     base,
 		selenium: s,
 	}, nil
 }
 
-func (n *native) SetUp(ctx context.Context) error {
-	if err := n.Base.SetUp(ctx); err != nil {
+func (p *phantomJS) SetUp(ctx context.Context) error {
+	if err := p.Base.SetUp(ctx); err != nil {
 		return err
 	}
-	return n.selenium.Start(ctx)
+	return p.selenium.Start(ctx)
 }
 
-func (n *native) TearDown(ctx context.Context) error {
-	if err := n.Base.TearDown(ctx); err != nil {
+func (p *phantomJS) TearDown(ctx context.Context) error {
+	if err := p.Base.TearDown(ctx); err != nil {
 		return err
 	}
-	return n.selenium.Stop(ctx)
+	return p.selenium.Stop(ctx)
 }
 
-func (n *native) WDAddress(context.Context) string {
-	return n.selenium.Address
+func (p *phantomJS) WDAddress(context.Context) string {
+	return p.selenium.Address
 }
 
-func (n *native) Healthy(ctx context.Context) error {
-	if err := n.Base.Healthy(ctx); err != nil {
+func (p *phantomJS) Healthy(ctx context.Context) error {
+	if err := p.Base.Healthy(ctx); err != nil {
 		return err
 	}
-	return n.selenium.Healthy(ctx)
+	return p.selenium.Healthy(ctx)
 }
 
-func useXvfb() bool {
-	return os.Getenv("DISPLAY") == "" || cmdhelper.IsTruthyEnv(forceXvfbEnv)
+// StartSession merges the passed in caps with b.metadata.caps and returns the merged
+// capabilities that should be used when calling new session on the WebDriver
+// server.
+func (p *phantomJS) StartSession(ctx context.Context, id int, caps map[string]interface{}) (map[string]interface{}, error) {
+	updated, err := p.Base.StartSession(ctx, id, caps)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: Figure out a general mechanism for this.
+	if phantomJS, err := p.Metadata.GetFilePath("PHANTOMJS"); err == nil {
+		updated = capabilities.Merge(updated, map[string]interface{}{
+			binaryCap: phantomJS,
+		})
+	}
+	return updated, nil
 }

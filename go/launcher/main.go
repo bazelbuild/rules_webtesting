@@ -30,6 +30,7 @@ import (
 	"github.com/bazelbuild/rules_web/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_web/go/launcher/environments/external"
 	"github.com/bazelbuild/rules_web/go/launcher/environments/native"
+	"github.com/bazelbuild/rules_web/go/launcher/environments/phantomjs"
 	"github.com/bazelbuild/rules_web/go/launcher/proxy/proxy"
 	"github.com/bazelbuild/rules_web/go/metadata/metadata"
 	"github.com/bazelbuild/rules_web/go/util/bazel"
@@ -94,7 +95,7 @@ func run() int {
 	}
 
 	// Temporary directory where WEB_TEST infrastructure writes it tmp files.
-	webTestTmpDir := os.Getenv("TEST_TMPDIR")
+	webTestTmpDir, _ := bazel.TestTmpDir()
 
 	// Make an isolated temp directory for the test.
 	tmpDir, err := ioutil.TempDir(webTestTmpDir, "test")
@@ -131,12 +132,14 @@ func run() int {
 	return 0
 }
 
-func buildEnv(m metadata.Metadata) (environment.Env, error) {
+func buildEnv(m *metadata.Metadata) (environment.Env, error) {
 	switch m.Environment {
 	case "external":
 		return external.NewEnv(m)
 	case "native":
 		return native.NewEnv(m)
+	case "phantomjs":
+		return phantomjs.NewEnv(m)
 	}
 	return nil, fmt.Errorf("unknown environment: %s", m.Environment)
 }

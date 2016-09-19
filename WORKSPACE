@@ -69,30 +69,32 @@ load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
 
 skydoc_repositories()
 
-new_http_archive(
+http_file(
     name = "org_chromium_chromedriver",
-    build_file = "//build_files:BUILD.chromedriver",
     sha256 = "d9bae7125a772742adc249dcd476f52e766928b83258a510d64a779744b7abfc",
     url = "http://chromedriver.storage.googleapis.com/2.23/chromedriver_linux64.zip",
 )
 
-new_http_archive(
+http_file(
     name = "com_google_chrome",
-    build_file = "//build_files:BUILD.chrome",
     sha256 = "e3902a68d176f1057579e87fb20389637491d64cef00975608e9d784e2e631e4",
     url = "https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/52.0.2743.116/precise64/chrome-precise64.zip",
 )
 
-new_http_archive(
+http_file(
     name = "org_mozilla_firefox",
-    build_file = "//build_files:BUILD.firefox",
     sha256 = "af171a6f605703a2322cca95c856c3c8111fd4ba59219efda01f867c2cc34608",
     url = "https://ftp.mozilla.org/pub/firefox/releases/48.0.2/firefox-48.0.2.linux-x86_64.sdk.tar.bz2",
 )
 
-new_http_archive(
+http_file(
     name = "org_mozilla_geckodriver",
-    build_file = "//build_files:BUILD.geckodriver",
     sha256 = "dee64571aefb5ef0279df7358d5f74fdf19a316adbab13c67e3c2d2c14da9e97",
     url = "https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-linux64.tar.gz",
+)
+
+http_file(
+    name = "org_phantomjs",
+    sha256 = "86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f",
+    url = "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2",
 )

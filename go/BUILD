@@ -55,9 +55,14 @@ web_test_suite(
         },
         "//browsers:chrome-native": {
             "local": True,
+            "tags": ["noci"],
         },
         "//browsers:firefox-native": {
             "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers:phantomjs": {
+            "tags": ["noci"],
         },
     },
     browsers = [
@@ -65,7 +70,7 @@ web_test_suite(
         "//browsers:chrome-native",
         "//browsers:firefox-external",
         "//browsers:firefox-native",
+        "//browsers:phantomjs",
     ],
     test = ":browser_test_wrapped",
-    tags = ["noci"],
 )
