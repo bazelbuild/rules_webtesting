@@ -18,9 +18,22 @@ package(default_testonly = 1)
 
 load("//web:web.bzl", "browser", "web_test_archive", "web_test_named_executable")
 
+config_setting(
+    name = "mac",
+    values = {"cpu": "darwin"},
+)
+
+config_setting(
+    name = "linux",
+    values = {"cpu": "k8"},
+)
+
 web_test_archive(
     name = "chromedriver",
-    archive = "@org_chromium_chromedriver//file",
+    archive = select({
+        ":linux": "@org_chromium_chromedriver_linux//file",
+        ":mac": "@org_chromium_chromedriver_mac//file",
+    }),
     named_files = {
         "CHROMEDRIVER": "chromedriver",
     },
@@ -28,23 +41,42 @@ web_test_archive(
 
 web_test_archive(
     name = "chrome",
-    archive = "@com_google_chrome//file",
-    named_files = {
-        "CHROME": "chrome-precise64/chrome",
-    },
+    archive = select({
+        ":linux": "@com_google_chrome_linux//file",
+        ":mac": "@com_google_chrome_mac//file",
+    }),
+    named_files = select({
+        ":linux": {
+            "CHROME": "chrome-precise64/chrome",
+        },
+        ":mac": {
+            "CHROME": "chrome-mac/Google Chrome.app/Contents/MacOS/Google Chrome",
+        },
+    }),
 )
 
 web_test_archive(
     name = "firefox",
-    archive = "@org_mozilla_firefox//file",
-    named_files = {
-        "FIREFOX": "firefox-sdk/bin/firefox",
-    },
+    archive = select({
+        ":linux": "@org_mozilla_firefox_linux//file",
+        ":mac": "@org_mozilla_firefox_mac//file",
+    }),
+    named_files = select({
+        ":linux": {
+            "FIREFOX": "firefox-sdk/bin/firefox",
+        },
+        ":mac": {
+            "FIREFOX": "firefox-sdk/bin/Firefox.app/Contents/MacOS/firefox",
+        },
+    }),
 )
 
 web_test_archive(
     name = "geckodriver",
-    archive = "@org_mozilla_geckodriver//file",
+    archive = select({
+        ":linux": "@org_mozilla_geckodriver_linux//file",
+        ":mac": "@org_mozilla_geckodriver_mac//file",
+    }),
     named_files = {
         "GECKODRIVER": "geckodriver",
     },
@@ -52,10 +84,18 @@ web_test_archive(
 
 web_test_archive(
     name = "phantomjs_bin",
-    archive = "@org_phantomjs//file",
-    named_files = {
-        "PHANTOMJS": "phantomjs-2.1.1-linux-x86_64/bin/phantomjs",
-    },
+    archive = select({
+        ":linux": "@org_phantomjs_linux//file",
+        ":mac": "@org_phantomjs_mac//file",
+    }),
+    named_files = select({
+        ":linux": {
+            "PHANTOMJS": "phantomjs-2.1.1-linux-x86_64/bin/phantomjs",
+        },
+        ":mac": {
+            "PHANTOMJS": "phantomjs-2.1.1-macosx/bin/phantomjs",
+        },
+    }),
 )
 
 browser(
@@ -79,6 +119,10 @@ browser(
         ":geckodriver",
         "//java:SELENIUM_SERVER",
     ],
+    environment = select({
+        ":linux": None,
+        ":mac": {"DISABLE_X_DISPLAY": "1"},
+    }),
     metadata = "firefox-native.json",
     # if not tagged local, then bazel does not exit cleanly
     required_tags = ["local"],
@@ -92,6 +136,10 @@ browser(
         ":chromedriver",
         "//java:SELENIUM_SERVER",
     ],
+    environment = select({
+        ":linux": None,
+        ":mac": {"DISABLE_X_DISPLAY": "1"},
+    }),
     metadata = "chrome-native.json",
     # if not tagged local, then bazel does not exit cleanly
     required_tags = ["local"],

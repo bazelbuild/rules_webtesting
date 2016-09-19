@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -196,7 +197,11 @@ func (a *Archive) getFilePath(name string) (string, error) {
 			return "", err
 		}
 	}
-	return filepath.Join(a.extractedPath, filename), nil
+	path := filepath.Join(a.extractedPath, filename)
+	if _, err := os.Stat(path); err != nil {
+		return "", err
+	}
+	return path, nil
 }
 
 func (a *Archive) extract() error {

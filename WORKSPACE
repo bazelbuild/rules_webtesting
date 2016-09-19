@@ -70,31 +70,61 @@ load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
 skydoc_repositories()
 
 http_file(
-    name = "org_chromium_chromedriver",
+    name = "org_chromium_chromedriver_linux",
     sha256 = "d9bae7125a772742adc249dcd476f52e766928b83258a510d64a779744b7abfc",
     url = "http://chromedriver.storage.googleapis.com/2.23/chromedriver_linux64.zip",
 )
 
 http_file(
-    name = "com_google_chrome",
+    name = "com_google_chrome_linux",
     sha256 = "e3902a68d176f1057579e87fb20389637491d64cef00975608e9d784e2e631e4",
     url = "https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/52.0.2743.116/precise64/chrome-precise64.zip",
 )
 
 http_file(
-    name = "org_mozilla_firefox",
+    name = "org_chromium_chromedriver_mac",
+    sha256 = "47a8caec6ce251f2dbaa9005e4dc783cb1fa6c09ecd76afafa41eab540a32e86",
+    url = "http://chromedriver.storage.googleapis.com/2.23/chromedriver_mac64.zip",
+)
+
+http_file(
+    name = "com_google_chrome_mac",
+    sha256 = "c4a1b0e4d0cf14486e1bca7c3cc210efdbbd5f229dd50613f76e4e36649d8491",
+    url = "https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/52.0.2743.116/mac64/chrome-mac.zip",
+)
+
+http_file(
+    name = "org_mozilla_firefox_linux",
     sha256 = "af171a6f605703a2322cca95c856c3c8111fd4ba59219efda01f867c2cc34608",
     url = "https://ftp.mozilla.org/pub/firefox/releases/48.0.2/firefox-48.0.2.linux-x86_64.sdk.tar.bz2",
 )
 
 http_file(
-    name = "org_mozilla_geckodriver",
+    name = "org_mozilla_firefox_mac",
+    sha256 = "50f27d0fe0eb4c3ba55f4447076021db491463fe32070164394bb836766d1968",
+    url = "https://ftp.mozilla.org/pub/firefox/releases/49.0/firefox-49.0.mac-x86_64.sdk.tar.bz2",
+)
+
+http_file(
+    name = "org_mozilla_geckodriver_linux",
     sha256 = "dee64571aefb5ef0279df7358d5f74fdf19a316adbab13c67e3c2d2c14da9e97",
     url = "https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-linux64.tar.gz",
 )
 
 http_file(
-    name = "org_phantomjs",
+    name = "org_mozilla_geckodriver_mac",
+    sha256 = "acb05a7671948167e6c1b6930f32ea71dcaa2c12b2c2963e829c7b232f9125d0",
+    url = "https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-macos.tar.gz",
+)
+
+http_file(
+    name = "org_phantomjs_linux",
     sha256 = "86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f",
     url = "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2",
+)
+
+http_file(
+    name = "org_phantomjs_mac",
+    sha256 = "538cf488219ab27e309eafc629e2bcee9976990fe90b1ec334f541779150f8c1",
+    url = "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-macosx.zip",
 )

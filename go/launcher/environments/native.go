@@ -30,8 +30,9 @@ import (
 )
 
 const (
-	compName     = "native environment"
-	forceXvfbEnv = "FORCE_DEDICATED_X_DISPLAY"
+	compName       = "native environment"
+	forceXvfbEnv   = "FORCE_DEDICATED_X_DISPLAY"
+	disableXvfbEnv = "DISABLE_X_DISPLAY"
 )
 
 type native struct {
@@ -83,5 +84,5 @@ func (n *native) Healthy(ctx context.Context) error {
 }
 
 func useXvfb() bool {
-	return os.Getenv("DISPLAY") == "" || cmdhelper.IsTruthyEnv(forceXvfbEnv)
+	return !cmdhelper.IsTruthyEnv(disableXvfbEnv) && (os.Getenv("DISPLAY") == "" || cmdhelper.IsTruthyEnv(forceXvfbEnv))
 }
