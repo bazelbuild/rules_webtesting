@@ -16,6 +16,8 @@
 #
 package(default_testonly = True)
 
+load("//web:web.bzl", "web_test", "web_test_suite")
+
 java_test(
     name = "BrowserTest_wrapped",
     srcs = ["BrowserTest.java"],
@@ -29,33 +31,28 @@ java_test(
     ],
 )
 
-load("//web:web.bzl", "web_test_suite")
-
 web_test_suite(
     name = "BrowserTest",
     browser_overrides = {
         "//browsers:chrome-external": {
             "tags": [
                 "manual",
+                "noci",
                 "requires-network",
             ],
         },
         "//browsers:firefox-external": {
             "tags": [
                 "manual",
+                "noci",
                 "requires-network",
             ],
         },
         "//browsers:chrome-native": {
             "local": True,
-            "tags": ["noci"],
         },
         "//browsers:firefox-native": {
             "local": True,
-            "tags": ["noci"],
-        },
-        "//browsers:phantomjs": {
-            "tags": ["noci"],
         },
     },
     browsers = [
@@ -65,5 +62,33 @@ web_test_suite(
         "//browsers:firefox-native",
         "//browsers:phantomjs",
     ],
+    tags = ["noci"],
+    test = ":BrowserTest_wrapped",
+)
+
+web_test(
+    name = "BrowserTest_ci_chrome-native",
+    browser = select({
+        "//browsers:mac": "//browsers:chrome-native",
+        "//browsers:linux": "//browsers:disabled",
+    }),
+    test = ":BrowserTest_wrapped",
+)
+
+web_test(
+    name = "BrowserTest_ci_firefox-native",
+    browser = select({
+        "//browsers:mac": "//browsers:firefox-native",
+        "//browsers:linux": "//browsers:disabled",
+    }),
+    test = ":BrowserTest_wrapped",
+)
+
+web_test(
+    name = "BrowserTest_ci_phantomjs",
+    browser = select({
+        "//browsers:mac": "//browsers:phantomjs",
+        "//browsers:linux": "//browsers:disabled",
+    }),
     test = ":BrowserTest_wrapped",
 )

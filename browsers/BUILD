@@ -21,11 +21,13 @@ load("//web:web.bzl", "browser", "web_test_archive", "web_test_named_executable"
 config_setting(
     name = "mac",
     values = {"cpu": "darwin"},
+    visibility = ["//:__subpackages__"],
 )
 
 config_setting(
     name = "linux",
     values = {"cpu": "k8"},
+    visibility = ["//:__subpackages__"],
 )
 
 web_test_archive(
@@ -153,5 +155,12 @@ browser(
         "//java:SELENIUM_SERVER",
     ],
     metadata = "phantomjs.json",
+    visibility = ["//visibility:public"],
+)
+
+browser(
+    name = "disabled",
+    disabled = "disabled pseudo-browser",
+    metadata = "disabled.json",
     visibility = ["//visibility:public"],
 )
