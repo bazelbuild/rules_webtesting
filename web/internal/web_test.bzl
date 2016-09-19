@@ -65,7 +65,7 @@ EOF
 
 exit 0
 """.format(
-          browser=ctx.attr.browser.label, message=ctx.attr.disabled),
+          browser=ctx.attr.browser.label, message=ctx.attr.browser.disabled),
       output=ctx.outputs.executable,
       executable=True,)
 

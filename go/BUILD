@@ -17,7 +17,7 @@
 package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
-load("//web:web.bzl", "web_test_suite")
+load("//web:web.bzl", "web_test", "web_test_suite")
 
 go_library(
     name = "browser",
@@ -44,25 +44,22 @@ web_test_suite(
         "//browsers:chrome-external": {
             "tags": [
                 "manual",
+                "noci",
                 "requires-network",
             ],
         },
         "//browsers:firefox-external": {
             "tags": [
                 "manual",
+                "noci",
                 "requires-network",
             ],
         },
         "//browsers:chrome-native": {
             "local": True,
-            "tags": ["noci"],
         },
         "//browsers:firefox-native": {
             "local": True,
-            "tags": ["noci"],
-        },
-        "//browsers:phantomjs": {
-            "tags": ["noci"],
         },
     },
     browsers = [
@@ -72,5 +69,33 @@ web_test_suite(
         "//browsers:firefox-native",
         "//browsers:phantomjs",
     ],
+    tags = ["noci"],
+    test = ":browser_test_wrapped",
+)
+
+web_test(
+    name = "browser_test_ci_chrome-native",
+    browser = select({
+        "//browsers:mac": "//browsers:chrome-native",
+        "//browsers:linux": "//browsers:disabled",
+    }),
+    test = ":browser_test_wrapped",
+)
+
+web_test(
+    name = "browser_test_ci_firefox-native",
+    browser = select({
+        "//browsers:mac": "//browsers:firefox-native",
+        "//browsers:linux": "//browsers:disabled",
+    }),
+    test = ":browser_test_wrapped",
+)
+
+web_test(
+    name = "browser_test_ci_phantomjs",
+    browser = select({
+        "//browsers:mac": "//browsers:phantomjs",
+        "//browsers:linux": "//browsers:disabled",
+    }),
     test = ":browser_test_wrapped",
 )
