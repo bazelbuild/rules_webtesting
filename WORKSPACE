@@ -95,8 +95,8 @@ http_file(
 
 http_file(
     name = "org_mozilla_firefox_linux",
-    sha256 = "af171a6f605703a2322cca95c856c3c8111fd4ba59219efda01f867c2cc34608",
-    url = "https://ftp.mozilla.org/pub/firefox/releases/48.0.2/firefox-48.0.2.linux-x86_64.sdk.tar.bz2",
+    sha256 = "95884070af8870a550ef70600793b6e6d5207f34af24f8b437b6c67b095e5517",
+    url = "https://ftp.mozilla.org/pub/firefox/releases/49.0/firefox-49.0.linux-x86_64.sdk.tar.bz2",
 )
 
 http_file(
