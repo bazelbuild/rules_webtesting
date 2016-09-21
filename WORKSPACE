@@ -101,7 +101,7 @@ http_file(
 
 http_file(
     name = "org_mozilla_firefox_mac",
-    sha256 = "50f27d0fe0eb4c3ba55f4447076021db491463fe32070164394bb836766d1968",
+    sha256 = "c068696c69af2da2b916e33e93755f7dda478fa6e9d17a60643cf2009bbaf8e2",
     url = "https://ftp.mozilla.org/pub/firefox/releases/49.0/firefox-49.0.mac-x86_64.sdk.tar.bz2",
 )
 
