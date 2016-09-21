@@ -152,6 +152,7 @@ browser(
         ":phantomjs_bin",
         "//java:SELENIUM_SERVER",
     ],
+    environment = {"DISABLE_X_DISPLAY": "1"},
     metadata = "phantomjs.json",
     visibility = ["//visibility:public"],
 )
