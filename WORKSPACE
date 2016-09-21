@@ -61,7 +61,7 @@ sass_repositories()
 
 git_repository(
     name = "io_bazel_skydoc",
-    commit = "8861b7c3d57764614a1d701321ac16e8aca9405d",
+    commit = "c57ff682364dbb1ae808b769f9e3add77cdbfad1",
     remote = "https://github.com/bazelbuild/skydoc.git",
 )
 
