@@ -77,16 +77,6 @@ web_test(
 )
 
 web_test(
-    name = "BrowserTest_ci_firefox-native",
-    browser = select({
-        "//browsers:mac": "//browsers:firefox-native",
-        "//browsers:linux": "//browsers:disabled",
-    }),
-    local = True,
-    test = ":BrowserTest_wrapped",
-)
-
-web_test(
     name = "BrowserTest_ci_phantomjs",
     browser = select({
         "//browsers:mac": "//browsers:phantomjs",
