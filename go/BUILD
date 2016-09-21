@@ -79,6 +79,7 @@ web_test(
         "//browsers:mac": "//browsers:chrome-native",
         "//browsers:linux": "//browsers:disabled",
     }),
+    local = True,
     test = ":browser_test_wrapped",
 )
 
@@ -88,6 +89,7 @@ web_test(
         "//browsers:mac": "//browsers:firefox-native",
         "//browsers:linux": "//browsers:disabled",
     }),
+    local = True,
     test = ":browser_test_wrapped",
 )
 
