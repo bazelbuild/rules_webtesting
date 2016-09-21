@@ -25,6 +25,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -181,6 +182,66 @@ func (m *Metadata) GetFilePath(name string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("no named file %q", name)
+}
+
+var varRegExp = regexp.MustCompile(`%\w+%`)
+
+// ResolvedCapabilities returns Capabilities with any strings/substrings
+// of the form %NAME% resolved to a file path retrieved with GetFilePath.
+func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
+	var resolve func(v interface{}) (interface{}, error)
+
+	resolveMap := func(m map[string]interface{}) (map[string]interface{}, error) {
+		caps := map[string]interface{}{}
+		for k, v := range m {
+			u, err := resolve(v)
+			if err != nil {
+				return nil, err
+			}
+			caps[k] = u
+		}
+		return caps, nil
+	}
+	resolveSlice := func(l []interface{}) ([]interface{}, error) {
+		caps := []interface{}{}
+		for _, v := range l {
+			u, err := resolve(v)
+			if err != nil {
+				return nil, err
+			}
+			caps = append(caps, u)
+		}
+		return caps, nil
+	}
+	resolveString := func(s string) (string, error) {
+		result := ""
+		previous := 0
+		for _, match := range varRegExp.FindAllStringIndex(s, -1) {
+			result += s[previous:match[0]]
+			name := s[match[0]+1 : match[1]-1]
+			path, err := m.GetFilePath(name)
+			if err != nil {
+				return "", err
+			}
+			result += path
+			previous = match[1]
+		}
+		result += s[previous:]
+		return result, nil
+	}
+	resolve = func(v interface{}) (interface{}, error) {
+		switch tv := v.(type) {
+		case string:
+			return resolveString(tv)
+		case []interface{}:
+			return resolveSlice(tv)
+		case map[string]interface{}:
+			return resolveMap(tv)
+		default:
+			return v, nil
+		}
+	}
+	return resolveMap(m.Capabilities)
 }
 
 func (a *Archive) getFilePath(name string) (string, error) {

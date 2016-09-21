@@ -30,7 +30,6 @@ import (
 	"github.com/bazelbuild/rules_web/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_web/go/launcher/environments/external"
 	"github.com/bazelbuild/rules_web/go/launcher/environments/native"
-	"github.com/bazelbuild/rules_web/go/launcher/environments/phantomjs"
 	"github.com/bazelbuild/rules_web/go/launcher/proxy/proxy"
 	"github.com/bazelbuild/rules_web/go/metadata/metadata"
 	"github.com/bazelbuild/rules_web/go/util/bazel"
@@ -138,8 +137,6 @@ func buildEnv(m *metadata.Metadata) (environment.Env, error) {
 		return external.NewEnv(m)
 	case "native":
 		return native.NewEnv(m)
-	case "phantomjs":
-		return phantomjs.NewEnv(m)
 	}
 	return nil, fmt.Errorf("unknown environment: %s", m.Environment)
 }

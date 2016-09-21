@@ -53,16 +53,3 @@ go_library(
         "//go/metadata",
     ],
 )
-
-go_library(
-    name = "phantomjs",
-    srcs = ["phantomjs.go"],
-    visibility = ["//go/launcher:__subpackages__"],
-    deps = [
-        ":environment",
-        "//go/launcher/services:selenium",
-        "//go/launcher/services:service",
-        "//go/metadata",
-        "//go/metadata:capabilities",
-    ],
-)

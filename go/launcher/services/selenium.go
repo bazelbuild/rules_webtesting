@@ -22,7 +22,6 @@ func NewSelenium(m *metadata.Metadata, xvfb bool) (*service.Server, error) {
 		log.Printf("ChromeDriver found at: %q", chromedriverPath)
 		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.chrome.driver=%s", chromedriverPath))
 	}
-
 	if geckodriverPath, err := m.GetFilePath("GECKODRIVER"); err == nil {
 		log.Printf("GeckoDriver found at: %q", geckodriverPath)
 		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.gecko.driver=%s", geckodriverPath))

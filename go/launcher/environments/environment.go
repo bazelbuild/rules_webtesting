@@ -89,23 +89,11 @@ func (b *Base) StartSession(ctx context.Context, id int, caps map[string]interfa
 	if err := b.Healthy(ctx); err != nil {
 		return nil, err
 	}
-	updated := capabilities.Merge(b.Metadata.Capabilities, caps)
-	// TODO: Figure out a general mechanism for this.
-	if chrome, err := b.Metadata.GetFilePath("CHROME"); err == nil {
-		updated = capabilities.Merge(updated, map[string]interface{}{
-			"chromeOptions": map[string]interface{}{
-				"binary": chrome,
-			},
-		})
+	resolved, err := b.Metadata.ResolvedCapabilities()
+	if err != nil {
+		return nil, err
 	}
-	if firefox, err := b.Metadata.GetFilePath("FIREFOX"); err == nil {
-		updated = capabilities.Merge(updated, map[string]interface{}{
-			"firefox_binary":  firefox,
-			"firefoxOptions": map[string]interface{}{
-				"binary": firefox,
-			},
-		})
-	}
+	updated := capabilities.Merge(resolved, caps)
 	return updated, nil
 }
 

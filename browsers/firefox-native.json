@@ -1,6 +1,10 @@
 {
     "environment": "native",
     "capabilities": {
-        "browserName": "firefox"
+        "browserName": "firefox",
+        "firefox_binary": "%FIREFOX%",
+		"firefoxOptions": {
+			"binary": "%FIREFOX%"
+		}
     }
 }
