@@ -71,32 +71,32 @@ skydoc_repositories()
 
 http_file(
     name = "org_chromium_chromedriver_linux",
-    sha256 = "d9bae7125a772742adc249dcd476f52e766928b83258a510d64a779744b7abfc",
-    url = "http://chromedriver.storage.googleapis.com/2.23/chromedriver_linux64.zip",
+    sha256 = "0c01b05276da98f203dc7eb4236c2ee7fe799b432734e088549bd0aadc71958e",
+    url = "http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip",
 )
 
 http_file(
     name = "com_google_chrome_linux",
-    sha256 = "e3902a68d176f1057579e87fb20389637491d64cef00975608e9d784e2e631e4",
-    url = "https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/52.0.2743.116/precise64/chrome-precise64.zip",
+    sha256 = "6e26d74fd814c38cd419d1ffe87b3e81ad6cfe453e27c7a672ab3c452968e71d",
+    url = "https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/53.0.2785.116/precise64/chrome-precise64.zip",
 )
 
 http_file(
     name = "org_chromium_chromedriver_mac",
-    sha256 = "47a8caec6ce251f2dbaa9005e4dc783cb1fa6c09ecd76afafa41eab540a32e86",
-    url = "http://chromedriver.storage.googleapis.com/2.23/chromedriver_mac64.zip",
+    sha256 = "d4f6e13d88ecf20735138f16ab1545e855a42bce41bebe73667a028871777790",
+    url = "http://chromedriver.storage.googleapis.com/2.24/chromedriver_mac64.zip",
 )
 
 http_file(
     name = "com_google_chrome_mac",
-    sha256 = "c4a1b0e4d0cf14486e1bca7c3cc210efdbbd5f229dd50613f76e4e36649d8491",
-    url = "https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/52.0.2743.116/mac64/chrome-mac.zip",
+    sha256 = "84b3cf4f7a9f85fa90dda837b1e38820c83c383fcb6346bbec6448d5128dd7f9",
+    url = "https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/53.0.2785.116/mac64/chrome-mac.zip",
 )
 
 http_file(
     name = "org_mozilla_firefox_linux",
-    sha256 = "af171a6f605703a2322cca95c856c3c8111fd4ba59219efda01f867c2cc34608",
-    url = "https://ftp.mozilla.org/pub/firefox/releases/48.0.2/firefox-48.0.2.linux-x86_64.sdk.tar.bz2",
+    sha256 = "95884070af8870a550ef70600793b6e6d5207f34af24f8b437b6c67b095e5517",
+    url = "https://ftp.mozilla.org/pub/firefox/releases/49.0/firefox-49.0.linux-x86_64.sdk.tar.bz2",
 )
 
 http_file(
