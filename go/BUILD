@@ -71,32 +71,3 @@ web_test_suite(
     ],
     test = ":browser_test_wrapped",
 )
-
-web_test(
-    name = "browser_test_ci_firefox-native",
-    browser = select({
-        "//browsers:mac": "//browsers:firefox-native",
-        "//browsers:linux": "//browsers:disabled",
-    }),
-    local = True,
-    test = ":browser_test_wrapped",
-)
-
-web_test(
-    name = "browser_test_ci_chrome-native",
-    browser = select({
-        "//browsers:mac": "//browsers:chrome-native",
-        "//browsers:linux": "//browsers:disabled",
-    }),
-    local = True,
-    test = ":browser_test_wrapped",
-)
-
-web_test(
-    name = "browser_test_ci_phantomjs",
-    browser = select({
-        "//browsers:mac": "//browsers:phantomjs",
-        "//browsers:linux": "//browsers:disabled",
-    }),
-    test = ":browser_test_wrapped",
-)
