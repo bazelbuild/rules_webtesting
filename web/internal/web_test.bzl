@@ -21,6 +21,15 @@ load("//web/internal:shared.bzl", "build_runfiles", "get_metadata_files",
 
 
 def _web_test_impl(ctx):
+  if ctx.attr.browser.disabled:
+    return _generate_noop_test(
+        ctx, """the browser configuration you requested is temporarily disabled.
+
+Disabled browser: %s
+
+Why was this browser disabled?
+%s""" % (ctx.attr.browser.label, ctx.attr.browser.disabled))
+
   missing_tags = [
       tag for tag in ctx.attr.browser.required_tags
       if (tag not in ctx.attr.tags) and (tag != "local" or not ctx.attr.local)
@@ -30,6 +39,40 @@ def _web_test_impl(ctx):
     fail("Browser {browser} requires tags {tags} that are missing.".format(
         browser=ctx.attr.browser.label, tags=missing_tags))
 
+  return _generate_default_test(ctx)
+
+
+def _generate_noop_test(ctx, reason, status=0):
+  """Generates a no-op test.
+
+  Args:
+    ctx: the ctx object for this rule.
+    reason: string, a description of why the no-op test is being used.
+    status: int, the exit code the test should return
+  Returns:
+    an empty struct for this rule.
+  """
+  if status:
+    success = "fails"
+  else:
+    success = "passes"
+
+  ctx.file_action(content="", output=ctx.outputs.web_test_metadata)
+
+  ctx.template_action(
+      template=ctx.file._noop_web_test_template,
+      output=ctx.outputs.executable,
+      substitutions={
+          "%TEMPLATED_success%": success,
+          "%TEMPLATED_reason%": reason,
+          "%TEMPLATED_status%": str(status),
+      },
+      executable=True)
+
+  return struct()
+
+
+def _generate_default_test(ctx):
   metadata_files = get_metadata_files(ctx, ["data", "browser", "config"])
 
   merge_metadata_files(
@@ -38,82 +81,21 @@ def _web_test_impl(ctx):
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files,)
 
-  if ctx.attr.browser.disabled:
-    return _generate_disabled_test(ctx)
-
-  return _generate_default_test(ctx)
-
-
-def _generate_disabled_test(ctx):
-  ctx.file_action(
-      content="""#!/bin/bash
-
-cat << EOF
-#####################################################################
-This test always passes. Your test was not run.
-
-This dummy test was inserted in place of the web test you intended
-to run because the browser configuration you requested has been
-temporarily disabled.
-
-Disabled browser: {browser}
-
-Why was this browser disabled?
-{message}
-#####################################################################
-EOF
-
-exit 0
-""".format(
-          browser=ctx.attr.browser.label, message=ctx.attr.browser.disabled),
-      output=ctx.outputs.executable,
-      executable=True,)
-
-  return struct()
-
-
-def _generate_default_test(ctx):
   env_vars = ""
   for k, v in ctx.attr.browser.environment.items():
     env_vars += "export %s=%s\n" % (k, v)
 
-  ctx.file_action(
-      content="""#!/bin/bash
-
-if [[ -z "$TEST_SRCDIR" ]]; then
-  case "$0" in
-    /*) self="$0" ;;
-    *)  self="$PWD/$0" ;;
-  esac
-
-  if [[ -e "$self.runfiles" ]]; then
-    export TEST_SRCDIR="$self.runfiles"
-  else
-    echo "Unable to determine runfiles location"
-    exit -1
-  fi
-fi
-
-if [[ -z "$TEST_TEMPDIR" ]]; then
-  export TEST_TEMPDIR=$(mktemp -d test_tempdir.XXXXXX)
-fi
-
-if [ ! -e "/dev/shm" ]; then
-  mkdir /dev/shm
-fi
-
-{env_vars}
-
-printenv
-
-$TEST_SRCDIR/{launcher} --metadata={metadata} --test={test}
-""".format(
-          env_vars=env_vars,
-          launcher=path(ctx, ctx.executable._launcher),
-          metadata=path(ctx, ctx.outputs.web_test_metadata),
-          test=path(ctx, ctx.executable.test)),
+  ctx.template_action(
+      template=ctx.file._web_test_template,
       output=ctx.outputs.executable,
+      substitutions={
+          "%TEMPLATED_env_vars%": env_vars,
+          "%TEMPLATED_launcher%": path(ctx, ctx.executable._launcher),
+          "%TEMPLATED_metadata%": path(ctx, ctx.outputs.web_test_metadata),
+          "%TEMPLATED_test%": path(ctx, ctx.executable.test),
+      },
       executable=True)
+
   return struct(runfiles=build_runfiles(
       ctx,
       files=[ctx.outputs.web_test_metadata],
@@ -124,31 +106,47 @@ web_test = rule(
     implementation=_web_test_impl,
     test=True,
     attrs={
-        "test": attr.label(
-            executable=True, mandatory=True, cfg="data"),
-        "browser": attr.label(
-            mandatory=True,
-            cfg="data",
-            providers=[
-                "disabled",
-                "environment",
-                "required_tags",
-                "web_test_metadata",
-            ],),
-        "config": attr.label(
-            cfg="data",
-            default=Label("//external:web_test_default_config"),
-            providers=[
-                "web_test_metadata",
-            ],),
-        "data": attr.label_list(
-            allow_files=True, cfg="data"),
-        "_merger": attr.label(
-            executable=True,
-            cfg="host",
-            default=Label("//external:web_test_merger")),
-        "_launcher": attr.label(
-            executable=True, default=Label("//external:web_test_launcher")),
+        "test":
+            attr.label(
+                cfg="data", executable=True, mandatory=True),
+        "browser":
+            attr.label(
+                cfg="data",
+                mandatory=True,
+                providers=[
+                    "disabled",
+                    "environment",
+                    "required_tags",
+                    "web_test_metadata",
+                ]),
+        "config":
+            attr.label(
+                cfg="data",
+                default=Label("//external:web_test_default_config"),
+                providers=["web_test_metadata"]),
+        "data":
+            attr.label_list(
+                allow_files=True, cfg="data"),
+        "_merger":
+            attr.label(
+                cfg="host",
+                executable=True,
+                default=Label("//external:web_test_merger")),
+        "_launcher":
+            attr.label(
+                cfg="data",
+                executable=True,
+                default=Label("//external:web_test_launcher")),
+        "_web_test_template":
+            attr.label(
+                allow_files=True,
+                single_file=True,
+                default=Label("//external:web_test_template")),
+        "_noop_web_test_template":
+            attr.label(
+                allow_files=True,
+                single_file=True,
+                default=Label("//external:noop_web_test_template")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """Runs a provided test against a provided browser configuration.

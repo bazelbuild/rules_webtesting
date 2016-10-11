@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [[ -z "$TEST_SRCDIR" ]]; then
+  case "$0" in
+    /*) self="$0" ;;
+    *)  self="$PWD/$0" ;;
+  esac
+
+  if [[ -e "$self.runfiles" ]]; then
+    export TEST_SRCDIR="$self.runfiles"
+  else
+    echo "Unable to determine runfiles location"
+    exit -1
+  fi
+fi
+
+if [[ -z "$TEST_TEMPDIR" ]]; then
+  export TEST_TEMPDIR=$(mktemp -d test_tempdir.XXXXXX)
+fi
+
+if [ ! -e "/dev/shm" ]; then
+  mkdir /dev/shm
+fi
+
+%TEMPLATED_env_vars%
+
+printenv
+
+"$TEST_SRCDIR/%TEMPLATED_launcher%" --metadata="%TEMPLATED_metadata%" --test="%TEMPLATED_test%"

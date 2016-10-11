@@ -23,3 +23,8 @@ exports_files(
         "//web:__subpackages__",
     ],
 )
+
+exports_files(
+    glob(["*.sh.template"]),
+    visibility = ["//visibility:public"],
+)

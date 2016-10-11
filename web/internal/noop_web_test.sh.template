@@ -1,0 +1,11 @@
+#!/bin/bash
+
+tee -a "$TEST_WARNINGS_OUTPUT_FILE" << EOF
+This test always %TEMPLATED_success%. Your test was not run.
+
+This dummy test was inserted in place of the web test you intended
+to run because:
+%TEMPLATED_reason%
+EOF
+
+exit %TEMPLATED_status%
