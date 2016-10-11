@@ -62,7 +62,7 @@ web_test_suite(
         "//browsers:firefox-native",
         "//browsers:phantomjs",
     ],
-    tags = ["noci"],
+    #  tags = ["noci"],
     test = ":BrowserTest_wrapped",
 )
 
