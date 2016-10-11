@@ -67,6 +67,16 @@ web_test_suite(
 )
 
 web_test(
+    name = "BrowserTest_ci_firefox-native",
+    browser = select({
+        "//browsers:mac": "//browsers:firefox-native",
+        "//browsers:linux": "//browsers:disabled",
+    }),
+    local = True,
+    test = ":BrowserTest_wrapped",
+)
+
+web_test(
     name = "BrowserTest_ci_chrome-native",
     browser = select({
         "//browsers:mac": "//browsers:chrome-native",
