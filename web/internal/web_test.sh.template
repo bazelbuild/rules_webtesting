@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +15,31 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
 
-exports_files(
-    glob(["*.bzl"]),
-    visibility = [
-        "//doc:__subpackages__",
-        "//web:__subpackages__",
-    ],
-)
+if [[ -z "$TEST_SRCDIR" ]]; then
+  case "$0" in
+    /*) self="$0" ;;
+    *)  self="$PWD/$0" ;;
+  esac
 
-exports_files(
-    glob(["*.sh.template"]),
-    visibility = ["//visibility:public"],
-)
+  if [[ -e "$self.runfiles" ]]; then
+    export TEST_SRCDIR="$self.runfiles"
+  else
+    echo "Unable to determine runfiles location"
+    exit -1
+  fi
+fi
+
+if [[ -z "$TEST_TEMPDIR" ]]; then
+  export TEST_TEMPDIR=$(mktemp -d test_tempdir.XXXXXX)
+fi
+
+if [ ! -e "/dev/shm" ]; then
+  mkdir /dev/shm
+fi
+
+%TEMPLATED_env_vars%
+
+printenv
+
+"$TEST_SRCDIR/%TEMPLATED_launcher%" --metadata="%TEMPLATED_metadata%" --test="%TEMPLATED_test%"

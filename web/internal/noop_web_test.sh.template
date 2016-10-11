@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +15,13 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
 
-exports_files(
-    glob(["*.bzl"]),
-    visibility = [
-        "//doc:__subpackages__",
-        "//web:__subpackages__",
-    ],
-)
+tee -a "$TEST_WARNINGS_OUTPUT_FILE" << EOF
+This test always %TEMPLATED_success%. Your test was not run.
 
-exports_files(
-    glob(["*.sh.template"]),
-    visibility = ["//visibility:public"],
-)
+This dummy test was inserted in place of the web test you intended
+to run because:
+%TEMPLATED_reason%
+EOF
+
+exit %TEMPLATED_status%

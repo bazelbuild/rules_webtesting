@@ -19,7 +19,7 @@ workspace(name = "io_bazel_rules_web")
 git_repository(
     name = "io_bazel_rules_go",
     remote = "https://github.com/bazelbuild/rules_go.git",
-    tag = "0.1.0",
+    tag = "0.2.0",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
@@ -34,7 +34,9 @@ web_test_repositories(
     java = True,
     launcher = "//go/launcher:main",
     merger = "//go/metadata:merger",
+    noop_web_test_template = "//web/internal:noop_web_test.sh.template",
     prefix = "",
+    web_test_template = "//web/internal:web_test.sh.template",
 )
 
 maven_jar(

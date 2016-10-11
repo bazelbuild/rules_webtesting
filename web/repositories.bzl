@@ -19,7 +19,10 @@ def web_test_repositories(
     go=False,
     launcher="@io_bazel_rules_web//go/launcher:main",
     merger="@io_bazel_rules_web//go/metadata:merger",
-    default_config="@io_bazel_rules_web//web:default_config"):
+    default_config="@io_bazel_rules_web//web:default_config",
+    web_test_template="@io_bazel_rules_web//web/internal:web_test.sh.template",
+    noop_web_test_template="@io_bazel_rules_web//web/internal:noop_web_test.sh.template",
+):
   native.new_git_repository(
       name="com_github_gorilla_mux",
       build_file=prefix + "//build_files:BUILD.gorilla_mux",
@@ -43,6 +46,14 @@ def web_test_repositories(
   native.bind(
       name="web_test_default_config",
       actual=default_config,)
+
+  native.bind(
+      name="web_test_template",
+      actual=web_test_template,)
+
+  native.bind(
+      name="noop_web_test_template",
+      actual=noop_web_test_template,)
 
   if java:
     native.new_http_archive(
