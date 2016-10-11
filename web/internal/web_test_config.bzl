@@ -49,18 +49,14 @@ def _web_test_config_impl(ctx):
 web_test_config = rule(
     implementation=_web_test_config_impl,
     attrs={
-        "configs":
-            attr.label_list(providers=["web_test_metadata"]),
-        "metadata":
-            attr.label(allow_single_file=True),
-        "data":
-            attr.label_list(
-                allow_files=True, cfg="data"),
-        "_merger":
-            attr.label(
-                executable=True,
-                cfg="host",
-                default=Label("//external:web_test_merger")),
+        "configs": attr.label_list(providers=["web_test_metadata"]),
+        "metadata": attr.label(allow_single_file=True),
+        "data": attr.label_list(
+            allow_files=True, cfg="data"),
+        "_merger": attr.label(
+            executable=True,
+            cfg="host",
+            default=Label("//external:web_test_merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """A browser-independent configuration that can be used across multiple web_tests.

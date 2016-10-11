@@ -16,12 +16,11 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "create_metadata_file",
-    "get_metadata_files",
-    "merge_metadata_files",)
+load("//web/internal:shared.bzl",
+     "build_runfiles",
+     "create_metadata_file",
+     "get_metadata_files",
+     "merge_metadata_files",)
 
 
 def _browser_impl(ctx):
@@ -29,8 +28,9 @@ def _browser_impl(ctx):
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   create_metadata_file(ctx=ctx, output=patch, browser_label=ctx.label)
 
-  metadata_files = get_metadata_files(ctx,
-                                      ["data"]) + [ctx.file.metadata, patch]
+  metadata_files = get_metadata_files(ctx, ["data"]) + [
+      ctx.file.metadata, patch
+  ]
 
   merge_metadata_files(
       ctx=ctx,
@@ -50,23 +50,17 @@ def _browser_impl(ctx):
 browser = rule(
     implementation=_browser_impl,
     attrs={
-        "metadata":
-            attr.label(
-                mandatory=True, allow_single_file=True, cfg="data"),
-        "data":
-            attr.label_list(
-                allow_files=True, cfg="data"),
-        "disabled":
-            attr.string(),
-        "environment":
-            attr.string_dict(default={}),
-        "required_tags":
-            attr.string_list(default=[]),
-        "_merger":
-            attr.label(
-                executable=True,
-                cfg="host",
-                default=Label("//external:web_test_merger")),
+        "metadata": attr.label(
+            mandatory=True, allow_single_file=True, cfg="data"),
+        "data": attr.label_list(
+            allow_files=True, cfg="data"),
+        "disabled": attr.string(),
+        "environment": attr.string_dict(default={}),
+        "required_tags": attr.string_list(default=[]),
+        "_merger": attr.label(
+            executable=True,
+            cfg="host",
+            default=Label("//external:web_test_merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """Defines a browser configuration for use with web_test.

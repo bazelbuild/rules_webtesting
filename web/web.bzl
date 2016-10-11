@@ -13,9 +13,8 @@
 # limitations under the License.
 """Public definitions for web_test related build rules."""
 
-load(
-    "//web/internal:shared.bzl",
-    "is_list_like",)
+load("//web/internal:shared.bzl",
+     "is_list_like",)
 load(
     "//web/internal:browser.bzl",
     browser_alias="browser",)
@@ -140,16 +139,14 @@ def _apply_browser_overrides(data, config, shard_count, size, flaky, timeout,
     {'shard_count': 4, 'size': 'medium', 'timeout': 100, 'flaky': 1}
   """
 
-  output = {
-      "data": data,
-      "config": config,
-      "shard_count": shard_count,
-      "size": size,
-      "flaky": flaky,
-      "timeout": timeout,
-      "tags": tags,
-      "local": local
-  }
+  output = {"data": data,
+            "config": config,
+            "shard_count": shard_count,
+            "size": size,
+            "flaky": flaky,
+            "timeout": timeout,
+            "tags": tags,
+            "local": local}
   for attribute in overrides:
     if attribute in output:
       output[attribute] = overrides[attribute]
