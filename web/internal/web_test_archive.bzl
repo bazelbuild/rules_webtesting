@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//web/internal:shared.bzl",
-     "path",)
+load(
+    "//web/internal:shared.bzl",
+    "path",)
 
 
 def _web_test_archive_impl(ctx):
@@ -42,9 +43,11 @@ def _web_test_archive_impl(ctx):
 web_test_archive = rule(
     implementation=_web_test_archive_impl,
     attrs={
-        "archive": attr.label(
-            allow_single_file=True, cfg="data", mandatory=True),
-        "named_files": attr.string_dict(mandatory=True)
+        "archive":
+            attr.label(
+                allow_single_file=True, cfg="data", mandatory=True),
+        "named_files":
+            attr.string_dict(mandatory=True)
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """Specifies an archive file with named files in it.

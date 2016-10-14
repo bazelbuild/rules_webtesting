@@ -82,8 +82,10 @@ def get_metadata_files(ctx, attr_names):
     if hasattr(attr, 'web_test_metadata'):
       metadata_files += [attr.web_test_metadata]
     elif is_list_like(attr):
-      metadata_files += [value.web_test_metadata for value in attr
-                         if hasattr(value, 'web_test_metadata')]
+      metadata_files += [
+          value.web_test_metadata for value in attr
+          if hasattr(value, 'web_test_metadata')
+      ]
 
   return metadata_files
 
@@ -115,12 +117,13 @@ def merge_metadata_files(ctx, merger, output, inputs):
       progress_message='merging %s' % (', '.join(short_paths)))
 
 
-def create_metadata_file(ctx,
-                         output,
-                         capabilities=None,
-                         environment=None,
-                         browser_label=None,
-                         test_label=None,):
+def create_metadata_file(
+    ctx,
+    output,
+    capabilities=None,
+    environment=None,
+    browser_label=None,
+    test_label=None,):
   """Generates a web_test metadata file with specified contents."""
   content = '{\n  "_comment": "generated file for %s"' % ctx.label
   if capabilities:

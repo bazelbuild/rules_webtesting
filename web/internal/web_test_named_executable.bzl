@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//web/internal:shared.bzl",
-     "build_runfiles",
-     "get_metadata_files",
-     "merge_metadata_files",
-     "path",)
+load(
+    "//web/internal:shared.bzl",
+    "build_runfiles",
+    "get_metadata_files",
+    "merge_metadata_files",
+    "path",)
 
 
 def _web_test_named_executable_impl(ctx):
@@ -54,15 +55,19 @@ def _web_test_named_executable_impl(ctx):
 web_test_named_executable = rule(
     implementation=_web_test_named_executable_impl,
     attrs={
-        "alt_name": attr.string(),
-        "executable": attr.label(
-            allow_files=True, executable=True, cfg="data", mandatory=True),
-        "data": attr.label_list(
-            allow_files=True, cfg="data"),
-        "_merger": attr.label(
-            executable=True,
-            cfg="host",
-            default=Label("//external:web_test_merger")),
+        "alt_name":
+            attr.string(),
+        "executable":
+            attr.label(
+                allow_files=True, executable=True, cfg="data", mandatory=True),
+        "data":
+            attr.label_list(
+                allow_files=True, cfg="data"),
+        "_merger":
+            attr.label(
+                executable=True,
+                cfg="host",
+                default=Label("//external:web_test_merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """Defines a executable that can be located by name.
