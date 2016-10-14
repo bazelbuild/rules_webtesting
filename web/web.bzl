@@ -180,7 +180,7 @@ def web_test(browser, test, data=None, size=None, **kwargs):
     **kwargs: see web_test in //web/internal:web_test.bzl
   """
   data = lists.clone(data)
-  lists.ensure_contains_all(data, [browser, test])
+  lists.ensure_contains(data, test)
   size = size or "large"
   web_test_alias(browser=browser, test=test, data=data, size=size, **kwargs)
 
