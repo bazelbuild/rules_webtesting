@@ -17,6 +17,7 @@ def web_test_repositories(
     prefix="@io_bazel_rules_web",
     java=False,
     go=False,
+    python=False,
     launcher="@io_bazel_rules_web//go/launcher:main",
     merger="@io_bazel_rules_web//go/metadata:merger",
     default_config="@io_bazel_rules_web//web:default_config",
@@ -84,3 +85,12 @@ def web_test_repositories(
         build_file=prefix + "//build_files:BUILD.selenium_go",
         remote="https://github.com/tebeka/selenium.git",
         tag="v0.8.5",)
+
+  if python:
+    native.new_http_archive(
+        name="org_seleniumhq_py",
+        build_file=prefix + "//build_files:BUILD.selenium_py",
+        sha256="0705803349964c7a2a144f1796a5d29905fe2a09931b2bb945ee0cb4deab75d7",
+        strip_prefix="selenium-3.0.1/py",
+        url="https://pypi.python.org/packages/3a/a3/e4ab60a0229a85f468a36367bc0672a4bca2720f24391eda33704a5f0ad5/selenium-3.0.1.tar.gz",
+    )

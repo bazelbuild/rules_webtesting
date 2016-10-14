@@ -1,0 +1,79 @@
+# Copyright 2016 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+################################################################################
+#
+package(default_testonly = 1)
+
+load("//web:web.bzl", "web_test", "web_test_suite")
+
+py_library(
+    name = "web",
+    srcs = glob(
+        ["*.py"],
+        exclude = ["*_test.py"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@org_seleniumhq_py//:selenium",
+    ],
+)
+
+py_test(
+    name = "browser_test_wrapped",
+    srcs = ["browser_test.py"],
+    main = "browser_test.py",
+    tags = [
+        "manual",
+        "noci",
+    ],
+    deps = [
+        ":web",
+    ],
+)
+
+web_test_suite(
+    name = "browser_test",
+    browser_overrides = {
+        "//browsers:chrome-external": {
+            "tags": [
+                "manual",
+                "noci",
+                "requires-network",
+            ],
+        },
+        "//browsers:firefox-external": {
+            "tags": [
+                "manual",
+                "noci",
+                "requires-network",
+            ],
+        },
+        "//browsers:chrome-native": {
+            "local": True,
+        },
+        "//browsers:firefox-native": {
+            "local": True,
+        },
+    },
+    browsers = [
+        "//browsers:chrome-external",
+        "//browsers:chrome-native",
+        "//browsers:firefox-external",
+        "//browsers:firefox-native",
+        "//browsers:phantomjs",
+    ],
+    tags = ["noci"],
+    test = ":browser_test_wrapped",
+)

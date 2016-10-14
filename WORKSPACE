@@ -36,6 +36,7 @@ web_test_repositories(
     merger = "//go/metadata:merger",
     noop_web_test_template = "//web/internal:noop_web_test.sh.template",
     prefix = "",
+    python = True,
     web_test_template = "//web/internal:web_test.sh.template",
 )
 
