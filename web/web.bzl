@@ -16,6 +16,7 @@
 load(
     "//web/internal:shared.bzl",
     "is_list_like",)
+load("//web/internal:collections.bzl", "lists")
 load(
     "//web/internal:browser.bzl",
     browser_alias="browser",)
@@ -170,15 +171,18 @@ def browser(testonly=True, **kwargs):
   browser_alias(testonly=testonly, **kwargs)
 
 
-def web_test(size="large", **kwargs):
+def web_test(browser, test, data=None, size=None, **kwargs):
   """Wrapper around web_test to correctly set defaults.
   
   Args:
+    data
     size: default = "large"
     **kwargs: see web_test in //web/internal:web_test.bzl
   """
+  data = lists.clone(data)
+  lists.ensure_contains_all(data, [browser, test])
   size = size or "large"
-  web_test_alias(size=size, **kwargs)
+  web_test_alias(browser=browser, test=test, data=data, size=size, **kwargs)
 
 
 def web_test_config(testonly=True, **kwargs):
