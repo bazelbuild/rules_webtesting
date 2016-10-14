@@ -99,5 +99,6 @@ web_test(
         "//browsers:mac": "//browsers:phantomjs",
         "//browsers:linux": "//browsers:disabled",
     }),
+    local = True,
     test = ":browser_test_wrapped",
 )
