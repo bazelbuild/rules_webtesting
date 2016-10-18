@@ -24,6 +24,7 @@ py_library(
         ["*.py"],
         exclude = ["*_test.py"],
     ),
+    srcs_version = "PY2AND3",
     visibility = ["//visibility:public"],
     deps = [
         "@org_seleniumhq_py//:selenium",
@@ -34,6 +35,7 @@ py_test(
     name = "browser_test_wrapped",
     srcs = ["browser_test.py"],
     main = "browser_test.py",
+    srcs_version = "PY2AND3",
     tags = [
         "manual",
         "noci",
