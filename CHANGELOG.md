@@ -1,3 +1,6 @@
+Version 0.0.3
+ - Change Python rules to srcs_version = "PY2AND3"
+
 Version 0.0.2
  - Add PhantomJS browser for Linux.
  - Add support for named files in archives.

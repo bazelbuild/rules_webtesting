@@ -23,5 +23,6 @@ py_library(
         ["**/*"],
         exclude = ["**/*.py"],
     ),
+    srcs_version = "PY2AND3",
     visibility = ["//visibility:public"],
 )
