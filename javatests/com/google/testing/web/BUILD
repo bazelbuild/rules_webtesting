@@ -73,6 +73,8 @@ web_test(
         "//browsers:linux": "//browsers:disabled",
     }),
     local = True,
+    # TODO(DrMarcII): diagnose and fix test timeout
+    tags = ["noci"],
     test = ":BrowserTest_wrapped",
 )
 
@@ -93,7 +95,5 @@ web_test(
         "//browsers:linux": "//browsers:disabled",
     }),
     local = True,
-    # TODO(DrMarcII): diagnose and fix test timeout
-    tags = ["noci"],
     test = ":BrowserTest_wrapped",
 )
