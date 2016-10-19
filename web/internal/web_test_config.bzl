@@ -58,7 +58,7 @@ web_test_config = rule(
             attr.label(allow_single_file=True),
         "data":
             attr.label_list(
-                llow_files=True, cfg="data"),
+                allow_files=True, cfg="data"),
         "merger":
             attr.label(
                 executable=True,
