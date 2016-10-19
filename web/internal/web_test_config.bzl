@@ -34,7 +34,7 @@ def _web_test_config_impl(ctx):
   if metadata_files:
     merge_metadata_files(
         ctx=ctx,
-        merger=ctx.executable._merger,
+        merger=ctx.executable.merger,
         output=ctx.outputs.web_test_metadata,
         inputs=metadata_files)
   else:
@@ -56,11 +56,11 @@ web_test_config = rule(
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
-        "_merger":
+        "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//external:web_test_merger")),
+                default=Label("//go/metadata:merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """A browser-independent configuration that can be used across multiple web_tests.

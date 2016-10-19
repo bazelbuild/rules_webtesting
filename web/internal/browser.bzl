@@ -34,7 +34,7 @@ def _browser_impl(ctx):
 
   merge_metadata_files(
       ctx=ctx,
-      merger=ctx.executable._merger,
+      merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files)
 
@@ -62,11 +62,11 @@ browser = rule(
             attr.string_dict(default={}),
         "required_tags":
             attr.string_list(default=[]),
-        "_merger":
+        "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//external:web_test_merger")),
+                default=Label("//go/metadata:merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """Defines a browser configuration for use with web_test.

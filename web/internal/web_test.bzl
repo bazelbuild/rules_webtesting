@@ -60,7 +60,7 @@ def _generate_noop_test(ctx, reason, status=0):
   ctx.file_action(content="", output=ctx.outputs.web_test_metadata)
 
   ctx.template_action(
-      template=ctx.file._noop_web_test_template,
+      template=ctx.file.noop_web_test_template,
       output=ctx.outputs.executable,
       substitutions={
           "%TEMPLATED_success%": success,
@@ -77,7 +77,7 @@ def _generate_default_test(ctx):
 
   merge_metadata_files(
       ctx=ctx,
-      merger=ctx.executable._merger,
+      merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files,)
 
@@ -86,11 +86,11 @@ def _generate_default_test(ctx):
     env_vars += "export %s=%s\n" % (k, v)
 
   ctx.template_action(
-      template=ctx.file._web_test_template,
+      template=ctx.file.web_test_template,
       output=ctx.outputs.executable,
       substitutions={
           "%TEMPLATED_env_vars%": env_vars,
-          "%TEMPLATED_launcher%": path(ctx, ctx.executable._launcher),
+          "%TEMPLATED_launcher%": path(ctx, ctx.executable.launcher),
           "%TEMPLATED_metadata%": path(ctx, ctx.outputs.web_test_metadata),
           "%TEMPLATED_test%": path(ctx, ctx.executable.test),
       },
@@ -99,7 +99,7 @@ def _generate_default_test(ctx):
   return struct(runfiles=build_runfiles(
       ctx,
       files=[ctx.outputs.web_test_metadata],
-      deps_attrs=["_launcher", "browser", "config", "test"]))
+      deps_attrs=["launcher", "browser", "config", "test"]))
 
 
 web_test = rule(
@@ -122,31 +122,31 @@ web_test = rule(
         "config":
             attr.label(
                 cfg="data",
-                default=Label("//external:web_test_default_config"),
+                default=Label("//web:default_config"),
                 providers=["web_test_metadata"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
-        "_merger":
+        "merger":
             attr.label(
                 cfg="host",
                 executable=True,
-                default=Label("//external:web_test_merger")),
-        "_launcher":
+                default=Label("//go/metadata:merger")),
+        "launcher":
             attr.label(
                 cfg="data",
                 executable=True,
-                default=Label("//external:web_test_launcher")),
-        "_web_test_template":
+                default=Label("//go/launcher:main")),
+        "web_test_template":
             attr.label(
                 allow_files=True,
                 single_file=True,
-                default=Label("//external:web_test_template")),
-        "_noop_web_test_template":
+                default=Label("//web/internal:web_test.sh.template")),
+        "noop_web_test_template":
             attr.label(
                 allow_files=True,
                 single_file=True,
-                default=Label("//external:noop_web_test_template")),
+                default=Label("//web/internal:noop_web_test.sh.template")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},)
 """Runs a provided test against a provided browser configuration.
