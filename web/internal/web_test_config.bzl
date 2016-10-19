@@ -19,8 +19,12 @@ such as additional capabilities.
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//web/internal:shared.bzl", "build_runfiles", "create_metadata_file",
-     "get_metadata_files", "merge_metadata_files")
+load(
+    "//web/internal:shared.bzl",
+    "build_runfiles",
+    "create_metadata_file",
+    "get_metadata_files",
+    "merge_metadata_files",)
 
 
 def _web_test_config_impl(ctx):
@@ -47,7 +51,6 @@ def _web_test_config_impl(ctx):
 
 
 web_test_config = rule(
-    implementation=_web_test_config_impl,
     attrs={
         "configs":
             attr.label_list(providers=["web_test_metadata"]),
@@ -55,14 +58,16 @@ web_test_config = rule(
             attr.label(allow_single_file=True),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
+                allow_files=True,
+                cfg="data",),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger")),
+                default=Label("//go/metadata:merger"),),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},)
+    outputs={"web_test_metadata": "%{name}.gen.json"},
+    implementation=_web_test_config_impl,)
 """A browser-independent configuration that can be used across multiple web_tests.
 
 Args:

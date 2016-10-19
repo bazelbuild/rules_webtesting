@@ -30,7 +30,7 @@ def web_test_repositories(java=False,
         build_file=str(Label("//build_files:BUILD.gorilla_mux")),
         url="https://github.com/gorilla/mux/archive/cf79e51a62d8219d52060dfc1b4e810414ba2d15.tar.gz",
         sha256="80077e14b2f0f8f2796b6bfcf5c8e41e148e3c8c45b4c20d1e6856b348d5efb7",
-        strip_prefix="mux-cf79e51a62d8219d52060dfc1b4e810414ba2d15")
+        strip_prefix="mux-cf79e51a62d8219d52060dfc1b4e810414ba2d15",)
 
   if not omit_org_seleniumhq_server:
     native.http_jar(
@@ -73,7 +73,7 @@ def web_test_repositories(java=False,
           build_file=str(Label("//build_files:BUILD.selenium_go")),
           url="https://github.com/tebeka/selenium/archive/v0.9.2.tar.gz",
           sha256="c5f21652eda6230ee8bb5f9f02b740fa8d8b22c0cddc832ec666a7654bb0d1a4",
-          strip_prefix="selenium-0.9.2")
+          strip_prefix="selenium-0.9.2",)
 
   if python:
     if not omit_org_seleniumhq_py:

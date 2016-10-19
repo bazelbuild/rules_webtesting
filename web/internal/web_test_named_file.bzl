@@ -53,23 +53,26 @@ def _web_test_named_file_impl(ctx):
 
 
 web_test_named_file = rule(
-    implementation=_web_test_named_file_impl,
     attrs={
         "alt_name":
             attr.string(),
         "file":
             attr.label(
-                allow_single_file=True, cfg="data", mandatory=True),
+                allow_single_file=True,
+                cfg="data",
+                mandatory=True,),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
+                allow_files=True,
+                cfg="data",),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger")),
+                default=Label("//go/metadata:merger"),),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},)
+    outputs={"web_test_metadata": "%{name}.gen.json"},
+    implementation=_web_test_named_file_impl,)
 """Defines a executable that can be located by name.
 
 Args:

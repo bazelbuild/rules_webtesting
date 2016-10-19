@@ -16,8 +16,12 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//web/internal:shared.bzl", "build_runfiles", "get_metadata_files",
-     "merge_metadata_files", "path")
+load(
+    "//web/internal:shared.bzl",
+    "build_runfiles",
+    "get_metadata_files",
+    "merge_metadata_files",
+    "path",)
 
 
 def _web_test_impl(ctx):
@@ -103,12 +107,12 @@ def _generate_default_test(ctx):
 
 
 web_test = rule(
-    implementation=_web_test_impl,
-    test=True,
     attrs={
         "test":
             attr.label(
-                cfg="data", executable=True, mandatory=True),
+                cfg="data",
+                executable=True,
+                mandatory=True,),
         "browser":
             attr.label(
                 cfg="data",
@@ -118,37 +122,40 @@ web_test = rule(
                     "environment",
                     "required_tags",
                     "web_test_metadata",
-                ]),
+                ],),
         "config":
             attr.label(
                 cfg="data",
                 default=Label("//web:default_config"),
-                providers=["web_test_metadata"]),
+                providers=["web_test_metadata"],),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
+                allow_files=True,
+                cfg="data",),
         "merger":
             attr.label(
                 cfg="host",
                 executable=True,
-                default=Label("//go/metadata:merger")),
+                default=Label("//go/metadata:merger"),),
         "launcher":
             attr.label(
                 cfg="data",
                 executable=True,
-                default=Label("//go/launcher:main")),
+                default=Label("//go/launcher:main"),),
         "web_test_template":
             attr.label(
                 allow_files=True,
                 single_file=True,
-                default=Label("//web/internal:web_test.sh.template")),
+                default=Label("//web/internal:web_test.sh.template"),),
         "noop_web_test_template":
             attr.label(
                 allow_files=True,
                 single_file=True,
-                default=Label("//web/internal:noop_web_test.sh.template")),
+                default=Label("//web/internal:noop_web_test.sh.template"),),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},)
+    outputs={"web_test_metadata": "%{name}.gen.json"},
+    test=True,
+    implementation=_web_test_impl,)
 """Runs a provided test against a provided browser configuration.
 
 Args:

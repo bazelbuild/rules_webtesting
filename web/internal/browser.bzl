@@ -48,14 +48,16 @@ def _browser_impl(ctx):
 
 
 browser = rule(
-    implementation=_browser_impl,
     attrs={
         "metadata":
             attr.label(
-                mandatory=True, allow_single_file=True, cfg="data"),
+                mandatory=True,
+                allow_single_file=True,
+                cfg="data",),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
+                allow_files=True,
+                cfg="data",),
         "disabled":
             attr.string(),
         "environment":
@@ -66,9 +68,10 @@ browser = rule(
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger")),
+                default=Label("//go/metadata:merger"),),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},)
+    outputs={"web_test_metadata": "%{name}.gen.json"},
+    implementation=_browser_impl,)
 """Defines a browser configuration for use with web_test.
 
 Args:

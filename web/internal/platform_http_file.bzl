@@ -38,10 +38,10 @@ def _impl(repository_ctx):
 
 
 platform_http_file = repository_rule(
-    implementation=_impl,
     attrs={
         "amd64_url": attr.string(),
         "amd64_sha256": attr.string(),
         "macos_url": attr.string(),
         "macos_sha256": attr.string(),
-    })
+    },
+    implementation=_impl,)
