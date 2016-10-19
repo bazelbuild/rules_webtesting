@@ -27,7 +27,10 @@ load(
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  create_metadata_file(ctx=ctx, output=patch, browser_label=ctx.label)
+  create_metadata_file(
+      ctx=ctx,
+      output=patch,
+      browser_label=ctx.label,)
 
   metadata_files = get_metadata_files(ctx,
                                       ["data"]) + [ctx.file.metadata, patch]
@@ -36,7 +39,7 @@ def _browser_impl(ctx):
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
+      inputs=metadata_files,)
 
   return struct(
       disabled=ctx.attr.disabled,

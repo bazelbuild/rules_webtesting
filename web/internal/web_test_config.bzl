@@ -40,7 +40,7 @@ def _web_test_config_impl(ctx):
         ctx=ctx,
         merger=ctx.executable.merger,
         output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files)
+        inputs=metadata_files,)
   else:
     create_metadata_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
 
@@ -58,7 +58,7 @@ web_test_config = rule(
             attr.label(allow_single_file=True),
         "data":
             attr.label_list(
-                allow_files=True,
+                llow_files=True,
                 cfg="data",),
         "merger":
             attr.label(

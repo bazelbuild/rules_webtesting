@@ -41,7 +41,8 @@ Why was this browser disabled?
 
   if missing_tags:
     fail("Browser {browser} requires tags {tags} that are missing.".format(
-        browser=ctx.attr.browser.label, tags=missing_tags))
+        browser=ctx.attr.browser.label,
+        tags=missing_tags,))
 
   return _generate_default_test(ctx)
 
@@ -61,7 +62,9 @@ def _generate_noop_test(ctx, reason, status=0):
   else:
     success = "passes"
 
-  ctx.file_action(content="", output=ctx.outputs.web_test_metadata)
+  ctx.file_action(
+      content="",
+      output=ctx.outputs.web_test_metadata,)
 
   ctx.template_action(
       template=ctx.file.noop_web_test_template,
@@ -71,7 +74,7 @@ def _generate_noop_test(ctx, reason, status=0):
           "%TEMPLATED_reason%": reason,
           "%TEMPLATED_status%": str(status),
       },
-      executable=True)
+      executable=True,)
 
   return struct()
 
@@ -98,12 +101,13 @@ def _generate_default_test(ctx):
           "%TEMPLATED_metadata%": path(ctx, ctx.outputs.web_test_metadata),
           "%TEMPLATED_test%": path(ctx, ctx.executable.test),
       },
-      executable=True)
+      executable=True,)
 
-  return struct(runfiles=build_runfiles(
-      ctx,
-      files=[ctx.outputs.web_test_metadata],
-      deps_attrs=["launcher", "browser", "config", "test"]))
+  return struct(
+      runfiles=build_runfiles(
+          ctx,
+          files=[ctx.outputs.web_test_metadata],
+          deps_attrs=["launcher", "browser", "config", "test"],),)
 
 
 web_test = rule(
@@ -153,7 +157,7 @@ web_test = rule(
                 single_file=True,
                 default=Label("//web/internal:noop_web_test.sh.template"),),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
+    outputs={"web_test_metadata": "%{name}.gen.json",},
     test=True,
     implementation=_web_test_impl,)
 """Runs a provided test against a provided browser configuration.
