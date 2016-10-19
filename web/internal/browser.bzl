@@ -27,10 +27,7 @@ load(
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  create_metadata_file(
-      ctx=ctx,
-      output=patch,
-      browser_label=ctx.label,)
+  create_metadata_file(ctx=ctx, output=patch, browser_label=ctx.label)
 
   metadata_files = get_metadata_files(ctx,
                                       ["data"]) + [ctx.file.metadata, patch]
@@ -39,7 +36,7 @@ def _browser_impl(ctx):
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files,)
+      inputs=metadata_files)
 
   return struct(
       disabled=ctx.attr.disabled,
@@ -47,34 +44,31 @@ def _browser_impl(ctx):
       required_tags=ctx.attr.required_tags,
       runfiles=build_runfiles(
           ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata,)
+      web_test_metadata=ctx.outputs.web_test_metadata)
 
 
 browser = rule(
     attrs={
         "metadata":
             attr.label(
-                mandatory=True,
-                allow_single_file=True,
-                cfg="data",),
+                mandatory=True, allow_single_file=True, cfg="data"),
         "data":
             attr.label_list(
-                allow_files=True,
-                cfg="data",),
+                allow_files=True, cfg="data"),
         "disabled":
             attr.string(),
         "environment":
-            attr.string_dict(default={}),
+            attr.string_dict(),
         "required_tags":
-            attr.string_list(default=[]),
+            attr.string_list(),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger"),),
+                default=Label("//go/metadata:merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_browser_impl,)
+    implementation=_browser_impl)
 """Defines a browser configuration for use with web_test.
 
 Args:

@@ -40,14 +40,14 @@ def _web_test_config_impl(ctx):
         ctx=ctx,
         merger=ctx.executable.merger,
         output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files,)
+        inputs=metadata_files)
   else:
     create_metadata_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
 
   return struct(
       runfiles=build_runfiles(
           ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata,)
+      web_test_metadata=ctx.outputs.web_test_metadata)
 
 
 web_test_config = rule(
@@ -58,16 +58,15 @@ web_test_config = rule(
             attr.label(allow_single_file=True),
         "data":
             attr.label_list(
-                llow_files=True,
-                cfg="data",),
+                llow_files=True, cfg="data"),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger"),),
+                default=Label("//go/metadata:merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_web_test_config_impl,)
+    implementation=_web_test_config_impl)
 """A browser-independent configuration that can be used across multiple web_tests.
 
 Args:

@@ -41,8 +41,7 @@ Why was this browser disabled?
 
   if missing_tags:
     fail("Browser {browser} requires tags {tags} that are missing.".format(
-        browser=ctx.attr.browser.label,
-        tags=missing_tags,))
+        browser=ctx.attr.browser.label, tags=missing_tags))
 
   return _generate_default_test(ctx)
 
@@ -74,7 +73,7 @@ def _generate_noop_test(ctx, reason, status=0):
           "%TEMPLATED_reason%": reason,
           "%TEMPLATED_status%": str(status),
       },
-      executable=True,)
+      executable=True)
 
   return struct()
 
@@ -86,7 +85,7 @@ def _generate_default_test(ctx):
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files,)
+      inputs=metadata_files)
 
   env_vars = ""
   for k, v in ctx.attr.browser.environment.items():
@@ -101,22 +100,19 @@ def _generate_default_test(ctx):
           "%TEMPLATED_metadata%": path(ctx, ctx.outputs.web_test_metadata),
           "%TEMPLATED_test%": path(ctx, ctx.executable.test),
       },
-      executable=True,)
+      executable=True)
 
-  return struct(
-      runfiles=build_runfiles(
-          ctx,
-          files=[ctx.outputs.web_test_metadata],
-          deps_attrs=["launcher", "browser", "config", "test"],),)
+  return struct(runfiles=build_runfiles(
+      ctx,
+      files=[ctx.outputs.web_test_metadata],
+      deps_attrs=["launcher", "browser", "config", "test"]))
 
 
 web_test = rule(
     attrs={
         "test":
             attr.label(
-                cfg="data",
-                executable=True,
-                mandatory=True,),
+                cfg="data", executable=True, mandatory=True),
         "browser":
             attr.label(
                 cfg="data",
@@ -126,40 +122,39 @@ web_test = rule(
                     "environment",
                     "required_tags",
                     "web_test_metadata",
-                ],),
+                ]),
         "config":
             attr.label(
                 cfg="data",
                 default=Label("//web:default_config"),
-                providers=["web_test_metadata"],),
+                providers=["web_test_metadata"]),
         "data":
             attr.label_list(
-                allow_files=True,
-                cfg="data",),
+                allow_files=True, cfg="data"),
         "merger":
             attr.label(
                 cfg="host",
                 executable=True,
-                default=Label("//go/metadata:merger"),),
+                default=Label("//go/metadata:merger")),
         "launcher":
             attr.label(
                 cfg="data",
                 executable=True,
-                default=Label("//go/launcher:main"),),
+                default=Label("//go/launcher:main")),
         "web_test_template":
             attr.label(
                 allow_files=True,
                 single_file=True,
-                default=Label("//web/internal:web_test.sh.template"),),
+                default=Label("//web/internal:web_test.sh.template")),
         "noop_web_test_template":
             attr.label(
                 allow_files=True,
                 single_file=True,
-                default=Label("//web/internal:noop_web_test.sh.template"),),
+                default=Label("//web/internal:noop_web_test.sh.template")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json",},
     test=True,
-    implementation=_web_test_impl,)
+    implementation=_web_test_impl)
 """Runs a provided test against a provided browser configuration.
 
 Args:

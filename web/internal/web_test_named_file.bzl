@@ -42,14 +42,12 @@ def _web_test_named_file_impl(ctx):
         ctx=ctx,
         merger=ctx.executable.merger,
         output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files,)
+        inputs=metadata_files)
 
   return struct(
       runfiles=build_runfiles(
-          ctx=ctx,
-          files=[ctx.outputs.web_test_metadata],
-          deps_attrs=["file"],),
-      web_test_metadata=ctx.outputs.web_test_metadata,)
+          ctx=ctx, files=[ctx.outputs.web_test_metadata], deps_attrs=["file"]),
+      web_test_metadata=ctx.outputs.web_test_metadata)
 
 
 web_test_named_file = rule(
@@ -58,21 +56,18 @@ web_test_named_file = rule(
             attr.string(),
         "file":
             attr.label(
-                allow_single_file=True,
-                cfg="data",
-                mandatory=True,),
+                allow_single_file=True, cfg="data", mandatory=True),
         "data":
             attr.label_list(
-                allow_files=True,
-                cfg="data",),
+                allow_files=True, cfg="data"),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger"),),
+                default=Label("//go/metadata:merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_web_test_named_file_impl,)
+    implementation=_web_test_named_file_impl)
 """Defines a executable that can be located by name.
 
 Args:

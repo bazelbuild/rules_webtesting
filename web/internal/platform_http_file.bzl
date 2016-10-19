@@ -44,4 +44,4 @@ platform_http_file = repository_rule(
         "macos_url": attr.string(),
         "macos_sha256": attr.string(),
     },
-    implementation=_impl,)
+    implementation=_impl)
