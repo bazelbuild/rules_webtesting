@@ -32,10 +32,7 @@ config_setting(
 
 web_test_archive(
     name = "chromedriver",
-    archive = select({
-        ":linux": "@org_chromium_chromedriver_linux//file",
-        ":mac": "@org_chromium_chromedriver_mac//file",
-    }),
+    archive = "@org_chromium_chromedriver//file",
     named_files = {
         "CHROMEDRIVER": "chromedriver",
     },
@@ -43,10 +40,7 @@ web_test_archive(
 
 web_test_archive(
     name = "chrome",
-    archive = select({
-        ":linux": "@com_google_chrome_linux//file",
-        ":mac": "@com_google_chrome_mac//file",
-    }),
+    archive = "@com_google_chrome//file",
     named_files = select({
         ":linux": {
             "CHROME": "chrome-precise64/chrome",
@@ -59,10 +53,7 @@ web_test_archive(
 
 web_test_archive(
     name = "firefox",
-    archive = select({
-        ":linux": "@org_mozilla_firefox_linux//file",
-        ":mac": "@org_mozilla_firefox_mac//file",
-    }),
+    archive = "@org_mozilla_firefox//file",
     named_files = select({
         ":linux": {
             "FIREFOX": "firefox-sdk/bin/firefox",
@@ -75,10 +66,7 @@ web_test_archive(
 
 web_test_archive(
     name = "geckodriver",
-    archive = select({
-        ":linux": "@org_mozilla_geckodriver_linux//file",
-        ":mac": "@org_mozilla_geckodriver_mac//file",
-    }),
+    archive = "@org_mozilla_geckodriver//file",
     named_files = {
         "GECKODRIVER": "geckodriver",
     },
@@ -86,10 +74,7 @@ web_test_archive(
 
 web_test_archive(
     name = "phantomjs_bin",
-    archive = select({
-        ":linux": "@org_phantomjs_linux//file",
-        ":mac": "@org_phantomjs_mac//file",
-    }),
+    archive = "@org_phantomjs//file",
     named_files = select({
         ":linux": {
             "PHANTOMJS": "phantomjs-2.1.1-linux-x86_64/bin/phantomjs",
