@@ -15,8 +15,6 @@ visibility = ["//go:go_packages"]  # Copyright 2016 Google Inc.
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_binary(

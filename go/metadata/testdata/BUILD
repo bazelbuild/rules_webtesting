@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
 exports_files(
     glob(["**"]),
     visibility = ["//go/metadata:__pkg__"],

@@ -14,13 +14,12 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load(":web.bzl", "web_test_config")
 
 web_test_config(
     name = "default_config",
     visibility = ["//visibility:public"],
+    testonly = 0,
 )
 
 exports_files(

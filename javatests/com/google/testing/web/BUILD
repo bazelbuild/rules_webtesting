@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("//web:web.bzl", "web_test", "web_test_suite")
 
 java_test(

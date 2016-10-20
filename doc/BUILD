@@ -1,5 +1,3 @@
-package(default_testonly = True)
-
 load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_doc")
 
 skylark_doc(

@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
 load("//web:web.bzl", "web_test_named_executable")
 
 java_binary(

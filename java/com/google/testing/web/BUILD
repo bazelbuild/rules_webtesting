@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
 java_library(
     name = "web",
     srcs = glob(["*.java"]),

@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
 load("//web:web.bzl", "web_test", "web_test_suite")
 
 py_library(

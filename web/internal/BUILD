@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 exports_files(
     glob(["*.bzl"]),
     visibility = [

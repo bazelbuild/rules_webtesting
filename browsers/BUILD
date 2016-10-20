@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
 load("//web:web.bzl", "browser", "web_test_archive", "web_test_named_executable")
 
 config_setting(
