@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-workspace(name = "io_bazel_rules_web")
+workspace(name = "io_bazel_rules_webtesting")
 
 http_archive(
     name = "io_bazel_rules_go",

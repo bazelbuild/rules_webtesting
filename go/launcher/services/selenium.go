@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/bazelbuild/rules_web/go/launcher/errors"
-	"github.com/bazelbuild/rules_web/go/launcher/services/service"
-	"github.com/bazelbuild/rules_web/go/metadata/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/services/service"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
 func NewSelenium(m *metadata.Metadata, xvfb bool) (*service.Server, error) {

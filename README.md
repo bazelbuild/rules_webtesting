@@ -18,8 +18,8 @@ load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
 go_repositories()
 
 git_repository(
-    name = "io_bazel_rules_web",
-    remote = "https://github.com/bazelbuild/rules_web.git",
+    name = "io_bazel_rules_webtesting",
+    remote = "https://github.com/bazelbuild/rules_webtesting.git",
     tag = "0.0.1",
 )
 
@@ -90,7 +90,7 @@ import (
     "testing"
 
     "github.com/tebeka/selenium/selenium"
-    "github.com/bazelbuild/rules_web/go/browser"
+    "github.com/bazelbuild/rules_webtesting/go/browser"
 )
 
 func TestWebApp(t *testing.T) {
@@ -127,7 +127,7 @@ go_test(
 web_test_suite(
     name = "browser_test",
     browsers = [
-        "@io_bazel_rules_web//browsers:chrome-native",
+        "@io_bazel_rules_webtesting//browsers:chrome-native",
     ],
     local = 1,
     test = ":browser_test_wrapped",

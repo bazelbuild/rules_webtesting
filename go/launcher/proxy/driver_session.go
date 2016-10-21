@@ -27,7 +27,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bazelbuild/rules_web/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
 	"github.com/gorilla/mux/mux"
 )
 

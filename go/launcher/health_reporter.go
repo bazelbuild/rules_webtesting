@@ -23,7 +23,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/bazelbuild/rules_web/go/launcher/errors"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 )
 
 const (

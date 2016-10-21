@@ -26,11 +26,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bazelbuild/rules_web/go/launcher/environments/environment"
-	"github.com/bazelbuild/rules_web/go/launcher/errors"
-	"github.com/bazelbuild/rules_web/go/launcher/healthreporter"
-	"github.com/bazelbuild/rules_web/go/launcher/proxy/webdriver"
-	"github.com/bazelbuild/rules_web/go/util/httphelper"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/util/httphelper"
 	"github.com/gorilla/mux/mux"
 )
 
