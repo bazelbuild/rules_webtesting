@@ -109,7 +109,7 @@ import (
 )
 
 func TestWebApp(t *testing.T) {
-    wd, err := NewSession(selenium.Capabilities{})
+    wd, err := browser.NewSession(selenium.Capabilities{})
     if err != nil {
         t.Fatal(err)
     }
