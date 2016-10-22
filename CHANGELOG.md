@@ -1,7 +1,9 @@
 # Change Log
 
-## Version Next
+## Version 0.0.4
 
+*   Added browser_repositories rule so users can get the browsers defined
+    //browsers/... working for experimenting with rules_webtesting.
 *   Rename to rules_webtesting.
 *   No longer use bind for configuraion. Instead make the rule attributes that
     depended on these bind statements public.
