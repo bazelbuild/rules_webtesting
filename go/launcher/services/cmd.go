@@ -25,8 +25,8 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/bazelbuild/rules_web/go/launcher/cmdhelper"
-	"github.com/bazelbuild/rules_web/go/launcher/errors"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 )
 
 // Cmd is a service that starts an external executable.

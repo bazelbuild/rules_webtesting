@@ -25,10 +25,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bazelbuild/rules_web/go/launcher/errors"
-	"github.com/bazelbuild/rules_web/go/launcher/healthreporter"
-	"github.com/bazelbuild/rules_web/go/util/httphelper"
-	"github.com/bazelbuild/rules_web/go/util/portpicker"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
+	"github.com/bazelbuild/rules_webtesting/go/util/httphelper"
+	"github.com/bazelbuild/rules_webtesting/go/util/portpicker"
 )
 
 // Server is a service that starts an external server.

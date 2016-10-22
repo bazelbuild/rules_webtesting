@@ -22,11 +22,11 @@ import (
 	"context"
 	"os"
 
-	"github.com/bazelbuild/rules_web/go/launcher/cmdhelper"
-	"github.com/bazelbuild/rules_web/go/launcher/environments/environment"
-	"github.com/bazelbuild/rules_web/go/launcher/services/selenium"
-	"github.com/bazelbuild/rules_web/go/launcher/services/service"
-	"github.com/bazelbuild/rules_web/go/metadata/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/services/selenium"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/services/service"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
 const (

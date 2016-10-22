@@ -29,8 +29,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bazelbuild/rules_web/go/metadata/capabilities"
-	"github.com/bazelbuild/rules_web/go/util/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
+	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
 )
 
 // Values for Metadata.RecordVideo.

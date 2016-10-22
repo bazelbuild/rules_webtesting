@@ -26,13 +26,13 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/bazelbuild/rules_web/go/launcher/cmdhelper"
-	"github.com/bazelbuild/rules_web/go/launcher/environments/environment"
-	"github.com/bazelbuild/rules_web/go/launcher/environments/external"
-	"github.com/bazelbuild/rules_web/go/launcher/environments/native"
-	"github.com/bazelbuild/rules_web/go/launcher/proxy/proxy"
-	"github.com/bazelbuild/rules_web/go/metadata/metadata"
-	"github.com/bazelbuild/rules_web/go/util/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/external"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/native"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/proxy"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
 )
 
 var (

@@ -2,6 +2,7 @@
 
 ## Version Next
 
+*   Rename to rules_webtesting.
 *   No longer use bind for configuraion. Instead make the rule attributes that
     depended on these bind statements public.
 *   Remove usages of git_repository.

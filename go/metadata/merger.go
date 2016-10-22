@@ -22,7 +22,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/bazelbuild/rules_web/go/metadata/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
 var output = flag.String("output", "", "output file for generated metadata")
