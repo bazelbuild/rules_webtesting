@@ -10,7 +10,7 @@ Add the following to your WORKSPACE file:
 git_repository(
     name = "io_bazel_rules_go",
     remote = "https://github.com/bazelbuild/rules_go.git",
-    tag = "0.1.0",
+    tag = "0.2.0",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
@@ -20,15 +20,28 @@ go_repositories()
 git_repository(
     name = "io_bazel_rules_webtesting",
     remote = "https://github.com/bazelbuild/rules_webtesting.git",
-    tag = "0.0.1",
+    tag = "0.0.4",
 )
 
-load("@io_bazel_rules_web//web:repositories.bzl", "web_test_repositories")
+load("@io_bazel_rules_web//web:repositories.bzl", 
+    "browser_respositories",
+    "web_test_repositories")
 
 web_test_repositories(
     # specify test languages your project is using.
     go = True,
     java = True,
+    python = True,
+)
+
+# Load repositories for example browser definitions.
+# You should create your own browser definitions and link
+# to the specific browser versions you are interested in
+# testing with.
+browser_respositories(
+    chrome = True,
+    firefox = True,
+    phantomjs = True,
 )
 ```
 
@@ -48,6 +61,8 @@ working:
     (only if java = True)
 *   [com_github_tebeka_selenium](https://github.com/tebeka/selenium) (only if
     go = True)
+*   [org_seleniumhq_py](http://www.seleniumhq.org/download/) -- Python client
+    binding (only if python = True)
 
 ## Write your tests
 
@@ -107,26 +122,49 @@ func TestWebApp(t *testing.T) {
 }
 ```
 
+Example Test (Python):
+
+```python
+import unittest
+from testing.web import browser
+
+
+class BrowserTest(unittest.TestCase):
+  def setUp(self):
+    self.driver = browser.Browser().new_session()
+
+  def tearDown(self):
+    try:
+      self.driver.quit()
+    finally:
+      self.driver = None
+
+  # Your tests here
+
+if __name__ == "__main__":
+  unittest.main()
+```
+
 In your BUILD files, create your test target as normal, but tag it "manual".
 Then create a web_test_suite that depends on your test target:
 
 ```bzl
-load("@io_bazel_rules_go//go:def.bzl", "go_test")
-load("@io_bazel_rules_web//web:web.bzl", "web_test_suite")
+load("@io_bazel_rules_webtesting//web:web.bzl", "web_test_suite")
 
-go_test(
+py_test(
     name = "browser_test_wrapped",
-    srcs = ["browser_test.go"],
+    srcs = ["browser_test.py"],
     tags = ["manual"],
     deps = [
-        "@com_github_tebeka_selenium//:selenium",
-        "@io_bazel_rules_web//go:browser",
+        "@io_bazel_rules_webtesting//testing/web",
     ],
 )
 
 web_test_suite(
     name = "browser_test",
     browsers = [
+        # For experimental purposes only. Eventually you should
+        # create your own browser definitions.
         "@io_bazel_rules_webtesting//browsers:chrome-native",
     ],
     local = 1,
