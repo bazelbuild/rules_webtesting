@@ -1,0 +1,11 @@
+
+{
+  "message": "@pullRequester, thanks! @reviewers, please review this.",
+  "fallbackNotifyForPaths": [
+    {
+      "name": "DrMarcII", // The user's Github username
+      "files": ["**/*"], // The array of file globs associated with the user
+    }
+  ], 
+  "findPotentialReviewers": true,
+}
