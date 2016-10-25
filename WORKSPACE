@@ -27,8 +27,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
 
 go_repositories()
 
-load("//web:repositories.bzl", "browser_repositories", 
-    "web_test_repositories")
+load(
+    "//web:repositories.bzl",
+    "browser_repositories",
+    "web_test_repositories",
+)
 
 web_test_repositories(
     go = True,
@@ -38,8 +41,20 @@ web_test_repositories(
 
 browser_repositories(
     chrome = True,
-    firefox = True, 
+    firefox = True,
     phantomjs = True,
+)
+
+http_file(
+    name = "fonts_noto_hinted_deb",
+    sha256 = "25b362c9437a7859ce034f22d94b698e8ed25007b443e5a26228ed5b3d2d32d4",
+    url = "http://bazel-mirror.storage.googleapis.com/http.us.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-hinted_20160116-1_all.deb",
+)
+
+http_file(
+    name = "fonts_noto_mono_deb",
+    sha256 = "74b457715f275ed893998a70d6bc955f67da6d36b36b422dbeeb045160edacb6",
+    url = "http://bazel-mirror.storage.googleapis.com/http.us.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-mono_20160116-1_all.deb",
 )
 
 maven_jar(

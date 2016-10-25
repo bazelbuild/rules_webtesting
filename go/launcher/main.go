@@ -27,6 +27,7 @@ import (
 	"syscall"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/chrome"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/external"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/native"
@@ -137,6 +138,8 @@ func buildEnv(m *metadata.Metadata) (environment.Env, error) {
 		return external.NewEnv(m)
 	case "native":
 		return native.NewEnv(m)
+	case "chrome":
+		return chrome.NewEnv(m)
 	}
 	return nil, fmt.Errorf("unknown environment: %s", m.Environment)
 }

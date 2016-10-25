@@ -1,10 +1,7 @@
 {
-    "environment": "native",
-    "capabilities": {
-        "browserName": "chrome",
-        "chromeOptions": {
-            "args": ["--no-sandbox"],
-            "binary": "%CHROME%"
-        }
+  "environment" : "chrome", "capabilities" : {
+    "browserName" : "chrome", "chromeOptions" : {
+      "args" : ["--no-sandbox"], "binary" : "%CHROME%"
     }
+  }
 }

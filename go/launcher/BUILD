@@ -25,6 +25,7 @@ go_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":cmdhelper",
+        "//go/launcher/environments:chrome",
         "//go/launcher/environments:environment",
         "//go/launcher/environments:external",
         "//go/launcher/environments:native",

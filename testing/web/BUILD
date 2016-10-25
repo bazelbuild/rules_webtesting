@@ -62,9 +62,6 @@ web_test_suite(
                 "requires-network",
             ],
         },
-        "//browsers:chrome-native": {
-            "local": True,
-        },
         "//browsers:firefox-native": {
             "local": True,
         },
@@ -98,7 +95,6 @@ web_test(
         "//browsers:mac": "//browsers:chrome-native",
         "//browsers:linux": "//browsers:disabled",
     }),
-    local = True,
     test = ":browser_test_wrapped",
 )
 
