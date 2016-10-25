@@ -2,8 +2,11 @@
 
 ## Version Next
 
-*   Add Chrome environment that uses chromedriver directly instead of Selenium
-    Server.
+*   Add Chrome environment that uses ChromeDriver directly instead of Selenium
+    Server Standalone.
+*   Add Firefox environment that uses GeckoDriver directly instead of Selenium
+    Server Standalone.
+*   Support using WebDriver remote ends other than Selenium Server Standalone.
 
 ## Version 0.0.4
 
