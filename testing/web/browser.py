@@ -33,7 +33,7 @@ class Browser(object):
   """Browser provisioning and information API."""
 
   def __init__(self):
-    self._address = os.environ["REMOTE_WEBDRIVER_SERVER"]
+    self._address = os.environ['REMOTE_WEBDRIVER_SERVER']
 
   def new_session(self, capabilities=None):
     """Provisions a new WebDriver session.
@@ -55,4 +55,4 @@ class Browser(object):
     # timeout is not used.
     remote_connection.RemoteConnection.set_timeout(450)
     return webdriver.WebDriver(
-        "http://%s/wd/hub" % self._address, desired_capabilities=desired)
+        self._address.rstrip('/'), desired_capabilities=desired)

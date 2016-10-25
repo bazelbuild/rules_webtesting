@@ -25,7 +25,6 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/services/selenium"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/services/service"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
@@ -37,7 +36,7 @@ const (
 
 type native struct {
 	*environment.Base
-	selenium *service.Server
+	selenium *selenium.Selenium
 }
 
 // NewEnv creates a new environment for launching a browser locally using
@@ -73,7 +72,7 @@ func (n *native) TearDown(ctx context.Context) error {
 }
 
 func (n *native) WDAddress(context.Context) string {
-	return n.selenium.Address
+	return n.selenium.Address()
 }
 
 func (n *native) Healthy(ctx context.Context) error {

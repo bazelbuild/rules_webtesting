@@ -129,7 +129,7 @@ func (h *hub) createSession(ctx context.Context, w http.ResponseWriter, r *http.
 
 	log.Printf("Caps: %+v", desired)
 	// TODO(fisherii) parameterize attempts based on browser metadata
-	driver, err := webdriver.CreateSession(ctx, "http://"+h.env.WDAddress(ctx)+"/wd/hub/", 3, desired)
+	driver, err := webdriver.CreateSession(ctx, h.env.WDAddress(ctx), 3, desired)
 	if err != nil {
 		if err2 := h.env.StopSession(ctx, id); err2 != nil {
 			log.Printf("error stopping session after failing to launch webdriver: %v", err2)

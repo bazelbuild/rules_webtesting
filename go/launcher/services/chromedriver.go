@@ -18,6 +18,7 @@
 package chromedriver
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
@@ -25,20 +26,31 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
+type ChromeDriver struct {
+	*service.Server
+}
+
 // New creates a new service.Server instance that manages chromedriver.
-func New(m *metadata.Metadata, xvfb bool) (*service.Server, error) {
-	chromedriverPath, err := m.GetFilePath("CHROMEDRIVER")
+func New(m *metadata.Metadata, xvfb bool) (*ChromeDriver, error) {
+	chromeDriverPath, err := m.GetFilePath("CHROMEDRIVER")
 	if err != nil {
 		return nil, errors.New("ChromeDriver", err)
 	}
 
-	return service.NewServer(
+	server, err := service.NewServer(
 		"ChromeDriver",
-		chromedriverPath,
-		"http://%s/wd/hub/status",
+		chromeDriverPath,
+		"http://%s/status",
 		xvfb,
 		60*time.Second,
 		nil,
-		"--port={port}",
-		"--url-base=wd/hub")
+		"--port={port}")
+	if err != nil {
+		return nil, err
+	}
+	return &ChromeDriver{server}, nil
+}
+
+func (c *ChromeDriver) Address() string {
+	return fmt.Sprintf("http://%s/", c.Server.Address())
 }

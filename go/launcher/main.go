@@ -111,7 +111,7 @@ func run() int {
 	testCmd := exec.Command(testExe, flag.Args()...)
 	testCmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), map[string]string{
 		"WEB_TEST_BROWSER_METADATA": *metadataFileFlag,
-		"REMOTE_WEBDRIVER_SERVER":   p.Address,
+		"REMOTE_WEBDRIVER_SERVER":   fmt.Sprintf("http://%s/wd/hub/", p.Address),
 		"TEST_TMPDIR":               tmpDir,
 		"WEB_TEST_TMPDIR":           webTestTmpDir,
 		"WEB_TEST_TARGET":           *test,

@@ -10,7 +10,11 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
-func NewSelenium(m *metadata.Metadata, xvfb bool) (*service.Server, error) {
+type Selenium struct {
+	*service.Server
+}
+
+func NewSelenium(m *metadata.Metadata, xvfb bool) (*Selenium, error) {
 	seleniumPath, err := m.GetFilePath("SELENIUM_SERVER")
 	if err != nil {
 		return nil, errors.New("SeleniumServer", err)
@@ -31,11 +35,19 @@ func NewSelenium(m *metadata.Metadata, xvfb bool) (*service.Server, error) {
 		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.firefox.bin=%s", firefoxPath))
 	}
 	args = append(args, "-port", "{port}")
-	return service.NewServer(
+	server, err := service.NewServer(
 		"SeleniumServer",
 		seleniumPath,
 		"http://%s/wd/hub/status",
 		xvfb,
 		60*time.Second,
 		nil, args...)
+	if err != nil {
+		return nil, err
+	}
+	return &Selenium{server}, nil
+}
+
+func (s *Selenium) Address() string {
+	return fmt.Sprintf("http://%s/wd/hub/", s.Server.Address())
 }

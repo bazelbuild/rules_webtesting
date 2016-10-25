@@ -45,14 +45,18 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public class Browser {
 
-  @Nullable private final String address;
+  @Nullable private final URL url;
 
   public Browser() {
     this(System.getenv("REMOTE_WEBDRIVER_SERVER"));
   }
 
   private Browser(String address) {
-    this.address = address;
+    try {
+      this.url = new URL(address);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /** Provisions and returns a new default {@link WebDriver} session. */
@@ -67,16 +71,8 @@ public class Browser {
    */
   public WebDriver newSession(Capabilities capabilities) {
     DesiredCapabilities desired = new DesiredCapabilities(capabilities);
-    WebDriver driver = new Augmenter().augment(new RemoteWebDriver(constructUrl(address), desired));
+    WebDriver driver = new Augmenter().augment(new RemoteWebDriver(url, desired));
 
     return driver;
-  }
-
-  private static URL constructUrl(String hostAndPort) {
-    try {
-      return new URL(String.format("http://%s/wd/hub", hostAndPort));
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
   }
 }
