@@ -1,5 +1,10 @@
 # Change Log
 
+## Version Next
+
+*   Add Chrome environment that uses chromedriver directly instead of Selenium
+    Server.
+
 ## Version 0.0.4
 
 *   Added browser_repositories rule so users can get the browsers defined

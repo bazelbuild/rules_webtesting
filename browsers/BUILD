@@ -121,15 +121,12 @@ browser(
     data = [
         ":chrome",
         ":chromedriver",
-        "//java:SELENIUM_SERVER",
     ],
     environment = select({
         ":linux": None,
         ":mac": {"DISABLE_X_DISPLAY": "1"},
     }),
     metadata = "chrome-native.json",
-    # if not tagged local, then bazel does not exit cleanly
-    required_tags = ["local"],
     visibility = ["//visibility:public"],
 )
 

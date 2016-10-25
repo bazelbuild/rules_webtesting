@@ -53,3 +53,16 @@ go_library(
         "//go/metadata",
     ],
 )
+
+go_library(
+    name = "chrome",
+    srcs = ["chrome.go"],
+    visibility = ["//go/launcher:__subpackages__"],
+    deps = [
+        ":environment",
+        "//go/launcher:cmdhelper",
+        "//go/launcher/services:chromedriver",
+        "//go/launcher/services:service",
+        "//go/metadata",
+    ],
+)
