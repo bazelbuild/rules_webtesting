@@ -56,3 +56,14 @@ go_library(
         "//go/metadata",
     ],
 )
+
+go_library(
+    name = "geckodriver",
+    srcs = ["geckodriver.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":service",
+        "//go/launcher:errors",
+        "//go/metadata",
+    ],
+)

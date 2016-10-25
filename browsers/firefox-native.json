@@ -1,5 +1,5 @@
 {
-    "environment": "native",
+    "environment": "firefox",
     "capabilities": {
         "browserName": "firefox",
         "firefox_binary": "%FIREFOX%",

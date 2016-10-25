@@ -93,7 +93,20 @@ func (s *Server) Healthy(ctx context.Context) error {
 	if err := s.Cmd.Healthy(ctx); err != nil {
 		return err
 	}
+	if s.healthPattern == "" {
+		dialer := &net.Dialer{}
+		c, err := dialer.DialContext(ctx, "tcp", s.address)
+		if err != nil {
+			return err
+		}
 
+		switch t := c.(type) {
+		case *net.TCPConn:
+			t.Close()
+		}
+
+		return nil
+	}
 	url := fmt.Sprintf(s.healthPattern, s.address)
 	resp, err := httphelper.Get(ctx, url)
 	if err != nil {

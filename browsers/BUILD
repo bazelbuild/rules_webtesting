@@ -104,7 +104,6 @@ browser(
     data = [
         ":firefox",
         ":geckodriver",
-        "//java:SELENIUM_SERVER",
     ],
     environment = select({
         ":linux": None,
