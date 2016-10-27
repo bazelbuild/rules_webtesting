@@ -88,7 +88,7 @@ func (h *hub) routeToSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *hub) createSession(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	log.Printf("Creating session: %+v\n\n", r)
+	log.Print("Creating session\n\n")
 	var desired map[string]interface{}
 
 	if err := h.waitForHealthyEnv(ctx); err != nil {
