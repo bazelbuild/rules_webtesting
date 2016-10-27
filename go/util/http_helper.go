@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -30,7 +29,6 @@ var client = &http.Client{}
 
 // Forward forwards r to host and writes the response from host to w.
 func Forward(ctx context.Context, host string, w http.ResponseWriter, r *http.Request) error {
-	log.Printf("MRF: %+v", r)
 	url, err := constructURL(host, r.URL.Path, "/wd/hub/")
 	if err != nil {
 		return err
