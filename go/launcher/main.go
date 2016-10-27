@@ -30,6 +30,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/chrome"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/external"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/firefox"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/native"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
@@ -140,6 +141,8 @@ func buildEnv(m *metadata.Metadata) (environment.Env, error) {
 		return native.NewEnv(m)
 	case "chrome":
 		return chrome.NewEnv(m)
+	case "firefox":
+		return firefox.NewEnv(m)
 	}
 	return nil, fmt.Errorf("unknown environment: %s", m.Environment)
 }

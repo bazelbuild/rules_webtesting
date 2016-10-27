@@ -66,3 +66,16 @@ go_library(
         "//go/metadata",
     ],
 )
+
+go_library(
+    name = "firefox",
+    srcs = ["firefox.go"],
+    visibility = ["//go/launcher:__subpackages__"],
+    deps = [
+        ":environment",
+        "//go/launcher:cmdhelper",
+        "//go/launcher/services:geckodriver",
+        "//go/launcher/services:service",
+        "//go/metadata",
+    ],
+)

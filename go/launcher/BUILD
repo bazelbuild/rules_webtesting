@@ -28,6 +28,7 @@ go_binary(
         "//go/launcher/environments:chrome",
         "//go/launcher/environments:environment",
         "//go/launcher/environments:external",
+        "//go/launcher/environments:firefox",
         "//go/launcher/environments:native",
         "//go/launcher/proxy",
         "//go/metadata",
