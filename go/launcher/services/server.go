@@ -34,7 +34,7 @@ import (
 // Server is a service that starts an external server.
 type Server struct {
 	*Cmd
-	Address       string
+	address       string
 	port          int
 	healthPattern string
 	timeout       time.Duration
@@ -58,7 +58,7 @@ func NewServer(name, exe, healthPattern string, xvfb bool, timeout time.Duration
 	}
 	return &Server{
 		Cmd:           cmd,
-		Address:       net.JoinHostPort("localhost", strconv.Itoa(port)),
+		address:       net.JoinHostPort("localhost", strconv.Itoa(port)),
 		port:          port,
 		healthPattern: healthPattern,
 		timeout:       timeout,
@@ -94,7 +94,7 @@ func (s *Server) Healthy(ctx context.Context) error {
 		return err
 	}
 
-	url := fmt.Sprintf(s.healthPattern, s.Address)
+	url := fmt.Sprintf(s.healthPattern, s.address)
 	resp, err := httphelper.Get(ctx, url)
 	if err != nil {
 		return errors.New(s.Name(), fmt.Errorf("error getting %s: %v", url, err))
@@ -109,4 +109,8 @@ func (s *Server) Healthy(ctx context.Context) error {
 // Port returns the port this server is running on as a string.
 func (s *Server) Port() string {
 	return fmt.Sprintf("%d", s.port)
+}
+
+func (s *Server) Address() string {
+	return s.address
 }

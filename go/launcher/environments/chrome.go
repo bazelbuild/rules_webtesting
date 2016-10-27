@@ -25,7 +25,6 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/services/chromedriver"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/services/service"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
@@ -37,7 +36,7 @@ const (
 
 type chrome struct {
 	*environment.Base
-	chromedriver *service.Server
+	chromedriver *chromedriver.ChromeDriver
 }
 
 // NewEnv creates a new environment for launching a chrome browser locally using
@@ -73,7 +72,7 @@ func (n *chrome) TearDown(ctx context.Context) error {
 }
 
 func (n *chrome) WDAddress(context.Context) string {
-	return n.chromedriver.Address
+	return n.chromedriver.Address()
 }
 
 func (n *chrome) Healthy(ctx context.Context) error {

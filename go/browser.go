@@ -32,6 +32,7 @@ package browser
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/tebeka/selenium/selenium"
 )
@@ -43,12 +44,10 @@ const (
 
 // NewSession provisions and returns a new WebDriver session.
 func NewSession(capabilities selenium.Capabilities) (selenium.WebDriver, error) {
-	hostport, ok := os.LookupEnv(webdriverServerEnvVar)
+	address, ok := os.LookupEnv(webdriverServerEnvVar)
 	if !ok {
 		return nil, fmt.Errorf("environment variable %q is not defined, are you using web_test", webdriverServerEnvVar)
 	}
 
-	address := fmt.Sprintf("http://%s/wd/hub", hostport)
-
-	return selenium.NewRemote(capabilities, address)
+	return selenium.NewRemote(capabilities, strings.TrimSuffix(address, "/"))
 }

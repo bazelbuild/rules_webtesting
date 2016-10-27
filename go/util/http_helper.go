@@ -18,18 +18,24 @@ package httphelper
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 var client = &http.Client{}
 
 // Forward forwards r to host and writes the response from host to w.
 func Forward(ctx context.Context, host string, w http.ResponseWriter, r *http.Request) error {
-	url := "http://" + host + r.URL.Path
+	url, err := constructURL(host, r.URL.Path, "/wd/hub/")
+	if err != nil {
+		return err
+	}
 
 	// Construct request based on Method, URL Path, and Body from r
-	request, err := http.NewRequest(r.Method, url, r.Body)
+	request, err := http.NewRequest(r.Method, url.String(), r.Body)
 	if err != nil {
 		return err
 	}
@@ -69,4 +75,22 @@ func Get(ctx context.Context, url string) (*http.Response, error) {
 	}
 	request = request.WithContext(ctx)
 	return client.Do(request)
+}
+
+func constructURL(base, path, prefix string) (*url.URL, error) {
+	u, err := url.Parse(base)
+	if err != nil {
+		return nil, err
+	}
+
+	if !strings.HasPrefix(path, prefix) {
+		return nil, fmt.Errorf("%q does not have expected prefix %q", path, prefix)
+	}
+
+	ref, err := url.Parse(strings.TrimPrefix(path, prefix))
+	if err != nil {
+		return nil, err
+	}
+
+	return u.ResolveReference(ref), err
 }
