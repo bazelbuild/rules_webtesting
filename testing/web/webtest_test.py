@@ -11,16 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for google3.testing.web.py.browser.Browser."""
+"""Tests for testing.web.webtest."""
 
 import unittest
-from testing.web import browser
+from testing.web import webtest
 
 
 class BrowserTest(unittest.TestCase):
 
   def testBrowserProvisioningNoCaps(self):
-    driver = browser.Browser().new_session()
+    driver = webtest.new_webdriver_session()
 
     try:
       driver.get("about:")
@@ -33,7 +33,7 @@ class BrowserTest(unittest.TestCase):
         "unexpectedAlertBehaviour": "dismiss",
         "elementScrollBehavior": 1,
     }
-    driver = browser.Browser().new_session(capabilities)
+    driver = webtest.new_webdriver_session(capabilities)
 
     try:
       driver.get("about:")

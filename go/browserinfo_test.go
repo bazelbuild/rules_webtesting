@@ -14,19 +14,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
-package com.google.testing.web;
+package webtest
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.openqa.selenium.WebDriver;
+import "testing"
 
-@RunWith(JUnit4.class)
-public class BrowserTest {
-
-  @Test
-  public void newSession() {
-    WebDriver driver = new Browser().newSession();
-    driver.quit();
-  }
+func TestBrowserInfo(t *testing.T) {
+	i, err := newInfo("io_bazel_rules_webtesting/go/metadata/testdata/all-fields.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if i.BrowserLabel != "//browsers:figaro" {
+		t.Errorf(`got BrowserLabel = %q, expected "//browsers:figaro"`, i.BrowserLabel)
+	}
+	if i.Environment != "chromeos" {
+		t.Errorf(`got Environment = %q, expected "chromeos"`, i.Environment)
+	}
 }

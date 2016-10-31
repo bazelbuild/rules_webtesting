@@ -32,9 +32,9 @@ py_library(
 )
 
 py_test(
-    name = "browser_test_wrapped",
-    srcs = ["browser_test.py"],
-    main = "browser_test.py",
+    name = "webtest_test_wrapped",
+    srcs = ["webtest_test.py"],
+    main = "webtest_test.py",
     srcs_version = "PY2AND3",
     tags = [
         "manual",
@@ -46,7 +46,7 @@ py_test(
 )
 
 web_test_suite(
-    name = "browser_test",
+    name = "webtest_test",
     browser_overrides = {
         "//browsers:chrome-external": {
             "tags": [
@@ -62,6 +62,9 @@ web_test_suite(
                 "requires-network",
             ],
         },
+        "//browsers:chrome-native": {
+            "local": True,
+        },        
         "//browsers:firefox-native": {
             "local": True,
         },
@@ -74,11 +77,11 @@ web_test_suite(
         "//browsers:phantomjs",
     ],
     tags = ["noci"],
-    test = ":browser_test_wrapped",
+    test = ":webtest_test_wrapped",
 )
 
 web_test(
-    name = "browser_test_ci_firefox-native",
+    name = "webtest_test_ci_firefox-native",
     browser = select({
         "//browsers:mac": "//browsers:firefox-native",
         "//browsers:linux": "//browsers:disabled",
@@ -86,24 +89,25 @@ web_test(
     local = True,
     # TODO(DrMarcII): diagnose and fix test timeout
     tags = ["noci"],
-    test = ":browser_test_wrapped",
+    test = ":webtest_test_wrapped",
 )
 
 web_test(
-    name = "browser_test_ci_chrome-native",
+    name = "webtest_test_ci_chrome-native",
     browser = select({
         "//browsers:mac": "//browsers:chrome-native",
         "//browsers:linux": "//browsers:disabled",
     }),
-    test = ":browser_test_wrapped",
+    local = True,
+    test = ":webtest_test_wrapped",
 )
 
 web_test(
-    name = "browser_test_ci_phantomjs",
+    name = "webtest_test_ci_phantomjs",
     browser = select({
         "//browsers:mac": "//browsers:phantomjs",
         "//browsers:linux": "//browsers:disabled",
     }),
     local = True,
-    test = ":browser_test_wrapped",
+    test = ":webtest_test_wrapped",
 )
