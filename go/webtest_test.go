@@ -14,16 +14,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
-package browser
+package webtest
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/tebeka/selenium/selenium"
 )
 
 func TestProvisionBrowser_NoCaps(t *testing.T) {
-	wd, err := NewSession(selenium.Capabilities{})
+	wd, err := NewWebDriverSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +47,7 @@ func TestProvisionBrowser_NoCaps(t *testing.T) {
 }
 
 func TestProvisionBrowser_WithCaps(t *testing.T) {
-	wd, err := NewSession(selenium.Capabilities{
+	wd, err := NewWebDriverSession(selenium.Capabilities{
 		"unexpectedAlertBehaviour": "dismiss",
 		"elementScrollBehavior":    1,
 	})
@@ -68,5 +69,24 @@ func TestProvisionBrowser_WithCaps(t *testing.T) {
 
 	if err := wd.Quit(); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestGetInfo(t *testing.T) {
+	i, err := GetBrowserInfo()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	switch {
+	case strings.Contains(i.BrowserLabel, "chrome"):
+		if i.Environment != "chrome" {
+			t.Errorf(`got Environment = %q, expected "chrome"`, i.Environment)
+		}
+	case strings.Contains(i.BrowserLabel, "firefox"):
+		if i.Environment != "firefox" {
+			t.Errorf(`got Environment = %q, expected "firefox"`, i.Environment)
+		}
 	}
 }

@@ -19,10 +19,10 @@ package(default_testonly = True)
 load("//web:web.bzl", "web_test", "web_test_suite")
 
 java_test(
-    name = "BrowserTest_wrapped",
-    srcs = ["BrowserTest.java"],
+    name = "WebTestTest_wrapped",
+    srcs = ["WebTestTest.java"],
     tags = ["manual"],
-    test_class = "com.google.testing.web.BrowserTest",
+    test_class = "com.google.testing.web.WebTestTest",
     deps = [
         "//java/com/google/testing/web",
         "@com_google_truth_truth//jar",
@@ -32,7 +32,7 @@ java_test(
 )
 
 web_test_suite(
-    name = "BrowserTest",
+    name = "WebTestTest",
     browser_overrides = {
         "//browsers:chrome-external": {
             "tags": [
@@ -48,6 +48,9 @@ web_test_suite(
                 "requires-network",
             ],
         },
+        "//browsers:chrome-native": {
+            "local": True,
+        },
         "//browsers:firefox-native": {
             "local": True,
         },
@@ -60,11 +63,11 @@ web_test_suite(
         "//browsers:phantomjs",
     ],
     tags = ["noci"],
-    test = ":BrowserTest_wrapped",
+    test = ":WebTestTest_wrapped",
 )
 
 web_test(
-    name = "BrowserTest_ci_firefox-native",
+    name = "WebTestTest_ci_firefox-native",
     browser = select({
         "//browsers:mac": "//browsers:firefox-native",
         "//browsers:linux": "//browsers:disabled",
@@ -72,24 +75,25 @@ web_test(
     local = True,
     # TODO(DrMarcII): diagnose and fix test timeout
     tags = ["noci"],
-    test = ":BrowserTest_wrapped",
+    test = ":WebTestTest_wrapped",
 )
 
 web_test(
-    name = "BrowserTest_ci_chrome-native",
+    name = "WebTestTest_ci_chrome-native",
     browser = select({
         "//browsers:mac": "//browsers:chrome-native",
         "//browsers:linux": "//browsers:disabled",
     }),
-    test = ":BrowserTest_wrapped",
+    local = True,
+    test = ":WebTestTest_wrapped",
 )
 
 web_test(
-    name = "BrowserTest_ci_phantomjs",
+    name = "WebTestTest_ci_phantomjs",
     browser = select({
         "//browsers:mac": "//browsers:phantomjs",
         "//browsers:linux": "//browsers:disabled",
     }),
     local = True,
-    test = ":BrowserTest_wrapped",
+    test = ":WebTestTest_wrapped",
 )

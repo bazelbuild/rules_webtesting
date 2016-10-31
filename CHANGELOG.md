@@ -1,7 +1,8 @@
 # Change Log
 
-## Version Next
+## Version 0.1.0
 
+*   Change browser-provisioning API from browser... to webtest....
 *   Add Chrome environment that uses ChromeDriver directly instead of Selenium
     Server Standalone.
 *   Add Firefox environment that uses GeckoDriver directly instead of Selenium

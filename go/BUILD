@@ -20,18 +20,29 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("//web:web.bzl", "web_test", "web_test_suite")
 
 go_library(
-    name = "browser",
-    srcs = ["browser.go"],
+    name = "webtest",
+    srcs = ["webtest.go"],
     visibility = ["//visibility:public"],
     deps = [
+        "//go/metadata",
+        "//go/util:bazel",
         "@com_github_tebeka_selenium//:selenium",
     ],
 )
 
 go_test(
-    name = "browser_test_wrapped",
-    srcs = ["browser_test.go"],
-    library = ":browser",
+    name = "browserinfo_test",
+    srcs = ["browserinfo_test.go"],
+    data = [
+        "//go/metadata/testdata:all-fields.json",
+    ],
+    library = ":webtest",
+)
+
+go_test(
+    name = "webtest_test_wrapped",
+    srcs = ["webtest_test.go"],
+    library = ":webtest",
     tags = ["manual"],
     deps = [
         "@com_github_tebeka_selenium//:selenium",
@@ -39,7 +50,7 @@ go_test(
 )
 
 web_test_suite(
-    name = "browser_test",
+    name = "webtest_test",
     browser_overrides = {
         "//browsers:chrome-external": {
             "tags": [
@@ -55,6 +66,9 @@ web_test_suite(
                 "requires-network",
             ],
         },
+        "//browsers:chrome-native": {
+            "local": True,
+        },
         "//browsers:firefox-native": {
             "local": True,
         },
@@ -67,11 +81,11 @@ web_test_suite(
         "//browsers:phantomjs",
     ],
     tags = ["noci"],
-    test = ":browser_test_wrapped",
+    test = ":webtest_test_wrapped",
 )
 
 web_test(
-    name = "browser_test_ci_firefox-native",
+    name = "webtest_test_ci_firefox-native",
     browser = select({
         "//browsers:mac": "//browsers:firefox-native",
         "//browsers:linux": "//browsers:disabled",
@@ -79,24 +93,25 @@ web_test(
     local = True,
     # TODO(DrMarcII): diagnose and fix test timeout
     tags = ["noci"],
-    test = ":browser_test_wrapped",
+    test = ":webtest_test_wrapped",
 )
 
 web_test(
-    name = "browser_test_ci_chrome-native",
+    name = "webtest_test_ci_chrome-native",
     browser = select({
         "//browsers:mac": "//browsers:chrome-native",
         "//browsers:linux": "//browsers:disabled",
     }),
-    test = ":browser_test_wrapped",
+    local = True,
+    test = ":webtest_test_wrapped",
 )
 
 web_test(
-    name = "browser_test_ci_phantomjs",
+    name = "webtest_test_ci_phantomjs",
     browser = select({
         "//browsers:mac": "//browsers:phantomjs",
         "//browsers:linux": "//browsers:disabled",
     }),
     local = True,
-    test = ":browser_test_wrapped",
+    test = ":webtest_test_wrapped",
 )

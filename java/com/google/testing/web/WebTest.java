@@ -31,7 +31,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * <p>Provision a browser:
  *
  * <pre class="code">
- * WebDriver driver = new Browser().newSession();
+ * import com.google.testing.web.WebTest;
+ *
+ * WebDriver driver = new WebTest().newWebDriverSession();
  * </pre>
  *
  * <p>Provision a browser with capabilities (as an example, profiling):
@@ -40,18 +42,18 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * DesiredCapabilities capabilities = new DesiredCapabilities();
  * capabilities.setCapability(CapabilityType.ENABLE_PROFILING_CAPABILITY, true);
  *
- * WebDriver driver = new Browser().newSession(capabilities);
+ * WebDriver driver = new WebTest().newWebDriverSession(capabilities);
  * </pre>
  */
-public class Browser {
+public class WebTest {
 
   @Nullable private final URL url;
 
-  public Browser() {
+  public WebTest() {
     this(System.getenv("REMOTE_WEBDRIVER_SERVER"));
   }
 
-  private Browser(String address) {
+  private WebTest(String address) {
     try {
       this.url = new URL(address);
     } catch (MalformedURLException e) {
@@ -60,8 +62,8 @@ public class Browser {
   }
 
   /** Provisions and returns a new default {@link WebDriver} session. */
-  public WebDriver newSession() {
-    return newSession(new DesiredCapabilities());
+  public WebDriver newWebDriverSession() {
+    return newWebDriverSession(new DesiredCapabilities());
   }
 
   /**
@@ -69,9 +71,8 @@ public class Browser {
    *
    * @param capabilities Configuration of the browser.
    */
-  public WebDriver newSession(Capabilities capabilities) {
-    DesiredCapabilities desired = new DesiredCapabilities(capabilities);
-    WebDriver driver = new Augmenter().augment(new RemoteWebDriver(url, desired));
+  public WebDriver newWebDriverSession(Capabilities capabilities) {
+    WebDriver driver = new Augmenter().augment(new RemoteWebDriver(url, capabilities));
 
     return driver;
   }
