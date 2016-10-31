@@ -72,7 +72,7 @@ to get an instance of WebDriver.
 Example Test (Java):
 
 ```java
-import com.google.testing.web.Browser;
+import com.google.testing.web.WebTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -83,7 +83,7 @@ public class BrowserTest {
   private WebDriver driver;
 
   @Before public void createDriver() {
-    driver = new Browser().newSession();
+    driver = new WebTest().newWebDriverSession();
   }
 
   @After public void quitDriver() {
@@ -105,11 +105,11 @@ import (
     "testing"
 
     "github.com/tebeka/selenium/selenium"
-    "github.com/bazelbuild/rules_webtesting/go/browser"
+    "github.com/bazelbuild/rules_webtesting/go/webtest"
 )
 
 func TestWebApp(t *testing.T) {
-    wd, err := browser.NewSession(selenium.Capabilities{})
+    wd, err := webtest.NewWebDriverSession(selenium.Capabilities{})
     if err != nil {
         t.Fatal(err)
     }
@@ -126,12 +126,12 @@ Example Test (Python):
 
 ```python
 import unittest
-from testing.web import browser
+from testing.web import webtest
 
 
 class BrowserTest(unittest.TestCase):
   def setUp(self):
-    self.driver = browser.Browser().new_session()
+    self.driver = webtest.new_webdriver_session()
 
   def tearDown(self):
     try:
