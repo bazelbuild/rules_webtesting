@@ -16,7 +16,7 @@
 // Package webtest provides WebDriver provisioning and information APIs.
 //
 // Provision a browser:
-//   import "google3/testing/web/go/webtest"
+//   import "github.com/bazelbuild/rules_webtesting/go/webtest"
 //
 //   driver, err := webtest.NewWebDriverSession(nil)
 //

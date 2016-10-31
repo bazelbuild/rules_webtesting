@@ -14,11 +14,13 @@
 """Browser provisioning and information API.
 
 Provision a browser:
+  from testing.web import webtest
+
   driver = webtest.new_webdriver_session()
 
 Provision a browser with capabilities:
   capabilities = {"webdriver.logging.profiler.enabled": true}
-  driver = browser.Browser().new_webdriver_session(capabilities)
+  driver = webtest.new_webdriver_session(capabilities)
 """
 import os
 

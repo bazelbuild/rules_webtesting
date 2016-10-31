@@ -31,6 +31,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * <p>Provision a browser:
  *
  * <pre class="code">
+ * import com.google.testing.web.WebTest;
+ *
  * WebDriver driver = new WebTest().newWebDriverSession();
  * </pre>
  *
