@@ -64,7 +64,7 @@ web_test_suite(
         },
         "//browsers:chrome-native": {
             "local": True,
-        },        
+        },
         "//browsers:firefox-native": {
             "local": True,
         },

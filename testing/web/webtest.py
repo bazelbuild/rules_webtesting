@@ -25,6 +25,7 @@ import os
 from selenium.webdriver.remote import remote_connection
 from selenium.webdriver.remote import webdriver
 
+
 def new_webdriver_session(capabilities={}):
   """Provisions a new WebDriver session.
 
