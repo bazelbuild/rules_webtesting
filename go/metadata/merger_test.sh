@@ -21,11 +21,11 @@ printenv
 
 error=0
 
-$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out1.json \
+$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/chrome-linux.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/android-browser-gingerbread-nexus-s.json
 
-diff $TEST_TMPDIR/out1.json \
+diff $TEST_TMPDIR/out.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/merger-result.json
 if [ $? != 0 ]; then
 	echo "Merge result didn't match."
