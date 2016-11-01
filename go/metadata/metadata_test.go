@@ -27,27 +27,41 @@ const (
 	chromeLinux    = "io_bazel_rules_webtesting/go/metadata/testdata/chrome-linux.json"
 	androidBrowser = "io_bazel_rules_webtesting/go/metadata/testdata/android-browser-gingerbread-nexus-s.json"
 	fakeBrowser    = "io_bazel_rules_webtesting/go/metadata/testdata/merge-from-file-result.json"
+	badNamedFiles  = "io_bazel_rules_webtesting/go/metadata/testdata/bad-named-files.json"
 )
 
 func TestFromFile(t *testing.T) {
-	f, err := bazel.Runfile(allFields)
-	if err != nil {
-		t.Fatal(err)
-	}
-	file, err := FromFile(f)
-	if err != nil {
-		t.Fatal(err)
-	}
+	t.Run("valid file", func(t *testing.T) {
+		f, err := bazel.Runfile(allFields)
+		if err != nil {
+			t.Fatal(err)
+		}
+		file, err := FromFile(f)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	expected := &Metadata{
-		Environment:  "chromeos",
-		BrowserLabel: "//browsers:figaro",
-		TestLabel:    "//go/launcher:tests",
-	}
+		expected := &Metadata{
+			Environment:  "chromeos",
+			BrowserLabel: "//browsers:figaro",
+			TestLabel:    "//go/launcher:tests",
+		}
 
-	if !Equals(expected, file) {
-		t.Errorf("Got %+v, expected %+v", file, expected)
-	}
+		if !Equals(expected, file) {
+			t.Errorf("Got %+v, expected %+v", file, expected)
+		}
+	})
+
+	t.Run("bad named files", func(t *testing.T) {
+		f, err := bazel.Runfile(badNamedFiles)
+		if err != nil {
+			t.Fatal(err)
+		}
+		d, err := FromFile(f)
+		if err == nil {
+			t.Errorf("Got %+v, expected err", d)
+		}
+	})
 }
 
 func TestMergeFromFile(t *testing.T) {
