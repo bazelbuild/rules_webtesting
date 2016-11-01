@@ -71,7 +71,7 @@ type Archive struct {
 
 // Merge takes two Metadata objects and merges them into a new Metadata object.
 // TODO(DrMarcII): If the same name maps to multiple files, return an error.
-func Merge(m1, m2 *Metadata) *Metadata {
+func Merge(m1, m2 *Metadata) (*Metadata, error) {
 	capabilities := capabilities.Merge(m1.Capabilities, m2.Capabilities)
 
 	environment := m1.Environment
@@ -89,11 +89,19 @@ func Merge(m1, m2 *Metadata) *Metadata {
 		testLabel = m2.TestLabel
 	}
 
-	namedFiles, _ := mergeNamedFiles(m1.NamedFiles, m2.NamedFiles)
+	namedFiles, err := mergeNamedFiles(m1.NamedFiles, m2.NamedFiles)
+	if err != nil {
+		return nil, err
+	}
 
-	archives := []*Archive{}
-	archives = append(archives, m1.Archives...)
-	archives = append(archives, m2.Archives...)
+	archives, err := mergeArchives(m1.Archives, m2.Archives)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := validateNoDuplicateNamedFiles(namedFiles, archives); err != nil {
+		return nil, err
+	}
 
 	return &Metadata{
 		Capabilities: capabilities,
@@ -102,7 +110,7 @@ func Merge(m1, m2 *Metadata) *Metadata {
 		TestLabel:    testLabel,
 		NamedFiles:   namedFiles,
 		Archives:     archives,
-	}
+	}, nil
 }
 
 // FromFile reads a Metadata object from a json file.
@@ -110,11 +118,15 @@ func FromFile(filename string) (*Metadata, error) {
 	metadata := &Metadata{}
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return metadata, err
+		return nil, err
 	}
 
 	if err := json.Unmarshal(bytes, metadata); err != nil {
-		return metadata, err
+		return nil, err
+	}
+
+	if err := validateNoDuplicateNamedFiles(metadata.NamedFiles, metadata.Archives); err != nil {
+		return nil, err
 	}
 	return metadata, nil
 }
@@ -300,5 +312,94 @@ func (a *Archive) extract() error {
 	}
 
 	a.extractedPath = extractPath
+	return nil
+}
+
+func mergeArchives(a1, a2 []*Archive) ([]*Archive, error) {
+	merged := map[string]*Archive{}
+
+	for _, a := range a1 {
+		if len(a.NamedFiles) == 0 {
+			continue
+		}
+		if b := merged[a.Path]; b != nil {
+			m, err := mergeArchive(a, b)
+			if err != nil {
+				return nil, err
+			}
+			merged[m.Path] = m
+		} else {
+			merged[a.Path] = a
+		}
+	}
+
+	for _, a := range a2 {
+		if len(a.NamedFiles) == 0 {
+			continue
+		}
+		if b := merged[a.Path]; b != nil {
+			m, err := mergeArchive(a, b)
+			if err != nil {
+				return nil, err
+			}
+			merged[m.Path] = m
+		} else {
+			merged[a.Path] = a
+		}
+	}
+
+	result := []*Archive{}
+	for _, m := range merged {
+		result = append(result, m)
+	}
+	return result, nil
+}
+
+func mergeArchive(a1, a2 *Archive) (*Archive, error) {
+	if a1.Path != a2.Path {
+		return nil, fmt.Errorf("expected paths (%q, %q) to be equal", a1.Path, a2.Path)
+	}
+	m := &Archive{
+		Path:       a1.Path,
+		NamedFiles: map[string]string{},
+	}
+
+	for name, path := range a1.NamedFiles {
+		if mp, ok := m.NamedFiles[name]; ok {
+			if mp != path {
+				return nil, fmt.Errorf("expected %q.%q paths (%q, %q) to be equals", m.Path, name, path, mp)
+			}
+		} else {
+			m.NamedFiles[name] = path
+		}
+	}
+
+	for name, path := range a2.NamedFiles {
+		if mp, ok := m.NamedFiles[name]; ok {
+			if mp != path {
+				return nil, fmt.Errorf("expected %q.%q paths (%q, %q) to be equals", m.Path, name, path, mp)
+			}
+		} else {
+			m.NamedFiles[name] = path
+		}
+	}
+	return m, nil
+}
+
+func validateNoDuplicateNamedFiles(namedFiles map[string]string, archives []*Archive) error {
+	found := map[string]bool{}
+
+	for name, _ := range namedFiles {
+		found[name] = true
+	}
+
+	for _, a := range archives {
+		for name, _ := range a.NamedFiles {
+			if found[name] {
+				return fmt.Errorf("duplicate name %q", name)
+			}
+			found[name] = true
+		}
+	}
 	return nil
 }

@@ -16,11 +16,36 @@
 #
 ################################################################################
 #
+set +e
 printenv
 
-$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out.json \
+error=0
+
+$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out1.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/chrome-linux.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/android-browser-gingerbread-nexus-s.json
 
-diff $TEST_TMPDIR/out.json \
+diff $TEST_TMPDIR/out1.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/merger-result.json
+if [ $? != 0 ]; then
+	echo "Merge result didn't match."
+	error=1
+fi
+
+$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out2.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files1.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files1.json
+if [ $? != 0 ]; then
+	echo "Expected successful named files merge failed."
+	error=1
+fi
+
+$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out2.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files1.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files2.json
+if [ $? == 0 ]; then
+	echo "Expected failing named files merge succeeded."
+	error=1
+fi
+
+exit $error

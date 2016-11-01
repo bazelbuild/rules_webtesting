@@ -72,5 +72,7 @@ sh_test(
         "//go/metadata/testdata:android-browser-gingerbread-nexus-s.json",
         "//go/metadata/testdata:chrome-linux.json",
         "//go/metadata/testdata:merger-result.json",
+        "//go/metadata/testdata:named-files1.json",
+        "//go/metadata/testdata:named-files2.json",
     ],
 )

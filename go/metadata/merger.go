@@ -35,9 +35,12 @@ func main() {
 	for _, file := range flag.Args() {
 		m, err := metadata.FromFile(file)
 		if err != nil {
-			log.Fatalf("Error reading %s: %v", file, err)
+			log.Fatalf("Error reading %q: %v", file, err)
 		}
-		data = metadata.Merge(data, m)
+		data, err = metadata.Merge(data, m)
+		if err != nil {
+			log.Fatalf("Error merging file %q: %v", file, err)
+		}
 	}
 
 	if err := data.ToFile(*output); err != nil {
