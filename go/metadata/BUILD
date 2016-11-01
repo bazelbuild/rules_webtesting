@@ -71,6 +71,7 @@ sh_test(
     data = [
         ":merger",
         "//go/metadata/testdata:android-browser-gingerbread-nexus-s.json",
+        "//go/metadata/testdata:bad-named-files.json",
         "//go/metadata/testdata:chrome-linux.json",
         "//go/metadata/testdata:merger-result.json",
         "//go/metadata/testdata:named-files1.json",

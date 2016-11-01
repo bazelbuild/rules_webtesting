@@ -48,4 +48,11 @@ if [ $? == 0 ]; then
 	error=1
 fi
 
+$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out2.json \
+	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/bad-named-files.json
+if [ $? == 0 ]; then
+	echo "Expected failing named files merge succeeded."
+	error=1
+fi
+
 exit $error
