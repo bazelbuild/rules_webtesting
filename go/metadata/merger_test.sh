@@ -51,7 +51,7 @@ fi
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out2.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/bad-named-files.json
 if [ $? == 0 ]; then
-	echo "Expected failing named files merge succeeded."
+	echo "Expected failing metdata file load succeeded."
 	error=1
 fi
 
