@@ -1,5 +1,9 @@
 # Change Log
 
+## Version Next
+
+*   Verify that each named file is unique.
+
 ## Version 0.1.0
 
 *   Change browser-provisioning API from browser... to webtest....
