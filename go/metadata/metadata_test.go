@@ -489,7 +489,7 @@ func TestValidateNoDuplicateNamedFiles(t *testing.T) {
 				t.Error("Got nil, expected err")
 			}
 			if err != nil && !tc.err {
-				t.Errorf("Exoected nil, got %v", err)
+				t.Errorf("Expected nil, got %v", err)
 			}
 		})
 	}
