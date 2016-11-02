@@ -27,31 +27,31 @@ $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out.json \
 
 diff $TEST_TMPDIR/out.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/merger-result.json
-if [ $? != 0 ]; then
-	echo "Merge result didn't match."
+if [[ $? != 0 ]]; then
+	echo "Merge of chrome-linux.json with android-browser-gingerbread-nexus-s.json didn't equal merger-result.json."
 	error=1
 fi
 
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out2.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files1.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files1.json
-if [ $? != 0 ]; then
-	echo "Expected successful named files merge failed."
+if [[ $? != 0 ]]; then
+	echo "Merge of named-files1.json with itself failed."
 	error=1
 fi
 
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out2.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files1.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/named-files2.json
-if [ $? == 0 ]; then
-	echo "Expected failing named files merge succeeded."
+if [[ $? == 0 ]]; then
+	echo "Expected merge of named-files1.json with named-files2.json to fail."
 	error=1
 fi
 
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/merger --output $TEST_TMPDIR/out2.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/bad-named-files.json
-if [ $? == 0 ]; then
-	echo "Expected failing metadata file load succeeded."
+if [[ $? == 0 ]]; then
+	echo "Expected load of bad-named-files.json to fail."
 	error=1
 fi
 
