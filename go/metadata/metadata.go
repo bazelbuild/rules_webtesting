@@ -43,9 +43,7 @@ type Metadata struct {
 	BrowserLabel string `json:"browserLabel,omitempty"`
 	// Test label set in the web_test rule.
 	TestLabel string `json:"testLabel,omitempty"`
-	// A list of archive files with named files in them.
-	// Note: An archive will only be extracted if GetExecutablePath is called
-	// with one of the named files.
+	// A list of WebTestFiles with named files in them.
 	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
 }
 

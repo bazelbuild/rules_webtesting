@@ -27,10 +27,10 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
 )
 
-// Archive is an archive file and the associated set of named file mappings as
-// defined by a web_test_archive rule.
+// WebTestFiles defines a set of namedFiles located either in the runfiles directory or
+// in an archive file located in the runfiles directory of the test.
 type WebTestFiles struct {
-	ArchiveFile string            `json:"ArchiveFile",omitempty`
+	ArchiveFile string            `json:"archiveFile",omitempty`
 	NamedFiles  map[string]string `json:"namedFiles"`
 
 	mu            sync.Mutex
@@ -81,7 +81,7 @@ func normalizeWebTestFiles(in []*WebTestFiles) ([]*WebTestFiles, error) {
 	names := map[string]bool{}
 	result := []*WebTestFiles{}
 	for _, m := range merged {
-		for name, _ := range m.NamedFiles {
+		for name := range m.NamedFiles {
 			if names[name] {
 				return nil, fmt.Errorf("name %q exists in multiple WebTestFiles", name)
 			}
