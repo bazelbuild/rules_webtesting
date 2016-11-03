@@ -287,54 +287,54 @@ func TestMergeNamedFiles(t *testing.T) {
 	}
 }
 
-func TestMergeArchive(t *testing.T) {
+func TestMergeWebTestFiles(t *testing.T) {
 	testCases := []struct {
 		name   string
-		input1 *Archive
-		input2 *Archive
-		result *Archive // nil indicates should return an error
+		input1 *WebTestFiles
+		input2 *WebTestFiles
+		result *WebTestFiles // nil indicates should return an error
 	}{
 		{
 			"empty",
-			&Archive{NamedFiles: map[string]string{}},
-			&Archive{NamedFiles: map[string]string{}},
-			&Archive{NamedFiles: map[string]string{}},
+			&WebTestFiles{NamedFiles: map[string]string{}},
+			&WebTestFiles{NamedFiles: map[string]string{}},
+			&WebTestFiles{NamedFiles: map[string]string{}},
 		},
 		{
 			"different archive paths",
-			&Archive{Path: "a", NamedFiles: map[string]string{}},
-			&Archive{Path: "b", NamedFiles: map[string]string{}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{}},
+			&WebTestFiles{ArchiveFile: "b", NamedFiles: map[string]string{}},
 			nil,
 		},
 		{
 			"different named file paths",
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}},
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "X"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "X"}},
 			nil,
 		},
 		{
 			"same named file paths",
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}},
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}},
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
 		},
 		{
 			"multiple names, successful",
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A", "b": "B", "c": "C"}},
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A", "d": "D", "e": "E"}},
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "b": "B", "c": "C"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D", "e": "E"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}},
 		},
 		{
 			"multiple names, unsuccessful",
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A", "b": "B", "c": "C"}},
-			&Archive{Path: "a", NamedFiles: map[string]string{"a": "A", "d": "D", "e": "E", "c": "X"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "b": "B", "c": "C"}},
+			&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D", "e": "E", "c": "X"}},
 			nil,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := mergeArchive(tc.input1, tc.input2)
+			result, err := mergeWebTestFiles(tc.input1, tc.input2)
 			if err != nil {
 				if tc.result != nil {
 					t.Error(err)
@@ -345,7 +345,7 @@ func TestMergeArchive(t *testing.T) {
 				t.Errorf("Got mergeArchive(%+v, %+v) == %+v, expected error", tc.input1, tc.input2, result)
 				return
 			}
-			if result.Path != tc.result.Path || !mapEquals(result.NamedFiles, tc.result.NamedFiles) {
+			if result.ArchiveFile != tc.result.ArchiveFile || !mapEquals(result.NamedFiles, tc.result.NamedFiles) {
 				t.Errorf("Got mergeArchive(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, result, tc.result)
 			}
 		})
@@ -353,58 +353,58 @@ func TestMergeArchive(t *testing.T) {
 
 }
 
-func TestMergeArchives(t *testing.T) {
+func TestNormalizeWebTestFiles(t *testing.T) {
 	testCases := []struct {
-		name   string
-		input1 []*Archive
-		input2 []*Archive
+		name  string
+		input []*WebTestFiles
 		// map of archive paths to NamedFiles maps
 		// nil indicates should return an error
-		result map[string]map[string]string
+		result []*WebTestFiles
 	}{
 		{
 			"empty",
-			[]*Archive{},
-			[]*Archive{},
-			map[string]map[string]string{},
+			[]*WebTestFiles{},
+			[]*WebTestFiles{},
 		},
 		{
-			"unmergeable archives",
-			[]*Archive{&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}}},
-			[]*Archive{&Archive{Path: "a", NamedFiles: map[string]string{"a": "X"}}},
+			"unnormalizable WebTestFiles",
+			[]*WebTestFiles{
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "X"}},
+			},
 			nil,
 		},
 		{
-			"mergeable archives",
-			[]*Archive{&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}}},
-			[]*Archive{&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}}},
-			map[string]map[string]string{"a": map[string]string{"a": "A"}},
-		},
-		{
-			"multiple archives, success",
-			[]*Archive{
-				&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}},
-				&Archive{Path: "b", NamedFiles: map[string]string{"b": "B"}},
+			"normalizable WebTestFiles",
+			[]*WebTestFiles{
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
 			},
-			[]*Archive{
-				&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}},
-				&Archive{Path: "c", NamedFiles: map[string]string{"c": "C"}},
-			},
-			map[string]map[string]string{
-				"a": map[string]string{"a": "A"},
-				"b": map[string]string{"b": "B"},
-				"c": map[string]string{"c": "C"},
+			[]*WebTestFiles{
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
 			},
 		},
 		{
-			"multiple archives, failure",
-			[]*Archive{
-				&Archive{Path: "a", NamedFiles: map[string]string{"a": "A"}},
-				&Archive{Path: "b", NamedFiles: map[string]string{"b": "B"}},
+			"multiple WebTestFiles, success",
+			[]*WebTestFiles{
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				&WebTestFiles{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D"}},
+				&WebTestFiles{ArchiveFile: "c", NamedFiles: map[string]string{"c": "C"}},
 			},
-			[]*Archive{
-				&Archive{Path: "a", NamedFiles: map[string]string{"a": "X"}},
-				&Archive{Path: "c", NamedFiles: map[string]string{"c": "C"}},
+			[]*WebTestFiles{
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D"}},
+				&WebTestFiles{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
+				&WebTestFiles{ArchiveFile: "c", NamedFiles: map[string]string{"c": "C"}},
+			},
+		},
+		{
+			"multiple WebTestFiles, failure",
+			[]*WebTestFiles{
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				&WebTestFiles{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
+				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"d": "D"}},
+				&WebTestFiles{ArchiveFile: "c", NamedFiles: map[string]string{"a": "A", "c": "C"}},
 			},
 			nil,
 		},
@@ -412,84 +412,19 @@ func TestMergeArchives(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := mergeArchives(tc.input1, tc.input2)
+			result, err := normalizeWebTestFiles(tc.input)
 			if err != nil {
 				if tc.result != nil {
-					t.Error(err)
+					t.Fatal(err)
 				}
 				return
 			}
 			if tc.result == nil {
-				t.Errorf("Got mergeArchives(%+v, %+v) == %+v, expected error", tc.input1, tc.input2, result)
-				return
+				t.Fatalf("Got NormalizeWebTestFiles(%+v) == %+v, expected error", tc.input, result)
 			}
 
-			for _, a := range result {
-				nf, ok := tc.result[a.Path]
-				delete(tc.result, a.Path)
-				if !ok {
-					t.Errorf("Result included unexpected archive %+v", a)
-					continue
-				}
-				if !mapEquals(a.NamedFiles, nf) {
-					t.Errorf("Got archive %+v, expected NamedFiles to be %+v", a, nf)
-				}
-			}
-
-			if len(tc.result) != 0 {
-				t.Errorf("Missing archives %+v from result", tc.result)
-			}
-		})
-	}
-}
-
-func TestValidateNoDuplicateNamedFiles(t *testing.T) {
-	testCases := []struct {
-		name       string
-		namedFiles map[string]string
-		archives   []*Archive
-		err        bool
-	}{
-		{
-			"empty",
-			map[string]string{},
-			[]*Archive{},
-			false,
-		},
-		{
-			"duplicate between NamedFiles and Archive",
-			map[string]string{"a": "A"},
-			[]*Archive{&Archive{NamedFiles: map[string]string{"a": "A"}}},
-			true,
-		},
-		{
-			"duplicate between two Archives",
-			map[string]string{},
-			[]*Archive{
-				&Archive{NamedFiles: map[string]string{"a": "A"}},
-				&Archive{NamedFiles: map[string]string{"a": "A"}},
-			},
-			true,
-		},
-		{
-			"no duplicates",
-			map[string]string{"a": "A", "b": "B"},
-			[]*Archive{
-				&Archive{NamedFiles: map[string]string{"c": "C", "d": "D"}},
-				&Archive{NamedFiles: map[string]string{"e": "E"}},
-			},
-			false,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			err := validateNoDuplicateNamedFiles(tc.namedFiles, tc.archives)
-			if err == nil && tc.err {
-				t.Error("Got nil, expected err")
-			}
-			if err != nil && !tc.err {
-				t.Errorf("Expected nil, got %v", err)
+			if !webTestFilesSliceEquals(result, tc.result) {
+				t.Fatalf("Got NormalizeWebTestFiles(%+v) == %+v, expected %+v", tc.input, result, tc.result)
 			}
 		})
 	}

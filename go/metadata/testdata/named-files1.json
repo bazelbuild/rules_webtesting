@@ -1,3 +1,1 @@
-{
-  "NamedFiles" : { "A" : "a" }
-}
+{ "webTestFiles" : [ {"namedFiles" : {"A" : "a"}} ] }

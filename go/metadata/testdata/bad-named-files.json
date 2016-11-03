@@ -1,4 +1,6 @@
 {
-  "NamedFiles" : {"a" : "A"},
-  "Archives" : [ {"Path" : "A", "NamedFiles" : {"a" : "A"}} ]
+	"webTestFiles" : [
+    {"namedFiles" : {"a" : "A"}},
+    {"archiveFile" : "A", "namedFiles" : {"a" : "A"}}
+  ]
 }

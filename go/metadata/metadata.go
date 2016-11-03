@@ -21,16 +21,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"regexp"
-	"strings"
-	"sync"
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
-	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
 )
 
 // Values for Metadata.RecordVideo.
@@ -50,27 +43,13 @@ type Metadata struct {
 	BrowserLabel string `json:"browserLabel,omitempty"`
 	// Test label set in the web_test rule.
 	TestLabel string `json:"testLabel,omitempty"`
-	// A map of names to TEST_SRCDIR-relative file paths.
-	// Prefer using GetExecutablePath instead of accessing this map directly.
-	NamedFiles map[string]string `json:"namedFiles,omitempty"`
 	// A list of archive files with named files in them.
 	// Note: An archive will only be extracted if GetExecutablePath is called
 	// with one of the named files.
-	Archives []*Archive `json:"archives,omitempty"`
-}
-
-// Archive is an archice file and the associated set of named file mappings as
-// defined by a web_test_archive rule.
-type Archive struct {
-	Path       string            `json:"path"`
-	NamedFiles map[string]string `json:"namedFiles"`
-
-	mu            sync.Mutex
-	extractedPath string
+	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
 }
 
 // Merge takes two Metadata objects and merges them into a new Metadata object.
-// TODO(DrMarcII): If the same name maps to multiple files, return an error.
 func Merge(m1, m2 *Metadata) (*Metadata, error) {
 	capabilities := capabilities.Merge(m1.Capabilities, m2.Capabilities)
 
@@ -89,17 +68,12 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		testLabel = m2.TestLabel
 	}
 
-	namedFiles, err := mergeNamedFiles(m1.NamedFiles, m2.NamedFiles)
-	if err != nil {
-		return nil, err
-	}
+	webTestFiles := []*WebTestFiles{}
+	webTestFiles = append(webTestFiles, m1.WebTestFiles...)
+	webTestFiles = append(webTestFiles, m2.WebTestFiles...)
 
-	archives, err := mergeArchives(m1.Archives, m2.Archives)
+	webTestFiles, err := normalizeWebTestFiles(webTestFiles)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := validateNoDuplicateNamedFiles(namedFiles, archives); err != nil {
 		return nil, err
 	}
 
@@ -108,8 +82,7 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		Environment:  environment,
 		BrowserLabel: browserLabel,
 		TestLabel:    testLabel,
-		NamedFiles:   namedFiles,
-		Archives:     archives,
+		WebTestFiles: webTestFiles,
 	}, nil
 }
 
@@ -124,10 +97,12 @@ func FromFile(filename string) (*Metadata, error) {
 	if err := json.Unmarshal(bytes, metadata); err != nil {
 		return nil, err
 	}
-
-	if err := validateNoDuplicateNamedFiles(metadata.NamedFiles, metadata.Archives); err != nil {
+	webTestFiles, err := normalizeWebTestFiles(metadata.WebTestFiles)
+	if err != nil {
 		return nil, err
 	}
+	metadata.WebTestFiles = webTestFiles
+
 	return metadata, nil
 }
 
@@ -142,27 +117,12 @@ func (m *Metadata) ToFile(filename string) error {
 
 // Equals compares two Metadata object and return true iff they are the same.
 func Equals(e, a *Metadata) bool {
+	// TODO(DrMarcII): should consider equality of WebTestFiles.
 	return capabilities.Equals(e.Capabilities, a.Capabilities) &&
 		e.Environment == a.Environment &&
 		e.BrowserLabel == a.BrowserLabel &&
 		e.TestLabel == a.TestLabel &&
-		mapEquals(e.NamedFiles, a.NamedFiles)
-}
-
-func mergeNamedFiles(n1, n2 map[string]string) (map[string]string, error) {
-	result := map[string]string{}
-
-	for k, v := range n1 {
-		result[k] = v
-	}
-
-	for k, v2 := range n2 {
-		if v1, ok := result[k]; ok && v1 != v2 {
-			return nil, fmt.Errorf("key %q exists in both NamedFiles with different values", k)
-		}
-		result[k] = v2
-	}
-	return result, nil
+		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles)
 }
 
 func mapEquals(e, a map[string]string) bool {
@@ -180,11 +140,7 @@ func mapEquals(e, a map[string]string) bool {
 // GetFilePath returns the path to a file specified by web_test_archive,
 // web_test_named_executable, or web_test_named_file.
 func (m *Metadata) GetFilePath(name string) (string, error) {
-	log.Printf("searching for name: %s", name)
-	if filename, ok := m.NamedFiles[name]; ok {
-		return bazel.Runfile(filename)
-	}
-	for _, a := range m.Archives {
+	for _, a := range m.WebTestFiles {
 		filename, err := a.getFilePath(name)
 		if err != nil {
 			return "", err
@@ -254,152 +210,4 @@ func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
 		}
 	}
 	return resolveMap(m.Capabilities)
-}
-
-func (a *Archive) getFilePath(name string) (string, error) {
-	log.Printf("searching for name: %s in %+v", name, a)
-	filename, ok := a.NamedFiles[name]
-	if !ok {
-		return "", nil
-	}
-
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if a.extractedPath == "" {
-		if err := a.extract(); err != nil {
-			return "", err
-		}
-	}
-	path := filepath.Join(a.extractedPath, filename)
-	if _, err := os.Stat(path); err != nil {
-		return "", err
-	}
-	return path, nil
-}
-
-func (a *Archive) extract() error {
-	log.Printf("extracting %+v", a)
-	filename, err := bazel.Runfile(a.Path)
-	if err != nil {
-		return err
-	}
-
-	extractPath, err := bazel.NewTmpDir(filepath.Base(filename))
-	if err != nil {
-		return err
-	}
-
-	var c *exec.Cmd
-	switch {
-	case strings.HasSuffix(filename, ".tar"):
-		c = exec.Command("tar", "xf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".tar.gz") || strings.HasSuffix(filename, ".tgz"):
-		c = exec.Command("tar", "xzf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".tar.bz2") || strings.HasSuffix(filename, ".tbz2"):
-		c = exec.Command("tar", "xjf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".tar.Z"):
-		c = exec.Command("tar", "xZf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".zip"):
-		c = exec.Command("unzip", filename, "-d", extractPath)
-	default:
-		return fmt.Errorf("unknown archive type: %s", filename)
-	}
-
-	log.Printf("extracting %+v to %s", a, extractPath)
-
-	if err := c.Run(); err != nil {
-		return err
-	}
-
-	a.extractedPath = extractPath
-	return nil
-}
-
-func mergeArchives(a1, a2 []*Archive) ([]*Archive, error) {
-	merged := map[string]*Archive{}
-
-	for _, a := range a1 {
-		if len(a.NamedFiles) == 0 {
-			continue
-		}
-		if b := merged[a.Path]; b != nil {
-			m, err := mergeArchive(a, b)
-			if err != nil {
-				return nil, err
-			}
-			merged[m.Path] = m
-		} else {
-			merged[a.Path] = a
-		}
-	}
-
-	for _, a := range a2 {
-		if len(a.NamedFiles) == 0 {
-			continue
-		}
-		if b := merged[a.Path]; b != nil {
-			m, err := mergeArchive(a, b)
-			if err != nil {
-				return nil, err
-			}
-			merged[m.Path] = m
-		} else {
-			merged[a.Path] = a
-		}
-	}
-
-	result := []*Archive{}
-	for _, m := range merged {
-		result = append(result, m)
-	}
-	return result, nil
-}
-
-func mergeArchive(a1, a2 *Archive) (*Archive, error) {
-	if a1.Path != a2.Path {
-		return nil, fmt.Errorf("expected paths (%q, %q) to be equal", a1.Path, a2.Path)
-	}
-	m := &Archive{
-		Path:       a1.Path,
-		NamedFiles: map[string]string{},
-	}
-
-	for name, path := range a1.NamedFiles {
-		if mp, ok := m.NamedFiles[name]; ok {
-			if mp != path {
-				return nil, fmt.Errorf("expected %q.%q paths (%q, %q) to be equals", m.Path, name, path, mp)
-			}
-		} else {
-			m.NamedFiles[name] = path
-		}
-	}
-
-	for name, path := range a2.NamedFiles {
-		if mp, ok := m.NamedFiles[name]; ok {
-			if mp != path {
-				return nil, fmt.Errorf("expected %q.%q paths (%q, %q) to be equals", m.Path, name, path, mp)
-			}
-		} else {
-			m.NamedFiles[name] = path
-		}
-	}
-	return m, nil
-}
-
-func validateNoDuplicateNamedFiles(namedFiles map[string]string, archives []*Archive) error {
-	found := map[string]bool{}
-
-	for name, _ := range namedFiles {
-		found[name] = true
-	}
-
-	for _, a := range archives {
-		for name, _ := range a.NamedFiles {
-			if found[name] {
-				return fmt.Errorf("duplicate name %q", name)
-			}
-			found[name] = true
-		}
-	}
-	return nil
 }

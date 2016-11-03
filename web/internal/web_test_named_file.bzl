@@ -31,7 +31,7 @@ def _web_test_named_file_impl(ctx):
     patch = ctx.outputs.web_test_metadata
 
   content = """{
-  "namedFiles": {"%s": "%s"}
+  "webTestFiles": ["namedFiles": {"%s": "%s"} }]
 }""" % (name, path(ctx, ctx.file.file))
 
   ctx.file_action(output=patch, content=content, executable=False)
