@@ -54,7 +54,7 @@ type WebTestFiles struct {
 	extractedPath string
 }
 
-// Only works correctly on normalized WeebTestFiles slices
+// Only works correctly on normalized WebTestFiles slices
 func webTestFilesSliceEquals(a, b []*WebTestFiles) bool {
 	if len(a) != len(b) {
 		return false
