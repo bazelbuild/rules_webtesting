@@ -345,7 +345,7 @@ func TestMergeWebTestFiles(t *testing.T) {
 				t.Errorf("Got mergeArchive(%+v, %+v) == %+v, expected error", tc.input1, tc.input2, result)
 				return
 			}
-			if result.ArchiveFile != tc.result.ArchiveFile || !mapEquals(result.NamedFiles, tc.result.NamedFiles) {
+			if !webTestFilesEquals(result, tc.result) {
 				t.Errorf("Got mergeArchive(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, result, tc.result)
 			}
 		})
