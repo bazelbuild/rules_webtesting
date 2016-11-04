@@ -30,7 +30,7 @@ import (
 // WebTestFiles defines a set of namedFiles located either in the runfiles directory or
 // in an archive file located in the runfiles directory of the test.
 type WebTestFiles struct {
-	ArchiveFile string            `json:"archiveFile",omitempty`
+	ArchiveFile string            `json:"archiveFile,omitempty"`
 	NamedFiles  map[string]string `json:"namedFiles"`
 
 	mu            sync.Mutex
