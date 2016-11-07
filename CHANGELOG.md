@@ -2,6 +2,7 @@
 
 ## Version Next
 
+*   Combine namedFiles and archive of metadata files into webTestFiles.
 *   Verify that each named file is unique.
 
 ## Version 0.1.0

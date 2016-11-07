@@ -18,8 +18,8 @@ load(
 
 
 def _web_test_archive_impl(ctx):
-  content = '{\n  "archives": [{\n    "path": "%s"' % path(ctx,
-                                                           ctx.file.archive)
+  content = '{\n  "webTestFiles": [{\n    "archiveFile": "%s"' % path(
+      ctx, ctx.file.archive)
   if ctx.attr.named_files:
     content += ',\n    "namedFiles": {'
     first = True

@@ -29,7 +29,10 @@ go_binary(
 
 go_library(
     name = "metadata",
-    srcs = ["metadata.go"],
+    srcs = [
+        "metadata.go",
+        "web_test_files.go",
+    ],
     visibility = ["//go:__subpackages__"],
     deps = [
         ":capabilities",
