@@ -19,14 +19,8 @@ such as additional capabilities.
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "create_metadata_file",
-    "get_metadata_files",
-    "merge_metadata_files",)
-load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect")
-
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_config_impl(ctx):
@@ -35,9 +29,7 @@ def _web_test_config_impl(ctx):
     m = [ctx.file.metadata]
   else:
     m = []
-  return struct(
-      runfiles=build_runfiles(ctx),
-      web_test_metadata=m)
+  return struct(runfiles=files.runfiles(ctx=ctx), web_test_metadata=m)
 
 
 web_test_config = rule(
@@ -48,7 +40,7 @@ web_test_config = rule(
             attr.label(allow_single_file=True),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data", aspects=[web_test_metadata_aspect]),
+                allow_files=True, cfg="data", aspects=[metadata.aspect]),
     },
     implementation=_web_test_config_impl)
 """A browser-independent configuration that can be used across multiple web_tests.

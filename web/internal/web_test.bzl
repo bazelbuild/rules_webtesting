@@ -16,13 +16,9 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "get_metadata_files",
-    "merge_metadata_files",
-    "path",)
-load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect", "get_files")
+load("//web/internal:collections.bzl", "lists")
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_impl(ctx):
@@ -62,9 +58,10 @@ def _generate_noop_test(ctx, reason, status=0):
   else:
     success = "passes"
 
-  ctx.file_action(
-      content="",
-      output=ctx.outputs.web_test_metadata,)
+  metadata.create_file(
+      ctx=ctx,
+      output=ctx.outputs.web_test_metadata,
+      test_label=ctx.attr.test.label)
 
   ctx.template_action(
       template=ctx.file.noop_web_test_template,
@@ -80,9 +77,21 @@ def _generate_noop_test(ctx, reason, status=0):
 
 
 def _generate_default_test(ctx):
-  metadata_files = get_files(ctx, ["data", "browser", "config"])
+    """Generates the web_test.
 
-  merge_metadata_files(
+  Args:
+    ctx: the ctx object for this rule.
+  Returns:
+    the struct for this rule.
+  """
+  metadata_files = metadata.get_files(ctx,
+                                      ["data", "test", "browser", "config"])
+
+  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+  metadata.create_file(ctx=ctx, output=patch, test_label=ctx.attr.test.label)
+  lists.ensure_at_end_of_list(metadata_files, patch)
+
+  metadata.merge_files(
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
@@ -96,24 +105,31 @@ def _generate_default_test(ctx):
       template=ctx.file.web_test_template,
       output=ctx.outputs.executable,
       substitutions={
-          "%TEMPLATED_env_vars%": env_vars,
-          "%TEMPLATED_launcher%": path(ctx, ctx.executable.launcher),
-          "%TEMPLATED_metadata%": path(ctx, ctx.outputs.web_test_metadata),
-          "%TEMPLATED_test%": path(ctx, ctx.executable.test),
+          "%TEMPLATED_env_vars%":
+              env_vars,
+          "%TEMPLATED_launcher%":
+              files.runfiles_path(ctx, ctx.executable.launcher),
+          "%TEMPLATED_metadata%":
+              files.runfiles_path(ctx, ctx.outputs.web_test_metadata),
+          "%TEMPLATED_test%":
+              files.runfiles_path(ctx, ctx.executable.test),
       },
       executable=True)
 
-  return struct(runfiles=build_runfiles(
-      ctx,
+  return struct(runfiles=files.runfiles(
+      ctx=ctx,
       files=[ctx.outputs.web_test_metadata],
-      deps_attrs=["launcher", "browser", "config", "test"]))
+      deps_attrs=["browser", "config", "launcher", "test"]))
 
 
 web_test = rule(
     attrs={
         "test":
             attr.label(
-                cfg="data", executable=True, mandatory=True),
+                cfg="data",
+                executable=True,
+                mandatory=True,
+                aspects=[metadata.aspect]),
         "browser":
             attr.label(
                 cfg="data",
@@ -123,15 +139,15 @@ web_test = rule(
                     "environment",
                     "required_tags",
                 ],
-                aspects=[web_test_metadata_aspect]),
+                aspects=[metadata.aspect]),
         "config":
             attr.label(
                 cfg="data",
                 default=Label("//web:default_config"),
-                aspects=[web_test_metadata_aspect]),
+                aspects=[metadata.aspect]),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data", aspects=[web_test_metadata_aspect]),
+                allow_files=True, cfg="data", aspects=[metadata.aspect]),
         "merger":
             attr.label(
                 cfg="host",
@@ -162,4 +178,10 @@ Args:
     this test.
   config: Additional configuration that overrides the configuration in browser.
   data: Additional runtime dependencies for the test.
+  merger: A web test metadata merger binary.
+  launcher: A web test launcher binary.
+  web_test_template: The shell script that should be executed for running the
+    web_test.
+  noop_web_test_template: The shell script that should be executed if the
+    browser is disabled.
 """

@@ -21,7 +21,7 @@ Usage:
 """
 
 
-def is_list_like(val):
+def _is_list_like(val):
   """Checks is val is a list-like (list, set, tuple) value."""
   return type(val) in [type([]), type(set()), type(())]
 
@@ -40,7 +40,7 @@ def _list_ensure_contains_all(lst, items):
 
 def _list_clone(original):
   """Create a new list with content of original."""
-  if is_list_like(original):
+  if _is_list_like(original):
     return list(original)
   if original:
     fail('got "' + original + '", but expected none or a list-like value')
@@ -56,12 +56,22 @@ def _list_ensure_at_end_of_list(lst, item):
   lst.append(item)
 
 
+def _list_ensure_all_at_end_of_list(lst, items):
+  """Removes all copies of item from lst, and appends item to end of lst."""
+  # while is not supported so this is easiest way to ensure
+  # that all copies of item are removed from the list.
+  for x in [i for i in lst if i in items]:
+    lst.remove(x)
+  lst.extend(items)
+
+
 lists = struct(
     clone=_list_clone,
-    is_list_like=is_list_like,
+    is_list_like=_is_list_like,
     ensure_contains=_list_ensure_contains,
     ensure_contains_all=_list_ensure_contains_all,
-    ensure_at_end_of_list=_list_ensure_at_end_of_list,)
+    ensure_at_end_of_list=_list_ensure_at_end_of_list,
+    ensure_all_at_end_of_list=_list_ensure_all_at_end_of_list)
 
 
 def _map_clone(original):

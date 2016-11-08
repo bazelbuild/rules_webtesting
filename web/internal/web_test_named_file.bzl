@@ -11,28 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Defines a file that referenced by name."""
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "get_metadata_files",
-    "merge_metadata_files",
-    "path",)
-
-load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect")
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_named_file_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
-  content = """{
-  "webTestFiles": [{"namedFiles": {"%s": "%s"} }]
-}""" % (name, path(ctx, ctx.file.file))
-
-  ctx.file_action(output=ctx.output.web_test_metadata, content=content, executable=False)
+  metadata.create_file(
+      ctx=ctx,
+      output=ctx.outputs.web_test_metadata,
+      web_test_files=[
+          metadata.web_test_files(named_files={name: ctx.file.file})
+      ])
 
   return struct(
-      runfiles=build_runfiles(ctx=ctx, deps_attrs=["file"]),
+      runfiles=files.runfiles(
+          ctx=ctx, deps_attrs=["file"]),
       web_test_metadata=[ctx.outputs.web_test_metadata])
 
 
@@ -42,15 +39,17 @@ web_test_named_file = rule(
             attr.string(),
         "file":
             attr.label(
-                allow_single_file=True, cfg="data", mandatory=True),
+                allow_single_file=True,
+                cfg="data",
+                mandatory=True,
+                aspects=[metadata.aspect]),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data",
-                aspects = [web_test_metadata_aspect]),
+                allow_files=True, cfg="data", aspects=[metadata.aspect]),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_web_test_named_file_impl)
-"""Defines a executable that can be located by name.
+"""Defines a file that can be located by name.
 
 Args:
   alt_name: If supplied, is used instead of name to lookup the file.

@@ -16,25 +16,20 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "create_metadata_file",
-    "get_metadata_files",
-    "merge_metadata_files",)
-load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect")
-
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
-  create_metadata_file(ctx=ctx, output=ctx.outputs.web_test_metadata, browser_label=ctx.label)
+  metadata.create_file(
+      ctx=ctx, output=ctx.outputs.web_test_metadata, browser_label=ctx.label)
 
   return struct(
       disabled=ctx.attr.disabled,
       environment=ctx.attr.environment,
       required_tags=ctx.attr.required_tags,
-      runfiles=build_runfiles(ctx),
+      runfiles=files.runfiles(ctx=ctx),
       web_test_metadata=[ctx.file.metadata, ctx.outputs.web_test_metadata])
 
 
@@ -45,7 +40,7 @@ browser = rule(
                 mandatory=True, allow_single_file=True, cfg="data"),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data", aspects=[web_test_metadata_aspect]),
+                allow_files=True, cfg="data", aspects=[metadata.aspect]),
         "disabled":
             attr.string(),
         "environment":

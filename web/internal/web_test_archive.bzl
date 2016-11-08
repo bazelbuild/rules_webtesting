@@ -12,30 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load(
-    "//web/internal:shared.bzl",
-    "path",)
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_archive_impl(ctx):
-  content = '{\n  "webTestFiles": [{\n    "archiveFile": "%s"' % path(
-      ctx, ctx.file.archive)
-  if ctx.attr.named_files:
-    content += ',\n    "namedFiles": {'
-    first = True
-    for k, v in ctx.attr.named_files.items():
-      if first:
-        first = False
-      else:
-        content += ","
-      content += '\n      "%s": "%s"' % (k, v)
-    content += "\n    }"
-  content += "\n  }]\n}"
+  metadata.create_file(
+      ctx=ctx,
+      output=ctx.outputs.web_test_metadata,
+      web_test_files=[
+          metadata.web_test_files(
+              archive_file=ctx.file.archive, named_files=ctx.attr.named_files)
+      ])
 
-  ctx.file_action(
-      output=ctx.outputs.web_test_metadata, content=content, executable=False)
   return struct(
-      runfiles=ctx.runfiles(files=[ctx.file.archive]),
+      runfiles=files.runfiles(
+          ctx=ctx, files=[ctx.file.archive]),
       web_test_metadata=[ctx.outputs.web_test_metadata])
 
 
@@ -44,7 +36,10 @@ web_test_archive = rule(
     attrs={
         "archive":
             attr.label(
-                allow_single_file=True, cfg="data", mandatory=True),
+                allow_single_file=True,
+                cfg="data",
+                mandatory=True,
+                aspects=[metadata.aspect]),
         "named_files":
             attr.string_dict(mandatory=True)
     },
@@ -56,5 +51,5 @@ files in the archive.
 
 Args:
   archive: label referring to the archive file.
-  named_files: a map of names used by Web Test Launcher to path in the archive.
+  named_files: a map of names to paths in the archive.
 """
