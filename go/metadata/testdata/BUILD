@@ -16,6 +16,8 @@
 #
 package(default_testonly = 1)
 
+licenses(["notice"])  # Apache 2.0
+
 exports_files(
     glob(["**"]),
     visibility = ["//go:__subpackages__"],

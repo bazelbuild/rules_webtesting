@@ -14,18 +14,36 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
-load("//web:web.bzl", "web_test_named_executable")
-
-java_binary(
-    name = "SeleniumServer",
-    main_class = "org.openqa.grid.selenium.GridLauncherV3",
-    runtime_deps = ["@org_seleniumhq_server//jar"],
+package(
+    default_testonly = 1,
+    default_visibility = ["//browsers:__subpackages__"],
 )
 
-web_test_named_executable(
-    name = "SELENIUM_SERVER",
-    executable = ":SeleniumServer",
-    visibility = ["//browsers:__pkg__"],
+load("//web:web.bzl", "web_test_archive")
+
+licenses(["reciprocal"])  # MPL 2.0
+
+exports_files(["LICENSE"])
+
+config_setting(
+    name = "mac",
+    values = {"cpu": "darwin"},
+)
+
+config_setting(
+    name = "linux",
+    values = {"cpu": "k8"},
+)
+
+web_test_archive(
+    name = "firefox",
+    archive = "@org_mozilla_firefox//file",
+    named_files = select({
+        ":linux": {
+            "FIREFOX": "firefox-sdk/bin/firefox",
+        },
+        ":mac": {
+            "FIREFOX": "firefox-sdk/bin/Firefox.app/Contents/MacOS/firefox",
+        },
+    }),
 )

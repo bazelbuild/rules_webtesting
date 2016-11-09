@@ -16,15 +16,22 @@
 #
 package(
     default_testonly = 1,
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//browsers:__subpackages__"],
 )
 
-licenses(["notice"])  # Apache 2.0
+load("//web:web.bzl", "web_test_archive")
 
-java_library(
-    name = "util",
-    srcs = glob(["*.java"]),
-    deps = [
-        "@com_google_guava_guava//jar",
-    ],
+licenses([
+    "notice",
+    "reciprocal",
+])
+
+exports_files(["LICENSE"])
+
+web_test_archive(
+    name = "chromedriver",
+    archive = "@org_chromium_chromedriver//file",
+    named_files = {
+        "CHROMEDRIVER": "chromedriver",
+    },
 )

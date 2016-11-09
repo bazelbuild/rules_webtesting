@@ -1,4 +1,0 @@
-exports_files(
-    ["geckodriver"],
-    visibility = ["//visibility:public"],
-)

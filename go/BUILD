@@ -16,8 +16,10 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 load("//web:web.bzl", "web_test", "web_test_suite")
+
+licenses(["notice"])  # Apache 2.0
 
 go_library(
     name = "webtest",

@@ -18,6 +18,8 @@ package(default_testonly = 1)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
+licenses(["notice"])  # Apache 2.0
+
 go_library(
     name = "proxy",
     srcs = ["proxy.go"],

@@ -16,15 +16,22 @@
 #
 package(
     default_testonly = 1,
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//browsers:__subpackages__"],
 )
+
+load("//web:web.bzl", "web_test_named_executable")
 
 licenses(["notice"])  # Apache 2.0
 
-java_library(
-    name = "util",
-    srcs = glob(["*.java"]),
-    deps = [
-        "@com_google_guava_guava//jar",
-    ],
+exports_files(["LICENSE"])
+
+java_binary(
+    name = "SeleniumServer",
+    main_class = "org.openqa.grid.selenium.GridLauncherV3",
+    runtime_deps = ["@org_seleniumhq_server//jar"],
+)
+
+web_test_named_executable(
+    name = "SELENIUM_SERVER",
+    executable = ":SeleniumServer",
 )
