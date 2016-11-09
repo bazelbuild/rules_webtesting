@@ -47,10 +47,21 @@ def _list_clone(original):
   return []
 
 
+def _list_ensure_at_end_of_list(lst, item):
+  """Removes all copies of item from lst, and appends item to end of lst."""
+  # while is not supported so this is easiest way to ensure
+  # that all copies of item are removed from the list.
+  for x in [i for i in lst if i == item]:
+    lst.remove(x)
+  lst.append(item)
+
+
 lists = struct(
     clone=_list_clone,
+    is_list_like=is_list_like,
     ensure_contains=_list_ensure_contains,
-    ensure_contains_all=_list_ensure_contains_all,)
+    ensure_contains_all=_list_ensure_contains_all,
+    ensure_at_end_of_list=_list_ensure_at_end_of_list,)
 
 
 def _map_clone(original):

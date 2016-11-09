@@ -22,29 +22,20 @@ load(
     "create_metadata_file",
     "get_metadata_files",
     "merge_metadata_files",)
+load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect")
+
 
 
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
-  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  create_metadata_file(ctx=ctx, output=patch, browser_label=ctx.label)
-
-  metadata_files = get_metadata_files(ctx,
-                                      ["data"]) + [ctx.file.metadata, patch]
-
-  merge_metadata_files(
-      ctx=ctx,
-      merger=ctx.executable.merger,
-      output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
+  create_metadata_file(ctx=ctx, output=ctx.outputs.web_test_metadata, browser_label=ctx.label)
 
   return struct(
       disabled=ctx.attr.disabled,
       environment=ctx.attr.environment,
       required_tags=ctx.attr.required_tags,
-      runfiles=build_runfiles(
-          ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=build_runfiles(ctx),
+      web_test_metadata=[ctx.file.metadata, ctx.outputs.web_test_metadata])
 
 
 browser = rule(
@@ -54,18 +45,13 @@ browser = rule(
                 mandatory=True, allow_single_file=True, cfg="data"),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
+                allow_files=True, cfg="data", aspects=[web_test_metadata_aspect]),
         "disabled":
             attr.string(),
         "environment":
             attr.string_dict(),
         "required_tags":
             attr.string_list(),
-        "merger":
-            attr.label(
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata:merger")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_browser_impl)

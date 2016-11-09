@@ -25,29 +25,19 @@ load(
     "create_metadata_file",
     "get_metadata_files",
     "merge_metadata_files",)
+load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect")
+
 
 
 def _web_test_config_impl(ctx):
   """Implementation of the web_test_config rule."""
-
-  metadata_files = get_metadata_files(ctx, ["data", "configs"])
-
-  if ctx.attr.metadata:
-    metadata_files += [ctx.file.metadata]
-
-  if metadata_files:
-    merge_metadata_files(
-        ctx=ctx,
-        merger=ctx.executable.merger,
-        output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files)
+  if ctx.file.metadata:
+    m = [ctx.file.metadata]
   else:
-    create_metadata_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
-
+    m = []
   return struct(
-      runfiles=build_runfiles(
-          ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=build_runfiles(ctx),
+      web_test_metadata=m)
 
 
 web_test_config = rule(
@@ -58,14 +48,8 @@ web_test_config = rule(
             attr.label(allow_single_file=True),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
-        "merger":
-            attr.label(
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata:merger")),
+                allow_files=True, cfg="data", aspects=[web_test_metadata_aspect]),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_web_test_config_impl)
 """A browser-independent configuration that can be used across multiple web_tests.
 

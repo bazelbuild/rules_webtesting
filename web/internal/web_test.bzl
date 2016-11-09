@@ -22,6 +22,7 @@ load(
     "get_metadata_files",
     "merge_metadata_files",
     "path",)
+load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect", "get_files")
 
 
 def _web_test_impl(ctx):
@@ -79,7 +80,7 @@ def _generate_noop_test(ctx, reason, status=0):
 
 
 def _generate_default_test(ctx):
-  metadata_files = get_metadata_files(ctx, ["data", "browser", "config"])
+  metadata_files = get_files(ctx, ["data", "browser", "config"])
 
   merge_metadata_files(
       ctx=ctx,
@@ -121,16 +122,16 @@ web_test = rule(
                     "disabled",
                     "environment",
                     "required_tags",
-                    "web_test_metadata",
-                ]),
+                ],
+                aspects=[web_test_metadata_aspect]),
         "config":
             attr.label(
                 cfg="data",
                 default=Label("//web:default_config"),
-                providers=["web_test_metadata"]),
+                aspects=[web_test_metadata_aspect]),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
+                allow_files=True, cfg="data", aspects=[web_test_metadata_aspect]),
         "merger":
             attr.label(
                 cfg="host",
@@ -143,13 +144,11 @@ web_test = rule(
                 default=Label("//go/launcher:main")),
         "web_test_template":
             attr.label(
-                allow_files=True,
-                single_file=True,
+                allow_single_file=True,
                 default=Label("//web/internal:web_test.sh.template")),
         "noop_web_test_template":
             attr.label(
-                allow_files=True,
-                single_file=True,
+                allow_single_file=True,
                 default=Label("//web/internal:noop_web_test.sh.template")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json",},

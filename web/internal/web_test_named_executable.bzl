@@ -18,38 +18,21 @@ load(
     "get_metadata_files",
     "merge_metadata_files",
     "path",)
+load("//web/internal:web_test_metadata_aspect.bzl", "web_test_metadata_aspect")
 
 
 def _web_test_named_executable_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
-  metadata_files = get_metadata_files(ctx, ["data"])
-
-  if metadata_files:
-    patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  else:
-    patch = ctx.outputs.web_test_metadata
-
   content = """{
   "webTestFiles": [{"namedFiles": {"%s": "%s"} }]
 }""" % (name, path(ctx, ctx.executable.executable))
 
-  ctx.file_action(output=patch, content=content, executable=False)
-
-  if metadata_files:
-    metadata_files += [patch]
-    merge_metadata_files(
-        ctx=ctx,
-        merger=ctx.executable.merger,
-        output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files)
+  ctx.file_action(output=ctx.outputs.web_test_metadata, content=content, executable=False)
 
   return struct(
-      runfiles=build_runfiles(
-          ctx=ctx,
-          files=[ctx.outputs.web_test_metadata],
-          deps_attrs=["executable"]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=build_runfiles(ctx=ctx, deps_attrs=["executable"]),
+      web_test_metadata=[ctx.outputs.web_test_metadata])
 
 
 web_test_named_executable = rule(
@@ -61,12 +44,7 @@ web_test_named_executable = rule(
                 allow_files=True, executable=True, cfg="data", mandatory=True),
         "data":
             attr.label_list(
-                allow_files=True, cfg="data"),
-        "merger":
-            attr.label(
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata:merger")),
+                allow_files=True, cfg="data", aspects=[web_test_metadata_aspect]),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_web_test_named_executable_impl,)

@@ -78,14 +78,15 @@ def get_metadata_files(ctx, attr_names):
   metadata_files = []
 
   for attr_name in attr_names:
-    attr = getattr(ctx.attr, attr_name)
-    if hasattr(attr, 'web_test_metadata'):
-      metadata_files += [attr.web_test_metadata]
-    elif is_list_like(attr):
-      metadata_files += [
-          value.web_test_metadata for value in attr
-          if hasattr(value, 'web_test_metadata')
-      ]
+    if hasattr(ctx.attr, attr_name):
+      attr = getattr(ctx.attr, attr_name)
+      if hasattr(attr, 'web_test_metadata'):
+        metadata_files += [attr.web_test_metadata]
+      elif is_list_like(attr):
+        metadata_files += [
+            value.web_test_metadata for value in attr
+            if hasattr(value, 'web_test_metadata')
+        ]
 
   return metadata_files
 

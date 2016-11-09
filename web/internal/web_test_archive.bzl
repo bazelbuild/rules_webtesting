@@ -35,9 +35,8 @@ def _web_test_archive_impl(ctx):
   ctx.file_action(
       output=ctx.outputs.web_test_metadata, content=content, executable=False)
   return struct(
-      runfiles=ctx.runfiles(
-          files=[ctx.file.archive, ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=ctx.runfiles(files=[ctx.file.archive]),
+      web_test_metadata=[ctx.outputs.web_test_metadata])
 
 
 web_test_archive = rule(
