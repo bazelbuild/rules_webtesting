@@ -16,7 +16,9 @@
 #
 package(default_testonly = 1)
 
-load("//web:web.bzl", "browser", "web_test_archive", "web_test_named_executable")
+load("//web:web.bzl", "browser")
+
+licenses(["notice"])  # Apache 2.0
 
 config_setting(
     name = "mac",
@@ -28,61 +30,6 @@ config_setting(
     name = "linux",
     values = {"cpu": "k8"},
     visibility = ["//:__subpackages__"],
-)
-
-web_test_archive(
-    name = "chromedriver",
-    archive = "@org_chromium_chromedriver//file",
-    named_files = {
-        "CHROMEDRIVER": "chromedriver",
-    },
-)
-
-web_test_archive(
-    name = "chrome",
-    archive = "@com_google_chrome//file",
-    named_files = select({
-        ":linux": {
-            "CHROME": "chrome-precise64/chrome",
-        },
-        ":mac": {
-            "CHROME": "chrome-mac/Google Chrome.app/Contents/MacOS/Google Chrome",
-        },
-    }),
-)
-
-web_test_archive(
-    name = "firefox",
-    archive = "@org_mozilla_firefox//file",
-    named_files = select({
-        ":linux": {
-            "FIREFOX": "firefox-sdk/bin/firefox",
-        },
-        ":mac": {
-            "FIREFOX": "firefox-sdk/bin/Firefox.app/Contents/MacOS/firefox",
-        },
-    }),
-)
-
-web_test_archive(
-    name = "geckodriver",
-    archive = "@org_mozilla_geckodriver//file",
-    named_files = {
-        "GECKODRIVER": "geckodriver",
-    },
-)
-
-web_test_archive(
-    name = "phantomjs_bin",
-    archive = "@org_phantomjs//file",
-    named_files = select({
-        ":linux": {
-            "PHANTOMJS": "phantomjs-2.1.1-linux-x86_64/bin/phantomjs",
-        },
-        ":mac": {
-            "PHANTOMJS": "phantomjs-2.1.1-macosx/bin/phantomjs",
-        },
-    }),
 )
 
 browser(
@@ -102,8 +49,8 @@ browser(
 browser(
     name = "firefox-native",
     data = [
-        ":firefox",
-        ":geckodriver",
+        "//third_party/firefox",
+        "//third_party/geckodriver",
     ],
     environment = select({
         ":linux": None,
@@ -118,8 +65,8 @@ browser(
 browser(
     name = "chrome-native",
     data = [
-        ":chrome",
-        ":chromedriver",
+        "//third_party/chrome",
+        "//third_party/chromedriver",
     ],
     environment = select({
         ":linux": None,
@@ -132,8 +79,8 @@ browser(
 browser(
     name = "phantomjs",
     data = [
-        ":phantomjs_bin",
-        "//java:SELENIUM_SERVER",
+        "//third_party/phantomjs",
+        "//third_party/selenium:SELENIUM_SERVER",
     ],
     environment = {"DISABLE_X_DISPLAY": "1"},
     metadata = "phantomjs.json",

@@ -16,15 +16,34 @@
 #
 package(
     default_testonly = 1,
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//browsers:__subpackages__"],
 )
 
-licenses(["notice"])  # Apache 2.0
+load("//web:web.bzl", "web_test_archive")
 
-java_library(
-    name = "util",
-    srcs = glob(["*.java"]),
-    deps = [
-        "@com_google_guava_guava//jar",
-    ],
+licenses(["by_exception_only"])
+
+exports_files(["LICENSE"])
+
+config_setting(
+    name = "mac",
+    values = {"cpu": "darwin"},
+)
+
+config_setting(
+    name = "linux",
+    values = {"cpu": "k8"},
+)
+
+web_test_archive(
+    name = "chrome",
+    archive = "@com_google_chrome//file",
+    named_files = select({
+        ":linux": {
+            "CHROME": "chrome-precise64/chrome",
+        },
+        ":mac": {
+            "CHROME": "chrome-mac/Google Chrome.app/Contents/MacOS/Google Chrome",
+        },
+    }),
 )

@@ -18,6 +18,8 @@ package(default_testonly = True)
 
 load(":web.bzl", "web_test_config")
 
+licenses(["notice"])  # Apache 2.0
+
 web_test_config(
     name = "default_config",
     visibility = ["//visibility:public"],

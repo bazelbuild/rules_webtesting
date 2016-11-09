@@ -16,15 +16,19 @@
 #
 package(
     default_testonly = 1,
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//browsers:__subpackages__"],
 )
 
-licenses(["notice"])  # Apache 2.0
+load("//web:web.bzl", "web_test_archive")
 
-java_library(
-    name = "util",
-    srcs = glob(["*.java"]),
-    deps = [
-        "@com_google_guava_guava//jar",
-    ],
+licenses(["reciprocal"])  # MPL 2.0
+
+exports_files(["LICENSE"])
+
+web_test_archive(
+    name = "geckodriver",
+    archive = "@org_mozilla_geckodriver//file",
+    named_files = {
+        "GECKODRIVER": "geckodriver",
+    },
 )

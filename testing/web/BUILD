@@ -18,6 +18,8 @@ package(default_testonly = 1)
 
 load("//web:web.bzl", "web_test", "web_test_suite")
 
+licenses(["notice"])  # Apache 2.0
+
 py_library(
     name = "web",
     srcs = glob(
