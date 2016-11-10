@@ -13,7 +13,6 @@
 # limitations under the License.
 """Defines external repositories needs by rules_webtesting."""
 
-
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@bazel_tools//tools/build_defs/repo:maven_rules.bzl", "maven_jar")
 
@@ -53,7 +52,6 @@ def web_test_repositories(java=False,
         url="https://github.com/gorilla/mux/archive/cf79e51a62d8219d52060dfc1b4e810414ba2d15.tar.gz",
         sha256="80077e14b2f0f8f2796b6bfcf5c8e41e148e3c8c45b4c20d1e6856b348d5efb7",
         strip_prefix="mux-cf79e51a62d8219d52060dfc1b4e810414ba2d15")
-    
 
   if java:
     if not omit_org_seleniumhq_java:
