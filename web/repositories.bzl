@@ -95,15 +95,15 @@ def web_test_repositories(java=False,
 
 
 def browser_repositories(firefox=False, chrome=False, phantomjs=False):
-  """Sets up repositories for browsers defined in //browsers/....    
-     
-  This should only be used on an experimental basis; trojects should define    
-  their own.browsers.    
-   
-  Args:    
-    firefox: Configure repositories for //browsers:firefox-native.   
-    chrome: Configure repositories for //browsers:chrome-native.   
-    phantomjs: Configure repositories for //browsers:phantomjs-native.   
+  """Sets up repositories for browsers defined in //browsers/....
+
+  This should only be used on an experimental basis; trojects should define
+  their own.browsers.
+
+  Args:
+    firefox: Configure repositories for //browsers:firefox-native.
+    chrome: Configure repositories for //browsers:chrome-native.
+    phantomjs: Configure repositories for //browsers:phantomjs-native.
   """
   if chrome:
     platform_http_file(
