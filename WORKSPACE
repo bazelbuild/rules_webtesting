@@ -65,12 +65,6 @@ maven_jar(
     sha1 = "2973d150c0dc1fefe998f834810d68f278ea58ec",
 )
 
-maven_jar(
-    name = "com_google_truth_truth",
-    artifact = "com.google.truth:truth:0.29",
-    sha1 = "b6ad12d98295a7d17b3fe4b8969d0f7905626b30",
-)
-
 http_archive(
     name = "io_bazel_rules_sass",
     sha256 = "d39d40c39a0fa2c7d05230ccf95aac3628936e4e76c0379ad324ff0b8488160f",
