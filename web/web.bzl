@@ -13,19 +13,12 @@
 # limitations under the License.
 """Public definitions for web_test related build rules."""
 
-load(
-    "//web/internal:shared.bzl",
-    "is_list_like",)
 load("//web/internal:collections.bzl", "lists")
-load(
-    "//web/internal:browser.bzl",
-    browser_alias="browser",)
-load(
-    "//web/internal:web_test.bzl",
-    web_test_alias="web_test",)
+load("//web/internal:browser.bzl", browser_alias="browser")
+load("//web/internal:web_test.bzl", web_test_alias="web_test")
 load(
     "//web/internal:web_test_config.bzl",
-    web_test_config_alias="web_test_config",)
+    web_test_config_alias="web_test_config")
 load(
     "//web/internal:web_test_named_executable.bzl",
     web_test_named_executable_alias="web_test_named_executable")
@@ -78,7 +71,7 @@ def web_test_suite(name,
     visibility: Label List; optional.
     local: Boolean; optional.
   """
-  if not is_list_like(browsers):
+  if not lists.is_list_like(browsers):
     fail("expected value of type 'list' or 'tuple' for attribute 'browsers' " +
          "but got '%s'" % type(browsers))
   if not browsers:
@@ -171,18 +164,21 @@ def browser(testonly=True, **kwargs):
   browser_alias(testonly=testonly, **kwargs)
 
 
-def web_test(browser, test, data=None, size=None, **kwargs):
+def web_test(test, data=None, size=None, **kwargs):
   """Wrapper around web_test to correctly set defaults.
   
   Args:
-    data
+    test: the test target that should be run.
+    data: files needed runtime.
     size: default = "large"
     **kwargs: see web_test in //web/internal:web_test.bzl
   """
   data = lists.clone(data)
   lists.ensure_contains(data, test)
+  if config:
+    lists.ensure_contains(data, config)
   size = size or "large"
-  web_test_alias(browser=browser, test=test, data=data, size=size, **kwargs)
+  web_test_alias(data=data, size=size, test=test, **kwargs)
 
 
 def web_test_config(testonly=True, **kwargs):
@@ -197,30 +193,39 @@ def web_test_config(testonly=True, **kwargs):
   web_test_config_alias(testonly=testonly, **kwargs)
 
 
-def web_test_named_executable(testonly=True, **kwargs):
+def web_test_named_executable(executable, data=None, testonly=True, **kwargs):
   """Wrapper around web_test_named_executable to correctly set defaults.
 
   Args:
+    executable: the executable that is being referenced.
+    data: additional runtime files that this executable needs.
     testonly: default = True
     **kwargs: see web_test_named_executable in 
       //web/internal:web_test_named_executable.bzl
   """
+  data = lists.clone(data)
+  lists.ensure_contains(data, executable)
   if testonly == None:
     testonly = True
-  web_test_named_executable_alias(testonly=testonly, **kwargs)
+  web_test_named_executable_alias(
+      data=data, executable=executable, testonly=testonly, **kwargs)
 
 
-def web_test_named_file(testonly=True, **kwargs):
+def web_test_named_file(file, data=None, testonly=True, **kwargs):
   """Wrapper around web_test_named_file to correctly set defaults.
 
   Args:
+    file: the file that is being references.
+    data: additional runtime files that this file needs.
     testonly: default = True
     **kwargs: see web_test_named_file in 
       //web/internal:web_test_named_file.bzl
   """
+  data = lists.clone(data)
+  lists.ensure_contains(data, file)
   if testonly == None:
     testonly = True
-  web_test_named_file_alias(testonly=testonly, **kwargs)
+  web_test_named_file_alias(data=data, file=file, testonly=testonly, **kwargs)
 
 
 def web_test_archive(testonly=True, **kwargs):
