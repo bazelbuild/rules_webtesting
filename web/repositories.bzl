@@ -11,21 +11,43 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Defines external repositories needs by rules_webtesting."""
 
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
+load("@bazel_tools//tools/build_defs/repo:maven_rules.bzl", "maven_jar")
 
 
 def web_test_repositories(java=False,
                           go=False,
                           python=False,
                           omit_com_github_gorilla_mux=False,
-                          omit_org_seleniumhq_server=False,
                           omit_org_seleniumhq_java=False,
                           omit_org_json_json=False,
                           omit_com_google_code_findbugs_jsr305=False,
                           omit_com_google_guava_guava=False,
                           omit_com_github_tebeka_selenium=False,
                           omit_org_seleniumhq_py=False):
+  """Configure repositories for Web Test Launcher and for client languages.
+
+  Args:
+    java: Configure Java client-side libraries.
+    go: Configure Go client-side libraries.
+    python: Configure Python client libraries.
+    omit_com_github_gorilla_mux*: Do not install Gorilla MUX. Gorilla
+      MUX is required to compile the test launcher.
+    omit_org_seleniumhq_java: Do not install Java Selenium client bindings.
+      These bindings are only installed if java=True.
+    omit_org_json_json: Do not instal json.org's Java JSON library.
+      This library is only installed if java=True.
+    omit_com_google_code_findbugs_jsr305: Do not install JSR305 annotations
+      library. This library is only installed if java=True.
+    omit_com_google_guava_guava: Do not install Guava libraries. This
+      library is only installed if java=True.
+    omit_com_github_tebeka_selenium: Do not install Go WebDriver client
+      bindings. These binding are only installed if go=True.
+    omit_org_seleniumhq_py: Do not install Python Selenium client bindings.
+      These bindings are only installed if python=True.
+  """
   if not omit_com_github_gorilla_mux:
     native.new_http_archive(
         name="com_github_gorilla_mux",
@@ -33,13 +55,6 @@ def web_test_repositories(java=False,
         url="https://github.com/gorilla/mux/archive/cf79e51a62d8219d52060dfc1b4e810414ba2d15.tar.gz",
         sha256="80077e14b2f0f8f2796b6bfcf5c8e41e148e3c8c45b4c20d1e6856b348d5efb7",
         strip_prefix="mux-cf79e51a62d8219d52060dfc1b4e810414ba2d15")
-
-  if not omit_org_seleniumhq_server:
-    native.http_jar(
-        name="org_seleniumhq_server",
-        sha256="f5ada04a651ba7ec70fcbc68bd4a59342a928ef7dce858ec594a8d5c49576ace",
-        url="http://selenium-release.storage.googleapis.com/3.0-beta3/selenium-server-standalone-3.0.0-beta3.jar"
-    )
 
   if java:
     if not omit_org_seleniumhq_java:
@@ -51,19 +66,19 @@ def web_test_repositories(java=False,
       )
 
     if not omit_org_json_json:
-      native.maven_jar(
+      maven_jar(
           name="org_json_json",
           artifact="org.json:json:20160810",
           sha1="aca5eb39e2a12fddd6c472b240afe9ebea3a6733")
 
     if not omit_com_google_code_findbugs_jsr305:
-      native.maven_jar(
+      maven_jar(
           name="com_google_code_findbugs_jsr305",
           artifact="com.google.code.findbugs:jsr305:3.0.1",
           sha1="f7be08ec23c21485b9b5a1cf1654c2ec8c58168d")
 
     if not omit_com_google_guava_guava:
-      native.maven_jar(
+      maven_jar(
           name="com_google_guava_guava",
           artifact="com.google.guava:guava:19.0",
           sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9")
@@ -89,6 +104,16 @@ def web_test_repositories(java=False,
 
 
 def browser_repositories(firefox=False, chrome=False, phantomjs=False):
+  """Sets up repositories for browsers defined in //browsers/....
+  
+  This should only be used on an experimental basis; trojects should define
+  their own.browsers.
+
+  Args:
+    firefox: Configure repositories for //browsers:firefox-native.
+    chrome: Configure repositories for //browsers:chrome-native.
+    phantomjs: Configure repositories for //browsers:phantomjs-native.
+  """
   if chrome:
     platform_http_file(
         name="org_chromium_chromedriver",
@@ -130,4 +155,10 @@ def browser_repositories(firefox=False, chrome=False, phantomjs=False):
         amd64_url="http://bazel-mirror.storage.googleapis.com/bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2",
         macos_sha256="538cf488219ab27e309eafc629e2bcee9976990fe90b1ec334f541779150f8c1",
         macos_url="http://bazel-mirror.storage.googleapis.com/bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
+    )
+
+    native.http_jar(
+        name="org_seleniumhq_server",
+        sha256="f5ada04a651ba7ec70fcbc68bd4a59342a928ef7dce858ec594a8d5c49576ace",
+        url="http://selenium-release.storage.googleapis.com/3.0-beta3/selenium-server-standalone-3.0.0-beta3.jar"
     )

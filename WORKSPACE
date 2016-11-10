@@ -57,6 +57,8 @@ http_file(
     url = "http://bazel-mirror.storage.googleapis.com/http.us.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-mono_20160116-1_all.deb",
 )
 
+load("@bazel_tools//tools/build_defs/repo:maven_rules.bzl", "maven_jar")
+
 maven_jar(
     name = "junit_junit",
     artifact = "junit:junit:4.12",
