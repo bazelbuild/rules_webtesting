@@ -1,5 +1,3 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
-
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +16,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 #
 package(default_testonly = True)
 
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 load("//web:web.bzl", "web_test", "web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
