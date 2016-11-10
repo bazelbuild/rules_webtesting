@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
+package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
@@ -47,7 +47,6 @@ go_library(
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/launcher/environments:environment",
-        "//go/metadata:capabilities",
         "//go/util:httphelper",
         "@com_github_gorilla_mux//:mux",
     ],

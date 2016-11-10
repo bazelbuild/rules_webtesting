@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
+package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
@@ -60,11 +60,11 @@ go_test(
     name = "healthreporter_test",
     srcs = ["health_reporter_test.go"],
     library = ":healthreporter",
+    deps = [":errors"],
 )
 
 go_library(
     name = "cmdhelper",
     srcs = ["cmd_helper.go"],
     visibility = ["//go:__subpackages__"],
-    deps = [":errors"],
 )

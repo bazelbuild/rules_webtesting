@@ -35,7 +35,7 @@ type WebTestFiles struct {
 	// are relative to the runfiles root. The archive will only be extracted if getFilePath is called
 	// at least once with a name defined in NamedFiles. If so, the entire archive will be extracted
 	// into subdirectory located test tmpdir.
-	ArchiveFile string            `json:"archiveFile,omitempty"`
+	ArchiveFile string `json:"archiveFile,omitempty"`
 	// NamedFiles is a map of names to file paths. These file paths are relative to the runfiles
 	// root if ArchiveFile is absent, otherwise they are paths inside the archive referred to by
 	// ArchiveFile. The names are used by other parts of Web Test Launcher to refer to needed
@@ -45,10 +45,10 @@ type WebTestFiles struct {
 	// can call md.GetFilePath("CHROMEDRIVER") (where md is a *metadata.Metadata object) which will
 	// search through all NamedFiles of all WebTestFiles structs in md to find that key and return
 	// the path to the corresponding file (extracting an archive if necessary).
-	NamedFiles  map[string]string `json:"namedFiles"`
+	NamedFiles map[string]string `json:"namedFiles"`
 
 	// The mu field protects access to the extractedPath field.
-	mu            sync.Mutex
+	mu sync.Mutex
 	// The extractedPath field refers to the location where this archive has been extracted to, if
 	// has been extracted.
 	extractedPath string

@@ -14,7 +14,6 @@
 """Defines external repositories needs by rules_webtesting."""
 
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
-load("@bazel_tools//tools/build_defs/repo:maven_rules.bzl", "maven_jar")
 
 
 def web_test_repositories(java=False,
@@ -22,31 +21,28 @@ def web_test_repositories(java=False,
                           python=False,
                           omit_com_github_gorilla_mux=False,
                           omit_org_seleniumhq_java=False,
-                          omit_org_json_json=False,
                           omit_com_google_code_findbugs_jsr305=False,
                           omit_com_google_guava_guava=False,
                           omit_com_github_tebeka_selenium=False,
                           omit_org_seleniumhq_py=False):
-  """Configure repositories for Web Test Launcher and for client languages.
-
-  Args:
-    java: Configure Java client-side libraries.
-    go: Configure Go client-side libraries.
-    python: Configure Python client libraries.
-    omit_com_github_gorilla_mux*: Do not install Gorilla MUX. Gorilla
-      MUX is required to compile the test launcher.
-    omit_org_seleniumhq_java: Do not install Java Selenium client bindings.
-      These bindings are only installed if java=True.
-    omit_org_json_json: Do not instal json.org's Java JSON library.
-      This library is only installed if java=True.
-    omit_com_google_code_findbugs_jsr305: Do not install JSR305 annotations
-      library. This library is only installed if java=True.
-    omit_com_google_guava_guava: Do not install Guava libraries. This
-      library is only installed if java=True.
-    omit_com_github_tebeka_selenium: Do not install Go WebDriver client
-      bindings. These binding are only installed if go=True.
-    omit_org_seleniumhq_py: Do not install Python Selenium client bindings.
-      These bindings are only installed if python=True.
+  """Configure repositories for Web Test Launcher and for client languages.    
+   
+  Args:    
+    java: Configure Java client-side libraries.    
+    go: Configure Go client-side libraries.    
+    python: Configure Python client libraries.   
+    omit_com_github_gorilla_mux*: Do not install Gorilla MUX. Gorilla    
+      MUX is required to compile the test launcher.    
+    omit_org_seleniumhq_java: Do not install Java Selenium client bindings.    
+      These bindings are only installed if java=True.    
+    omit_com_google_code_findbugs_jsr305: Do not install JSR305 annotations    
+      library. This library is only installed if java=True.    
+    omit_com_google_guava_guava: Do not install Guava libraries. This    
+      library is only installed if java=True.    
+    omit_com_github_tebeka_selenium: Do not install Go WebDriver client    
+      bindings. These binding are only installed if go=True.   
+    omit_org_seleniumhq_py: Do not install Python Selenium client bindings.    
+      These bindings are only installed if python=True.    
   """
   if not omit_com_github_gorilla_mux:
     native.new_http_archive(
@@ -65,20 +61,14 @@ def web_test_repositories(java=False,
           url="http://selenium-release.storage.googleapis.com/3.0-beta3/selenium-java-3.0.0-beta3.zip"
       )
 
-    if not omit_org_json_json:
-      maven_jar(
-          name="org_json_json",
-          artifact="org.json:json:20160810",
-          sha1="aca5eb39e2a12fddd6c472b240afe9ebea3a6733")
-
     if not omit_com_google_code_findbugs_jsr305:
-      maven_jar(
+      native.maven_jar(
           name="com_google_code_findbugs_jsr305",
           artifact="com.google.code.findbugs:jsr305:3.0.1",
           sha1="f7be08ec23c21485b9b5a1cf1654c2ec8c58168d")
 
     if not omit_com_google_guava_guava:
-      maven_jar(
+      native.maven_jar(
           name="com_google_guava_guava",
           artifact="com.google.guava:guava:19.0",
           sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9")
@@ -105,7 +95,7 @@ def web_test_repositories(java=False,
 
 def browser_repositories(firefox=False, chrome=False, phantomjs=False):
   """Sets up repositories for browsers defined in //browsers/....
-  
+
   This should only be used on an experimental basis; trojects should define
   their own.browsers.
 

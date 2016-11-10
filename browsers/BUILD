@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
+package(default_testonly = True)
 
 load("//web:web.bzl", "browser")
 

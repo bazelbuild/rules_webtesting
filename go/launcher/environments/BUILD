@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
+package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
@@ -51,7 +51,6 @@ go_library(
         ":environment",
         "//go/launcher:cmdhelper",
         "//go/launcher/services:selenium",
-        "//go/launcher/services:service",
         "//go/metadata",
     ],
 )
@@ -64,7 +63,6 @@ go_library(
         ":environment",
         "//go/launcher:cmdhelper",
         "//go/launcher/services:chromedriver",
-        "//go/launcher/services:service",
         "//go/metadata",
     ],
 )
@@ -77,7 +75,6 @@ go_library(
         ":environment",
         "//go/launcher:cmdhelper",
         "//go/launcher/services:geckodriver",
-        "//go/launcher/services:service",
         "//go/metadata",
     ],
 )

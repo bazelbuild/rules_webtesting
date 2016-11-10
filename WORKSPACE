@@ -57,18 +57,10 @@ http_file(
     url = "http://bazel-mirror.storage.googleapis.com/http.us.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-mono_20160116-1_all.deb",
 )
 
-load("@bazel_tools//tools/build_defs/repo:maven_rules.bzl", "maven_jar")
-
 maven_jar(
     name = "junit_junit",
     artifact = "junit:junit:4.12",
     sha1 = "2973d150c0dc1fefe998f834810d68f278ea58ec",
-)
-
-maven_jar(
-    name = "com_google_truth_truth",
-    artifact = "com.google.truth:truth:0.29",
-    sha1 = "b6ad12d98295a7d17b3fe4b8969d0f7905626b30",
 )
 
 http_archive(
