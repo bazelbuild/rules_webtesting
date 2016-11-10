@@ -27,7 +27,6 @@ java_test(
     test_class = "com.google.testing.web.WebTestTest",
     deps = [
         "//java/com/google/testing/web",
-        "@com_google_truth_truth//jar",
         "@junit_junit//jar",
         "@org_seleniumhq_java//:selenium",
     ],

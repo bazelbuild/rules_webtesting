@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 

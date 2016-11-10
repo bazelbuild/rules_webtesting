@@ -1,3 +1,5 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +16,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -47,7 +47,6 @@ go_library(
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/launcher/environments:environment",
-        "//go/metadata:capabilities",
         "//go/util:httphelper",
         "@com_github_gorilla_mux//:mux",
     ],

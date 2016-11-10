@@ -1,3 +1,5 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +16,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
-
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -51,7 +51,6 @@ go_library(
         ":environment",
         "//go/launcher:cmdhelper",
         "//go/launcher/services:selenium",
-        "//go/launcher/services:service",
         "//go/metadata",
     ],
 )
@@ -64,7 +63,6 @@ go_library(
         ":environment",
         "//go/launcher:cmdhelper",
         "//go/launcher/services:chromedriver",
-        "//go/launcher/services:service",
         "//go/metadata",
     ],
 )
@@ -77,7 +75,6 @@ go_library(
         ":environment",
         "//go/launcher:cmdhelper",
         "//go/launcher/services:geckodriver",
-        "//go/launcher/services:service",
         "//go/metadata",
     ],
 )

@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-package(default_testonly = 1)
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -23,9 +23,7 @@ java_library(
     srcs = glob(["*.java"]),
     visibility = ["//visibility:public"],
     deps = [
-        "//java/com/google/testing/util",
         "@com_google_code_findbugs_jsr305//jar",
-        "@org_json_json//jar",
         "@org_seleniumhq_java//:selenium",
     ],
 )
