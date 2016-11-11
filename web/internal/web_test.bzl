@@ -16,26 +16,22 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "get_metadata_files",
-    "merge_metadata_files",
-    "path",)
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_impl(ctx):
-  if ctx.attr.browser.disabled:
+  if ctx.attr.browser.web_test.disabled:
     return _generate_noop_test(
-        ctx, """the browser configuration you requested is temporarily disabled.
+        ctx, """The browser configuration you requested is temporarily disabled.
 
 Disabled browser: %s
 
 Why was this browser disabled?
-%s""" % (ctx.attr.browser.label, ctx.attr.browser.disabled))
+%s""" % (ctx.attr.browser.label, ctx.attr.browser.web_test.disabled))
 
   missing_tags = [
-      tag for tag in ctx.attr.browser.required_tags
+      tag for tag in ctx.attr.browser.web_test.required_tags
       if (tag not in ctx.attr.tags) and (tag != "local" or not ctx.attr.local)
   ]
 
@@ -61,9 +57,7 @@ def _generate_noop_test(ctx, reason, status=0):
   else:
     success = "passes"
 
-  ctx.file_action(
-      content="",
-      output=ctx.outputs.web_test_metadata,)
+  metadata.create_file(ctx, output=ctx.outputs.web_test_metadata)
 
   ctx.template_action(
       template=ctx.file.noop_web_test_template,
@@ -79,31 +73,38 @@ def _generate_noop_test(ctx, reason, status=0):
 
 
 def _generate_default_test(ctx):
-  metadata_files = get_metadata_files(ctx, ["data", "browser", "config"])
+  metadata_files = metadata.get_files(ctx, ["config", "browser", "data"])
+  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+  metadata.create_file(ctx=ctx, output=patch, test_label=ctx.attr.test.label)
+  metadata_files = metadata_files | set([patch])
 
-  merge_metadata_files(
+  metadata.merge_files(
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files)
 
   env_vars = ""
-  for k, v in ctx.attr.browser.environment.items():
+  for k, v in ctx.attr.browser.web_test.environment.items():
     env_vars += "export %s=%s\n" % (k, v)
 
   ctx.template_action(
       template=ctx.file.web_test_template,
       output=ctx.outputs.executable,
       substitutions={
-          "%TEMPLATED_env_vars%": env_vars,
-          "%TEMPLATED_launcher%": path(ctx, ctx.executable.launcher),
-          "%TEMPLATED_metadata%": path(ctx, ctx.outputs.web_test_metadata),
-          "%TEMPLATED_test%": path(ctx, ctx.executable.test),
+          "%TEMPLATED_env_vars%":
+              env_vars,
+          "%TEMPLATED_launcher%":
+              files.long_path(ctx, ctx.executable.launcher),
+          "%TEMPLATED_metadata%":
+              files.long_path(ctx, ctx.outputs.web_test_metadata),
+          "%TEMPLATED_test%":
+              files.long_path(ctx, ctx.executable.test),
       },
       executable=True)
 
-  return struct(runfiles=build_runfiles(
-      ctx,
+  return struct(runfiles=files.runfiles(
+      ctx=ctx,
       files=[ctx.outputs.web_test_metadata],
       deps_attrs=["launcher", "browser", "config", "test"]))
 
@@ -115,19 +116,12 @@ web_test = rule(
                 cfg="data", executable=True, mandatory=True),
         "browser":
             attr.label(
-                cfg="data",
-                mandatory=True,
-                providers=[
-                    "disabled",
-                    "environment",
-                    "required_tags",
-                    "web_test_metadata",
-                ]),
+                cfg="data", mandatory=True, providers=["web_test"]),
         "config":
             attr.label(
                 cfg="data",
                 default=Label("//web:default_config"),
-                providers=["web_test_metadata"]),
+                providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),

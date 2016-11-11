@@ -21,7 +21,7 @@ Usage:
 """
 
 
-def is_list_like(val):
+def _is_list_like(val):
   """Checks is val is a list-like (list, set, tuple) value."""
   return type(val) in [type([]), type(set()), type(())]
 
@@ -40,7 +40,7 @@ def _list_ensure_contains_all(lst, items):
 
 def _list_clone(original):
   """Create a new list with content of original."""
-  if is_list_like(original):
+  if _is_list_like(original):
     return list(original)
   if original:
     fail('got "' + original + '", but expected none or a list-like value')
@@ -50,7 +50,8 @@ def _list_clone(original):
 lists = struct(
     clone=_list_clone,
     ensure_contains=_list_ensure_contains,
-    ensure_contains_all=_list_ensure_contains_all,)
+    ensure_contains_all=_list_ensure_contains_all,
+    is_list_like=_is_list_like)
 
 
 def _map_clone(original):
@@ -60,4 +61,4 @@ def _map_clone(original):
   return new_map
 
 
-maps = struct(clone=_map_clone,)
+maps = struct(clone=_map_clone)

@@ -16,35 +16,30 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "create_metadata_file",
-    "get_metadata_files",
-    "merge_metadata_files",)
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  create_metadata_file(ctx=ctx, output=patch, browser_label=ctx.label)
+  metadata.create_file(ctx=ctx, output=patch, browser_label=ctx.label)
+  metadata_files = metadata.get_files(ctx=ctx, attr_names=["data"])
+  metadata_files = metadata_files | set([patch, ctx.file.metadata])
 
-  metadata_files = get_metadata_files(ctx,
-                                      ["data"]) + [ctx.file.metadata, patch]
-
-  merge_metadata_files(
+  metadata.merge_files(
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files)
 
   return struct(
-      disabled=ctx.attr.disabled,
-      environment=ctx.attr.environment,
-      required_tags=ctx.attr.required_tags,
-      runfiles=build_runfiles(
-          ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=files.runfiles(ctx=ctx),
+      web_test=struct(
+          disabled=ctx.attr.disabled,
+          environment=ctx.attr.environment,
+          metadata=ctx.outputs.web_test_metadata,
+          required_tags=ctx.attr.required_tags))
 
 
 browser = rule(

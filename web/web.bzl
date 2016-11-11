@@ -13,9 +13,6 @@
 # limitations under the License.
 """Public definitions for web_test related build rules."""
 
-load(
-    "//web/internal:shared.bzl",
-    "is_list_like",)
 load("//web/internal:collections.bzl", "lists")
 load(
     "//web/internal:browser.bzl",
@@ -78,7 +75,7 @@ def web_test_suite(name,
     visibility: Label List; optional.
     local: Boolean; optional.
   """
-  if not is_list_like(browsers):
+  if not lists.is_list_like(browsers):
     fail("expected value of type 'list' or 'tuple' for attribute 'browsers' " +
          "but got '%s'" % type(browsers))
   if not browsers:

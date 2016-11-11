@@ -19,41 +19,36 @@ such as additional capabilities.
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "create_metadata_file",
-    "get_metadata_files",
-    "merge_metadata_files",)
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_config_impl(ctx):
   """Implementation of the web_test_config rule."""
 
-  metadata_files = get_metadata_files(ctx, ["data", "configs"])
+  metadata_files = metadata.get_files(ctx, ["configs", "data"])
 
   if ctx.attr.metadata:
-    metadata_files += [ctx.file.metadata]
+    metadata_files = metadata_files | set([ctx.file.metadata])
 
   if metadata_files:
-    merge_metadata_files(
+    metadata.merge_files(
         ctx=ctx,
         merger=ctx.executable.merger,
         output=ctx.outputs.web_test_metadata,
         inputs=metadata_files)
   else:
-    create_metadata_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
+    metadata.create_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
 
   return struct(
-      runfiles=build_runfiles(
-          ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=files.runfiles(ctx=ctx),
+      web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 
 web_test_config = rule(
     attrs={
         "configs":
-            attr.label_list(providers=["web_test_metadata"]),
+            attr.label_list(providers=["web_test"]),
         "metadata":
             attr.label(allow_single_file=True),
         "data":

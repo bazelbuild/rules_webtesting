@@ -12,44 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "get_metadata_files",
-    "merge_metadata_files",
-    "path",)
+load("//web/internal:files.bzl", "files")
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_named_executable_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
-  metadata_files = get_metadata_files(ctx, ["data"])
+  metadata_files = metadata.get_files(ctx, ["data"])
 
-  if metadata_files:
-    patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  else:
-    patch = ctx.outputs.web_test_metadata
-
-  content = """{
-  "webTestFiles": [{"namedFiles": {"%s": "%s"} }]
-}""" % (name, path(ctx, ctx.executable.executable))
-
-  ctx.file_action(output=patch, content=content, executable=False)
-
-  if metadata_files:
-    metadata_files += [patch]
-    merge_metadata_files(
-        ctx=ctx,
-        merger=ctx.executable.merger,
-        output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files)
+  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+  metadata.create_file(
+      ctx=ctx,
+      output=patch,
+      web_test_files=[
+          metadata.web_test_files(
+              named_files={name: ctx.executable.executable}),
+      ])
+  metadata_files = metadata_files | set([patch])
+  metadata.merge_files(
+      ctx=ctx,
+      merger=ctx.executable.merger,
+      output=ctx.outputs.web_test_metadata,
+      inputs=metadata_files)
 
   return struct(
-      runfiles=build_runfiles(
-          ctx=ctx,
-          files=[ctx.outputs.web_test_metadata],
-          deps_attrs=["executable"]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=files.runfiles(
+          ctx=ctx, deps_attrs=["executable"]),
+      web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 
 web_test_named_executable = rule(
