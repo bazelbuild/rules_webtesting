@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//web/internal:files.bzl", "files")
 load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_named_executable_impl(ctx):
-  name = ctx.attr.alt_name or ctx.label.name
+  if ctx.attr.executable.label not in [data.label for data in ctx.attr.data]:
+    fail("Executable %s must be in data." % ctx.attr.executable.label, "data")
 
-  metadata_files = metadata.get_files(ctx, ["data"])
+  name = ctx.attr.alt_name or ctx.label.name
 
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   metadata.create_file(
@@ -27,9 +27,10 @@ def _web_test_named_executable_impl(ctx):
       output=patch,
       web_test_files=[
           metadata.web_test_files(
-              named_files={name: ctx.executable.executable}),
+              ctx=ctx, named_files={name: ctx.executable.executable}),
       ])
-  metadata_files = metadata_files | set([patch])
+  metadata_files = [patch] + [dep.web_test.metadata for dep in ctx.attr.deps]
+
   metadata.merge_files(
       ctx=ctx,
       merger=ctx.executable.merger,
@@ -37,8 +38,8 @@ def _web_test_named_executable_impl(ctx):
       inputs=metadata_files)
 
   return struct(
-      runfiles=files.runfiles(
-          ctx=ctx, deps_attrs=["executable"]),
+      runfiles=ctx.runfiles(
+          collect_data=True, collect_default=True),
       web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 
@@ -49,6 +50,8 @@ web_test_named_executable = rule(
         "executable":
             attr.label(
                 allow_files=True, executable=True, cfg="data", mandatory=True),
+        "deps":
+            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
@@ -65,5 +68,6 @@ web_test_named_executable = rule(
 Args:
   alt_name: If supplied, is used instead of name to lookup the executable.
   executable: The executable that will be returned for name or alt_name.
+  deps: Other web_test-related rules that this rule depends on.
   data: Runtime dependencies for the executable.
 """

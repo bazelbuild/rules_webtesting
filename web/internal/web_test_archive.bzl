@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//web/internal:files.bzl", "files")
 load("//web/internal:metadata.bzl", "metadata")
 
 
@@ -22,12 +21,14 @@ def _web_test_archive_impl(ctx):
       output=ctx.outputs.web_test_metadata,
       web_test_files=[
           metadata.web_test_files(
-              archive_file=ctx.file.archive, named_files=ctx.attr.named_files),
+              ctx=ctx,
+              archive_file=ctx.file.archive,
+              named_files=ctx.attr.named_files),
       ])
 
   return struct(
-      runfiles=files.runfiles(
-          ctx=ctx, files=[ctx.file.archive]),
+      runfiles=ctx.runfiles(
+          collect_data=True, collect_default=True, files=[ctx.file.archive]),
       web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 

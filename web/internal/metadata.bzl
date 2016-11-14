@@ -13,7 +13,6 @@
 # limitations under the License.
 """A library of functions for working with web_test metadata files."""
 
-load('//web/internal:collections.bzl', 'lists')
 load('//web/internal:files.bzl', 'files')
 
 
@@ -24,11 +23,10 @@ def _merge_files(ctx, merger, output, inputs):
     ctx: a Skylark rule context.
     merger: the WTL metadata merger executable.
     output: a File object for the output file.
-    inputs: a sequence of File objects. These files are in order of priority; 
+    inputs: a list of File objects. These files are in order of priority; 
       i.e. values in the first file will take precedence over values in the 
       second file, etc.
   """
-  inputs = list(inputs)
   paths = [i.path for i in reversed(inputs)]
   short_paths = [i.short_path for i in inputs]
   args = ['--output', output.path] + paths
@@ -60,112 +58,28 @@ def _create_file(ctx,
     web_test_files: sequence of web_test_file structs. The named files needed
       for this configuration.
   """
-  content = '{\n  "_comment": "generated file for %s"' % ctx.label
+  fields = {}
+
   if capabilities:
-    content += ',\n  "capabilities": ' + capabilities
+    fields['capabilities'] = capabilities
   if environment:
-    content += ',\n  "environment": "' + environment + '"'
+    fields['environment'] = environment
   if browser_label:
-    content += ',\n  "browserLabel": "%s"' % browser_label
+    fields['browserLabel'] = str(browser_label)
   if test_label:
-    content += ',\n  "testLabel": "%s"' % test_label
+    fields['testLabel'] = str(test_label)
   if web_test_files:
-    content += ',\n  "webTestFiles": ['
-    first = True
-    for f in web_test_files:
-      if first:
-        first = False
-      else:
-        content += ','
-      content += '\n' + _web_test_files_to_string(ctx, f, '    ')
-    content += '\n  ]'
-  content += '\n}\n'
+    fields['webTestFiles'] = web_test_files
 
-  ctx.file_action(output=output, content=content, executable=False)
+  ctx.file_action(
+      output=output, content=struct(**fields).to_json(), executable=False)
 
 
-def _web_test_files_to_string(ctx, files_struct, indent=''):
-  """Converts a web_test_files struct to a JSON string.
-
-  Args:
-    ctx: a Skylark rule context.
-    files_struct: a web_test_files struct.
-    indent: string. the base indentation that should be used when writing
-      generating the JSON-encoded string.
-  Returns:
-    a JSON-encoded string representing the web_test_files object.
-  """
-  result = indent + '{\n'
-  if files_struct.archive_file:
-    result += indent + '  "archiveFile": "' + files.long_path(
-        ctx, files_struct.archive_file) + '",\n'
-  result += indent + '  "namedFiles": {'
-  first = True
-  for n, f in files_struct.named_files.items():
-    if first:
-      first = False
-    else:
-      result += ','
-    result += '\n' + indent + '    "' + n + '": "'
-    if type(f) == type(''):
-      result += f
-    else:
-      result += files.long_path(ctx, f)
-    result += '"'
-  result += '\n' + indent + '  }\n' + indent + '}'
-  return result
-
-
-def _get_files(ctx, attr_names):
-  """Finds all of the web_test_metadata files in given attributes.
-
-  It ensures that all web_test_metadata files position in the returned list is
-  based on the last attribute in attr_names that they appear in.
-
-  Args:
-    ctx: a Skylark rule context.
-    attr_names: sequence of strings. The names of attributes to get 
-      web_test_metadata files from. Attributes earlier in the list will
-      return files earlier in the result.
-  Returns:
-    A sequence of all of the web_test_metadata files in the specificied 
-    attributes.
-  """
-  metadata_files = set()
-
-  for attr_name in reversed(attr_names):
-    attr = getattr(ctx.attr, attr_name)
-    if lists.is_list_like(attr):
-      for a in reversed(attr):
-        mf = _get_metadata_if_present(a)
-        if mf:
-          metadata_files = metadata_files | set([mf])
-    else:
-      mf = _get_metadata_if_present(attr)
-      if mf:
-        metadata_files = metadata_files | set([mf])
-
-  return metadata_files
-
-
-def _get_metadata_if_present(attr):
-  """Gets attr.web_test.metadata if it exists.
-
-  Args:
-    attr: the object to get the web_test.metadata from.
-  Returns:
-    The File object that web_test.metadata refers to if present.
-    Otherwise None.
-  """
-  if hasattr(attr, 'web_test') and hasattr(attr.web_test, 'metadata'):
-    return attr.web_test.metadata
-  return None
-
-
-def _web_test_files(archive_file=None, named_files={}):
+def _web_test_files(ctx, archive_file=None, named_files=None):
   """Build a web_test_files struct.
 
   Args:
+    ctx: a Skylark rule context.
     archive_file: a File object. The archive file where the named_files will be
       found. If absent, the named_files are located directly in the runfiles.
     named_files: a dict of strings to strings or File objects. The mapping of
@@ -176,11 +90,16 @@ def _web_test_files(archive_file=None, named_files={}):
   Returns:
     A web_test_files struct.
   """
-  return struct(archive_file=archive_file, named_files=named_files)
+  named_files = named_files or {}
+  for k, v in named_files.items():
+    if type(v) != type(''):
+      named_files[k] = files.long_path(ctx, v)
+  if archive_file:
+    archive_file = files.long_path(ctx, archive_file)
+  return struct(archiveFile=archive_file, namedFiles=struct(**named_files))
 
 
 metadata = struct(
     create_file=_create_file,
-    get_files=_get_files,
     merge_files=_merge_files,
     web_test_files=_web_test_files)

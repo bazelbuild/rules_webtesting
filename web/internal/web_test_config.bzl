@@ -19,17 +19,17 @@ such as additional capabilities.
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//web/internal:files.bzl", "files")
 load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_config_impl(ctx):
   """Implementation of the web_test_config rule."""
-
-  metadata_files = metadata.get_files(ctx, ["configs", "data"])
+  metadata_files = []
 
   if ctx.attr.metadata:
-    metadata_files = metadata_files | set([ctx.file.metadata])
+    metadata_files = [ctx.file.metadata]
+
+  metadata_files += [dep.web_test.metadata for dep in ctx.attr.deps]
 
   if metadata_files:
     metadata.merge_files(
@@ -41,16 +41,17 @@ def _web_test_config_impl(ctx):
     metadata.create_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
 
   return struct(
-      runfiles=files.runfiles(ctx=ctx),
+      runfiles=ctx.runfiles(
+          collect_data=True, collect_default=True),
       web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 
 web_test_config = rule(
     attrs={
-        "configs":
-            attr.label_list(providers=["web_test"]),
         "metadata":
-            attr.label(allow_single_file=True),
+            attr.label(allow_single_file=[".json"]),
+        "deps":
+            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
@@ -65,9 +66,7 @@ web_test_config = rule(
 """A browser-independent configuration that can be used across multiple web_tests.
 
 Args:
-  configs: A list of web_test_config rules that this rule inherits from.
-    Configuration in rules later in the list will override configuration
-    earlier in the list.
+  deps: Other web_test-related rules that this rule depends on.
   metadata: A web_test metadata file with configuration that will override
     all other configuration.
   data: Additional files that this web_test_config depends on at runtime.

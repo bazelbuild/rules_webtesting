@@ -16,7 +16,6 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//web/internal:files.bzl", "files")
 load("//web/internal:metadata.bzl", "metadata")
 
 
@@ -24,8 +23,10 @@ def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   metadata.create_file(ctx=ctx, output=patch, browser_label=ctx.label)
-  metadata_files = metadata.get_files(ctx=ctx, attr_names=["data"])
-  metadata_files = metadata_files | set([patch, ctx.file.metadata])
+  metadata_files = [
+      patch,
+      ctx.file.metadata,
+  ] + [dep.web_test.metadata for dep in ctx.attr.deps]
 
   metadata.merge_files(
       ctx=ctx,
@@ -34,7 +35,8 @@ def _browser_impl(ctx):
       inputs=metadata_files)
 
   return struct(
-      runfiles=files.runfiles(ctx=ctx),
+      runfiles=ctx.runfiles(
+          collect_data=True, collect_default=True),
       web_test=struct(
           disabled=ctx.attr.disabled,
           environment=ctx.attr.environment,
@@ -46,7 +48,9 @@ browser = rule(
     attrs={
         "metadata":
             attr.label(
-                mandatory=True, allow_single_file=True, cfg="data"),
+                mandatory=True, allow_single_file=[".json"], cfg="data"),
+        "deps":
+            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),

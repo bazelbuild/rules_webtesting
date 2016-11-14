@@ -90,7 +90,8 @@ def web_test_suite(name,
 
     # Replace current browser attributes with those specified in the browser
     # overrides.
-    overrides = browser_overrides.get(browser) or {}
+    overrides = browser_overrides.get(browser) or browser_overrides.get(
+        unqualified_browser) or {}
     overridable_attributes = _apply_browser_overrides(
         data=data or [],
         config=config,
@@ -168,7 +169,13 @@ def browser(testonly=True, **kwargs):
   browser_alias(testonly=testonly, **kwargs)
 
 
-def web_test(browser, test, data=None, size=None, **kwargs):
+def web_test(browser,
+             test,
+             config=None,
+             data=None,
+             launcher=None,
+             size=None,
+             **kwargs):
   """Wrapper around web_test to correctly set defaults.
   
   Args:
@@ -176,10 +183,19 @@ def web_test(browser, test, data=None, size=None, **kwargs):
     size: default = "large"
     **kwargs: see web_test in //web/internal:web_test.bzl
   """
+  config = config or str(Label("//web:default_config"))
+  launcher = launcher or str(Label("//go/launcher:main"))
   data = lists.clone(data)
-  lists.ensure_contains(data, test)
+  lists.ensure_contains_all(data, [browser, config, launcher, test])
   size = size or "large"
-  web_test_alias(browser=browser, test=test, data=data, size=size, **kwargs)
+  web_test_alias(
+      browser=browser,
+      config=config,
+      launcher=launcher,
+      test=test,
+      data=data,
+      size=size,
+      **kwargs)
 
 
 def web_test_config(testonly=True, **kwargs):
@@ -194,7 +210,7 @@ def web_test_config(testonly=True, **kwargs):
   web_test_config_alias(testonly=testonly, **kwargs)
 
 
-def web_test_named_executable(testonly=True, **kwargs):
+def web_test_named_executable(executable, data=None, testonly=True, **kwargs):
   """Wrapper around web_test_named_executable to correctly set defaults.
 
   Args:
@@ -202,9 +218,12 @@ def web_test_named_executable(testonly=True, **kwargs):
     **kwargs: see web_test_named_executable in 
       //web/internal:web_test_named_executable.bzl
   """
+  data = lists.clone(data)
+  lists.ensure_contains(data, executable)
   if testonly == None:
     testonly = True
-  web_test_named_executable_alias(testonly=testonly, **kwargs)
+  web_test_named_executable_alias(
+      data=data, executable=executable, testonly=testonly, **kwargs)
 
 
 def web_test_named_file(testonly=True, **kwargs):

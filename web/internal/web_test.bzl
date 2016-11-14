@@ -30,6 +30,17 @@ Disabled browser: %s
 Why was this browser disabled?
 %s""" % (ctx.attr.browser.label, ctx.attr.browser.web_test.disabled))
 
+  data_labels = [data.label for data in ctx.attr.data]
+
+  if ctx.attr.test.label not in data_labels:
+    fail("Test %s must be in data." % ctx.attr.test.label, "data")
+
+  if ctx.attr.browser.label not in data_labels:
+    fail("Browser %s must be in data." % ctx.attr.browser.label, "data")
+
+  if ctx.attr.config.label not in data_labels:
+    fail("Browser %s must be in data." % ctx.attr.browser.label, "data")
+
   missing_tags = [
       tag for tag in ctx.attr.browser.web_test.required_tags
       if (tag not in ctx.attr.tags) and (tag != "local" or not ctx.attr.local)
@@ -73,16 +84,18 @@ def _generate_noop_test(ctx, reason, status=0):
 
 
 def _generate_default_test(ctx):
-  metadata_files = metadata.get_files(ctx, ["config", "browser", "data"])
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   metadata.create_file(ctx=ctx, output=patch, test_label=ctx.attr.test.label)
-  metadata_files = metadata_files | set([patch])
 
   metadata.merge_files(
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
+      inputs=[
+          patch,
+          ctx.attr.config.web_test.metadata,
+          ctx.attr.browser.web_test.metadata,
+      ])
 
   env_vars = ""
   for k, v in ctx.attr.browser.web_test.environment.items():
@@ -103,10 +116,10 @@ def _generate_default_test(ctx):
       },
       executable=True)
 
-  return struct(runfiles=files.runfiles(
-      ctx=ctx,
-      files=[ctx.outputs.web_test_metadata],
-      deps_attrs=["launcher", "browser", "config", "test"]))
+  return struct(runfiles=ctx.runfiles(
+      collect_data=True,
+      collect_default=True,
+      files=[ctx.outputs.web_test_metadata]))
 
 
 web_test = rule(
@@ -119,9 +132,7 @@ web_test = rule(
                 cfg="data", mandatory=True, providers=["web_test"]),
         "config":
             attr.label(
-                cfg="data",
-                default=Label("//web:default_config"),
-                providers=["web_test"]),
+                cfg="data", mandatory=True, providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
@@ -132,9 +143,7 @@ web_test = rule(
                 default=Label("//go/metadata:merger")),
         "launcher":
             attr.label(
-                cfg="data",
-                executable=True,
-                default=Label("//go/launcher:main")),
+                cfg="data", executable=True, mandatory=True),
         "web_test_template":
             attr.label(
                 allow_files=True,
