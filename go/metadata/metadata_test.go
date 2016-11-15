@@ -36,7 +36,7 @@ func TestFromFile(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		file, err := FromFile(f)
+		file, err := FromFile(f, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -57,7 +57,7 @@ func TestFromFile(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		d, err := FromFile(f)
+		d, err := FromFile(f, nil)
 		if err == nil {
 			t.Errorf("Got %+v, expected err", d)
 		}
@@ -69,7 +69,7 @@ func TestMergeFromFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cl, err := FromFile(f1)
+	cl, err := FromFile(f1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +78,7 @@ func TestMergeFromFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ab, err := FromFile(f2)
+	ab, err := FromFile(f2, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func TestMergeFromFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fb, err := FromFile(f3)
+	fb, err := FromFile(f3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
