@@ -177,7 +177,7 @@ def web_test(browser,
              size=None,
              **kwargs):
   """Wrapper around web_test to correctly set defaults.
-  
+
   Args:
     data
     size: default = "large"
