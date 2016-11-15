@@ -30,5 +30,8 @@ skylark_doc(
         "//web/internal:web_test_config.bzl",
         "//web/internal:web_test_named_executable.bzl",
     ],
-    tags = ["manual"],
+    tags = [
+        "manual",
+        "noci",
+    ],
 )

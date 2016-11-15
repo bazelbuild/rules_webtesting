@@ -23,7 +23,10 @@ licenses(["notice"])  # Apache 2.0
 java_test(
     name = "WebTestTest_wrapped",
     srcs = ["WebTestTest.java"],
-    tags = ["manual"],
+    tags = [
+        "manual",
+        "noci",
+    ],
     test_class = "com.google.testing.web.WebTestTest",
     deps = [
         "//java/com/google/testing/web",

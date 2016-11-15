@@ -45,7 +45,10 @@ go_test(
     name = "webtest_test_wrapped",
     srcs = ["webtest_test.go"],
     library = ":webtest",
-    tags = ["manual"],
+    tags = [
+        "manual",
+        "noci",
+    ],
     deps = [
         "@com_github_tebeka_selenium//:selenium",
     ],
