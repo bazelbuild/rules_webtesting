@@ -16,42 +16,41 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "create_metadata_file",
-    "get_metadata_files",
-    "merge_metadata_files",)
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  create_metadata_file(ctx=ctx, output=patch, browser_label=ctx.label)
+  metadata.create_file(ctx=ctx, output=patch, browser_label=ctx.label)
+  metadata_files = [
+      patch,
+      ctx.file.metadata,
+  ] + [dep.web_test.metadata for dep in ctx.attr.deps]
 
-  metadata_files = get_metadata_files(ctx,
-                                      ["data"]) + [ctx.file.metadata, patch]
-
-  merge_metadata_files(
+  metadata.merge_files(
       ctx=ctx,
       merger=ctx.executable.merger,
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files)
 
   return struct(
-      disabled=ctx.attr.disabled,
-      environment=ctx.attr.environment,
-      required_tags=ctx.attr.required_tags,
-      runfiles=build_runfiles(
-          ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=ctx.runfiles(
+          collect_data=True, collect_default=True),
+      web_test=struct(
+          disabled=ctx.attr.disabled,
+          environment=ctx.attr.environment,
+          metadata=ctx.outputs.web_test_metadata,
+          required_tags=ctx.attr.required_tags))
 
 
 browser = rule(
     attrs={
         "metadata":
             attr.label(
-                mandatory=True, allow_single_file=True, cfg="data"),
+                mandatory=True, allow_single_file=[".json"], cfg="data"),
+        "deps":
+            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),

@@ -12,42 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "get_metadata_files",
-    "merge_metadata_files",
-    "path",)
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_named_file_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
-  metadata_files = get_metadata_files(ctx, ["data"])
-
-  if metadata_files:
-    patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  else:
-    patch = ctx.outputs.web_test_metadata
-
-  content = """{
-  "webTestFiles": [{"namedFiles": {"%s": "%s"} }]
-}""" % (name, path(ctx, ctx.file.file))
-
-  ctx.file_action(output=patch, content=content, executable=False)
-
-  if metadata_files:
-    metadata_files += [patch]
-    merge_metadata_files(
-        ctx=ctx,
-        merger=ctx.executable.merger,
-        output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files)
+  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+  metadata.create_file(
+      ctx=ctx,
+      output=patch,
+      web_test_files=[
+          metadata.web_test_files(named_files={name: ctx.file.file}),
+      ])
+  metadata_files = [patch] + [dep.web_test.metadata for dep in ctx.attr.deps]
+  metadata.merge_files(
+      ctx=ctx,
+      merger=ctx.executable.merger,
+      output=ctx.outputs.web_test_metadata,
+      inputs=metadata_files)
 
   return struct(
-      runfiles=build_runfiles(
-          ctx=ctx, files=[ctx.outputs.web_test_metadata], deps_attrs=["file"]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=ctx.runfiles(
+          collect_data=True, collect_default=True, files=ctx.files.file),
+      web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 
 web_test_named_file = rule(
@@ -57,6 +45,8 @@ web_test_named_file = rule(
         "file":
             attr.label(
                 allow_single_file=True, cfg="data", mandatory=True),
+        "deps":
+            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
@@ -73,5 +63,6 @@ web_test_named_file = rule(
 Args:
   alt_name: If supplied, is used instead of name to lookup the file.
   file: The file that will be returned for name or alt_name.
+  deps: Other web_test-related rules that this rule depends on.
   data: Runtime dependencies for the file.
 """

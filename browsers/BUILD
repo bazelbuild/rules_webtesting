@@ -48,10 +48,6 @@ browser(
 
 browser(
     name = "firefox-native",
-    data = [
-        "//third_party/firefox",
-        "//third_party/geckodriver",
-    ],
     environment = select({
         ":linux": None,
         ":mac": {"DISABLE_X_DISPLAY": "1"},
@@ -60,31 +56,35 @@ browser(
     # if not tagged local, then bazel does not exit cleanly
     required_tags = ["local"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/firefox",
+        "//third_party/geckodriver",
+    ],
 )
 
 browser(
     name = "chrome-native",
-    data = [
-        "//third_party/chrome",
-        "//third_party/chromedriver",
-    ],
     environment = select({
         ":linux": None,
         ":mac": {"DISABLE_X_DISPLAY": "1"},
     }),
     metadata = "chrome-native.json",
     visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/chrome",
+        "//third_party/chromedriver",
+    ],
 )
 
 browser(
     name = "phantomjs",
-    data = [
-        "//third_party/phantomjs",
-        "//third_party/selenium:SELENIUM_SERVER",
-    ],
     environment = {"DISABLE_X_DISPLAY": "1"},
     metadata = "phantomjs.json",
     visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/phantomjs",
+        "//third_party/selenium:SELENIUM_SERVER",
+    ],
 )
 
 browser(

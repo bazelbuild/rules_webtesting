@@ -19,43 +19,39 @@ such as additional capabilities.
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load(
-    "//web/internal:shared.bzl",
-    "build_runfiles",
-    "create_metadata_file",
-    "get_metadata_files",
-    "merge_metadata_files",)
+load("//web/internal:metadata.bzl", "metadata")
 
 
 def _web_test_config_impl(ctx):
   """Implementation of the web_test_config rule."""
-
-  metadata_files = get_metadata_files(ctx, ["data", "configs"])
+  metadata_files = []
 
   if ctx.attr.metadata:
-    metadata_files += [ctx.file.metadata]
+    metadata_files = [ctx.file.metadata]
+
+  metadata_files += [dep.web_test.metadata for dep in ctx.attr.deps]
 
   if metadata_files:
-    merge_metadata_files(
+    metadata.merge_files(
         ctx=ctx,
         merger=ctx.executable.merger,
         output=ctx.outputs.web_test_metadata,
         inputs=metadata_files)
   else:
-    create_metadata_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
+    metadata.create_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
 
   return struct(
-      runfiles=build_runfiles(
-          ctx, files=[ctx.outputs.web_test_metadata]),
-      web_test_metadata=ctx.outputs.web_test_metadata)
+      runfiles=ctx.runfiles(
+          collect_data=True, collect_default=True),
+      web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 
 web_test_config = rule(
     attrs={
-        "configs":
-            attr.label_list(providers=["web_test_metadata"]),
         "metadata":
-            attr.label(allow_single_file=True),
+            attr.label(allow_single_file=[".json"]),
+        "deps":
+            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
@@ -70,9 +66,7 @@ web_test_config = rule(
 """A browser-independent configuration that can be used across multiple web_tests.
 
 Args:
-  configs: A list of web_test_config rules that this rule inherits from.
-    Configuration in rules later in the list will override configuration
-    earlier in the list.
+  deps: Other web_test-related rules that this rule depends on.
   metadata: A web_test metadata file with configuration that will override
     all other configuration.
   data: Additional files that this web_test_config depends on at runtime.

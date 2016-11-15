@@ -85,35 +85,3 @@ web_test_suite(
     tags = ["noci"],
     test = ":webtest_test_wrapped",
 )
-
-web_test(
-    name = "webtest_test_ci_firefox-native",
-    browser = select({
-        "//browsers:mac": "//browsers:firefox-native",
-        "//browsers:linux": "//browsers:disabled",
-    }),
-    local = True,
-    # TODO(DrMarcII): diagnose and fix test timeout
-    tags = ["noci"],
-    test = ":webtest_test_wrapped",
-)
-
-web_test(
-    name = "webtest_test_ci_chrome-native",
-    browser = select({
-        "//browsers:mac": "//browsers:chrome-native",
-        "//browsers:linux": "//browsers:disabled",
-    }),
-    local = True,
-    test = ":webtest_test_wrapped",
-)
-
-web_test(
-    name = "webtest_test_ci_phantomjs",
-    browser = select({
-        "//browsers:mac": "//browsers:phantomjs",
-        "//browsers:linux": "//browsers:disabled",
-    }),
-    local = True,
-    test = ":webtest_test_wrapped",
-)
