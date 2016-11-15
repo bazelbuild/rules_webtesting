@@ -1,0 +1,11 @@
+{
+  "capabilities": {},
+  "environment": "chromeos",
+  "browserLabel": "//browsers:figaro",
+  "testLabel": "//go/launcher:tests",
+  "namedExecutables": {},
+  "extension": {
+	  "ExtensionField1": "hello",
+	  "ExtensionField2": 1024
+  }
+}

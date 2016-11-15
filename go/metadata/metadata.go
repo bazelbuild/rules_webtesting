@@ -45,6 +45,20 @@ type Metadata struct {
 	TestLabel string `json:"testLabel,omitempty"`
 	// A list of WebTestFiles with named files in them.
 	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
+	// An object for any additinal metadata fields on this object.
+	Extension `json:"extension,omitempty"`
+}
+
+// Extension is an interface for adding additional fields that will be parsed as part of the metadata.
+type Extension interface {
+	// Merge merges this extension data with another set of Extension data. It should not mutata either
+	// Extension object, but it is allowed to return one of the Extension objects unchanged if needed.
+	// In general value in other should take precedence over values in this object.
+	Merge(other Extension) (Extension, error)
+	// Normalize normalizes and validate the extension data.
+	Normalize() error
+	// Equals returns true iff other should be treated as equal to this.
+	Equals(other Extension) bool
 }
 
 // Merge takes two Metadata objects and merges them into a new Metadata object.
@@ -75,18 +89,30 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		return nil, err
 	}
 
+	extension := m1.Extension
+	if extension == nil {
+		extension = m2.Extension
+	} else if m2.Extension != nil {
+		e, err := extension.Merge(m2.Extension)
+		if err != nil {
+			return nil, err
+		}
+		extension = e
+	}
+
 	return &Metadata{
 		Capabilities: capabilities,
 		Environment:  environment,
 		BrowserLabel: browserLabel,
 		TestLabel:    testLabel,
 		WebTestFiles: webTestFiles,
+		Extension:    extension,
 	}, nil
 }
 
 // FromFile reads a Metadata object from a json file.
-func FromFile(filename string) (*Metadata, error) {
-	metadata := &Metadata{}
+func FromFile(filename string, extension Extension) (*Metadata, error) {
+	metadata := &Metadata{Extension: extension}
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -100,6 +126,12 @@ func FromFile(filename string) (*Metadata, error) {
 		return nil, err
 	}
 	metadata.WebTestFiles = webTestFiles
+
+	if metadata.Extension != nil {
+		if err := metadata.Extension.Normalize(); err != nil {
+			return nil, err
+		}
+	}
 
 	return metadata, nil
 }

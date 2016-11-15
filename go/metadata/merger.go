@@ -33,7 +33,7 @@ func main() {
 	data := &metadata.Metadata{}
 
 	for _, file := range flag.Args() {
-		m, err := metadata.FromFile(file)
+		m, err := metadata.FromFile(file, nil)
 		if err != nil {
 			log.Fatalf("Error reading %q: %v", file, err)
 		}

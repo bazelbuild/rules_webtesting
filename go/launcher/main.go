@@ -55,7 +55,7 @@ func run() int {
 		return 127
 	}
 
-	m, err := metadata.FromFile(metadataFile)
+	m, err := metadata.FromFile(metadataFile, nil)
 	if err != nil {
 		log.Printf("Error reading metadata file: %v", err)
 		return 127

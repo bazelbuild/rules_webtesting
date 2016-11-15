@@ -50,12 +50,16 @@ go_library(
 
 go_test(
     name = "metadata_test",
-    srcs = ["metadata_test.go"],
+    srcs = [
+        "extension_test.go",
+        "metadata_test.go",
+    ],
     data = [
         "//go/metadata/testdata:all-fields.json",
         "//go/metadata/testdata:android-browser-gingerbread-nexus-s.json",
         "//go/metadata/testdata:bad-named-files.json",
         "//go/metadata/testdata:chrome-linux.json",
+        "//go/metadata/testdata:extension.json",
         "//go/metadata/testdata:merge-from-file-result.json",
     ],
     library = ":metadata",
