@@ -13,7 +13,7 @@
 # limitations under the License.
 """A library of functions for working with web_test metadata files."""
 
-load('//web/internal:files.bzl', 'files')
+load("//web/internal:files.bzl", "files")
 
 
 def _merge_files(ctx, merger, output, inputs):
@@ -29,15 +29,15 @@ def _merge_files(ctx, merger, output, inputs):
   """
   paths = [i.path for i in reversed(inputs)]
   short_paths = [i.short_path for i in inputs]
-  args = ['--output', output.path] + paths
+  args = ["--output", output.path] + paths
 
   ctx.action(
       outputs=[output],
       inputs=inputs,
       executable=merger,
       arguments=args,
-      mnemonic='METADATAMERGER',
-      progress_message='merging %s' % (', '.join(short_paths)))
+      mnemonic="METADATAMERGER",
+      progress_message="merging %s" % (", ".join(short_paths)))
 
 
 def _create_file(ctx,
@@ -61,15 +61,15 @@ def _create_file(ctx,
   fields = {}
 
   if capabilities:
-    fields['capabilities'] = capabilities
+    fields["capabilities"] = capabilities
   if environment:
-    fields['environment'] = environment
+    fields["environment"] = environment
   if browser_label:
-    fields['browserLabel'] = str(browser_label)
+    fields["browserLabel"] = str(browser_label)
   if test_label:
-    fields['testLabel'] = str(test_label)
+    fields["testLabel"] = str(test_label)
   if web_test_files:
-    fields['webTestFiles'] = web_test_files
+    fields["webTestFiles"] = web_test_files
 
   ctx.file_action(
       output=output, content=struct(**fields).to_json(), executable=False)
@@ -92,7 +92,7 @@ def _web_test_files(ctx, archive_file=None, named_files=None):
   """
   named_files = named_files or {}
   for k, v in named_files.items():
-    if type(v) != type(''):
+    if type(v) != type(""):
       named_files[k] = files.long_path(ctx, v)
   if archive_file:
     archive_file = files.long_path(ctx, archive_file)
