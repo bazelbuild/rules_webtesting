@@ -25,7 +25,24 @@ web_test_config(
     visibility = ["//visibility:public"],
 )
 
-exports_files(
-    glob(["*.bzl"]),
+filegroup(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    data = ["//web/internal:platform_http_file"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "web",
+    srcs = ["web.bzl"],
+    data = [
+        "//web/internal:browser",
+        "//web/internal:collections",
+        "//web/internal:web_test",
+        "//web/internal:web_test_archive",
+        "//web/internal:web_test_config",
+        "//web/internal:web_test_named_executable",
+        "//web/internal:web_test_named_file",
+    ],
     visibility = ["//visibility:public"],
 )
