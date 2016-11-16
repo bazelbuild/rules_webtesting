@@ -19,14 +19,77 @@ package(default_testonly = True)
 licenses(["notice"])  # Apache 2.0
 
 exports_files(
-    glob(["*.bzl"]),
-    visibility = [
-        "//doc:__subpackages__",
-        "//web:__subpackages__",
-    ],
+    glob(["*.sh.template"]),
+    visibility = ["//visibility:public"],
 )
 
-exports_files(
-    glob(["*.sh.template"]),
+filegroup(
+    name = "browser",
+    srcs = ["browser.bzl"],
+    data = [":metadata"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "collections",
+    srcs = ["collections.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "files",
+    srcs = ["files.bzl"],
+    data = [":collections"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "metadata",
+    srcs = ["metadata.bzl"],
+    data = [":files"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "platform_http_file",
+    srcs = ["platform_http_file.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "web_test",
+    srcs = ["web_test.bzl"],
+    data = [
+        ":files",
+        ":metadata",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "web_test_archive",
+    srcs = ["web_test_archive.bzl"],
+    data = [":metadata"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "web_test_config",
+    srcs = ["web_test_config.bzl"],
+    data = [":metadata"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "web_test_named_executable",
+    srcs = ["web_test_named_executable.bzl"],
+    data = [":metadata"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "web_test_named_file",
+    srcs = ["web_test_named_file.bzl"],
+    data = [":metadata"],
     visibility = ["//visibility:public"],
 )

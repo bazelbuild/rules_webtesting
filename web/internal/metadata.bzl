@@ -23,8 +23,8 @@ def _merge_files(ctx, merger, output, inputs):
     ctx: a Skylark rule context.
     merger: the WTL metadata merger executable.
     output: a File object for the output file.
-    inputs: a list of File objects. These files are in order of priority; 
-      i.e. values in the first file will take precedence over values in the 
+    inputs: a list of File objects. These files are in order of priority;
+      i.e. values in the first file will take precedence over values in the
       second file, etc.
   """
   paths = [i.path for i in reversed(inputs)]
@@ -89,7 +89,7 @@ def _web_test_files(ctx, archive_file=None, named_files=None):
       found. If absent, the named_files are located directly in the runfiles.
     named_files: a dict of strings to strings or File objects. The mapping of
       names to file path. If archive_file is absent, the values should be
-      File objects for files that will be in the runfiles of the test. If 
+      File objects for files that will be in the runfiles of the test. If
       archive_file is present, the values should be string paths referencing
       files in archive_file.
   Returns:
