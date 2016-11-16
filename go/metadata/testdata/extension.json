@@ -5,7 +5,7 @@
   "testLabel": "//go/launcher:tests",
   "namedExecutables": {},
   "extension": {
-	  "ExtensionField1": "hello",
-	  "ExtensionField2": 1024
+    "ExtensionField1": "hello",
+    "ExtensionField2": 1024
   }
 }

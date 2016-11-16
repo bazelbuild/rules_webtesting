@@ -11,9 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-////////////////////////////////////////////////////////////////////////////////
-//
+
+// Binary launcher is used to manage the envrionment for web tests and start the underlying test.
 package main
 
 import (
