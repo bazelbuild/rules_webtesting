@@ -11,9 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-////////////////////////////////////////////////////////////////////////////////
-//
+
+// Package httphelper provides simple wrappers for working with HTTP.
 package httphelper
 
 import (
@@ -68,6 +67,7 @@ func Forward(ctx context.Context, host string, w http.ResponseWriter, r *http.Re
 	return nil
 }
 
+// Get returns the contents located at url.
 func Get(ctx context.Context, url string) (*http.Response, error) {
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {

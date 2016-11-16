@@ -11,9 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-////////////////////////////////////////////////////////////////////////////////
-//
+
+// Package portpicker provides methods for picking unused TCP ports.
 package portpicker
 
 import (
@@ -21,6 +20,7 @@ import (
 	"strconv"
 )
 
+// PickUnusedPort picks an unused TCP port.
 func PickUnusedPort() (int, error) {
 	l, err := net.Listen("tcp", ":0")
 	if err != nil {

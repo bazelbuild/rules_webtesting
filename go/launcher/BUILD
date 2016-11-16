@@ -21,8 +21,8 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 licenses(["notice"])  # Apache 2.0
 
 go_binary(
-    name = "main",
-    srcs = ["main.go"],
+    name = "launcher",
+    srcs = ["launcher.go"],
     visibility = ["//visibility:public"],
     deps = [
         ":cmdhelper",

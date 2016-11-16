@@ -11,8 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-////////////////////////////////////////////////////////////////////////////////
+
 // Package webtest provides WebDriver provisioning and information APIs.
 //
 // Provision a browser:
@@ -67,7 +66,7 @@ func newInfo(mf string) (*BrowserInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	m, err := metadata.FromFile(f)
+	m, err := metadata.FromFile(f, nil)
 	if err != nil {
 		return nil, err
 	}

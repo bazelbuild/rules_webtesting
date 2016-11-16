@@ -184,7 +184,7 @@ def web_test(browser,
     **kwargs: see web_test in //web/internal:web_test.bzl
   """
   config = config or str(Label("//web:default_config"))
-  launcher = launcher or str(Label("//go/launcher:main"))
+  launcher = launcher or str(Label("//go/launcher"))
   data = lists.clone(data)
   lists.ensure_contains_all(data, [browser, config, launcher, test])
   size = size or "large"
