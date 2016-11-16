@@ -46,7 +46,8 @@ def _create_file(ctx,
                  environment=None,
                  browser_label=None,
                  test_label=None,
-                 web_test_files=None):
+                 web_test_files=None,
+                 extension=None):
   """Generates a web_test metadata file with specified contents.
 
   Args:
@@ -70,6 +71,10 @@ def _create_file(ctx,
     fields["testLabel"] = str(test_label)
   if web_test_files:
     fields["webTestFiles"] = web_test_files
+  if extension:
+    if type(extension) == type({}):
+      extension = struct(**extension)
+    fields["extension"] = extension
 
   ctx.file_action(
       output=output, content=struct(**fields).to_json(), executable=False)
