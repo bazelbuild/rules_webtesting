@@ -50,7 +50,7 @@ public class WebTest {
   @Nullable private final URL url;
 
   public WebTest() {
-    this(System.getenv("REMOTE_WEBDRIVER_SERVER"));
+    this(System.getenv("WEB_TEST_WEBDRIVER_SERVER"));
   }
 
   private WebTest(String address) {

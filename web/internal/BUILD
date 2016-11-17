@@ -60,6 +60,7 @@ filegroup(
     name = "web_test",
     srcs = ["web_test.bzl"],
     data = [
+        ":collections",
         ":files",
         ":metadata",
     ],
