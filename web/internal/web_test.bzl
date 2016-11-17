@@ -16,6 +16,7 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
+load("//web/internal:collections.bzl", "maps")
 load("//web/internal:files.bzl", "files")
 load("//web/internal:metadata.bzl", "metadata")
 
@@ -98,7 +99,9 @@ def _generate_default_test(ctx):
       ])
 
   env_vars = ""
-  for k, v in ctx.attr.browser.web_test.environment.items():
+  env = maps.clone(ctx.attr.browser.web_test.environment)
+  env["WEB_TEST_METADATA"] = files.long_path(ctx, ctx.outputs.web_test_metadata)
+  for k, v in env.items():
     env_vars += "export %s=%s\n" % (k, v)
 
   ctx.template_action(

@@ -39,7 +39,7 @@ def new_webdriver_session(capabilities={}):
     A new WebDriver connected to a browser defined by the web test
     environment.
   """
-  address = os.environ['REMOTE_WEBDRIVER_SERVER'].rstrip('/')
+  address = os.environ['WEB_TEST_WEBDRIVER_SERVER'].rstrip('/')
 
   # Set the timeout for WebDriver http requests so that the socket default
   # timeout is not used.

@@ -52,7 +52,7 @@ type BrowserInfo struct {
 // GetBrowserInfo returns basic information about the browser defined by the web test environment.
 func GetBrowserInfo() (*BrowserInfo, error) {
 	if info == nil {
-		i, err := newInfo(os.Getenv("WEB_TEST_BROWSER_METADATA"))
+		i, err := newInfo(os.Getenv("WEB_TEST_METADATA"))
 		if err != nil {
 			return nil, err
 		}
@@ -78,9 +78,9 @@ func newInfo(mf string) (*BrowserInfo, error) {
 
 // NewWebDriverSession provisions and returns a new WebDriver session.
 func NewWebDriverSession(capabilities selenium.Capabilities) (selenium.WebDriver, error) {
-	address, ok := os.LookupEnv("REMOTE_WEBDRIVER_SERVER")
+	address, ok := os.LookupEnv("WEB_TEST_WEBDRIVER_SERVER")
 	if !ok {
-		return nil, errors.New(`environment variable "REMOTE_WEBDRIVER_SERVER" not set.`)
+		return nil, errors.New(`environment variable "WEB_TEST_WEBDRIVER_SERVER" not set.`)
 	}
 
 	return selenium.NewRemote(capabilities, strings.TrimSuffix(address, "/"))
