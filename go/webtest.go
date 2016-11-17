@@ -80,7 +80,7 @@ func newInfo(mf string) (*BrowserInfo, error) {
 func NewWebDriverSession(capabilities selenium.Capabilities) (selenium.WebDriver, error) {
 	address, ok := os.LookupEnv("WEB_TEST_WEBDRIVER_SERVER")
 	if !ok {
-		return nil, errors.New(`environment variable "WEB_TEST_WEBDRIVER_SERVER" not set.`)
+		return nil, errors.New(`environment variable "WEB_TEST_WEBDRIVER_SERVER" not set`)
 	}
 
 	return selenium.NewRemote(capabilities, strings.TrimSuffix(address, "/"))
