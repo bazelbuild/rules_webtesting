@@ -23,8 +23,8 @@ git_repository(
     tag = "0.1.0",
 )
 
-load("@io_bazel_rules_web//web:repositories.bzl", 
-    "browser_respositories",
+load("@io_bazel_rules_webtesting//web:repositories.bzl", 
+    "browser_repositories",
     "web_test_repositories")
 
 web_test_repositories(
@@ -38,7 +38,7 @@ web_test_repositories(
 # You should create your own browser definitions and link
 # to the specific browser versions you are interested in
 # testing with.
-browser_respositories(
+browser_repositories(
     chrome = True,
     firefox = True,
     phantomjs = True,
