@@ -19,7 +19,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -95,14 +94,10 @@ func run() int {
 	}
 
 	// Temporary directory where WEB_TEST infrastructure writes it tmp files.
-	webTestTmpDir, _ := bazel.TestTmpDir()
-
-	// Make an isolated temp directory for the test.
-	tmpDir, err := ioutil.TempDir(webTestTmpDir, "test")
+	tmpDir, err := bazel.NewTmpDir("test")
 	if err != nil {
 		log.Printf("Unable to create new temp dir for test: %v", err)
-		// Fallback to previous value.
-		tmpDir = webTestTmpDir
+		return -1
 	} else {
 		// cleanup tmpDir after test is done.
 		defer os.RemoveAll(tmpDir)
@@ -112,7 +107,7 @@ func run() int {
 	testCmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), map[string]string{
 		"WEB_TEST_WEBDRIVER_SERVER": fmt.Sprintf("http://%s/wd/hub", p.Address),
 		"TEST_TMPDIR":               tmpDir,
-		"WEB_TEST_TMPDIR":           webTestTmpDir,
+		"WEB_TEST_TMPDIR":           bazel.TestTmpDir(),
 		"WEB_TEST_TARGET":           *test,
 	})
 	testCmd.Stdout = os.Stdout
