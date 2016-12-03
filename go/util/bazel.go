@@ -51,7 +51,7 @@ func Runfile(path string) (string, error) {
 		return filename, nil
 	}
 
-	return nil, fmt.Errorf("unable to find file %q", path)
+	return "", fmt.Errorf("unable to find file %q", path)
 }
 
 // RunfilesPath return the path to the run files tree for this test.
