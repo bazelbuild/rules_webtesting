@@ -26,9 +26,14 @@ import (
 var DefaultWorkspace = "io_bazel_rules_webtesting"
 
 // Runfile returns an absolute path to the specified file in the runfiles directory of the running target.
-// It searches in both RunfilesPath() directory and in RunfilesPath()/TestWorkspace().
+// It searches the current working directory, RunfilesPath() directory, and RunfilesPath()/TestWorkspace().
 // Returns an error if unable to locate RunfilesPath() or if the file does not exist.
 func Runfile(path string) (string, error) {
+	if _, err := os.Stat(path); err != nil {
+		// absolute path or found in current working directory
+		return path, nil
+	}
+
 	runfiles, err := RunfilesPath()
 	if err != nil {
 		return "", err
@@ -42,22 +47,21 @@ func Runfile(path string) (string, error) {
 
 	filename = filepath.Join(runfiles, TestWorkspace(), path)
 	if _, err := os.Stat(filename); err != nil {
-		// not found at RunfilesPath()/TestWorkspace()/path
-		return "", err
+		// found at RunfilesPath()/TestWorkspace()/path
+		return filename, nil
 	}
 
-	return filename, nil
+	return nil, fmt.Errorf("unable to find file %q", path)
 }
 
 // RunfilesPath return the path to the run files tree for this test.
 // It returns an error if TEST_SRCDIR does not exist.
 func RunfilesPath() (string, error) {
 	const srcEnv = "TEST_SRCDIR"
-	src, ok := os.LookupEnv(srcEnv)
-	if !ok {
-		return "", fmt.Errorf("environment variable %q is not defined, are you running with bazel test", srcEnv)
+	if src, ok := os.LookupEnv(srcEnv); ok {
+		return src, nil
 	}
-	return src, nil
+	return "", fmt.Errorf("environment variable %q is not defined, are you running with bazel test", srcEnv)
 }
 
 // NewTmpDir creates a new temporary directory in TestTmpDir().
@@ -68,21 +72,17 @@ func NewTmpDir(prefix string) (string, error) {
 // TestTmpDir returns the path the Bazel test temp directory.
 // If TEST_TMPDIR is not defined, it returns the OS default temp dir.
 func TestTmpDir() string {
-	const tmpEnv = "TEST_TMPDIR"
-	tmp, ok := os.LookupEnv(tmpEnv)
-	if !ok {
-		return os.TempDir()
+	if tmp, ok := os.LookupEnv("TEST_TMPDIR"); ok {
+		return tmp
 	}
-	return tmp
+	return os.TempDir()
 }
 
 // TestWorkspace returns the name of the Bazel workspace for this test.
 // If TEST_WORKSPACE is not defined, it returns DefaultWorkspace.
 func TestWorkspace() string {
-	const wsEnv = "TEST_WORKSPACE"
-	ws, ok := os.LookupEnv(wsEnv)
-	if !ok {
-		return DefaultWorkspace
+	if ws, ok := os.LookupEnv("TEST_WORKSPACE"); ok {
+		return ws
 	}
-	return ws
+	return DefaultWorkspace
 }
