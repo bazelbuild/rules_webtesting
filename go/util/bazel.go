@@ -29,7 +29,7 @@ var DefaultWorkspace = "io_bazel_rules_webtesting"
 // It searches the current working directory, RunfilesPath() directory, and RunfilesPath()/TestWorkspace().
 // Returns an error if unable to locate RunfilesPath() or if the file does not exist.
 func Runfile(path string) (string, error) {
-	if _, err := os.Stat(path); err != nil {
+	if _, err := os.Stat(path); err == nil {
 		// absolute path or found in current working directory
 		return path, nil
 	}
