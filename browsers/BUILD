@@ -62,8 +62,10 @@ browser(
     ],
 )
 
+# TODO(DrMarcII): re-enable when chrome download issues fixed.
 browser(
     name = "chrome-native",
+    disabled = "chrome downloads not working.",
     environment = select({
         ":linux": None,
         ":mac": {"DISABLE_X_DISPLAY": "1"},
@@ -71,8 +73,8 @@ browser(
     metadata = "chrome-native.json",
     visibility = ["//visibility:public"],
     deps = [
-        "//third_party/chrome",
-        "//third_party/chromedriver",
+        # "//third_party/chrome",
+        # "//third_party/chromedriver",
     ],
 )
 
