@@ -28,10 +28,11 @@ licenses([
 
 exports_files(["LICENSE"])
 
-web_test_archive(
-    name = "chromedriver",
-    archive = "@org_chromium_chromedriver//file",
-    named_files = {
-        "CHROMEDRIVER": "chromedriver",
-    },
-)
+# TODO(DrMarcII): Uncomment when chrome download issues are fixed.
+# web_test_archive(
+#     name = "chromedriver",
+#     archive = "@org_chromium_chromedriver//file",
+#     named_files = {
+#         "CHROMEDRIVER": "chromedriver",
+#     },
+# )
