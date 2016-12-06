@@ -34,10 +34,6 @@ if [[ -z "$TEST_TEMPDIR" ]]; then
   export TEST_TEMPDIR=$(mktemp -d test_tempdir.XXXXXX)
 fi
 
-if [ ! -e "/dev/shm" ]; then
-  mkdir /dev/shm
-fi
-
 %TEMPLATED_env_vars%
 
 printenv
