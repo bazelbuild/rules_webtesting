@@ -35,16 +35,15 @@ config_setting(
     values = {"cpu": "k8"},
 )
 
-# TODO(DrMarcII): Uncomment when chrome download issues are fixed.
-# web_test_archive(
-#     name = "chrome",
-#     archive = "@com_google_chrome//file",
-#     named_files = select({
-#         ":linux": {
-#             "CHROME": "chrome-precise64/chrome",
-#         },
-#         ":mac": {
-#             "CHROME": "chrome-mac/Google Chrome.app/Contents/MacOS/Google Chrome",
-#         },
-#     }),
-# )
+web_test_archive(
+    name = "chromium",
+    archive = "@org_chromium_chromium//file",
+    named_files = select({
+        ":linux": {
+            "CHROME": "chrome-linux/chrome",
+        },
+        ":mac": {
+            "CHROME": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
+        },
+    }),
+)

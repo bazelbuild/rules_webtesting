@@ -64,7 +64,7 @@ web_test_suite(
                 "requires-network",
             ],
         },
-        "//browsers:chrome-native": {
+        "//browsers:chromium-native": {
             "local": True,
         },
         "//browsers:firefox-native": {
@@ -73,7 +73,7 @@ web_test_suite(
     },
     browsers = [
         "//browsers:chrome-external",
-        "//browsers:chrome-native",
+        "//browsers:chromium-native",
         "//browsers:firefox-external",
         "//browsers:firefox-native",
         "//browsers:phantomjs",

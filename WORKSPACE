@@ -41,7 +41,7 @@ web_test_repositories(
 
 # TODO(DrMarcII): Re-enable chrome when chrome download issues are fixed.
 browser_repositories(
-    chrome = False,
+    chromium = True,
     firefox = True,
     phantomjs = True,
 )
