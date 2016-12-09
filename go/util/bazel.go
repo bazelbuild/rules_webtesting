@@ -46,7 +46,7 @@ func Runfile(path string) (string, error) {
 	}
 
 	filename = filepath.Join(runfiles, TestWorkspace(), path)
-	if _, err := os.Stat(filename); err != nil {
+	if _, err := os.Stat(filename); err == nil {
 		// found at RunfilesPath()/TestWorkspace()/path
 		return filename, nil
 	}
