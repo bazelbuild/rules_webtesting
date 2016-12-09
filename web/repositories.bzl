@@ -93,7 +93,7 @@ def web_test_repositories(java=False,
       )
 
 
-def browser_repositories(firefox=False, chrome=False, phantomjs=False):
+def browser_repositories(firefox=False, chromium=False, phantomjs=False):
   """Sets up repositories for browsers defined in //browsers/....
 
   This should only be used on an experimental basis; trojects should define
@@ -101,24 +101,25 @@ def browser_repositories(firefox=False, chrome=False, phantomjs=False):
 
   Args:
     firefox: Configure repositories for //browsers:firefox-native.
-    chrome: Configure repositories for //browsers:chrome-native.
+    chromium: Configure repositories for //browsers:chromium-native.
     phantomjs: Configure repositories for //browsers:phantomjs-native.
   """
-  if chrome:
+  if chromium:
     platform_http_file(
         name="org_chromium_chromedriver",
-        amd64_sha256="0c01b05276da98f203dc7eb4236c2ee7fe799b432734e088549bd0aadc71958e",
-        amd64_url="http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip",
-        macos_sha256="d4f6e13d88ecf20735138f16ab1545e855a42bce41bebe73667a028871777790",
-        macos_url="http://chromedriver.storage.googleapis.com/2.24/chromedriver_mac64.zip"
+        amd64_sha256="d011749e76305b5591b5500897939b33fac460d705d9815b8c03c53b0e1ecc7c",
+        amd64_url="http://chromedriver.storage.googleapis.com/2.25/chromedriver_linux64.zip",
+        macos_sha256="e95fb36ab85264e16c51d58dd9766624eca6b6339569da0460088f4c788c67ad",
+        macos_url="http://chromedriver.storage.googleapis.com/2.25/chromedriver_mac64.zip"
     )
 
+    # Roughly corresponds to Chrome 55
     platform_http_file(
-        name="com_google_chrome",
-        amd64_sha256="6e26d74fd814c38cd419d1ffe87b3e81ad6cfe453e27c7a672ab3c452968e71d",
-        amd64_url="https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/53.0.2785.116/precise64/chrome-precise64.zip",
-        macos_sha256="84b3cf4f7a9f85fa90dda837b1e38820c83c383fcb6346bbec6448d5128dd7f9",
-        macos_url="https://commondatastorage.googleapis.com/chrome-unsigned/desktop-5c0tCh/53.0.2785.116/mac64/chrome-mac.zip"
+        name="org_chromium_chromium",
+        amd64_sha256="e3c99954d6acce013174053534b72f47f67f18a0d75f79c794daaa8dd2ae8aaf",
+        amd64_url="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/423768/chrome-linux.zip",
+        macos_sha256="62aeb7a5c6b8a1b7b31400105bf01295bbd45b0627920b8f99f0cc4ca76927ca",
+        macos_url="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/423758/chrome-mac.zip"
     )
 
   if firefox:
