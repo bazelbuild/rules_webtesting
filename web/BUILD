@@ -20,6 +20,11 @@ load(":web.bzl", "web_test_config")
 
 licenses(["notice"])  # Apache 2.0
 
+exports_files(
+    glob(["*.bzl"]),
+    visibility = ["//doc:__pkg__"],
+)
+
 web_test_config(
     name = "default_config",
     visibility = ["//visibility:public"],

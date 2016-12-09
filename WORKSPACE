@@ -65,9 +65,9 @@ maven_jar(
 
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "d39d40c39a0fa2c7d05230ccf95aac3628936e4e76c0379ad324ff0b8488160f",
-    strip_prefix = "rules_sass-0.0.1",
-    url = "https://github.com/bazelbuild/rules_sass/archive/0.0.1.tar.gz",
+    sha256 = "4bd44d81747d06e8334570d413b714218b7759db0883df807e28127e9d59fe80",
+    strip_prefix = "rules_sass-931508528093364b86abd44a5b9401e5150f1ba7",
+    url = "https://github.com/bazelbuild/rules_sass/archive/931508528093364b86abd44a5b9401e5150f1ba7.tar.gz",
 )
 
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_repositories")
@@ -76,11 +76,38 @@ sass_repositories()
 
 http_archive(
     name = "io_bazel_skydoc",
-    sha256 = "256bf8b64269d21fd46b8696007b5b9ef10070d79c106e74fb37979c04b6d519",
-    strip_prefix = "skydoc-c57ff682364dbb1ae808b769f9e3add77cdbfad1",
-    url = "https://github.com/bazelbuild/skydoc/archive/c57ff682364dbb1ae808b769f9e3add77cdbfad1.tar.gz",
+    sha256 = "04c7a457631c8af9ce47464f671ce1b7ddadb1e8d0d284218e8ef6a3623f27ba",
+    strip_prefix = "skydoc-b14ff1002f53c24054960ede321090282644c4dc",
+    url = "https://github.com/bazelbuild/skydoc/archive/b14ff1002f53c24054960ede321090282644c4dc.tar.gz",
 )
 
 load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
 
 skydoc_repositories()
+
+http_archive(
+    name = "io_bazel_rules_dart",
+    sha256 = "83220a6d89b2299887506911a4a12439190baa1633f6da2fd32a67c4442d6f33",
+    strip_prefix = "rules_dart-84052073c0c6fdb60013b65358d887bb808c6478",
+    url = "https://github.com/dart-lang/rules_dart/archive/84052073c0c6fdb60013b65358d887bb808c6478.tar.gz",
+)
+
+load("@io_bazel_rules_dart//dart/build_rules:repositories.bzl", "dart_repositories")
+
+dart_repositories()
+
+# http_archive(
+#     name = "com_github_google_webdriver_dart",
+#     sha256 = "67ccd156d238529a971d5d69f619f1191c7d7867b12709c747983e5c049769f2",
+#     strip_prefix = "webdriver.dart-bd6845d45531b5443d9bff7aa9aac9f4156132ac",
+#     url = "https://github.com/DrMarcII/webdriver.dart/archive/bd6845d45531b5443d9bff7aa9aac9f4156132ac.tar.gz",
+# )
+
+local_repository(
+    name = "com_github_google_webdriver_dart",
+    path = "/usr/local/google/home/fisherii/github/webdriver.dart",
+)
+
+load("@com_github_google_webdriver_dart//:repositories.bzl", "webdriver_dart_repositories")
+
+webdriver_dart_repositories()
