@@ -168,7 +168,7 @@ func (h *hub) defaultForward(ctx context.Context, w http.ResponseWriter, r *http
 		return
 	}
 
-	if err := httphelper.Forward(ctx, h.env.WDAddress(ctx), w, r); err != nil {
+	if err := httphelper.Forward(ctx, h.env.WDAddress(ctx), "/wd/hub/", w, r); err != nil {
 		unknownError(w, err)
 	}
 }
