@@ -78,12 +78,13 @@ func Get(ctx context.Context, url string) (*http.Response, error) {
 }
 
 func constructURL(base, path, prefix string) (*url.URL, error) {
-	if !strings.HasPrefix(path, prefix) {
-		prefix = "/" + prefix
-	}
 	u, err := url.Parse(base)
 	if err != nil {
 		return nil, err
+	}
+
+	if !strings.HasPrefix(prefix, "/") {
+		prefix = "/" + prefix
 	}
 
 	if !strings.HasPrefix(path, prefix) {
