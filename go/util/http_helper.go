@@ -27,8 +27,8 @@ import (
 var client = &http.Client{}
 
 // Forward forwards r to host and writes the response from host to w.
-func Forward(ctx context.Context, host string, w http.ResponseWriter, r *http.Request) error {
-	url, err := constructURL(host, r.URL.Path, "/wd/hub/")
+func Forward(ctx context.Context, host, trimPrefix string, w http.ResponseWriter, r *http.Request) error {
+	url, err := constructURL(host, r.URL.Path, trimPrefix)
 	if err != nil {
 		return err
 	}
@@ -81,6 +81,10 @@ func constructURL(base, path, prefix string) (*url.URL, error) {
 	u, err := url.Parse(base)
 	if err != nil {
 		return nil, err
+	}
+
+	if !strings.HasPrefix(prefix, "/") {
+		prefix = "/" + prefix
 	}
 
 	if !strings.HasPrefix(path, prefix) {
