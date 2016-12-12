@@ -1,5 +1,7 @@
 # Bazel Web Testing Rules
 
+test
+
 Bazel rules and supporting code to allow testing against a browser with WebDriver.
 
 ## Configure your Bazel project
