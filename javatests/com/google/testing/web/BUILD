@@ -43,5 +43,6 @@ web_test_suite(
         "//browsers:phantomjs",
     ],
     local = True,
+    tags = ["noci"],
     test = ":WebTestTest_wrapped",
 )
