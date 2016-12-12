@@ -37,35 +37,11 @@ java_test(
 
 web_test_suite(
     name = "WebTestTest",
-    browser_overrides = {
-        "//browsers:chrome-external": {
-            "tags": [
-                "manual",
-                "noci",
-                "requires-network",
-            ],
-        },
-        "//browsers:firefox-external": {
-            "tags": [
-                "manual",
-                "noci",
-                "requires-network",
-            ],
-        },
-        "//browsers:chromium-native": {
-            "local": True,
-        },
-        "//browsers:firefox-native": {
-            "local": True,
-        },
-    },
     browsers = [
-        "//browsers:chrome-external",
         "//browsers:chromium-native",
-        "//browsers:firefox-external",
         "//browsers:firefox-native",
         "//browsers:phantomjs",
     ],
-    tags = ["noci"],
+    local = True,
     test = ":WebTestTest_wrapped",
 )
