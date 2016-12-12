@@ -25,24 +25,24 @@ def web_test_repositories(java=False,
                           omit_com_google_guava_guava=False,
                           omit_com_github_tebeka_selenium=False,
                           omit_org_seleniumhq_py=False):
-  """Configure repositories for Web Test Launcher and for client languages.    
-   
-  Args:    
-    java: Configure Java client-side libraries.    
-    go: Configure Go client-side libraries.    
-    python: Configure Python client libraries.   
-    omit_com_github_gorilla_mux*: Do not install Gorilla MUX. Gorilla    
-      MUX is required to compile the test launcher.    
-    omit_org_seleniumhq_java: Do not install Java Selenium client bindings.    
-      These bindings are only installed if java=True.    
-    omit_com_google_code_findbugs_jsr305: Do not install JSR305 annotations    
-      library. This library is only installed if java=True.    
-    omit_com_google_guava_guava: Do not install Guava libraries. This    
-      library is only installed if java=True.    
-    omit_com_github_tebeka_selenium: Do not install Go WebDriver client    
-      bindings. These binding are only installed if go=True.   
-    omit_org_seleniumhq_py: Do not install Python Selenium client bindings.    
-      These bindings are only installed if python=True.    
+  """Configure repositories for Web Test Launcher and for client languages.
+
+  Args:
+    java: Configure Java client-side libraries.
+    go: Configure Go client-side libraries.
+    python: Configure Python client libraries.
+    omit_com_github_gorilla_mux*: Do not install Gorilla MUX. Gorilla
+      MUX is required to compile the test launcher.
+    omit_org_seleniumhq_java: Do not install Java Selenium client bindings.
+      These bindings are only installed if java=True.
+    omit_com_google_code_findbugs_jsr305: Do not install JSR305 annotations
+      library. This library is only installed if java=True.
+    omit_com_google_guava_guava: Do not install Guava libraries. This
+      library is only installed if java=True.
+    omit_com_github_tebeka_selenium: Do not install Go WebDriver client
+      bindings. These binding are only installed if go=True.
+    omit_org_seleniumhq_py: Do not install Python Selenium client bindings.
+      These bindings are only installed if python=True.
   """
   if not omit_com_github_gorilla_mux:
     native.new_http_archive(
@@ -96,8 +96,8 @@ def web_test_repositories(java=False,
 def browser_repositories(firefox=False, chromium=False, phantomjs=False):
   """Sets up repositories for browsers defined in //browsers/....
 
-  This should only be used on an experimental basis; trojects should define
-  their own.browsers.
+  This should only be used on an experimental basis; projects should define
+  their own browsers.
 
   Args:
     firefox: Configure repositories for //browsers:firefox-native.
