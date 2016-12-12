@@ -39,7 +39,6 @@ web_test_repositories(
     python = True,
 )
 
-# TODO(DrMarcII): Re-enable chrome when chrome download issues are fixed.
 browser_repositories(
     chromium = True,
     firefox = True,
