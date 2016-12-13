@@ -96,16 +96,11 @@ load("@io_bazel_rules_dart//dart/build_rules:repositories.bzl", "dart_repositori
 
 dart_repositories()
 
-# http_archive(
-#     name = "com_github_google_webdriver_dart",
-#     sha256 = "67ccd156d238529a971d5d69f619f1191c7d7867b12709c747983e5c049769f2",
-#     strip_prefix = "webdriver.dart-bd6845d45531b5443d9bff7aa9aac9f4156132ac",
-#     url = "https://github.com/DrMarcII/webdriver.dart/archive/bd6845d45531b5443d9bff7aa9aac9f4156132ac.tar.gz",
-# )
-
-local_repository(
+http_archive(
     name = "com_github_google_webdriver_dart",
-    path = "/usr/local/google/home/fisherii/github/webdriver.dart",
+    sha256 = "98ad4f57102823b770b0ed8a51097ede621fe14bf2b106a0b581167252f84ab7",
+    strip_prefix = "webdriver.dart-cac534aaa9e80c65ebf08fa87f16f01d8f0d25a1",
+    url = "https://github.com/google/webdriver.dart/archive/cac534aaa9e80c65ebf08fa87f16f01d8f0d25a1.tar.gz",
 )
 
 load("@com_github_google_webdriver_dart//:repositories.bzl", "webdriver_dart_repositories")
