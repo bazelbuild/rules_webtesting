@@ -24,6 +24,7 @@ dart_library(
     name = "dart",
     srcs = glob(["lib/**/*.dart"]),
     pub_pkg_name = "webtest",
+    tags = ["noci"],
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_google_webdriver_dart//:webdriver",
