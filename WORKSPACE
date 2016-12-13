@@ -45,18 +45,6 @@ browser_repositories(
     phantomjs = True,
 )
 
-http_file(
-    name = "fonts_noto_hinted_deb",
-    sha256 = "25b362c9437a7859ce034f22d94b698e8ed25007b443e5a26228ed5b3d2d32d4",
-    url = "http://bazel-mirror.storage.googleapis.com/http.us.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-hinted_20160116-1_all.deb",
-)
-
-http_file(
-    name = "fonts_noto_mono_deb",
-    sha256 = "74b457715f275ed893998a70d6bc955f67da6d36b36b422dbeeb045160edacb6",
-    url = "http://bazel-mirror.storage.googleapis.com/http.us.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-mono_20160116-1_all.deb",
-)
-
 maven_jar(
     name = "junit_junit",
     artifact = "junit:junit:4.12",
@@ -87,9 +75,9 @@ skydoc_repositories()
 
 http_archive(
     name = "io_bazel_rules_dart",
-    sha256 = "83220a6d89b2299887506911a4a12439190baa1633f6da2fd32a67c4442d6f33",
-    strip_prefix = "rules_dart-84052073c0c6fdb60013b65358d887bb808c6478",
-    url = "https://github.com/dart-lang/rules_dart/archive/84052073c0c6fdb60013b65358d887bb808c6478.tar.gz",
+    sha256 = "d151f647062c06c594a81a1fafcc060c3a9a2f1087a0f1c16c10a5b364ec9fe4",
+    strip_prefix = "rules_dart-30cf89513de3d8c0fce4ab1d7448b673300ace84",
+    url = "https://github.com/dart-lang/rules_dart/archive/30cf89513de3d8c0fce4ab1d7448b673300ace84.tar.gz",
 )
 
 load("@io_bazel_rules_dart//dart/build_rules:repositories.bzl", "dart_repositories")

@@ -24,11 +24,8 @@ dart_library(
     name = "dart",
     srcs = glob(["lib/**/*.dart"]),
     pub_pkg_name = "webtest",
-    tags = ["noci"],
     visibility = ["//visibility:public"],
-    deps = [
-        "@com_github_google_webdriver_dart//:webdriver",
-    ],
+    deps = ["@com_github_google_webdriver_dart//:webdriver"],
 )
 
 dart_vm_test(
@@ -47,10 +44,7 @@ dart_vm_test(
 
 web_test_suite(
     name = "webtest_test",
-    browsers = [
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-    ],
+    browsers = ["//browsers:chromium-native"],
     local = True,
     tags = ["noci"],
     test = ":webtest_test_wrapped",
