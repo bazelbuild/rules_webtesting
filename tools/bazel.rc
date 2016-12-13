@@ -1,2 +1,3 @@
 # sandbox_tmpfs_path is not in the released Bazel.
 test --sandbox_tmpfs_path=/run/shm
+build --spawn_strategy=standalone

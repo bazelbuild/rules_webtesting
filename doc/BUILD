@@ -26,9 +26,12 @@ skylark_doc(
         "//web:repositories.bzl",
         "//web:web.bzl",
         "//web/internal:browser.bzl",
+        "//web/internal:platform_http_file.bzl",
         "//web/internal:web_test.bzl",
+        "//web/internal:web_test_archive.bzl",
         "//web/internal:web_test_config.bzl",
         "//web/internal:web_test_named_executable.bzl",
+        "//web/internal:web_test_named_file.bzl",
     ],
     tags = [
         "manual",

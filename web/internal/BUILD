@@ -23,6 +23,11 @@ exports_files(
     visibility = ["//visibility:public"],
 )
 
+exports_files(
+    glob(["*.bzl"]),
+    visibility = ["//doc:__pkg__"],
+)
+
 filegroup(
     name = "browser",
     srcs = ["browser.bzl"],
