@@ -48,7 +48,9 @@ web_test_suite(
     name = "webtest_test",
     browsers = [
         "//browsers:chromium-native",
+        "//browsers:firefox-native",
     ],
     local = True,
+    tags = ["noci"],
     test = ":webtest_test_wrapped",
 )
