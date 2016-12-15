@@ -50,7 +50,17 @@ web_test_archive = rule(
     attrs={
         "archive":
             attr.label(
-                allow_single_file=True, cfg="data", mandatory=True),
+                allow_single_file=[
+                    ".tar",
+                    ".tar.bz2",
+                    ".tbz2",
+                    ".tar.gz",
+                    ".tgz",
+                    ".tar.Z",
+                    ".zip",
+                ],
+                cfg="data",
+                mandatory=True),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
