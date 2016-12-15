@@ -20,6 +20,8 @@ load("@io_bazel_rules_dart//dart/build_rules:core.bzl", "dart_library")
 load("@io_bazel_rules_dart//dart/build_rules:vm.bzl", "dart_vm_test")
 load("//web:web.bzl", "web_test_suite")
 
+licenses(["notice"])  # Apache 2.0
+
 dart_library(
     name = "dart",
     srcs = glob(["lib/**/*.dart"]),
