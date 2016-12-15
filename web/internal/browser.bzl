@@ -46,37 +46,39 @@ def _browser_impl(ctx):
 
 browser = rule(
     attrs={
-        "metadata":
-            attr.label(
-                mandatory=True, allow_single_file=[".json"], cfg="data"),
-        "deps":
-            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
+        "deps":
+            attr.label_list(providers=["web_test"]),
         "disabled":
             attr.string(),
         "environment":
             attr.string_dict(),
-        "required_tags":
-            attr.string_list(),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
                 default=Label("//go/metadata:merger")),
+        "metadata":
+            attr.label(
+                mandatory=True, allow_single_file=[".json"], cfg="data"),
+        "required_tags":
+            attr.string_list(),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_browser_impl)
 """Defines a browser configuration for use with web_test.
 
 Args:
-  metadata: The web_test metadata file that defines how this browser
-    is launched and default capabilities for this browser.
-  data: Runtime dependencies needed for this browser.
+  data: Runtime dependencies for this configuration.
+  deps: Other web_test-related rules that this rule depends on.
   disabled: If set, then a no-op test will be run for all tests using
     this browser.
-  environment: Map of environment variables-values to set for this browser.
+  environment: Map of environment variables-values to set for this browser.  
+  merger: Metadata merger executable.  
+  metadata: The web_test metadata file that defines how this browser
+    is launched and default capabilities for this browser.  
   required_tags: A list of tags that all web_tests using this browser
     should have. Examples include "requires-network", "local", etc.
 """

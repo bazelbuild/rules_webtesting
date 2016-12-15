@@ -35,45 +35,44 @@ load(
 
 
 def web_test_suite(name,
-                   test,
                    browsers,
+                   test,
+                   args=None,
+                   browser_overrides=None,
+                   config=None,
                    data=None,
                    deprecation=None,
+                   flaky=None,
+                   local=None,
                    shard_count=None,
                    size=None,
-                   args=None,
                    tags=None,
                    timeout=None,
-                   browser_overrides=None,
-                   flaky=None,
-                   config=None,
-                   visibility=None,
-                   local=None):
+                   visibility=None):
   """Defines a test_suite of web_test targets to be run.
 
   Args:
     name: Name; required. A unique name for this rule.
+    browsers: List of labels; required. The browsers with which to run the test.
     test: Label; required. A single *_test or *_binary target. The test that
       web_test should run with the specified browser.
-    browsers: List of labels; required. The browsers with which to run the test.
-    data: Label List; optional.
-    deprecation: String; optional.
-    shard_count: Integer; optional; default is 1.
-    size: String; optional; default is 'large'
     args: String list; optional; list of arguments to pass to test.
-    tags: String list; optional.
-    timeout: String; optional.
     browser_overrides: Dictionary; optional; default is an empty dictionary. A
       dictionary mapping from browser names to browser-specific web_test
       attributes, such as shard_count, flakiness, timeout, etc. For example:
       {'\\browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
-       '\\browsers:firefox-native': {'shard_count': 1, 'size': 'medium',
-         'timeout': 100}}.
-    flaky: Boolean; optional.
+       '\\browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
     config: Label; optional; default is //external:web_test_default_config.
       Configuration of web test features.
-    visibility: Label List; optional.
+    data: Label List; optional.
+    deprecation: String; optional.
+    flaky: Boolean; optional.
     local: Boolean; optional.
+    shard_count: Integer; optional; default is 1.
+    size: String; optional; default is 'large'.
+    tags: String list; optional.
+    timeout: String; optional.
+    visibility: Label List; optional.
   """
   if not lists.is_list_like(browsers):
     fail("expected value of type 'list' or 'tuple' for attribute 'browsers' " +
@@ -93,22 +92,22 @@ def web_test_suite(name,
     overrides = browser_overrides.get(browser) or browser_overrides.get(
         unqualified_browser) or {}
     overridable_attributes = _apply_browser_overrides(
-        data=data or [],
         config=config,
+        data=data,
+        flaky=flaky,
+        local=local,
         shard_count=shard_count,
         size=size,
-        flaky=flaky,
-        timeout=timeout,
         tags=tags,
-        local=local,
+        timeout=timeout,
         overrides=overrides)
 
     web_test(
         name=test_name,
-        test=test,
+        args=args,
         browser=browser,
         deprecation=deprecation,
-        args=args,
+        test=test,
         visibility=visibility,
         **overridable_attributes)
     tests += [test_name]
@@ -117,20 +116,20 @@ def web_test_suite(name,
       name=name, tests=tests, tags=["manual"], visibility=visibility)
 
 
-def _apply_browser_overrides(data, config, shard_count, size, flaky, timeout,
-                             tags, local, overrides):
+def _apply_browser_overrides(config, data, flaky, local, shard_count, size,
+                             tags, timeout, overrides):
   """Handles browser-specific options that override the top-level definitions.
 
   Args:
-    data: Additional data dependencies for the web_test() target.
     config: Label; optional; default is //testing/web/configs:default.
       Configuration of web test features.
+    data: Additional data dependencies for the web_test() target.
+    flaky: A boolean specifying the test is flaky.
+    local: A boolean specifying the test should be run locally only.
     shard_count: The number of test shards to use per browser.
     size: A string specifying the test size.
-    flaky: A boolean specifying the test is flaky.
-    timeout: A string specifying the test timeout.
     tags: Tags to use for a specific browser.
-    local: A boolean specifying the test should be run locally only.
+    timeout: A string specifying the test timeout.
     overrides: A dictionary of attributes with the new attributes that should
       replace the top-level definitions.
 
@@ -142,12 +141,12 @@ def _apply_browser_overrides(data, config, shard_count, size, flaky, timeout,
   output = {
       "data": data,
       "config": config,
+      "flaky": flaky,
+      "local": local,
       "shard_count": shard_count,
       "size": size,
-      "flaky": flaky,
       "timeout": timeout,
       "tags": tags,
-      "local": local
   }
   for attribute in overrides:
     if attribute in output:
@@ -158,31 +157,21 @@ def _apply_browser_overrides(data, config, shard_count, size, flaky, timeout,
 
 
 def browser(testonly=True, **kwargs):
-  """Wrapper around browser to correctly set defaults.
-
-  Args:
-    testonly: default = True
-    **kwargs: see browser in //web/internal:browser.bzl
-  """
+  """Wrapper around browser to correctly set defaults."""
   if testonly == None:
     testonly = True
   browser_alias(testonly=testonly, **kwargs)
 
 
-def web_test(browser,
-             test,
-             config=None,
-             data=None,
-             launcher=None,
-             size=None,
-             **kwargs):
-  """Wrapper around web_test to correctly set defaults.
-
-  Args:
-    data
-    size: default = "large"
-    **kwargs: see web_test in //web/internal:web_test.bzl
-  """
+def web_test(
+    browser,  # pylint: disable=redefined-outer-name
+    test,
+    config=None,
+    data=None,
+    launcher=None,
+    size=None,
+    **kwargs):
+  """Wrapper around web_test to correctly set defaults."""
   config = config or str(Label("//web:default_config"))
   launcher = launcher or str(Label("//go/launcher"))
   data = lists.clone(data)
@@ -199,25 +188,14 @@ def web_test(browser,
 
 
 def web_test_config(testonly=True, **kwargs):
-  """Wrapper around web_test_config to correctly set defaults.
-
-  Args:
-    testonly: default = True
-    **kwargs: see web_test_config in //web/internal:web_test_config.bzl
-  """
+  """Wrapper around web_test_config to correctly set defaults."""
   if testonly == None:
     testonly = True
   web_test_config_alias(testonly=testonly, **kwargs)
 
 
 def web_test_named_executable(executable, data=None, testonly=True, **kwargs):
-  """Wrapper around web_test_named_executable to correctly set defaults.
-
-  Args:
-    testonly: default = True
-    **kwargs: see web_test_named_executable in 
-      //web/internal:web_test_named_executable.bzl
-  """
+  """Wrapper around web_test_named_executable to correctly set defaults."""
   data = lists.clone(data)
   lists.ensure_contains(data, executable)
   if testonly == None:
@@ -227,26 +205,14 @@ def web_test_named_executable(executable, data=None, testonly=True, **kwargs):
 
 
 def web_test_named_file(testonly=True, **kwargs):
-  """Wrapper around web_test_named_file to correctly set defaults.
-
-  Args:
-    testonly: default = True
-    **kwargs: see web_test_named_file in 
-      //web/internal:web_test_named_file.bzl
-  """
+  """Wrapper around web_test_named_file to correctly set defaults."""
   if testonly == None:
     testonly = True
   web_test_named_file_alias(testonly=testonly, **kwargs)
 
 
 def web_test_archive(testonly=True, **kwargs):
-  """Wrapper around web_test_archive to correctly set defaults.
-
-  Args:
-    testonly: default = True
-    **kwargs: see web_test_archive in 
-      //web/internal:web_test_archive.bzl
-  """
+  """Wrapper around web_test_archive to correctly set defaults."""
   if testonly == None:
     testonly = True
   web_test_archive_alias(testonly=testonly, **kwargs)

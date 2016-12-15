@@ -42,9 +42,9 @@ def _merge_files(ctx, merger, output, inputs):
 
 def _create_file(ctx,
                  output,
+                 browser_label=None,
                  capabilities=None,
                  environment=None,
-                 browser_label=None,
                  test_label=None,
                  web_test_files=None,
                  extension=None):
@@ -53,11 +53,13 @@ def _create_file(ctx,
   Args:
     ctx: a Skylark rule context.
     output: File object. The file to write the metadata to.
+    browser_label: Label. The label for a browser rule.    
+    capabilities: struct; Browser capabilities.
     environment: string. The Web Test Launcher environment name.
-    browser_label: Label. The label for a browser rule.
     test_label: Label. The label for the test being executed.
-    web_test_files: sequence of web_test_file structs. The named files needed
-      for this configuration.
+    web_test_files: sequence of web_test_file structs.
+    extension: map or struct defining additional fields that should be added
+      metadata file.
   """
   fields = {}
 

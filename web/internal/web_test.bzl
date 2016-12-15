@@ -127,9 +127,6 @@ def _generate_default_test(ctx):
 
 web_test = rule(
     attrs={
-        "test":
-            attr.label(
-                cfg="data", executable=True, mandatory=True),
         "browser":
             attr.label(
                 cfg="data", mandatory=True, providers=["web_test"]),
@@ -139,24 +136,25 @@ web_test = rule(
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
+        "launcher":
+            attr.label(
+                cfg="data", executable=True),
         "merger":
             attr.label(
                 cfg="host",
                 executable=True,
                 default=Label("//go/metadata:merger")),
-        "launcher":
+        "noop_web_test_template":
+            attr.label(
+                allow_single_file=True,
+                default=Label("//web/internal:noop_web_test.sh.template")),
+        "test":
             attr.label(
                 cfg="data", executable=True, mandatory=True),
         "web_test_template":
             attr.label(
-                allow_files=True,
-                single_file=True,
+                allow_single_file=True,
                 default=Label("//web/internal:web_test.sh.template")),
-        "noop_web_test_template":
-            attr.label(
-                allow_files=True,
-                single_file=True,
-                default=Label("//web/internal:noop_web_test.sh.template")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json",},
     test=True,
@@ -164,9 +162,15 @@ web_test = rule(
 """Runs a provided test against a provided browser configuration.
 
 Args:
-  test: The test that will be run against the provided browser.
   browser: A browser configuration that defines the type of browser used for
     this test.
   config: Additional configuration that overrides the configuration in browser.
   data: Additional runtime dependencies for the test.
+  launcher: The web test launcher binary.
+  merger: The metadata merger binary.
+  noop_web_test_template: Shell template used to launch test when browser is
+    disabled.
+  test: The test that will be run against the provided browser.
+  web_test_template: Shell template used to launch test when browser is not
+    disabled.
 """
