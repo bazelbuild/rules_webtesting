@@ -39,7 +39,7 @@ web_test_repositories(
 # to the specific browser versions you are interested in
 # testing with.
 browser_repositories(
-    chrome = True,
+    chromium = True,
     firefox = True,
     phantomjs = True,
 )
@@ -165,7 +165,7 @@ web_test_suite(
     browsers = [
         # For experimental purposes only. Eventually you should
         # create your own browser definitions.
-        "@io_bazel_rules_webtesting//browsers:chrome-native",
+        "@io_bazel_rules_webtesting//browsers:chromium-native",
     ],
     local = 1,
     test = ":browser_test_wrapped",
