@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""A rule for defining executables that can be located by name.
+
+DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
+"""
 
 load("//web/internal:metadata.bzl", "metadata")
 
@@ -47,14 +51,14 @@ web_test_named_executable = rule(
     attrs={
         "alt_name":
             attr.string(),
-        "executable":
-            attr.label(
-                allow_files=True, executable=True, cfg="data", mandatory=True),
-        "deps":
-            attr.label_list(providers=["web_test"]),
         "data":
             attr.label_list(
                 allow_files=True, cfg="data"),
+        "deps":
+            attr.label_list(providers=["web_test"]),
+        "executable":
+            attr.label(
+                allow_files=True, executable=True, cfg="data", mandatory=True),
         "merger":
             attr.label(
                 executable=True,
@@ -67,7 +71,8 @@ web_test_named_executable = rule(
 
 Args:
   alt_name: If supplied, is used instead of name to lookup the executable.
-  executable: The executable that will be returned for name or alt_name.
-  deps: Other web_test-related rules that this rule depends on.
   data: Runtime dependencies for the executable.
+  deps: Other web_test-related rules that this rule depends on.
+  executable: The executable that will be returned for name or alt_name.
+  merger: Metadata merger executable.
 """
