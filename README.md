@@ -1,8 +1,10 @@
 # Bazel Web Testing Rules
 
-[![Build Status](http://ci.bazel.io/buildStatus/icon?job=rules_web)](http://ci.bazel.io/job/rules_web)
+[![Build
+Status](http://ci.bazel.io/buildStatus/icon?job=rules_web)](http://ci.bazel.io/job/rules_web)
 
-Bazel rules and supporting code to allow testing against a browser with WebDriver.
+Bazel rules and supporting code to allow testing against a browser with
+WebDriver.
 
 ## Configure your Bazel project
 
@@ -22,10 +24,10 @@ go_repositories()
 git_repository(
     name = "io_bazel_rules_webtesting",
     remote = "https://github.com/bazelbuild/rules_webtesting.git",
-    tag = "0.1.0",
+    tag = "0.1.1",
 )
 
-load("@io_bazel_rules_webtesting//web:repositories.bzl", 
+load("@io_bazel_rules_webtesting//web:repositories.bzl",
     "browser_repositories",
     "web_test_repositories")
 
@@ -174,4 +176,7 @@ web_test_suite(
 )
 ```
 
-## [Rules reference](RULES.md)
+## Rules Reference
+
+-   [BUILD Rules reference](rules.md)
+-   [WORKSPACE Rules reference](repository_rules.md)

@@ -27,11 +27,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
 
 go_repositories()
 
-load(
-    "//web:repositories.bzl",
-    "browser_repositories",
-    "web_test_repositories",
-)
+load("//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
 web_test_repositories(
     go = True,
@@ -64,9 +60,9 @@ sass_repositories()
 
 http_archive(
     name = "io_bazel_skydoc",
-    sha256 = "04c7a457631c8af9ce47464f671ce1b7ddadb1e8d0d284218e8ef6a3623f27ba",
-    strip_prefix = "skydoc-b14ff1002f53c24054960ede321090282644c4dc",
-    url = "https://github.com/bazelbuild/skydoc/archive/b14ff1002f53c24054960ede321090282644c4dc.tar.gz",
+    sha256 = "06d855d8412cae1461d4131481a26d71ba9457914473803df65b110ea4dd6a88",
+    strip_prefix = "skydoc-0.1.1",
+    url = "https://github.com/bazelbuild/skydoc/archive/0.1.1.tar.gz",
 )
 
 load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
@@ -86,9 +82,9 @@ dart_repositories()
 
 http_archive(
     name = "com_github_google_webdriver_dart",
-    sha256 = "98ad4f57102823b770b0ed8a51097ede621fe14bf2b106a0b581167252f84ab7",
-    strip_prefix = "webdriver.dart-cac534aaa9e80c65ebf08fa87f16f01d8f0d25a1",
-    url = "https://github.com/google/webdriver.dart/archive/cac534aaa9e80c65ebf08fa87f16f01d8f0d25a1.tar.gz",
+    sha256 = "7d1abb9b2688fe317b41a54f35accd725e9a6e17408fa79bca87d9c7a655dc27",
+    strip_prefix = "webdriver.dart-5a8db28c328cf9f100ca946d39e8e62a37fbacdd",
+    url = "https://github.com/google/webdriver.dart/archive/5a8db28c328cf9f100ca946d39e8e62a37fbacdd.tar.gz",
 )
 
 load("@com_github_google_webdriver_dart//:repositories.bzl", "webdriver_dart_repositories")
