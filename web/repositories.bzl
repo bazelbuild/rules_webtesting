@@ -137,7 +137,7 @@ def browser_repositories(firefox=False, chromium=False, phantomjs=False):
         name="org_mozilla_geckodriver",
         amd64_sha256="ce4aa8b5cf918a6607b50e73996fb909db42fd803855f0ecc9d7183999c3bedc",
         amd64_url="https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz",
-        macos_sha256="acb05a7671948167e6c1b6930f32ea71dcaa2c12b2c2963e829c7b232f9125d0",
+        macos_sha256="802cc1a33b8ce6f7c3aeb5116730cb6efc20414959d6f750e74437869d37a150",
         macos_url="https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-macos.tar.gz"
     )
 
