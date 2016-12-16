@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Defines external repositories needs by rules_webtesting."""
+"""Defines external repositories needed by rules_webtesting."""
 
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 
@@ -31,7 +31,7 @@ def web_test_repositories(java=False,
     java: Configure Java client-side libraries.
     go: Configure Go client-side libraries.
     python: Configure Python client libraries.
-    omit_com_github_gorilla_mux*: Do not install Gorilla MUX. Gorilla
+    omit_com_github_gorilla_mux: Do not install Gorilla MUX. Gorilla
       MUX is required to compile the test launcher.
     omit_org_seleniumhq_java: Do not install Java Selenium client bindings.
       These bindings are only installed if java=True.
@@ -48,17 +48,18 @@ def web_test_repositories(java=False,
     native.new_http_archive(
         name="com_github_gorilla_mux",
         build_file=str(Label("//build_files:gorilla_mux.BUILD")),
-        url="https://github.com/gorilla/mux/archive/cf79e51a62d8219d52060dfc1b4e810414ba2d15.tar.gz",
-        sha256="80077e14b2f0f8f2796b6bfcf5c8e41e148e3c8c45b4c20d1e6856b348d5efb7",
-        strip_prefix="mux-cf79e51a62d8219d52060dfc1b4e810414ba2d15")
+        sha256="a32c13a36c58cb321136231ae8b67b0c6ad3c5f462e65eb6771f59c44b44ccba",
+        strip_prefix="mux-757bef944d0f21880861c2dd9c871ca543023cba",
+        url="https://github.com/gorilla/mux/archive/757bef944d0f21880861c2dd9c871ca543023cba.tar.gz"
+    )
 
   if java:
     if not omit_org_seleniumhq_java:
       native.new_http_archive(
           name="org_seleniumhq_java",
           build_file=str(Label("//build_files:selenium_java.BUILD")),
-          sha256="a26a449388abd46d1e152771e3641859ac4acee9c0ea24a101ca369048a81ecb",
-          url="http://selenium-release.storage.googleapis.com/3.0-beta3/selenium-java-3.0.0-beta3.zip"
+          sha256="0001f86f575d27a1886be3b383e198bcda621330d70c21e0cd0258170c2bc514",
+          url="http://selenium-release.storage.googleapis.com/3.0/selenium-java-3.0.1.zip"
       )
 
     if not omit_com_google_code_findbugs_jsr305:
@@ -70,26 +71,27 @@ def web_test_repositories(java=False,
     if not omit_com_google_guava_guava:
       native.maven_jar(
           name="com_google_guava_guava",
-          artifact="com.google.guava:guava:19.0",
-          sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9")
+          artifact="com.google.guava:guava:20.0",
+          sha1="89507701249388e1ed5ddcf8c41f4ce1be7831ef")
 
   if go:
     if not omit_com_github_tebeka_selenium:
       native.new_http_archive(
           name="com_github_tebeka_selenium",
           build_file=str(Label("//build_files:selenium_go.BUILD")),
-          url="https://github.com/tebeka/selenium/archive/v0.9.2.tar.gz",
-          sha256="c5f21652eda6230ee8bb5f9f02b740fa8d8b22c0cddc832ec666a7654bb0d1a4",
-          strip_prefix="selenium-0.9.2")
+          sha256="8a94dddb37cac3e839981a9d8452373136d49655408ecb7796a1a44ef876d94e",
+          strip_prefix="selenium-1cc64bfa7b5e2513fb492727d4b730ffe8f02433",
+          url="https://github.com/tebeka/selenium/archive/1cc64bfa7b5e2513fb492727d4b730ffe8f02433.tar.gz"
+      )
 
   if python:
     if not omit_org_seleniumhq_py:
       native.new_http_archive(
           name="org_seleniumhq_py",
           build_file=str(Label("//build_files:selenium_py.BUILD")),
-          sha256="0705803349964c7a2a144f1796a5d29905fe2a09931b2bb945ee0cb4deab75d7",
-          strip_prefix="selenium-3.0.1/py",
-          url="https://pypi.python.org/packages/3a/a3/e4ab60a0229a85f468a36367bc0672a4bca2720f24391eda33704a5f0ad5/selenium-3.0.1.tar.gz"
+          sha256="85daad4d09be86bddd4f45579986ac316c1909c3b4653ed471ea4519eb413c8f",
+          strip_prefix="selenium-3.0.2/py",
+          url="https://pypi.python.org/packages/0c/42/20c235e604bf736bc970c1275a78c4ea28c6453a0934002f95df9c49dad0/selenium-3.0.2.tar.gz"
       )
 
 
@@ -107,10 +109,10 @@ def browser_repositories(firefox=False, chromium=False, phantomjs=False):
   if chromium:
     platform_http_file(
         name="org_chromium_chromedriver",
-        amd64_sha256="d011749e76305b5591b5500897939b33fac460d705d9815b8c03c53b0e1ecc7c",
-        amd64_url="http://chromedriver.storage.googleapis.com/2.25/chromedriver_linux64.zip",
-        macos_sha256="e95fb36ab85264e16c51d58dd9766624eca6b6339569da0460088f4c788c67ad",
-        macos_url="http://chromedriver.storage.googleapis.com/2.25/chromedriver_mac64.zip"
+        amd64_sha256="59e6b1b1656a20334d5731b3c5a7400f92a9c6f5043bb4ab67f1ccf1979ee486",
+        amd64_url="http://chromedriver.storage.googleapis.com/2.26/chromedriver_linux64.zip",
+        macos_sha256="70aae3812941ed94ad8065bb4a9432861d7d4ebacdd93ee47bb2c7c57c7e841e",
+        macos_url="http://chromedriver.storage.googleapis.com/2.26/chromedriver_mac64.zip"
     )
 
     # Roughly corresponds to Chrome 55
@@ -125,18 +127,18 @@ def browser_repositories(firefox=False, chromium=False, phantomjs=False):
   if firefox:
     platform_http_file(
         name="org_mozilla_firefox",
-        amd64_sha256="95884070af8870a550ef70600793b6e6d5207f34af24f8b437b6c67b095e5517",
-        amd64_url="https://ftp.mozilla.org/pub/firefox/releases/49.0/firefox-49.0.linux-x86_64.sdk.tar.bz2",
-        macos_sha256="c068696c69af2da2b916e33e93755f7dda478fa6e9d17a60643cf2009bbaf8e2",
-        macos_url="https://ftp.mozilla.org/pub/firefox/releases/49.0/firefox-49.0.mac-x86_64.sdk.tar.bz2"
+        amd64_sha256="10533f3db9c819a56f6cd72f9340e05c7e3b116454eb81b0d39ed161955bb48f",
+        amd64_url="https://ftp.mozilla.org/pub/firefox/releases/50.1.0/firefox-50.1.0.linux-x86_64.sdk.tar.bz2",
+        macos_sha256="5cd449ebedb44b2f882b37e6e5cee1a814bc5ff3c3f86d1a1019b937aa287441",
+        macos_url="https://ftp.mozilla.org/pub/firefox/releases/50.1.0/firefox-50.1.0.mac-x86_64.sdk.tar.bz2"
     )
 
     platform_http_file(
         name="org_mozilla_geckodriver",
-        amd64_sha256="dee64571aefb5ef0279df7358d5f74fdf19a316adbab13c67e3c2d2c14da9e97",
-        amd64_url="https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-linux64.tar.gz",
+        amd64_sha256="ce4aa8b5cf918a6607b50e73996fb909db42fd803855f0ecc9d7183999c3bedc",
+        amd64_url="https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz",
         macos_sha256="acb05a7671948167e6c1b6930f32ea71dcaa2c12b2c2963e829c7b232f9125d0",
-        macos_url="https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-macos.tar.gz"
+        macos_url="https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-macos.tar.gz"
     )
 
   if phantomjs:
@@ -150,6 +152,6 @@ def browser_repositories(firefox=False, chromium=False, phantomjs=False):
 
     native.http_jar(
         name="org_seleniumhq_server",
-        sha256="f5ada04a651ba7ec70fcbc68bd4a59342a928ef7dce858ec594a8d5c49576ace",
-        url="http://selenium-release.storage.googleapis.com/3.0-beta3/selenium-server-standalone-3.0.0-beta3.jar"
+        sha256="1537b6d1b259191ed51586378791bc62b38b0cb18ae5ba1433009dc365e9f26b",
+        url="http://selenium-release.storage.googleapis.com/3.0/selenium-server-standalone-3.0.1.jar"
     )
