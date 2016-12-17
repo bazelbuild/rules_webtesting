@@ -28,6 +28,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/util/httphelper"
 	"github.com/gorilla/mux/mux"
 )
@@ -40,6 +41,7 @@ const (
 type hub struct {
 	*mux.Router
 	env         environment.Env
+	metadata    *metadata.Metadata
 	healthyOnce sync.Once
 	client      *http.Client
 
@@ -49,12 +51,13 @@ type hub struct {
 }
 
 // NewHandler creates a handler for /wd/hub paths that delegates to a WebDriver server instance provided by env.
-func NewHandler(env environment.Env) http.Handler {
+func NewHandler(env environment.Env, m *metadata.Metadata) http.Handler {
 	h := &hub{
 		Router:   mux.NewRouter(),
 		env:      env,
 		sessions: map[string]http.Handler{},
 		client:   &http.Client{},
+		metadata: m,
 	}
 
 	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(withContext(h.createSession))

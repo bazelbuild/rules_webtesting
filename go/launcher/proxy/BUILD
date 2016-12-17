@@ -29,6 +29,7 @@ go_library(
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/launcher/environments:environment",
+        "//go/metadata",
         "//go/util:httphelper",
         "//go/util:portpicker",
     ],
@@ -40,6 +41,7 @@ go_library(
         "driver_hub.go",
         "driver_responses.go",
         "driver_session.go",
+        "screenshot.go",
     ],
     visibility = ["//go:__subpackages__"],
     deps = [
@@ -47,6 +49,7 @@ go_library(
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/launcher/environments:environment",
+        "//go/metadata",
         "//go/util:httphelper",
         "@com_github_gorilla_mux//:mux",
     ],

@@ -29,13 +29,13 @@ import (
 	"github.com/gorilla/mux/mux"
 )
 
-type handlerFunc func(context.Context, request) (response, error)
+type HandlerFunc func(context.Context, Request) (Response, error)
 
 type session struct {
 	id          int
 	hub         *hub
 	driver      webdriver.WebDriver
-	handler     handlerFunc
+	handler     HandlerFunc
 	sessionPath string
 	router      *mux.Router
 
@@ -43,14 +43,14 @@ type session struct {
 	stopped bool
 }
 
-type request struct {
+type Request struct {
 	method string
 	path   []string
 	header http.Header
 	body   []byte
 }
 
-type response struct {
+type Response struct {
 	status int
 	header http.Header
 	body   []byte
@@ -59,6 +59,11 @@ type response struct {
 func createSession(id int, hub *hub, driver webdriver.WebDriver, desired map[string]interface{}) (http.Handler, error) {
 	// create base handler function
 	handler := createBaseHandler(driver)
+
+	handler, err := createChromeEmulatedDeviceHandler(driver, desired, handler)
+	if err != nil {
+		return nil, err
+	}
 
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
 	sess := &session{id: id, hub: hub, driver: driver, handler: handler, sessionPath: sessionPath}
@@ -153,7 +158,7 @@ func (s *session) defaultHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	req := request{
+	req := Request{
 		method: r.Method,
 		path:   pathTokens,
 		header: r.Header,
@@ -186,18 +191,18 @@ func (s *session) defaultHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp.body)
 }
 
-func createBaseHandler(driver webdriver.WebDriver) handlerFunc {
+func createBaseHandler(driver webdriver.WebDriver) HandlerFunc {
 	client := &http.Client{}
 
-	return func(ctx context.Context, rq request) (response, error) {
+	return func(ctx context.Context, rq Request) (Response, error) {
 		url, err := driver.CommandURL(rq.path...)
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
 
 		req, err := http.NewRequest(rq.method, url.String(), bytes.NewReader(rq.body))
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
 		req = req.WithContext(ctx)
 		if rq.header != nil {
@@ -206,13 +211,13 @@ func createBaseHandler(driver webdriver.WebDriver) handlerFunc {
 
 		resp, err := client.Do(req)
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
-		return response{resp.StatusCode, resp.Header, body}, nil
+		return Response{resp.StatusCode, resp.Header, body}, nil
 	}
 }
