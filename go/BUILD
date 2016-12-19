@@ -17,7 +17,7 @@
 package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
-load("//web:web.bzl", "web_test", "web_test_suite")
+load("//web:web.bzl", "web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -35,9 +35,7 @@ go_library(
 go_test(
     name = "browserinfo_test",
     srcs = ["browserinfo_test.go"],
-    data = [
-        "//go/metadata/testdata:all-fields.json",
-    ],
+    data = ["//go/metadata/testdata:all-fields.json"],
     library = ":webtest",
 )
 
@@ -49,9 +47,7 @@ go_test(
         "manual",
         "noci",
     ],
-    deps = [
-        "@com_github_tebeka_selenium//:selenium",
-    ],
+    deps = ["@com_github_tebeka_selenium//:selenium"],
 )
 
 web_test_suite(

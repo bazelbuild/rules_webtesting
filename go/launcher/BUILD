@@ -22,7 +22,10 @@ licenses(["notice"])  # Apache 2.0
 
 go_binary(
     name = "launcher",
-    srcs = ["launcher.go"],
+    srcs = [
+        "config.go",
+        "launcher.go",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":cmdhelper",
@@ -32,6 +35,8 @@ go_binary(
         "//go/launcher/environments:firefox",
         "//go/launcher/environments:native",
         "//go/launcher/proxy",
+        "//go/launcher/proxy:driverhub",        
+        "//go/launcher/proxy:screenshot",
         "//go/metadata",
         "//go/util:bazel",
     ],

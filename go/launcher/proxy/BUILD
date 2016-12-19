@@ -16,7 +16,8 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("//web:web.bzl", "web_test_config", "web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -41,7 +42,6 @@ go_library(
         "driver_hub.go",
         "driver_responses.go",
         "driver_session.go",
-        "screenshot.go",
     ],
     visibility = ["//go:__subpackages__"],
     deps = [
@@ -63,4 +63,43 @@ go_library(
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
     ],
+)
+
+go_library(
+    name = "screenshot",
+    srcs = ["screenshot.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":driverhub",
+        ":webdriver",
+        "//go/util:cropper",
+    ],
+)
+
+web_test_config(
+    name = "screenshot_test_config",
+    metadata = "screenshot_test.json",
+)
+
+go_test(
+    name = "screenshot_test_wrapped",
+    srcs = ["screenshot_test.go"],
+    tags = [
+        "manual",
+        "noci",
+    ],
+    deps = [
+        "//go:webtest",
+        "//go/util:bazel",
+        "@com_github_tebeka_selenium//:selenium",
+    ],
+)
+
+web_test_suite(
+    name = "screenshot_test",
+    browsers = ["//browsers:chromium-native"],
+    config = ":screenshot_test_config",
+    local = True,
+    tags = ["noci"],
+    test = ":screenshot_test_wrapped",
 )
