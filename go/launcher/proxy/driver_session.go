@@ -29,69 +29,104 @@ import (
 	"github.com/gorilla/mux/mux"
 )
 
-type handlerFunc func(context.Context, request) (response, error)
-
-type session struct {
-	id          int
-	hub         *hub
-	driver      webdriver.WebDriver
-	handler     handlerFunc
+// WebDriverSession is an http.Handler for forwarding requests to a WebDriver session.
+type WebDriverSession struct {
+	*mux.Router
+	*WebDriverHub
+	webdriver.WebDriver
+	ID          int
+	handler     HandlerFunc
 	sessionPath string
-	router      *mux.Router
 
 	mu      sync.Mutex
 	stopped bool
 }
 
-type request struct {
-	method string
-	path   []string
-	header http.Header
-	body   []byte
+// A handlerProvider wraps another HandlerFunc to create a new HandlerFunc.
+// If the second return value is false, then the provider did not construct a new HandlerFunc.
+type handlerProvider func(session *WebDriverSession, desired map[string]interface{}, base HandlerFunc) (HandlerFunc, bool)
+
+// HandlerFunc is a func for handling a request to a WebDriver session.
+type HandlerFunc func(context.Context, Request) (Response, error)
+
+// Request wraps a request to a WebDriver session.
+type Request struct {
+	// HTTP Method for this request (e.g. http.MethodGet, ...).
+	Method string
+	// Path of the request after the session id.
+	Path []string
+	// Any HTTP headers sent with the request.
+	Header http.Header
+	// The body of the request.
+	Body []byte
 }
 
-type response struct {
-	status int
-	header http.Header
-	body   []byte
+// Response describes what response should be returned for a request to WebDriver session.
+type Response struct {
+	// HTTP status code to return (e.g. http.StatusOK, ...).
+	Status int
+	// Any HTTP Headers that should be included in the response.
+	Header http.Header
+	// The body of the response.
+	Body []byte
 }
 
-func createSession(id int, hub *hub, driver webdriver.WebDriver, desired map[string]interface{}) (http.Handler, error) {
-	// create base handler function
-	handler := createBaseHandler(driver)
+var providers = []handlerProvider{}
 
+// HandlerProvider adds additional handlers that will wrap any previously defined handlers.
+//
+// It is important to note that later added handlers will wrap earlier added handlers.
+// E.g. if you call as follows:
+//   HandlerProviderFunc(hp1)
+//   HandlerProviderFunc(hp2)
+//   HandlerProviderFunc(hp3)
+//
+// The generated handler will be constructed as follows:
+//   hp3(session, desired, hp2(session, desired, hp1(session, desired, base)))
+// where base is the a default function that forwards commands to WebDriver unchanged.
+func HandlerProviderFunc(provider handlerProvider) {
+	providers = append(providers, provider)
+}
+
+func createHandler(session *WebDriverSession, desired map[string]interface{}) HandlerFunc {
+	handler := createBaseHandler(session)
+
+	for _, provider := range providers {
+		if h, ok := provider(session, desired, handler); ok {
+			handler = h
+		}
+	}
+	return handler
+}
+
+func createSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desired map[string]interface{}) (http.Handler, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
-	sess := &session{id: id, hub: hub, driver: driver, handler: handler, sessionPath: sessionPath}
+	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter()}
 
-	r := mux.NewRouter()
-	r.Path(sessionPath).Methods("DELETE").HandlerFunc(sess.quit)
+	session.handler = createHandler(session, desired)
+	session.Path(sessionPath).Methods("DELETE").HandlerFunc(session.quit)
 	// Route for commands for this session.
-	r.PathPrefix(sessionPath).HandlerFunc(sess.defaultHandler)
+	session.PathPrefix(sessionPath).HandlerFunc(session.defaultHandler)
 	// Route for commands for some other session. If this happens, the hub has
 	// done something wrong.
-	r.PathPrefix("/wd/hub/session/{sessionID}").HandlerFunc(sess.wrongSession)
+	session.PathPrefix("/wd/hub/session/{sessionID}").HandlerFunc(session.wrongSession)
 	// Route for all other paths that aren't WebDriver commands. This also implies
 	// that the hub has done something wrong.
-	r.PathPrefix("/").HandlerFunc(sess.unknownCommand)
-	sess.router = r
+	session.PathPrefix("/").HandlerFunc(session.unknownCommand)
 
-	return sess, nil
+	return session, nil
 }
 
-func (s *session) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.router.ServeHTTP(w, r)
-}
-
-func (s *session) wrongSession(w http.ResponseWriter, r *http.Request) {
+func (s *WebDriverSession) wrongSession(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	unknownError(w, fmt.Errorf("request for session %q was routed to handler for %q", vars["sessionID"], s.driver.SessionID()))
+	unknownError(w, fmt.Errorf("request for session %q was routed to handler for %q", vars["sessionID"], s.SessionID()))
 }
 
-func (s *session) unknownCommand(w http.ResponseWriter, r *http.Request) {
+func (s *WebDriverSession) unknownCommand(w http.ResponseWriter, r *http.Request) {
 	unknownCommand(w, r)
 }
 
-func (s *session) quit(w http.ResponseWriter, r *http.Request) {
+func (s *WebDriverSession) quit(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -105,19 +140,19 @@ func (s *session) quit(w http.ResponseWriter, r *http.Request) {
 
 	s.stopped = true
 
-	wdErr := s.driver.Quit(ctx)
+	wdErr := s.Quit(ctx)
 	if wdErr != nil {
 		log.Printf("Error quitting wendrover: %v", wdErr)
 	}
 
-	envErr := s.hub.env.StopSession(ctx, s.id)
+	envErr := s.WebDriverHub.Env.StopSession(ctx, s.ID)
 	if envErr != nil {
 		log.Printf("Error stopping session: %v", envErr)
 	}
 
-	s.hub.mu.Lock()
-	delete(s.hub.sessions, s.driver.SessionID())
-	s.hub.mu.Unlock()
+	s.WebDriverHub.mu.Lock()
+	delete(s.WebDriverHub.sessions, s.SessionID())
+	s.WebDriverHub.mu.Unlock()
 
 	if wdErr != nil {
 		unknownError(w, wdErr)
@@ -132,12 +167,12 @@ func (s *session) quit(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (s *session) commandPathTokens(path string) []string {
+func (s *WebDriverSession) commandPathTokens(path string) []string {
 	commandPath := strings.TrimPrefix(path, s.sessionPath)
 	return strings.Split(strings.Trim(commandPath, "/"), "/")
 }
 
-func (s *session) defaultHandler(w http.ResponseWriter, r *http.Request) {
+func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	vars := mux.Vars(r)
 	pathTokens := s.commandPathTokens(r.URL.Path)
@@ -153,11 +188,11 @@ func (s *session) defaultHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	req := request{
-		method: r.Method,
-		path:   pathTokens,
-		header: r.Header,
-		body:   body,
+	req := Request{
+		Method: r.Method,
+		Path:   pathTokens,
+		Header: r.Header,
+		Body:   body,
 	}
 	resp, err := s.handler(ctx, req)
 	if err != nil {
@@ -165,9 +200,9 @@ func (s *session) defaultHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if resp.header != nil {
+	if resp.Header != nil {
 		// Copy response headers from resp to w
-		for k, vs := range resp.header {
+		for k, vs := range resp.Header {
 			w.Header().Del(k)
 			for _, v := range vs {
 				w.Header().Add(k, v)
@@ -177,42 +212,42 @@ func (s *session) defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 	// TODO(fisherii): needed to play nice with Dart Sync WebDriver. Delete when Dart Sync WebDriver is deleted.
 	w.Header().Set("Transfer-Encoding", "identity")
-	w.Header().Set("Content-Length", strconv.Itoa(len(resp.body)))
+	w.Header().Set("Content-Length", strconv.Itoa(len(resp.Body)))
 
 	// Copy status code from resp to w
-	w.WriteHeader(resp.status)
+	w.WriteHeader(resp.Status)
 
 	// Write body from resp to w
-	w.Write(resp.body)
+	w.Write(resp.Body)
 }
 
-func createBaseHandler(driver webdriver.WebDriver) handlerFunc {
+func createBaseHandler(driver webdriver.WebDriver) HandlerFunc {
 	client := &http.Client{}
 
-	return func(ctx context.Context, rq request) (response, error) {
-		url, err := driver.CommandURL(rq.path...)
+	return func(ctx context.Context, rq Request) (Response, error) {
+		url, err := driver.CommandURL(rq.Path...)
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
 
-		req, err := http.NewRequest(rq.method, url.String(), bytes.NewReader(rq.body))
+		req, err := http.NewRequest(rq.Method, url.String(), bytes.NewReader(rq.Body))
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
 		req = req.WithContext(ctx)
-		if rq.header != nil {
-			req.Header = rq.header
+		if rq.Header != nil {
+			req.Header = rq.Header
 		}
 
 		resp, err := client.Do(req)
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return response{}, err
+			return Response{}, err
 		}
-		return response{resp.StatusCode, resp.Header, body}, nil
+		return Response{resp.StatusCode, resp.Header, body}, nil
 	}
 }

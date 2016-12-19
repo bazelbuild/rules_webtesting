@@ -28,6 +28,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/util/httphelper"
 	"github.com/gorilla/mux/mux"
 )
@@ -37,11 +38,14 @@ const (
 	envTimeout = 5 * time.Minute // some environments such as Android take a long time to start up.
 )
 
-type hub struct {
+// WebDriverHub routes message to the various WebDriver sessions.
+type WebDriverHub struct {
 	*mux.Router
-	env         environment.Env
+	environment.Env
+	*metadata.Metadata
+	*http.Client
+
 	healthyOnce sync.Once
-	client      *http.Client
 
 	mu       sync.RWMutex
 	sessions map[string]http.Handler
@@ -49,30 +53,25 @@ type hub struct {
 }
 
 // NewHandler creates a handler for /wd/hub paths that delegates to a WebDriver server instance provided by env.
-func NewHandler(env environment.Env) http.Handler {
-	h := &hub{
+func NewHandler(env environment.Env, m *metadata.Metadata) http.Handler {
+	h := &WebDriverHub{
 		Router:   mux.NewRouter(),
-		env:      env,
+		Env:      env,
 		sessions: map[string]http.Handler{},
-		client:   &http.Client{},
+		Client:   &http.Client{},
+		Metadata: m,
 	}
 
-	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(withContext(h.createSession))
+	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(h.createSession)
 	h.Path("/wd/hub/session").HandlerFunc(unknownMethod)
 	h.PathPrefix("/wd/hub/session/{sessionID}").HandlerFunc(h.routeToSession)
-	h.PathPrefix("/wd/hub/{command}").HandlerFunc(withContext(h.defaultForward))
+	h.PathPrefix("/wd/hub/{command}").HandlerFunc(h.defaultForward)
 	h.PathPrefix("/").HandlerFunc(unknownCommand)
 
 	return h
 }
 
-func withContext(handler func(ctx context.Context, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		handler(r.Context(), w, r)
-	}
-}
-
-func (h *hub) routeToSession(w http.ResponseWriter, r *http.Request) {
+func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
 	sid := mux.Vars(r)["sessionID"]
 	h.mu.RLock()
 	session := h.sessions[sid]
@@ -85,7 +84,8 @@ func (h *hub) routeToSession(w http.ResponseWriter, r *http.Request) {
 	session.ServeHTTP(w, r)
 }
 
-func (h *hub) createSession(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	log.Print("Creating session\n\n")
 	var desired map[string]interface{}
 
@@ -119,7 +119,7 @@ func (h *hub) createSession(ctx context.Context, w http.ResponseWriter, r *http.
 	h.nextID++
 	h.mu.Unlock()
 
-	desired, err = h.env.StartSession(ctx, id, j.Desired)
+	desired, err = h.Env.StartSession(ctx, id, j.Desired)
 	if err != nil {
 		sessionNotCreated(w, err)
 		return
@@ -127,9 +127,9 @@ func (h *hub) createSession(ctx context.Context, w http.ResponseWriter, r *http.
 
 	log.Printf("Caps: %+v", desired)
 	// TODO(fisherii) parameterize attempts based on browser metadata
-	driver, err := webdriver.CreateSession(ctx, h.env.WDAddress(ctx), 3, desired)
+	driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, desired)
 	if err != nil {
-		if err2 := h.env.StopSession(ctx, id); err2 != nil {
+		if err2 := h.Env.StopSession(ctx, id); err2 != nil {
 			log.Printf("error stopping session after failing to launch webdriver: %v", err2)
 		}
 		sessionNotCreated(w, err)
@@ -162,23 +162,24 @@ func (h *hub) createSession(ctx context.Context, w http.ResponseWriter, r *http.
 	w.Write(bytes)
 }
 
-func (h *hub) defaultForward(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+func (h *WebDriverHub) defaultForward(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	if err := h.waitForHealthyEnv(ctx); err != nil {
 		unknownError(w, err)
 		return
 	}
 
-	if err := httphelper.Forward(ctx, h.env.WDAddress(ctx), "/wd/hub/", w, r); err != nil {
+	if err := httphelper.Forward(r.Context(), h.Env.WDAddress(ctx), "/wd/hub/", w, r); err != nil {
 		unknownError(w, err)
 	}
 }
 
-func (h *hub) waitForHealthyEnv(ctx context.Context) error {
+func (h *WebDriverHub) waitForHealthyEnv(ctx context.Context) error {
 	h.healthyOnce.Do(func() {
 		healthyCtx, cancel := context.WithTimeout(ctx, envTimeout)
 		defer cancel()
 		// ignore error here as we will call and return Healthy below.
-		healthreporter.WaitForHealthy(healthyCtx, h.env)
+		healthreporter.WaitForHealthy(healthyCtx, h.Env)
 	})
-	return h.env.Healthy(ctx)
+	return h.Env.Healthy(ctx)
 }

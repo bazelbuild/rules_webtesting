@@ -76,7 +76,7 @@ func run() int {
 		}
 	}()
 
-	p, err := proxy.New(env)
+	p, err := proxy.New(env, m)
 	if err != nil {
 		log.Printf("Error creating proxy: %v", err)
 		return 127

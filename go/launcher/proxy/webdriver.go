@@ -18,8 +18,11 @@ package webdriver
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"image"
+	"image/png"
 	"io"
 	"io/ioutil"
 	"log"
@@ -56,6 +59,8 @@ type WebDriver interface {
 	Address() *url.URL
 	// Capabilities returns the capabilities returned from the remote end when session was created.
 	Capabilities() map[string]interface{}
+	// Screenshot takes a screenshot of the current browser window.
+	Screenshot(ctx context.Context) (image.Image, error)
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
@@ -198,6 +203,15 @@ func (d *webDriver) ExecuteScriptAsync(ctx context.Context, script string, args 
 	return err
 }
 
+// Screenshot takes a screenshot of the current browser window.
+func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
+	var value string
+	if err := d.get(ctx, "screenshot", &value); err != nil {
+		return nil, err
+	}
+	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
+}
+
 func (d *webDriver) post(ctx context.Context, suffix string, body interface{}, value interface{}) error {
 	c, err := d.CommandURL(suffix)
 	if err != nil {
@@ -205,6 +219,15 @@ func (d *webDriver) post(ctx context.Context, suffix string, body interface{}, v
 	}
 
 	_, err = post(ctx, d.client, c, body, value)
+	return err
+}
+
+func (d *webDriver) get(ctx context.Context, suffix string, value interface{}) error {
+	c, err := d.CommandURL(suffix)
+	if err != nil {
+		return err
+	}
+	_, err = getReq(ctx, d.client, c, value)
 	return err
 }
 
@@ -311,6 +334,15 @@ func post(ctx context.Context, client *http.Client, command *url.URL, body inter
 
 func deleteReq(ctx context.Context, client *http.Client, command *url.URL, value interface{}) (*jsonResp, error) {
 	request, err := http.NewRequest("DELETE", command.String(), nil)
+	if err != nil {
+		return nil, errors.NewPermanent(compName, err)
+	}
+
+	return doRequest(ctx, client, request, value)
+}
+
+func getReq(ctx context.Context, client *http.Client, command *url.URL, value interface{}) (*jsonResp, error) {
+	request, err := http.NewRequest("GET", command.String(), nil)
 	if err != nil {
 		return nil, errors.NewPermanent(compName, err)
 	}

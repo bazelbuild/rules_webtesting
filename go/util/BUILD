@@ -16,7 +16,7 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -36,4 +36,20 @@ go_library(
     name = "portpicker",
     srcs = ["port_picker.go"],
     visibility = ["//go:__subpackages__"],
+)
+
+go_library(
+    name = "cropper",
+    srcs = ["cropper.go"],
+    visibility = ["//go:__subpackages__"],
+)
+
+go_test(
+    name = "cropper_test",
+    srcs = ["cropper_test.go"],
+    library = ":cropper",
+    deps = [
+        "//go/util:bazel",
+    ],
+    data = ["//go/util/testdata"]
 )
