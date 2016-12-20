@@ -26,6 +26,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
@@ -43,6 +44,7 @@ const (
 
 // Proxy starts a WebDriver protocol proxy.
 type Proxy struct {
+	diagnostics.Diagnostics
 	env      environment.Env
 	metadata *metadata.Metadata
 	Address  string
@@ -50,16 +52,17 @@ type Proxy struct {
 }
 
 // New creates a new Proxy object.
-func New(env environment.Env, m *metadata.Metadata) (*Proxy, error) {
+func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (*Proxy, error) {
 	port, err := portpicker.PickUnusedPort()
 	if err != nil {
 		return nil, errors.New(compName, err)
 	}
 	return &Proxy{
-		env:      env,
-		metadata: m,
-		Address:  net.JoinHostPort("localhost", strconv.Itoa(port)),
-		port:     port,
+		Diagnostics: d,
+		env:         env,
+		metadata:    m,
+		Address:     net.JoinHostPort("localhost", strconv.Itoa(port)),
+		port:        port,
 	}, nil
 }
 
@@ -72,7 +75,7 @@ func (*Proxy) Name() string {
 func (p *Proxy) Start(ctx context.Context) error {
 	log.Printf("launching server at: %v", p.Address)
 
-	http.Handle("/wd/hub/", driverhub.NewHandler(p.env, p.metadata))
+	http.Handle("/wd/hub/", driverhub.NewHandler(p.env, p.metadata, p.Diagnostics))
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")

@@ -19,12 +19,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
 	"github.com/gorilla/mux/mux"
 )
@@ -117,12 +117,18 @@ func createSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desire
 	return session, nil
 }
 
+func (s *WebDriverSession) Name() string {
+	return "WebDriver Session Handler"
+}
+
 func (s *WebDriverSession) wrongSession(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	s.Severe(errors.New(s.Name(), "request routed to wrong session handler"))
 	unknownError(w, fmt.Errorf("request for session %q was routed to handler for %q", vars["sessionID"], s.SessionID()))
 }
 
 func (s *WebDriverSession) unknownCommand(w http.ResponseWriter, r *http.Request) {
+	s.Severe(errors.New(s.Name(), "unknown command routed to session handler"))
 	unknownCommand(w, r)
 }
 
@@ -142,12 +148,12 @@ func (s *WebDriverSession) quit(w http.ResponseWriter, r *http.Request) {
 
 	wdErr := s.Quit(ctx)
 	if wdErr != nil {
-		log.Printf("Error quitting wendrover: %v", wdErr)
+		s.Warning(wdErr)
 	}
 
 	envErr := s.WebDriverHub.Env.StopSession(ctx, s.ID)
 	if envErr != nil {
-		log.Printf("Error stopping session: %v", envErr)
+		s.Warning(envErr)
 	}
 
 	s.WebDriverHub.mu.Lock()
@@ -196,6 +202,7 @@ func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request
 	}
 	resp, err := s.handler(ctx, req)
 	if err != nil {
+		s.Severe(errors.New(s.Name(), err))
 		unknownError(w, err)
 		return
 	}

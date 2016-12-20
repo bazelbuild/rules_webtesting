@@ -29,17 +29,25 @@ go_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":cmdhelper",
+        ":diagnostics",
         "//go/launcher/environments:chrome",
         "//go/launcher/environments:environment",
         "//go/launcher/environments:external",
         "//go/launcher/environments:firefox",
         "//go/launcher/environments:native",
         "//go/launcher/proxy",
-        "//go/launcher/proxy:driverhub",        
+        "//go/launcher/proxy:driverhub",
         "//go/launcher/proxy:screenshot",
         "//go/metadata",
         "//go/util:bazel",
     ],
+)
+
+go_library(
+    name = "diagnostics",
+    srcs = ["diagnostics.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [":errors"],
 )
 
 go_library(

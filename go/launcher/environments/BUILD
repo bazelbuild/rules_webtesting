@@ -25,6 +25,7 @@ go_library(
     srcs = ["environment.go"],
     visibility = ["//go/launcher:__subpackages__"],
     deps = [
+        "//go/launcher:diagnostics",
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/metadata",
@@ -38,6 +39,7 @@ go_library(
     visibility = ["//go/launcher:__subpackages__"],
     deps = [
         ":environment",
+        "//go/launcher:diagnostics",
         "//go/launcher:errors",
         "//go/metadata",
     ],
@@ -50,6 +52,7 @@ go_library(
     deps = [
         ":environment",
         "//go/launcher:cmdhelper",
+        "//go/launcher:diagnostics",
         "//go/launcher/services:selenium",
         "//go/metadata",
     ],
@@ -62,6 +65,7 @@ go_library(
     deps = [
         ":environment",
         "//go/launcher:cmdhelper",
+        "//go/launcher:diagnostics",
         "//go/launcher/services:chromedriver",
         "//go/metadata",
     ],
@@ -74,6 +78,7 @@ go_library(
     deps = [
         ":environment",
         "//go/launcher:cmdhelper",
+        "//go/launcher:diagnostics",
         "//go/launcher/services:geckodriver",
         "//go/metadata",
     ],

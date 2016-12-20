@@ -27,6 +27,7 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         ":driverhub",
+        "//go/launcher:diagnostics",
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/launcher/environments:environment",
@@ -46,6 +47,7 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         ":webdriver",
+        "//go/launcher:diagnostics",
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/launcher/environments:environment",
