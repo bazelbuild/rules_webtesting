@@ -62,7 +62,7 @@ func (d *noOPDiagnostics) Timing(_, _, _ string, _, _ time.Time) error {
 // Severe reports an error that is highly likely to cause problems in tests.
 func (d *noOPDiagnostics) Severe(err error) error {
 	if d.closed {
-		return errors.New(d.Name(), "cannot add timing data after diagnostics are closed")
+		return errors.New(d.Name(), "cannot add errors after diagnostics are closed")
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ func (d *noOPDiagnostics) Severe(err error) error {
 // that you want to track anyway.
 func (d *noOPDiagnostics) Warning(err error) error {
 	if d.closed {
-		return errors.New(d.Name(), "cannot add timing data after diagnostics are closed")
+		return errors.New(d.Name(), "cannot add errors after diagnostics are closed")
 	}
 	return nil
 }
