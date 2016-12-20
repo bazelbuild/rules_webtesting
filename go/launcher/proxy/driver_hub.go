@@ -24,6 +24,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
@@ -33,10 +34,7 @@ import (
 	"github.com/gorilla/mux/mux"
 )
 
-const (
-	compName   = "WebDriver Hub"
-	envTimeout = 5 * time.Minute // some environments such as Android take a long time to start up.
-)
+const envTimeout = 5 * time.Minute // some environments such as Android take a long time to start up.
 
 // WebDriverHub routes message to the various WebDriver sessions.
 type WebDriverHub struct {
@@ -44,6 +42,7 @@ type WebDriverHub struct {
 	environment.Env
 	*metadata.Metadata
 	*http.Client
+	diagnostics.Diagnostics
 
 	healthyOnce sync.Once
 
@@ -53,13 +52,14 @@ type WebDriverHub struct {
 }
 
 // NewHandler creates a handler for /wd/hub paths that delegates to a WebDriver server instance provided by env.
-func NewHandler(env environment.Env, m *metadata.Metadata) http.Handler {
+func NewHandler(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) http.Handler {
 	h := &WebDriverHub{
-		Router:   mux.NewRouter(),
-		Env:      env,
-		sessions: map[string]http.Handler{},
-		Client:   &http.Client{},
-		Metadata: m,
+		Router:      mux.NewRouter(),
+		Env:         env,
+		sessions:    map[string]http.Handler{},
+		Client:      &http.Client{},
+		Diagnostics: d,
+		Metadata:    m,
 	}
 
 	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(h.createSession)
@@ -69,6 +69,10 @@ func NewHandler(env environment.Env, m *metadata.Metadata) http.Handler {
 	h.PathPrefix("/").HandlerFunc(unknownCommand)
 
 	return h
+}
+
+func (h *WebDriverHub) Name() string {
+	return "WebDriver Hub"
 }
 
 func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
@@ -110,7 +114,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if j.Desired == nil {
-		sessionNotCreated(w, errors.New(compName, "new session request body missing desired capabilities"))
+		sessionNotCreated(w, errors.New(h.Name(), "new session request body missing desired capabilities"))
 		return
 	}
 

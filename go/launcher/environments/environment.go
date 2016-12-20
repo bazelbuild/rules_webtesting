@@ -20,6 +20,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
@@ -53,8 +54,9 @@ type Env interface {
 // Base is a partial implementation of Env useful as the base struct for
 // implementations of Env.
 type Base struct {
-	name     string
-	Metadata *metadata.Metadata
+	*metadata.Metadata
+	diagnostics.Diagnostics
+	name string
 
 	mu      sync.RWMutex
 	started bool
@@ -62,10 +64,11 @@ type Base struct {
 }
 
 // NewBase creates a new Base environment with the given component name.
-func NewBase(name string, m *metadata.Metadata) (*Base, error) {
+func NewBase(name string, m *metadata.Metadata, d diagnostics.Diagnostics) (*Base, error) {
 	return &Base{
-		name:     name,
-		Metadata: m,
+		name:        name,
+		Metadata:    m,
+		Diagnostics: d,
 	}, nil
 }
 

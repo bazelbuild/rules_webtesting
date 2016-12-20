@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
@@ -35,13 +36,13 @@ type external struct {
 }
 
 // NewEnv creates a new environment that uses an externally started Selenium Server.
-func NewEnv(m *metadata.Metadata) (environment.Env, error) {
+func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error) {
 	address, ok := os.LookupEnv(address_env_var)
 	if !ok {
 		return nil, errors.New(name, fmt.Errorf("environment variable %q not set", address_env_var))
 	}
 
-	base, err := environment.NewBase(name, m)
+	base, err := environment.NewBase(name, m, d)
 	if err != nil {
 		return nil, err
 	}

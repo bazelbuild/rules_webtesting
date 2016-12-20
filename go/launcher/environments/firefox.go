@@ -21,6 +21,7 @@ import (
 	"os"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/services/geckodriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
@@ -39,19 +40,19 @@ type firefox struct {
 
 // NewEnv creates a new environment for launching a chrome browser locally using
 // ChromeDriver.
-func NewEnv(m *metadata.Metadata) (environment.Env, error) {
-	base, err := environment.NewBase(compName, m)
+func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error) {
+	base, err := environment.NewBase(compName, m, d)
 	if err != nil {
 		return nil, err
 	}
-	d, err := geckodriver.New(m, useXvfb())
+	gd, err := geckodriver.New(m, useXvfb())
 	if err != nil {
 		return nil, err
 	}
 
 	return &firefox{
 		Base:   base,
-		driver: d,
+		driver: gd,
 	}, nil
 }
 

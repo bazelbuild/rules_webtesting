@@ -25,28 +25,39 @@ import (
 	"syscall"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/chrome"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/external"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/firefox"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/native"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
 )
 
+type envProvider func(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error)
+
 var (
 	test             = flag.String("test", "", "Test script to launch")
 	metadataFileFlag = flag.String("metadata", "", "metadata file")
+	envProviders     = map[string]envProvider{}
 )
 
 func main() {
 	flag.Parse()
 
-	os.Exit(run())
+	d := diagnostics.NoOP()
+
+	status := Run(d)
+
+	d.Close()
+	os.Exit(status)
 }
 
-func run() int {
+// RegisterEnvProviderFunc adds a new env provider.
+func RegisterEnvProviderFunc(name string, p envProvider) {
+	envProviders[name] = p
+}
+
+// Run runs the test.
+func Run(d diagnostics.Diagnostics) int {
 	metadataFile, err := bazel.Runfile(*metadataFileFlag)
 	if err != nil {
 		log.Printf("Error locating metadata file: %v", err)
@@ -59,7 +70,7 @@ func run() int {
 		return 127
 	}
 
-	env, err := buildEnv(m)
+	env, err := buildEnv(m, d)
 	if err != nil {
 		log.Printf("Error building environment: %v", err)
 		return 127
@@ -76,7 +87,7 @@ func run() int {
 		}
 	}()
 
-	p, err := proxy.New(env, m)
+	p, err := proxy.New(env, m, d)
 	if err != nil {
 		log.Printf("Error creating proxy: %v", err)
 		return 127
@@ -126,16 +137,10 @@ func run() int {
 	return 0
 }
 
-func buildEnv(m *metadata.Metadata) (environment.Env, error) {
-	switch m.Environment {
-	case "external":
-		return external.NewEnv(m)
-	case "native":
-		return native.NewEnv(m)
-	case "chrome":
-		return chrome.NewEnv(m)
-	case "firefox":
-		return firefox.NewEnv(m)
+func buildEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error) {
+	p, ok := envProviders[m.Environment]
+	if !ok {
+		return nil, fmt.Errorf("unknown environment: %s", m.Environment)
 	}
-	return nil, fmt.Errorf("unknown environment: %s", m.Environment)
+	return p(m, d)
 }
