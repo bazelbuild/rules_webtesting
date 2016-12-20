@@ -24,6 +24,8 @@ type subImageSupported interface {
 	SubImage(r image.Rectangle) image.Image
 }
 
+// Crops an image to bounds.
+// The cropped image may be a view on the original image or a completely distinct image.
 func Crop(src image.Image, bounds image.Rectangle) (image.Image, error) {
 	s, ok := src.(subImageSupported)
 	if !ok {

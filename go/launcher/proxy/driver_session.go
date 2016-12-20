@@ -73,7 +73,7 @@ type Response struct {
 
 var providers = []handlerProvider{}
 
-// HandlerProvider adds additional handlers that will wrap any previously defined handlers.
+// HandlerProviderFunc adds additional handlers that will wrap any previously defined handlers.
 //
 // It is important to note that later added handlers will wrap earlier added handlers.
 // E.g. if you call as follows:
