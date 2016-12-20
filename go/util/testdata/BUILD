@@ -16,6 +16,8 @@
 #
 package(default_testonly = True)
 
+licenses(["notice"])  # Apache 2.0
+
 filegroup(
     name = "testdata",
     srcs = glob(["*"]),
