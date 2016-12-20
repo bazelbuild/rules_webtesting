@@ -71,6 +71,7 @@ func NewHandler(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnos
 	return h
 }
 
+// Name is the name of the component used in error messages.
 func (h *WebDriverHub) Name() string {
 	return "WebDriver Hub"
 }

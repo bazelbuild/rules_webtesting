@@ -41,7 +41,7 @@ type noOPDiagnostics struct {
 	closed bool
 }
 
-// New creates a new empty Diagnostics object.
+// NoOP creates a new empty Diagnostics object.
 func NoOP() Diagnostics {
 	return &noOPDiagnostics{}
 }
