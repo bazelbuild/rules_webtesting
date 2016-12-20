@@ -38,6 +38,7 @@ def web_test_suite(name,
                    browsers,
                    test,
                    browser_overrides=None,
+                   test_suite_tags=("manual",),
                    visibility=None,
                    **kwargs):
   """Defines a test_suite of web_test targets to be run.
@@ -52,6 +53,8 @@ def web_test_suite(name,
       attributes, such as shard_count, flakiness, timeout, etc. For example:
       {'\\browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
        '\\browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
+    test_suite_tags: List of strings; optoinal default = ["manual"]; tags
+      for the generated test_suite rule.
     visibility: List of labels; optional.
     **kwargs: Additional arguments for web_test rule.
   """
@@ -83,7 +86,7 @@ def web_test_suite(name,
     tests += [test_name]
 
   native.test_suite(
-      name=name, tests=tests, tags=["manual"], visibility=visibility)
+      name=name, tests=tests, tags=test_suite_tags, visibility=visibility)
 
 
 def _apply_browser_overrides(kwargs, overrides):

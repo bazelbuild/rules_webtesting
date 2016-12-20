@@ -17,7 +17,7 @@
 package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
-load("//web:web.bzl", "web_test_suite")
+load("//web:go.bzl", "go_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -39,25 +39,20 @@ go_test(
     library = ":webtest",
 )
 
-go_test(
-    name = "webtest_test_wrapped",
-    srcs = ["webtest_test.go"],
-    library = ":webtest",
-    tags = [
-        "manual",
-        "noci",
-    ],
-    deps = ["@com_github_tebeka_selenium//:selenium"],
-)
-
-web_test_suite(
+go_web_test_suite(
     name = "webtest_test",
+    srcs = ["webtest_test.go"],
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
         "//browsers:phantomjs",
     ],
+    go_test_tags = [
+        "manual",
+        "noci",
+    ],
+    library = ":webtest",
     local = True,
     tags = ["noci"],
-    test = ":webtest_test_wrapped",
+    deps = ["@com_github_tebeka_selenium//:selenium"],
 )

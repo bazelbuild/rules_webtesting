@@ -51,3 +51,33 @@ filegroup(
     ],
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+    name = "dart",
+    srcs = ["dart.bzl"],
+    data = [
+        ":web",
+        # should depend on dart build rules.
+    ],
+)
+
+filegroup(
+    name = "go",
+    srcs = ["go.bzl"],
+    data = [
+        ":web",
+        # should depend on go build rules.
+    ],
+)
+
+filegroup(
+    name = "java",
+    srcs = ["java.bzl"],
+    data = [":web"],
+)
+
+filegroup(
+    name = "py",
+    srcs = ["py.bzl"],
+    data = [":web"],
+)

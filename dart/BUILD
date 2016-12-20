@@ -17,8 +17,7 @@
 package(default_testonly = True)
 
 load("@io_bazel_rules_dart//dart/build_rules:core.bzl", "dart_library")
-load("@io_bazel_rules_dart//dart/build_rules:vm.bzl", "dart_vm_test")
-load("//web:web.bzl", "web_test_suite")
+load("//web:dart.bzl", "dart_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -30,24 +29,18 @@ dart_library(
     deps = ["@com_github_google_webdriver_dart//:webdriver"],
 )
 
-dart_vm_test(
-    name = "webtest_test_wrapped",
+dart_web_test_suite(
+    name = "webtest_test",
     srcs = glob(["test/**/*.dart"]),
-    script_file = "test/webtest_test.dart",
-    tags = [
+    browsers = ["//browsers:chromium-native"],
+    dart_test_tags = [
         "manual",
         "noci",
     ],
+    local = True,
+    tags = ["noci"],
     deps = [
         ":dart",
         "@org_dartlang_pub_test//:test",
     ],
-)
-
-web_test_suite(
-    name = "webtest_test",
-    browsers = ["//browsers:chromium-native"],
-    local = True,
-    tags = ["noci"],
-    test = ":webtest_test_wrapped",
 )
