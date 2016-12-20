@@ -48,8 +48,6 @@ go_test(
     name = "cropper_test",
     srcs = ["cropper_test.go"],
     library = ":cropper",
-    deps = [
-        "//go/util:bazel",
-    ],
+    deps = [":bazel"],
     data = ["//go/util/testdata"]
 )
