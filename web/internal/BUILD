@@ -99,3 +99,10 @@ filegroup(
     data = [":metadata"],
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+    name = "wrap_web_test_suite",
+    srcs = ["wrap_web_test_suite.bzl"],
+    data = ["//web"],
+    visibility = ["//visibility:public"],
+)

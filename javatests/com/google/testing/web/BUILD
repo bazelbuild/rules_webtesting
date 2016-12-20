@@ -16,33 +16,27 @@
 #
 package(default_testonly = True)
 
-load("//web:web.bzl", "web_test", "web_test_suite")
+load("//web:java.bzl", "java_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
-java_test(
-    name = "WebTestTest_wrapped",
-    srcs = ["WebTestTest.java"],
-    tags = [
-        "manual",
-        "noci",
-    ],
-    test_class = "com.google.testing.web.WebTestTest",
-    deps = [
-        "//java/com/google/testing/web",
-        "@junit_junit//jar",
-        "@org_seleniumhq_java//:selenium",
-    ],
-)
-
-web_test_suite(
+java_web_test_suite(
     name = "WebTestTest",
+    srcs = ["WebTestTest.java"],
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
         "//browsers:phantomjs",
     ],
+    java_test_tags = [
+        "manual",
+        "noci",
+    ],
     local = True,
     tags = ["noci"],
-    test = ":WebTestTest_wrapped",
+    deps = [
+        "//java/com/google/testing/web",
+        "@junit_junit//jar",
+        "@org_seleniumhq_java//:selenium",
+    ],
 )

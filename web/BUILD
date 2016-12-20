@@ -51,3 +51,33 @@ filegroup(
     ],
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+    name = "dart",
+    srcs = ["dart.bzl"],
+    data = [
+        "//web/internal:wrap_web_test_suite",
+        # should depend on dart build rules.
+    ],
+)
+
+filegroup(
+    name = "go",
+    srcs = ["go.bzl"],
+    data = [
+        "//web/internal:wrap_web_test_suite",
+        # should depend on go build rules.
+    ],
+)
+
+filegroup(
+    name = "java",
+    srcs = ["java.bzl"],
+    data = ["//web/internal:wrap_web_test_suite"],
+)
+
+filegroup(
+    name = "py",
+    srcs = ["py.bzl"],
+    data = ["//web/internal:wrap_web_test_suite"],
+)

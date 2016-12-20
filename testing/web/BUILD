@@ -16,7 +16,7 @@
 #
 package(default_testonly = True)
 
-load("//web:web.bzl", "web_test", "web_test_suite")
+load("//web:py.bzl", "py_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -33,28 +33,20 @@ py_library(
     ],
 )
 
-py_test(
-    name = "webtest_test_wrapped",
-    srcs = ["webtest_test.py"],
-    main = "webtest_test.py",
-    srcs_version = "PY2AND3",
-    tags = [
-        "manual",
-        "noci",
-    ],
-    deps = [
-        ":web",
-    ],
-)
-
-web_test_suite(
+py_web_test_suite(
     name = "webtest_test",
+    srcs = ["webtest_test.py"],
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
         "//browsers:phantomjs",
     ],
     local = True,
+    py_test_tags = [
+        "manual",
+        "noci",
+    ],
+    srcs_version = "PY2AND3",
     tags = ["noci"],
-    test = ":webtest_test_wrapped",
+    deps = [":web"],
 )

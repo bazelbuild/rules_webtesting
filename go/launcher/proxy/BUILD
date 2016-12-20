@@ -16,8 +16,9 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
-load("//web:web.bzl", "web_test_config", "web_test_suite")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//web:web.bzl", "web_test_config")
+load("//web:go.bzl", "go_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -83,25 +84,20 @@ web_test_config(
     metadata = "screenshot_test.json",
 )
 
-go_test(
-    name = "screenshot_test_wrapped",
+go_web_test_suite(
+    name = "screenshot_test",
     srcs = ["screenshot_test.go"],
-    tags = [
+    browsers = ["//browsers:chromium-native"],
+    config = ":screenshot_test_config",
+    go_test_tags = [
         "manual",
         "noci",
     ],
+    local = True,
+    tags = ["noci"],
     deps = [
         "//go:webtest",
         "//go/util:bazel",
         "@com_github_tebeka_selenium//:selenium",
     ],
-)
-
-web_test_suite(
-    name = "screenshot_test",
-    browsers = ["//browsers:chromium-native"],
-    config = ":screenshot_test_config",
-    local = True,
-    tags = ["noci"],
-    test = ":screenshot_test_wrapped",
 )
