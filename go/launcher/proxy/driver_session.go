@@ -117,6 +117,7 @@ func createSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desire
 	return session, nil
 }
 
+// Name is the name of the component used in error messages.
 func (s *WebDriverSession) Name() string {
 	return "WebDriver Session Handler"
 }
