@@ -51,7 +51,7 @@ func (d *noOPDiagnostics) Name() string {
 	return "No-OP Diagnostics"
 }
 
-// Timing reports timing i
+// Timing reports timing info.
 func (d *noOPDiagnostics) Timing(_, _, _ string, _, _ time.Time) error {
 	if d.closed {
 		return errors.New(d.Name(), "cannot add timing data after diagnostics are closed")
