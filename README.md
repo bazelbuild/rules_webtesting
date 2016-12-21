@@ -149,30 +149,21 @@ if __name__ == "__main__":
   unittest.main()
 ```
 
-In your BUILD files, create your test target as normal, but tag it "manual".
-Then create a web_test_suite that depends on your test target:
+In your BUILD files, load the correct language specific build rule and create a test target using it:
 
 ```bzl
-load("@io_bazel_rules_webtesting//web:web.bzl", "web_test_suite")
+load("@io_bazel_rules_webtesting//web:py.bzl", "py_web_test_suite")
 
-py_test(
-    name = "browser_test_wrapped",
-    srcs = ["browser_test.py"],
-    tags = ["manual"],
-    deps = [
-        "@io_bazel_rules_webtesting//testing/web",
-    ],
-)
-
-web_test_suite(
+py_web_test_suite(
     name = "browser_test",
+    srcs = ["browser_test.py"],    
     browsers = [
         # For experimental purposes only. Eventually you should
         # create your own browser definitions.
         "@io_bazel_rules_webtesting//browsers:chromium-native",
     ],
-    local = 1,
-    test = ":browser_test_wrapped",
+    local = True,
+    deps = ["@io_bazel_rules_webtesting//testing/web"],
 )
 ```
 
