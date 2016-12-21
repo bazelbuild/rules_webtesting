@@ -72,7 +72,7 @@ func TestScreenshot(t *testing.T) {
 		return
 	}
 
-	if config.Width != 480 || config.Height != 800 {
-		t.Errorf("got size == %d, %d, expected 480, 800", config.Width, config.Height)
+	if config.Width != 200 || config.Height != 200 {
+		t.Errorf("got size == %d, %d, expected 200, 200", config.Width, config.Height)
 	}
 }

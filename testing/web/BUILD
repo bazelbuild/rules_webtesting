@@ -28,9 +28,7 @@ py_library(
     ),
     srcs_version = "PY2AND3",
     visibility = ["//visibility:public"],
-    deps = [
-        "@org_seleniumhq_py//:selenium",
-    ],
+    deps = ["@org_seleniumhq_py//:selenium"],
 )
 
 py_web_test_suite(

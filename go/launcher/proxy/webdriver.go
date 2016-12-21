@@ -81,6 +81,7 @@ type jsonResp struct {
 	Status    int         `json:"status"`
 	SessionID string      `json:"sessionId"`
 	Value     interface{} `json:"value"`
+	Error     string      `json:"error"`
 }
 
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
@@ -292,7 +293,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 
 	respBody := &jsonResp{Value: value}
 
-	if err := json.Unmarshal(bytes, respBody); err == nil && respBody.Status == 0 {
+	if err := json.Unmarshal(bytes, respBody); err == nil && respBody.Status == 0 && respBody.Error == "" {
 		// WebDriver returned success, we are done.
 		return respBody, nil
 	} else if value == nil && err != nil {
@@ -302,7 +303,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 
 	// if no value object was passed in then we can use the parsed Value
 	if value == nil {
-		return respBody, &webDriverError{respBody.Status, respBody.Value}
+		return respBody, newWebDriverError(respBody)
 	}
 
 	// otherwise we can't trust the parsed Value has what we want, so need to re-parse.
@@ -311,7 +312,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 		return nil, errors.New(compName, err)
 	}
 
-	return respBody, &webDriverError{errBody.Status, errBody.Value}
+	return errBody, newWebDriverError(errBody)
 }
 
 func post(ctx context.Context, client *http.Client, command *url.URL, body interface{}, value interface{}) (*jsonResp, error) {
@@ -363,60 +364,4 @@ func doRequest(ctx context.Context, client *http.Client, request *http.Request, 
 	defer resp.Body.Close()
 	r, err := processResponse(resp.Body, value)
 	return r, err
-}
-
-type webDriverError struct {
-	status int
-	value  interface{}
-}
-
-func (e *webDriverError) Component() string {
-	return compName
-}
-
-func (e *webDriverError) Error() string {
-	return fmt.Sprintf("[%s] (%d) %v", e.Component(), e.status, e.value)
-}
-
-// IsWebDriverError returns true if err is a WebDriver Error.
-func IsWebDriverError(err error) bool {
-	_, ok := err.(*webDriverError)
-	return ok
-}
-
-// ErrorStatus returns the WebDriver status for err if it is a WebDriver error.
-func ErrorStatus(err error) (int, bool) {
-	we, ok := err.(*webDriverError)
-	if !ok {
-		return 0, false
-	}
-	return we.status, true
-}
-
-// ErrorValue returns the WebDriver value for err if it is a WebDriver error.
-func ErrorValue(err error) (interface{}, bool) {
-	we, ok := err.(*webDriverError)
-	if !ok {
-		return nil, false
-	}
-	return we.value, true
-}
-
-// MarshalError generates the WebDriver JSON wire protocol HTTP response body for err.
-func MarshalError(err error) ([]byte, error) {
-	body := map[string]interface{}{}
-
-	if IsWebDriverError(err) {
-		s, _ := ErrorStatus(err)
-		body["status"] = s
-		v, _ := ErrorValue(err)
-		body["value"] = v
-	} else {
-		body["status"] = 12 // UnknownError
-		body["value"] = map[string]string{
-			"message": err.Error(),
-		}
-	}
-
-	return json.Marshal(body)
 }

@@ -60,7 +60,10 @@ go_library(
 
 go_library(
     name = "webdriver",
-    srcs = ["webdriver.go"],
+    srcs = [
+        "webdriver.go",
+        "webdriver_error.go",
+    ],
     visibility = ["//go:__subpackages__"],
     deps = [
         "//go/launcher:errors",
@@ -100,4 +103,21 @@ go_web_test_suite(
         "//go/util:bazel",
         "@com_github_tebeka_selenium//:selenium",
     ],
+)
+
+go_web_test_suite(
+    name = "webdriver_test",
+    size = "large",
+    srcs = ["webdriver_test.go"],
+    browsers = [
+        "//browsers:chromium-native",
+        "//browsers:firefox-native",
+    ],
+    go_test_tags = [
+        "manual",
+        "noci",
+    ],
+    library = ":webdriver",
+    local = True,
+    tags = ["noci"],
 )
