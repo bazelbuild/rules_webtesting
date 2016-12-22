@@ -78,10 +78,12 @@ type webDriver struct {
 }
 
 type jsonResp struct {
-	Status    int         `json:"status"`
-	SessionID string      `json:"sessionId"`
-	Value     interface{} `json:"value"`
-	Error     string      `json:"error"`
+	Status     int         `json:"status"`
+	SessionID  string      `json:"sessionId"`
+	Value      interface{} `json:"value"`
+	Error      string      `json:"error"`
+	Message    string      `json:"message"`
+	StackTrace interface{} `json:"stacktrace"`
 }
 
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
@@ -291,12 +293,14 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 		return nil, errors.New(compName, err)
 	}
 
+	log.Printf("MRF: %q", string(bytes))
 	respBody := &jsonResp{Value: value}
 
 	if err := json.Unmarshal(bytes, respBody); err == nil && respBody.Status == 0 && respBody.Error == "" {
 		// WebDriver returned success, we are done.
+
 		return respBody, nil
-	} else if value == nil && err != nil {
+	} else if err != nil && value == nil {
 		// Response body was not correctly constructed, return generic error
 		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, respBody))
 	}
@@ -309,7 +313,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 	// otherwise we can't trust the parsed Value has what we want, so need to re-parse.
 	errBody := &jsonResp{}
 	if err := json.Unmarshal(bytes, errBody); err != nil {
-		return nil, errors.New(compName, err)
+		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, respBody))
 	}
 
 	return errBody, newWebDriverError(errBody)

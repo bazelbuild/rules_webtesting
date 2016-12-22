@@ -123,27 +123,68 @@ var errorData = []errorDatum{
 }
 
 type webDriverError struct {
-	errDatum errorDatum
-	value    interface{}
+	errDatum   errorDatum
+	value      interface{}
+	message    string
+	stackTrace interface{}
 }
 
 func newWebDriverError(resp *jsonResp) error {
+	return &webDriverError{
+		errDatum:   errDatum(resp),
+		value:      errValue(resp),
+		message:    errMessage(resp),
+		stackTrace: errStackTrace(resp),
+	}
+}
+
+func errDatum(resp *jsonResp) errorDatum {
 	if resp.Error != "" {
 		for _, cand := range errorData {
 			if cand.Error == resp.Error {
-				return &webDriverError{cand, resp.Value}
+				return cand
 			}
 		}
 	}
 	if resp.Status != 0 {
 		for _, cand := range errorData {
 			if cand.Status == resp.Status {
-				return &webDriverError{cand, resp.Value}
+				return cand
 			}
 		}
 	}
+	return errorDatum{resp.Status, resp.Error, 500, false}
+}
 
-	return &webDriverError{errorDatum{resp.Status, resp.Error, 500, false}, resp.Value}
+func errMessage(resp *jsonResp) string {
+	if resp.Message != "" {
+		return resp.Message
+	}
+	value, _ := resp.Value.(map[string]interface{})
+	message, _ := value["message"].(string)
+	return message
+}
+
+func errStackTrace(resp *jsonResp) interface{} {
+	if resp.StackTrace != nil {
+		return resp.StackTrace
+	}
+	value, _ := resp.Value.(map[string]interface{})
+	return value["stacktrace"]
+}
+
+func errValue(resp *jsonResp) interface{} {
+	if resp.Value != nil {
+		return resp.Value
+	}
+	val := map[string]interface{}{}
+	if resp.Message != "" {
+		val["message"] = resp.Message
+	}
+	if resp.StackTrace != nil {
+		val["stacktrace"] = resp.StackTrace
+	}
+	return val
 }
 
 func (e *webDriverError) Component() string {
@@ -192,6 +233,24 @@ func ErrorValue(err error) interface{} {
 	return we.value
 }
 
+// ErrorStackTrace returns the WebDriver value for err.
+func ErrorStackTrace(err error) interface{} {
+	we, ok := err.(*webDriverError)
+	if !ok {
+		return nil
+	}
+	return we.stackTrace
+}
+
+// ErrorMessage returns the WebDriver value for err.
+func ErrorMessage(err error) string {
+	we, ok := err.(*webDriverError)
+	if !ok {
+		return err.Error()
+	}
+	return we.message
+}
+
 // ErrorError returns the WebDriver error for err.
 func ErrorError(err error) string {
 	we, ok := err.(*webDriverError)
@@ -217,9 +276,15 @@ func ErrorHTTPStatus(err error) int {
 // MarshalError generates the WebDriver JSON wire protocol HTTP response body for err.
 func MarshalError(err error) ([]byte, error) {
 	body := map[string]interface{}{
-		"status": ErrorStatus(err),
-		"value":  ErrorValue(err),
-		"error":  ErrorError(err),
+		"status":  ErrorStatus(err),
+		"value":   ErrorValue(err),
+		"error":   ErrorError(err),
+		"message": ErrorMessage(err),
+	}
+
+	st := ErrorStackTrace(err)
+	if st != nil {
+		body["stacktrace"] = st
 	}
 
 	return json.Marshal(body)
