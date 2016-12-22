@@ -141,7 +141,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := createSession(id, h, driver, desired)
+	session, err := CreateSession(id, h, driver, desired)
 	if err != nil {
 		sessionNotCreated(w, err)
 		return

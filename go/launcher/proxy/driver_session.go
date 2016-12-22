@@ -99,7 +99,7 @@ func createHandler(session *WebDriverSession, desired map[string]interface{}) Ha
 	return handler
 }
 
-func createSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desired map[string]interface{}) (http.Handler, error) {
+func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desired map[string]interface{}) (http.Handler, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
 	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter()}
 
