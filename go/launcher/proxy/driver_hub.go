@@ -76,18 +76,21 @@ func (h *WebDriverHub) Name() string {
 	return "WebDriver Hub"
 }
 
+// AddSession adds a session to WebDriverHub.
 func (h *WebDriverHub) AddSession(id string, session http.Handler) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	h.sessions[id] = session
 }
 
+// RemoveSession removes a session from WebDriverHub.
 func (h *WebDriverHub) RemoveSession(id string) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	delete(h.sessions, id)
 }
 
+// GetSession gets the session for a given WebDriver session id..
 func (h *WebDriverHub) GetSession(id string) http.Handler {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
