@@ -76,11 +76,39 @@ func (h *WebDriverHub) Name() string {
 	return "WebDriver Hub"
 }
 
+// AddSession adds a session to WebDriverHub.
+func (h *WebDriverHub) AddSession(id string, session http.Handler) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.sessions[id] = session
+}
+
+// RemoveSession removes a session from WebDriverHub.
+func (h *WebDriverHub) RemoveSession(id string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	delete(h.sessions, id)
+}
+
+// GetSession gets the session for a given WebDriver session id..
+func (h *WebDriverHub) GetSession(id string) http.Handler {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	return h.sessions[id]
+}
+
+// NextID gets the next available internal id for a session.
+func (h *WebDriverHub) NextID() int {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	id := h.nextID
+	h.nextID++
+	return id
+}
+
 func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
 	sid := mux.Vars(r)["sessionID"]
-	h.mu.RLock()
-	session := h.sessions[sid]
-	h.mu.RUnlock()
+	session := h.GetSession(sid)
 
 	if session == nil {
 		invalidSessionID(w, sid)
@@ -119,10 +147,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.mu.Lock()
-	id := h.nextID
-	h.nextID++
-	h.mu.Unlock()
+	id := h.NextID()
 
 	desired, err = h.Env.StartSession(ctx, id, j.Desired)
 	if err != nil {
@@ -147,9 +172,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.mu.Lock()
-	h.sessions[driver.SessionID()] = session
-	h.mu.Unlock()
+	h.AddSession(driver.SessionID(), session)
 
 	respJSON := map[string]interface{}{
 		"status":    0,

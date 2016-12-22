@@ -157,9 +157,7 @@ func (s *WebDriverSession) quit(w http.ResponseWriter, r *http.Request) {
 		s.Warning(envErr)
 	}
 
-	s.WebDriverHub.mu.Lock()
-	delete(s.WebDriverHub.sessions, s.SessionID())
-	s.WebDriverHub.mu.Unlock()
+	s.WebDriverHub.RemoveSession(s.SessionID())
 
 	if wdErr != nil {
 		unknownError(w, wdErr)
