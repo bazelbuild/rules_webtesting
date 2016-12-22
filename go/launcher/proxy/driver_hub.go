@@ -97,6 +97,7 @@ func (h *WebDriverHub) GetSession(id string) http.Handler {
 	return h.sessions[id]
 }
 
+// NextID gets the next available internal id for a session.
 func (h *WebDriverHub) NextID() int {
 	h.mu.Lock()
 	defer h.mu.Unlock()
