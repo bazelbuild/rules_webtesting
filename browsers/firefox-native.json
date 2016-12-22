@@ -2,8 +2,8 @@
     "environment": "firefox",
     "capabilities": {
         "browserName": "firefox",
-		"moz:firefoxOptions": {
-			"binary": "%FIREFOX%"
-		}		
+        "moz:firefoxOptions": {
+            "binary": "%FIREFOX%"
+        }
     }
-}
+} 
