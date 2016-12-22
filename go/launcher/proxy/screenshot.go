@@ -50,7 +50,7 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		if err != nil {
 			body, _ := webdriver.MarshalError(err)
 			return driverhub.Response{
-				Status: http.StatusInternalServerError,
+				Status: webdriver.ErrorHTTPStatus(err),
 				Body:   body,
 			}, nil
 		}
@@ -63,7 +63,7 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		if err := session.ExecuteScript(ctx, sizeScript, nil, &val); err != nil {
 			body, _ := webdriver.MarshalError(err)
 			return driverhub.Response{
-				Status: http.StatusInternalServerError,
+				Status: webdriver.ErrorHTTPStatus(err),
 				Body:   body,
 			}, nil
 		}
@@ -72,7 +72,7 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		if err != nil {
 			body, _ := webdriver.MarshalError(err)
 			return driverhub.Response{
-				Status: http.StatusInternalServerError,
+				Status: webdriver.ErrorHTTPStatus(err),
 				Body:   body,
 			}, nil
 		}
@@ -82,7 +82,7 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		if err := png.Encode(base64.NewEncoder(base64.StdEncoding, buffer), cropped); err != nil {
 			body, _ := webdriver.MarshalError(err)
 			return driverhub.Response{
-				Status: http.StatusInternalServerError,
+				Status: webdriver.ErrorHTTPStatus(err),
 				Body:   body,
 			}, nil
 		}
