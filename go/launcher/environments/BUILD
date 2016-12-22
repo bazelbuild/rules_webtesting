@@ -23,7 +23,7 @@ licenses(["notice"])  # Apache 2.0
 go_library(
     name = "environment",
     srcs = ["environment.go"],
-    visibility = ["//go/launcher:__subpackages__"],
+    visibility = ["//go:__subpackages__"],
     deps = [
         "//go/launcher:diagnostics",
         "//go/launcher:errors",
@@ -36,7 +36,7 @@ go_library(
 go_library(
     name = "external",
     srcs = ["external.go"],
-    visibility = ["//go/launcher:__subpackages__"],
+    visibility = ["//go:__subpackages__"],
     deps = [
         ":environment",
         "//go/launcher:diagnostics",
@@ -48,7 +48,7 @@ go_library(
 go_library(
     name = "native",
     srcs = ["native.go"],
-    visibility = ["//go/launcher:__subpackages__"],
+    visibility = ["//go:__subpackages__"],
     deps = [
         ":environment",
         "//go/launcher:cmdhelper",
@@ -61,7 +61,7 @@ go_library(
 go_library(
     name = "chrome",
     srcs = ["chrome.go"],
-    visibility = ["//go/launcher:__subpackages__"],
+    visibility = ["//go:__subpackages__"],
     deps = [
         ":environment",
         "//go/launcher:cmdhelper",
@@ -74,7 +74,7 @@ go_library(
 go_library(
     name = "firefox",
     srcs = ["firefox.go"],
-    visibility = ["//go/launcher:__subpackages__"],
+    visibility = ["//go:__subpackages__"],
     deps = [
         ":environment",
         "//go/launcher:cmdhelper",
