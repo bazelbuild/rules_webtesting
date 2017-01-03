@@ -293,7 +293,6 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 		return nil, errors.New(compName, err)
 	}
 
-	log.Printf("MRF: %q", string(bytes))
 	respBody := &jsonResp{Value: value}
 
 	if err := json.Unmarshal(bytes, respBody); err == nil && respBody.Status == 0 && respBody.Error == "" {
