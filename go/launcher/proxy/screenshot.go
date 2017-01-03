@@ -78,14 +78,17 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		}
 
 		buffer := &bytes.Buffer{}
+		b64 := base64.NewEncoder(base64.StdEncoding, buffer)
 
-		if err := png.Encode(base64.NewEncoder(base64.StdEncoding, buffer), cropped); err != nil {
+		if err := png.Encode(b64, cropped); err != nil {
 			body, _ := webdriver.MarshalError(err)
 			return driverhub.Response{
 				Status: webdriver.ErrorHTTPStatus(err),
 				Body:   body,
 			}, nil
 		}
+
+		b64.Close()
 
 		return driverhub.Response{
 			Status: http.StatusOK,
