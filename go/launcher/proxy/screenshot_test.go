@@ -40,44 +40,38 @@ func TestScreenshot(t *testing.T) {
 	defer driver.Quit()
 
 	if err := driver.Get("file://" + testpage); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	img, err := driver.Screenshot()
 
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	tmpDir, err := bazel.NewTmpDir("crop_test")
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	outPath := filepath.Join(tmpDir, "cropped.png")
 
 	if err := ioutil.WriteFile(outPath, img, 0660); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	check, err := os.Open(outPath)
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
+	defer check.Close()
 
 	config, err := png.DecodeConfig(check)
-	check.Close()
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if config.Width != 200 || config.Height != 200 {
-		t.Errorf("got size == %d, %d, expected 200, 200", config.Width, config.Height)
+		t.Fatalf("got size == %d, %d, expected 200, 200", config.Width, config.Height)
 	}
 }

@@ -105,7 +105,7 @@ func TestExecuteScript(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	defer d.Quit(ctx)
 	for _, tc := range testCases {
 		t.Run(tc.script, func(t *testing.T) {
 			if err := d.ExecuteScript(ctx, tc.script, tc.args, &tc.value); err != nil {
@@ -122,9 +122,6 @@ func TestExecuteScript(t *testing.T) {
 				t.Errorf("got %v, expected %v for ExecuteScript(%q, %v)", tc.value, tc.expected, tc.script, tc.args)
 			}
 		})
-	}
-	if err := d.Quit(ctx); err != nil {
-		t.Error(err)
 	}
 }
 
@@ -172,6 +169,7 @@ func TestExecuteScriptAsync(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer d.Quit(ctx)
 
 	for _, tc := range testCases {
 		t.Run(tc.script, func(t *testing.T) {
@@ -190,9 +188,6 @@ func TestExecuteScriptAsync(t *testing.T) {
 			}
 		})
 	}
-	if err := d.Quit(ctx); err != nil {
-		t.Error(err)
-	}
 }
 
 func TestScreenshot(t *testing.T) {
@@ -202,16 +197,44 @@ func TestScreenshot(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer d.Quit(ctx)
 
 	img, err := d.Screenshot(ctx)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if img == nil {
-		t.Error("got nil, expected an image.Image")
+		t.Fatal("got nil, expected an image.Image")
 	}
-	if err := d.Quit(ctx); err != nil {
-		t.Error(err)
+}
+
+func TestWindowHandles(t *testing.T) {
+	ctx := context.Background()
+
+	driver, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer driver.Quit(ctx)
+
+	if windows, err := driver.WindowHandles(ctx); err != nil {
+		t.Fatal(err)
+	} else if len(windows) != 1 {
+		t.Fatalf("Got %d handles, expected 1", len(windows))
+	}
+}
+
+func TestQuit(t *testing.T) {
+	ctx := context.Background()
+
+	driver, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	driver.Quit(ctx)
+
+	if _, err := driver.WindowHandles(ctx); err == nil {
+		t.Fatal("Got nil err, expected unknown session err")
 	}
 }
 

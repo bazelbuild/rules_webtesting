@@ -37,20 +37,13 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		}
 
 		// If closing last window, then quit.
-		if windows, err := session.GetWindowHandles(ctx); err != nil {
+		if windows, err := session.WindowHandles(ctx); err != nil {
 			return driverhub.ResponseFromError(err)
 		} else if len(windows) == 1 {
 			return session.Quit(ctx, rq)
 		}
 
-		// Otherwise close window
-		if err := session.Close(ctx); err != nil {
-			return driverhub.ResponseFromError(err)
-		}
-
-		return driverhub.Response{
-			Status: http.StatusOK,
-			Body:   []byte(`{"status": 0}`),
-		}, nil
+		// Otherwise forward the close window
+		return base(ctx, rq)
 	}, true
 }

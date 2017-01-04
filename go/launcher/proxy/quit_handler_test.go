@@ -16,6 +16,7 @@ package quithandler
 
 import (
 	"testing"
+	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
@@ -33,22 +34,18 @@ func TestCloseOneWindow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Avoid Fatal so that this defer gets called
 	defer driver.Quit()
 
 	if err := driver.Get("file://" + testpage); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if err := driver.CloseWindow(""); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if _, err := driver.WindowHandles(); err == nil {
-		t.Error("got nil, expected invalid session error")
-		return
+		t.Fatal("got nil, expected invalid session error")
 	}
 }
 
@@ -63,33 +60,27 @@ func TestQuit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Avoid Fatal so that this defer gets called
 	defer driver.Quit()
 
 	if err := driver.Get("file://" + testpage); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	button, err := driver.FindElement("tag name", "input")
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if err := button.Click(); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if err := driver.Quit(); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if _, err := driver.WindowHandles(); err == nil {
-		t.Error("got nil, expected invalid session error")
-		return
+		t.Fatal("got nil, expected invalid session error")
 	}
 }
 
@@ -104,52 +95,54 @@ func TestCloseTwoWindows(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Avoid Fatal so that this defer gets called
 	defer driver.Quit()
 
 	if err := driver.Get("file://" + testpage); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	button, err := driver.FindElement("tag name", "input")
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if err := button.Click(); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
+	}
+
+	for i := 0; i < 3; i++ {
+		handles, err := driver.WindowHandles()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(handles) == 2 {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	if err := driver.CloseWindow(""); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	handles, err := driver.WindowHandles()
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if len(handles) != 1 {
-		t.Errorf("Got %d handles, expected 1", len(handles))
-		return
+		t.Fatalf("Got %d handles, expected 1", len(handles))
 	}
 
 	if err := driver.SwitchWindow(handles[0]); err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if err := driver.CloseWindow(""); err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
 
 	if _, err := driver.WindowHandles(); err == nil {
-		t.Error("got nil, expected invalid session error")
-		return
+		t.Fatal("got nil, expected invalid session error")
 	}
 }
