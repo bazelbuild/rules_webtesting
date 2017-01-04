@@ -38,7 +38,7 @@ type WebDriverSession struct {
 	handler     HandlerFunc
 	sessionPath string
 
-	mu      sync.Mutex
+	mu      sync.RWMutex
 	stopped bool
 }
 
@@ -89,7 +89,7 @@ func HandlerProviderFunc(provider handlerProvider) {
 }
 
 func createHandler(session *WebDriverSession, desired map[string]interface{}) HandlerFunc {
-	handler := createBaseHandler(session)
+	handler := createBaseHandler(session.WebDriver)
 
 	for _, provider := range providers {
 		if h, ok := provider(session, desired, handler); ok {
@@ -105,7 +105,6 @@ func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desire
 	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter()}
 
 	session.handler = createHandler(session, desired)
-	session.Path(sessionPath).Methods("DELETE").HandlerFunc(session.quit)
 	// Route for commands for this session.
 	session.PathPrefix(sessionPath).HandlerFunc(session.defaultHandler)
 	// Route for commands for some other session. If this happens, the hub has
@@ -134,21 +133,14 @@ func (s *WebDriverSession) unknownCommand(w http.ResponseWriter, r *http.Request
 	unknownCommand(w, r)
 }
 
-func (s *WebDriverSession) quit(w http.ResponseWriter, r *http.Request) {
+// Quit can be called by handlers to quit this session.
+func (s *WebDriverSession) Quit(ctx context.Context, rq Request) (Response, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	ctx := r.Context()
-	vars := mux.Vars(r)
-
-	if s.stopped {
-		invalidSessionID(w, vars["sessionID"])
-		return
-	}
-
 	s.stopped = true
 
-	wdErr := s.Quit(ctx)
+	wdErr := s.WebDriver.Quit(ctx)
 	if wdErr != nil {
 		s.Warning(wdErr)
 	}
@@ -161,16 +153,16 @@ func (s *WebDriverSession) quit(w http.ResponseWriter, r *http.Request) {
 	s.WebDriverHub.RemoveSession(s.SessionID())
 
 	if wdErr != nil {
-		unknownError(w, wdErr)
-		return
+		return ResponseFromError(wdErr)
 	}
 	if envErr != nil {
-		unknownError(w, envErr)
-		return
+		return ResponseFromError(envErr)
 	}
 
-	success(w, nil)
-	return
+	return Response{
+		Status: http.StatusOK,
+		Body:   []byte(`{"status": 0}`),
+	}, nil
 }
 
 func (s *WebDriverSession) commandPathTokens(path string) []string {
@@ -257,4 +249,12 @@ func createBaseHandler(driver webdriver.WebDriver) HandlerFunc {
 		}
 		return Response{resp.StatusCode, resp.Header, body}, nil
 	}
+}
+
+func ResponseFromError(err error) (Response, error) {
+	body, e := webdriver.MarshalError(err)
+	return Response{
+		Status: webdriver.ErrorHTTPStatus(err),
+		Body:   body,
+	}, e
 }

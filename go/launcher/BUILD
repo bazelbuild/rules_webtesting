@@ -37,6 +37,7 @@ go_binary(
         "//go/launcher/environments:native",
         "//go/launcher/proxy",
         "//go/launcher/proxy:driverhub",
+        "//go/launcher/proxy:quithandler",        
         "//go/launcher/proxy:screenshot",
         "//go/metadata",
         "//go/util:bazel",

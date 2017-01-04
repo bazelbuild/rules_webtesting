@@ -27,6 +27,11 @@ import (
 )
 
 func TestScreenshot(t *testing.T) {
+	testpage, err := bazel.Runfile("go/launcher/proxy/testdata/testpage.html")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
@@ -34,7 +39,7 @@ func TestScreenshot(t *testing.T) {
 
 	defer driver.Quit()
 
-	if err := driver.Get("http://www.google.com"); err != nil {
+	if err := driver.Get("file://" + testpage); err != nil {
 		t.Error(err)
 		return
 	}

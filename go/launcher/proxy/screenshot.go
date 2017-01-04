@@ -25,7 +25,6 @@ import (
 	"net/http"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/util/cropper"
 )
 
@@ -48,11 +47,7 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		}
 		img, err := session.Screenshot(ctx)
 		if err != nil {
-			body, _ := webdriver.MarshalError(err)
-			return driverhub.Response{
-				Status: webdriver.ErrorHTTPStatus(err),
-				Body:   body,
-			}, nil
+			return driverhub.ResponseFromError(err)
 		}
 
 		val := struct {
@@ -61,31 +56,19 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		}{}
 
 		if err := session.ExecuteScript(ctx, sizeScript, nil, &val); err != nil {
-			body, _ := webdriver.MarshalError(err)
-			return driverhub.Response{
-				Status: webdriver.ErrorHTTPStatus(err),
-				Body:   body,
-			}, nil
+			return driverhub.ResponseFromError(err)
 		}
 
 		cropped, err := cropper.Crop(img, image.Rect(0, 0, val.Width, val.Height))
 		if err != nil {
-			body, _ := webdriver.MarshalError(err)
-			return driverhub.Response{
-				Status: webdriver.ErrorHTTPStatus(err),
-				Body:   body,
-			}, nil
+			return driverhub.ResponseFromError(err)
 		}
 
 		buffer := &bytes.Buffer{}
 		b64 := base64.NewEncoder(base64.StdEncoding, buffer)
 
 		if err := png.Encode(b64, cropped); err != nil {
-			body, _ := webdriver.MarshalError(err)
-			return driverhub.Response{
-				Status: webdriver.ErrorHTTPStatus(err),
-				Body:   body,
-			}, nil
+			return driverhub.ResponseFromError(err)
 		}
 
 		b64.Close()

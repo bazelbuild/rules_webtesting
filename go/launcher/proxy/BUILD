@@ -72,6 +72,33 @@ go_library(
 )
 
 go_library(
+    name = "quithandler",
+    srcs = ["quit_handler.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":driverhub",
+    ],
+)
+
+go_web_test_suite(
+    name = "quithandler_test",
+    srcs = ["quit_handler_test.go"],
+    browsers = ["//browsers:chromium-native"],
+    data = ["//go/launcher/proxy/testdata:testpage.html"],
+    go_test_tags = [
+        "manual",
+        "noci",
+    ],
+    local = True,
+    tags = ["noci"],
+    deps = [
+        "//go:webtest",
+        "//go/util:bazel",
+        "@com_github_tebeka_selenium//:selenium",
+    ],
+)
+
+go_library(
     name = "screenshot",
     srcs = ["screenshot.go"],
     visibility = ["//go:__subpackages__"],
@@ -92,6 +119,7 @@ go_web_test_suite(
     srcs = ["screenshot_test.go"],
     browsers = ["//browsers:chromium-native"],
     config = ":screenshot_test_config",
+    data = ["//go/launcher/proxy/testdata:testpage.html"],
     go_test_tags = [
         "manual",
         "noci",
