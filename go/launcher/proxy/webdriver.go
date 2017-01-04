@@ -61,6 +61,8 @@ type WebDriver interface {
 	Capabilities() map[string]interface{}
 	// Screenshot takes a screenshot of the current browser window.
 	Screenshot(ctx context.Context) (image.Image, error)
+	// WindowHandles returns a slice of the current window handles.
+	WindowHandles(ctx context.Context) ([]string, error)
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
@@ -213,6 +215,15 @@ func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
 		return nil, err
 	}
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
+}
+
+// WindowHandles returns a slice of the current window handles.
+func (d *webDriver) WindowHandles(ctx context.Context) ([]string, error) {
+	var value []string
+	if err := d.get(ctx, "window_handles", &value); err != nil {
+		return nil, err
+	}
+	return value, nil
 }
 
 func (d *webDriver) post(ctx context.Context, suffix string, body interface{}, value interface{}) error {
