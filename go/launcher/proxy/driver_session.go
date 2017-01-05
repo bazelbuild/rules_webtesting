@@ -251,6 +251,7 @@ func createBaseHandler(driver webdriver.WebDriver) HandlerFunc {
 	}
 }
 
+// ResponseFromError generates a Response object for err.
 func ResponseFromError(err error) (Response, error) {
 	body, e := webdriver.MarshalError(err)
 	return Response{
