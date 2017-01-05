@@ -104,7 +104,6 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         ":driverhub",
-        ":webdriver",
         "//go/util:cropper",
     ],
 )
