@@ -80,6 +80,9 @@ func (h *WebDriverHub) Name() string {
 func (h *WebDriverHub) AddSession(id string, session http.Handler) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+	if h.sessions == nil {
+		h.sessions = map[string]http.Handler{}
+	}
 	h.sessions[id] = session
 }
 
@@ -87,6 +90,9 @@ func (h *WebDriverHub) AddSession(id string, session http.Handler) {
 func (h *WebDriverHub) RemoveSession(id string) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+	if h.sessions == nil {
+		h.sessions = map[string]http.Handler{}
+	}
 	delete(h.sessions, id)
 }
 
