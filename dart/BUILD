@@ -24,6 +24,7 @@ licenses(["notice"])  # Apache 2.0
 dart_library(
     name = "dart",
     srcs = glob(["lib/**/*.dart"]),
+    enable_ddc = False,
     pub_pkg_name = "webtest",
     visibility = ["//visibility:public"],
     deps = ["@com_github_google_webdriver_dart//:webdriver"],
