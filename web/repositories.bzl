@@ -79,9 +79,9 @@ def web_test_repositories(java=False,
       native.new_http_archive(
           name="com_github_tebeka_selenium",
           build_file=str(Label("//build_files:selenium_go.BUILD")),
-          sha256="8a94dddb37cac3e839981a9d8452373136d49655408ecb7796a1a44ef876d94e",
-          strip_prefix="selenium-1cc64bfa7b5e2513fb492727d4b730ffe8f02433",
-          url="https://github.com/tebeka/selenium/archive/1cc64bfa7b5e2513fb492727d4b730ffe8f02433.tar.gz"
+          sha256="84949fd190b82935af672732b02709b9291933d7d2f5916dcae8b4668c0004cc",
+          strip_prefix="selenium-0.9.3",
+          url="https://github.com/tebeka/selenium/archive/v0.9.3.tar.gz"
       )
 
   if python:
