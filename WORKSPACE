@@ -19,7 +19,7 @@ workspace(name = "io_bazel_rules_webtesting")
 git_repository(
     name = "io_bazel_rules_go",
     remote = "https://github.com/bazelbuild/rules_go.git",
-    hash = "76c63b5cd0d47c1f2b47ab4953db96c574af1c1d",
+    commit = "76c63b5cd0d47c1f2b47ab4953db96c574af1c1d",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
