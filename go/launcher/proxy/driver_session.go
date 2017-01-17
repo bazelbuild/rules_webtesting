@@ -166,8 +166,11 @@ func (s *WebDriverSession) Quit(ctx context.Context, rq Request) (Response, erro
 }
 
 func (s *WebDriverSession) commandPathTokens(path string) []string {
-	commandPath := strings.TrimPrefix(path, s.sessionPath)
-	return strings.Split(strings.Trim(commandPath, "/"), "/")
+	commandPath := strings.Trim(strings.TrimPrefix(path, s.sessionPath), "/")
+	if commandPath == "" {
+		return []string{}
+	}
+	return strings.Split(commandPath, "/")
 }
 
 func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request) {
