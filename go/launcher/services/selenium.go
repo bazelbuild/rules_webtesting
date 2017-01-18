@@ -18,6 +18,7 @@ package selenium
 import (
 	"fmt"
 	"log"
+	"os/exec"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
@@ -30,12 +31,23 @@ type Selenium struct {
 }
 
 func NewSelenium(m *metadata.Metadata, xvfb bool) (*Selenium, error) {
-	seleniumPath, err := m.GetFilePath("SELENIUM_SERVER")
+	seleniumPath, err := m.GetFilePath("SELENIUM")
 	if err != nil {
 		return nil, errors.New("SeleniumServer", err)
 	}
+	log.Printf("Selenium found at at: %s", seleniumPath)
 
-	args := []string{}
+	javaPath, err := m.GetFilePath("JAVA")
+	if err != nil {
+		log.Print("did not find provided java")
+		javaPath, err = exec.LookPath("java")
+		if err != nil {
+			return nil, errors.New("SeleniumServer", "unable to find a suitable java runtime environment")
+		}
+	}
+	log.Printf("Java found at at: %s", javaPath)
+
+	args := []string{"-jar", seleniumPath}
 
 	if chromedriverPath, err := m.GetFilePath("CHROMEDRIVER"); err == nil {
 		log.Printf("ChromeDriver found at: %q", chromedriverPath)
@@ -52,7 +64,7 @@ func NewSelenium(m *metadata.Metadata, xvfb bool) (*Selenium, error) {
 	args = append(args, "-port", "{port}")
 	server, err := service.NewServer(
 		"SeleniumServer",
-		seleniumPath,
+		javaPath,
 		"http://%s/wd/hub/status",
 		xvfb,
 		60*time.Second,

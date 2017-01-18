@@ -83,7 +83,7 @@ browser(
     visibility = ["//visibility:public"],
     deps = [
         "//third_party/phantomjs",
-        "//third_party/selenium:SELENIUM_SERVER",
+        "//third_party/selenium",
     ],
 )
 

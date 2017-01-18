@@ -19,19 +19,22 @@ package(
     default_visibility = ["//browsers:__subpackages__"],
 )
 
-load("//web:web.bzl", "web_test_named_executable")
+load("//web:web.bzl", "web_test_named_executable", "web_test_named_file")
 
 licenses(["notice"])  # Apache 2.0
 
 exports_files(["LICENSE"])
 
-java_binary(
-    name = "SeleniumServer",
-    main_class = "org.openqa.grid.selenium.GridLauncherV3",
-    runtime_deps = ["@org_seleniumhq_server//jar"],
+web_test_named_file(
+    name = "selenium",
+    file = "@org_seleniumhq_server//jar",
+    deps = [":java"],
+    alt_name = "SELENIUM"
 )
 
-web_test_named_executable(
-    name = "SELENIUM_SERVER",
-    executable = ":SeleniumServer",
+web_test_named_file(
+    name = "java",
+    file = "@bazel_tools//tools/jdk:java",
+    data = ["@bazel_tools//tools/jdk"],
+    alt_name = "JAVA",
 )
