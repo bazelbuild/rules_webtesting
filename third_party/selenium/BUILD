@@ -27,7 +27,7 @@ exports_files(["LICENSE"])
 
 web_test_named_file(
     name = "selenium",
-    file = "@org_seleniumhq_server//jar",
+    file = "@org_seleniumhq_server//file",
     deps = [":java"],
     alt_name = "SELENIUM"
 )

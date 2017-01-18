@@ -150,7 +150,7 @@ def browser_repositories(firefox=False, chromium=False, phantomjs=False):
         macos_url="http://bazel-mirror.storage.googleapis.com/bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
     )
 
-    native.http_jar(
+    native.http_file(
         name="org_seleniumhq_server",
         sha256="1537b6d1b259191ed51586378791bc62b38b0cb18ae5ba1433009dc365e9f26b",
         url="http://selenium-release.storage.googleapis.com/3.0/selenium-server-standalone-3.0.1.jar"
