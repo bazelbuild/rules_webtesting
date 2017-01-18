@@ -35,7 +35,7 @@ java_web_test_suite(
     tags = ["noci"],
     deps = [
         "//java/com/google/testing/web",
-        "@junit_junit//jar",
-        "@org_seleniumhq_java//:selenium",
+        "@junit",
+        "@org_seleniumhq_selenium_api",
     ],
 )

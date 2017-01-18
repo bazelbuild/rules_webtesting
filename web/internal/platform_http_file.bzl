@@ -1,5 +1,3 @@
-# -*- mode: python; -*-
-#
 # Copyright 2016 The Closure Rules Authors. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Downloads files based on local platform."""
 
 
 def _impl(repository_ctx):
-  if repository_ctx.os.name.lower().startswith("mac os"):
-    url = repository_ctx.attr.macos_url
+  if repository_ctx.os.name.lower().startswith('mac os'):
+    urls = repository_ctx.attr.macos_urls
     sha256 = repository_ctx.attr.macos_sha256
   else:
-    url = repository_ctx.attr.amd64_url
+    urls = repository_ctx.attr.amd64_urls
     sha256 = repository_ctx.attr.amd64_sha256
-  basename = url[url.rindex("/") + 1:]
-  repository_ctx.download(url, basename, sha256)
+  basename = urls[0][urls[0].rindex('/') + 1:]
+  repository_ctx.download(urls, basename, sha256)
   repository_ctx.symlink(basename, "file/" + basename)
   repository_ctx.file("file/BUILD", "\n".join([
       ("# DO NOT EDIT: automatically generated BUILD file for " +
@@ -38,10 +37,10 @@ def _impl(repository_ctx):
 
 
 platform_http_file = repository_rule(
+    implementation=_impl,
     attrs={
-        "amd64_url": attr.string(),
+        "amd64_urls": attr.string_list(),
         "amd64_sha256": attr.string(),
-        "macos_url": attr.string(),
+        "macos_urls": attr.string_list(),
         "macos_sha256": attr.string(),
-    },
-    implementation=_impl)
+    })
