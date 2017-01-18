@@ -202,6 +202,9 @@ func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	if len(resp.Body) != 0 {
+		w.Header().Set("Content-Type", contentType)
+	}
 	if resp.Header != nil {
 		// Copy response headers from resp to w
 		for k, vs := range resp.Header {
