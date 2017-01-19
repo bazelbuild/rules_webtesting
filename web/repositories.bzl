@@ -95,7 +95,7 @@ def web_test_repositories(java=False,
       )
 
 
-def browser_repositories(firefox=False, chromium=False, phantomjs=False):
+def browser_repositories(firefox=False, chromium=False):
   """Sets up repositories for browsers defined in //browsers/....
 
   This should only be used on an experimental basis; projects should define
@@ -104,7 +104,6 @@ def browser_repositories(firefox=False, chromium=False, phantomjs=False):
   Args:
     firefox: Configure repositories for //browsers:firefox-native.
     chromium: Configure repositories for //browsers:chromium-native.
-    phantomjs: Configure repositories for //browsers:phantomjs-native.
   """
   if chromium:
     platform_http_file(
@@ -139,19 +138,4 @@ def browser_repositories(firefox=False, chromium=False, phantomjs=False):
         amd64_url="https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz",
         macos_sha256="802cc1a33b8ce6f7c3aeb5116730cb6efc20414959d6f750e74437869d37a150",
         macos_url="https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-macos.tar.gz"
-    )
-
-  if phantomjs:
-    platform_http_file(
-        name="org_phantomjs",
-        amd64_sha256="86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f",
-        amd64_url="http://bazel-mirror.storage.googleapis.com/bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2",
-        macos_sha256="538cf488219ab27e309eafc629e2bcee9976990fe90b1ec334f541779150f8c1",
-        macos_url="http://bazel-mirror.storage.googleapis.com/bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
-    )
-
-    native.http_jar(
-        name="org_seleniumhq_server",
-        sha256="1537b6d1b259191ed51586378791bc62b38b0cb18ae5ba1433009dc365e9f26b",
-        url="http://selenium-release.storage.googleapis.com/3.0/selenium-server-standalone-3.0.1.jar"
     )

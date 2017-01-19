@@ -38,7 +38,6 @@ web_test_repositories(
 browser_repositories(
     chromium = True,
     firefox = True,
-    phantomjs = True,
 )
 
 maven_jar(

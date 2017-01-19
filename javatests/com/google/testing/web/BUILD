@@ -26,7 +26,6 @@ java_web_test_suite(
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
-        "//browsers:phantomjs",
     ],
     java_test_tags = [
         "manual",

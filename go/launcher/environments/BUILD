@@ -46,19 +46,6 @@ go_library(
 )
 
 go_library(
-    name = "native",
-    srcs = ["native.go"],
-    visibility = ["//go:__subpackages__"],
-    deps = [
-        ":environment",
-        "//go/launcher:cmdhelper",
-        "//go/launcher:diagnostics",
-        "//go/launcher/services:selenium",
-        "//go/metadata",
-    ],
-)
-
-go_library(
     name = "chrome",
     srcs = ["chrome.go"],
     visibility = ["//go:__subpackages__"],

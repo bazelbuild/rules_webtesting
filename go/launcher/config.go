@@ -18,7 +18,6 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/chrome"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/external"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/firefox"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/native"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/quithandler"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/screenshot"
@@ -31,7 +30,6 @@ func init() {
 
 	// Configure Environments.
 	RegisterEnvProviderFunc("external", external.NewEnv)
-	RegisterEnvProviderFunc("native", native.NewEnv)
 	RegisterEnvProviderFunc("chrome", chrome.NewEnv)
 	RegisterEnvProviderFunc("firefox", firefox.NewEnv)
 }
