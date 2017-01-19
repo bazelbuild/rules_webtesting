@@ -47,21 +47,23 @@ func NewSelenium(m *metadata.Metadata, xvfb bool) (*Selenium, error) {
 	}
 	log.Printf("Java found at at: %s", javaPath)
 
-	args := []string{"-jar", seleniumPath}
+	args := []string{}
 
 	if chromedriverPath, err := m.GetFilePath("CHROMEDRIVER"); err == nil {
 		log.Printf("ChromeDriver found at: %q", chromedriverPath)
-		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.chrome.driver=%s", chromedriverPath))
+		args = append(args, fmt.Sprintf("-Dwebdriver.chrome.driver=%s", chromedriverPath))
 	}
 	if geckodriverPath, err := m.GetFilePath("GECKODRIVER"); err == nil {
 		log.Printf("GeckoDriver found at: %q", geckodriverPath)
-		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.gecko.driver=%s", geckodriverPath))
+		args = append(args, fmt.Sprintf("-Dwebdriver.gecko.driver=%s", geckodriverPath))
 	}
 	if firefoxPath, err := m.GetFilePath("FIREFOX"); err == nil {
 		log.Printf("Firefox found at: %q", firefoxPath)
-		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.firefox.bin=%s", firefoxPath))
+		args = append(args, fmt.Sprintf("-Dwebdriver.firefox.bin=%s", firefoxPath))
 	}
-	args = append(args, "-port", "{port}")
+
+	args = append(args, "-jar", seleniumPath, "-port", "{port}")
+
 	server, err := service.NewServer(
 		"SeleniumServer",
 		javaPath,
