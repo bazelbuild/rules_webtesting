@@ -18,6 +18,7 @@ package selenium
 import (
 	"fmt"
 	"log"
+	"os/exec"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
@@ -30,29 +31,42 @@ type Selenium struct {
 }
 
 func NewSelenium(m *metadata.Metadata, xvfb bool) (*Selenium, error) {
-	seleniumPath, err := m.GetFilePath("SELENIUM_SERVER")
+	seleniumPath, err := m.GetFilePath("SELENIUM")
 	if err != nil {
 		return nil, errors.New("SeleniumServer", err)
 	}
+	log.Printf("Selenium found at at: %s", seleniumPath)
+
+	javaPath, err := m.GetFilePath("JAVA")
+	if err != nil {
+		log.Print("did not find provided java")
+		javaPath, err = exec.LookPath("java")
+		if err != nil {
+			return nil, errors.New("SeleniumServer", "unable to find a suitable java runtime environment")
+		}
+	}
+	log.Printf("Java found at at: %s", javaPath)
 
 	args := []string{}
 
 	if chromedriverPath, err := m.GetFilePath("CHROMEDRIVER"); err == nil {
 		log.Printf("ChromeDriver found at: %q", chromedriverPath)
-		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.chrome.driver=%s", chromedriverPath))
+		args = append(args, fmt.Sprintf("-Dwebdriver.chrome.driver=%s", chromedriverPath))
 	}
 	if geckodriverPath, err := m.GetFilePath("GECKODRIVER"); err == nil {
 		log.Printf("GeckoDriver found at: %q", geckodriverPath)
-		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.gecko.driver=%s", geckodriverPath))
+		args = append(args, fmt.Sprintf("-Dwebdriver.gecko.driver=%s", geckodriverPath))
 	}
 	if firefoxPath, err := m.GetFilePath("FIREFOX"); err == nil {
 		log.Printf("Firefox found at: %q", firefoxPath)
-		args = append(args, fmt.Sprintf("--jvm_flag=-Dwebdriver.firefox.bin=%s", firefoxPath))
+		args = append(args, fmt.Sprintf("-Dwebdriver.firefox.bin=%s", firefoxPath))
 	}
-	args = append(args, "-port", "{port}")
+
+	args = append(args, "-jar", seleniumPath, "-port", "{port}")
+
 	server, err := service.NewServer(
 		"SeleniumServer",
-		seleniumPath,
+		javaPath,
 		"http://%s/wd/hub/status",
 		xvfb,
 		60*time.Second,

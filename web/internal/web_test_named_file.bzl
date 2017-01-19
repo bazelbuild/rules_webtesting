@@ -27,7 +27,7 @@ def _web_test_named_file_impl(ctx):
       ctx=ctx,
       output=patch,
       web_test_files=[
-          metadata.web_test_files(named_files={name: ctx.file.file}),
+          metadata.web_test_files(ctx=ctx, named_files={name: ctx.file.file}),
       ])
   metadata_files = [patch] + [dep.web_test.metadata for dep in ctx.attr.deps]
   metadata.merge_files(
