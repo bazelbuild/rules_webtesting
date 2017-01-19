@@ -23,7 +23,8 @@ java_library(
     srcs = glob(["*.java"]),
     visibility = ["//visibility:public"],
     deps = [
-        "@com_google_code_findbugs_jsr305//jar",
-        "@org_seleniumhq_java//:selenium",
+        "@com_google_code_findbugs_jsr305",
+        "@org_seleniumhq_selenium_api",
+        "@org_seleniumhq_selenium_remote_driver",
     ],
 )
