@@ -77,17 +77,6 @@ browser(
 )
 
 browser(
-    name = "phantomjs",
-    environment = {"DISABLE_X_DISPLAY": "1"},
-    metadata = "phantomjs.json",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//third_party/phantomjs",
-        "//third_party/selenium:SELENIUM_SERVER",
-    ],
-)
-
-browser(
     name = "disabled",
     disabled = "disabled pseudo-browser",
     metadata = "disabled.json",

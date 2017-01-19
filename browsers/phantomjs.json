@@ -1,7 +1,0 @@
-{
-    "environment": "native",
-    "capabilities": {
-        "browserName": "phantomjs",
-        "phantomjs.binary.path": "%PHANTOMJS%"
-    }
-}

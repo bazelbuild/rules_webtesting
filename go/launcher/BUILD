@@ -34,7 +34,6 @@ go_binary(
         "//go/launcher/environments:environment",
         "//go/launcher/environments:external",
         "//go/launcher/environments:firefox",
-        "//go/launcher/environments:native",
         "//go/launcher/proxy",
         "//go/launcher/proxy:driverhub",
         "//go/launcher/proxy:quithandler",        

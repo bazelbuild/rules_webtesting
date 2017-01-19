@@ -37,7 +37,6 @@ py_web_test_suite(
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
-        "//browsers:phantomjs",
     ],
     local = True,
     py_test_tags = [

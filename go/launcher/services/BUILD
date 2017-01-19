@@ -38,17 +38,6 @@ go_library(
 )
 
 go_library(
-    name = "selenium",
-    srcs = ["selenium.go"],
-    visibility = ["//go:__subpackages__"],
-    deps = [
-        ":service",
-        "//go/launcher:errors",
-        "//go/metadata",
-    ],
-)
-
-go_library(
     name = "chromedriver",
     srcs = ["chromedriver.go"],
     visibility = ["//go:__subpackages__"],

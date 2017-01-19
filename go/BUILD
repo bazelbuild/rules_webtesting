@@ -45,7 +45,6 @@ go_web_test_suite(
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
-        "//browsers:phantomjs",
     ],
     go_test_tags = [
         "manual",
