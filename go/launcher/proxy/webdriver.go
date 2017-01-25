@@ -36,7 +36,11 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 )
 
-const compName = "Go WebDriver Client"
+const (
+	compName           = "Go WebDriver Client"
+	seleniumElementKey = "ELEMENT"
+	w3cElementKey      = "element-6066-11e4-a52e-4f735466cecf"
+)
 
 // WebDriver provides access to a running WebDriver session
 type WebDriver interface {
@@ -63,6 +67,24 @@ type WebDriver interface {
 	Screenshot(ctx context.Context) (image.Image, error)
 	// WindowHandles returns a slice of the current window handles.
 	WindowHandles(ctx context.Context) ([]string, error)
+	// ElementFromID returns a new WebElement object for the given id.
+	ElementFromID(string) WebElement
+	// ElementFromMap returns a new WebElement from a map representing a JSON object.
+	ElementFromMap(map[string]interface{}) (WebElement, error)
+}
+
+// WebElement provides access to a specific DOM element in a WebDriver session.
+type WebElement interface {
+	// ID returns the WebDriver element id.
+	ID() string
+	// ToMap returns a Map representation of a WebElement suitable for use in other WebDriver commands.
+	ToMap() map[string]string
+	// ScrollIntoView scrolls a WebElement to the top of the browsers viewport.
+	ScrollIntoView(ctx context.Context) error
+	// Bounds returns the bounds of the WebElement within the viewport.
+	// This will not scroll the element into the viewport first.
+	// Will return an error if the element is not in the viewport.
+	Bounds(ctx context.Context) (image.Rectangle, error)
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
@@ -77,6 +99,11 @@ type webDriver struct {
 	sessionID    string
 	capabilities map[string]interface{}
 	client       *http.Client
+}
+
+type webElement struct {
+	driver *webDriver
+	id     string
 }
 
 type jsonResp struct {
@@ -280,6 +307,28 @@ func (d *webDriver) Logs(ctx context.Context, logType string) ([]LogEntry, error
 	return entries, nil
 }
 
+// ElementFromID returns a new WebElement object for the given id.
+func (d *webDriver) ElementFromID(id string) WebElement {
+	return &webElement{driver: d, id: id}
+}
+
+// ElementFromMap returns a new WebElement from a map representing a JSON object.
+func (d *webDriver) ElementFromMap(m map[string]interface{}) (WebElement, error) {
+	i, ok := m[w3cElementKey]
+	if !ok {
+		i, ok = m[seleniumElementKey]
+		if !ok {
+			return nil, errors.New(d.Name(), fmt.Errorf("map %v does not appear to represent a WebElement", m))
+		}
+	}
+
+	id, ok := i.(string)
+	if !ok {
+		return nil, errors.New(d.Name(), fmt.Errorf("map %v does not appear to represent a WebElement", m))
+	}
+	return d.ElementFromID(id), nil
+}
+
 func command(addr *url.URL, endpoint ...string) (*url.URL, error) {
 	u, err := addr.Parse(path.Join(endpoint...))
 	if err != nil {
@@ -305,16 +354,14 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 	}
 
 	respBody := &jsonResp{Value: value}
-
+	var jsonErr error
 	if err := json.Unmarshal(bytes, respBody); err == nil && respBody.Status == 0 && respBody.Error == "" {
 		// WebDriver returned success, we are done.
-
 		return respBody, nil
-	} else if err != nil && value == nil {
-		// Response body was not correctly constructed, return generic error
-		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, respBody))
+	} else if err != nil {
+		jsonErr = err
+		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
 	}
-
 	// if no value object was passed in then we can use the parsed Value
 	if value == nil {
 		return respBody, newWebDriverError(respBody)
@@ -324,6 +371,10 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 	errBody := &jsonResp{}
 	if err := json.Unmarshal(bytes, errBody); err != nil {
 		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, respBody))
+	}
+
+	if errBody.Status == 0 && errBody.Error == "" {
+		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", jsonErr, string(bytes)))
 	}
 
 	return errBody, newWebDriverError(errBody)
@@ -378,4 +429,55 @@ func doRequest(ctx context.Context, client *http.Client, request *http.Request, 
 	defer resp.Body.Close()
 	r, err := processResponse(resp.Body, value)
 	return r, err
+}
+
+// ID returns the WebDriver element id.
+func (e *webElement) ID() string {
+	return e.id
+}
+
+// ToMap returns a Map representation of a WebElement suitable for use in other WebDriver commands.
+func (e *webElement) ToMap() map[string]string {
+	return map[string]string{
+		seleniumElementKey: e.ID(),
+		w3cElementKey:      e.ID(),
+	}
+}
+
+// ScrollIntoView scrolls a WebElement to the top of the browsers viewport.
+func (e *webElement) ScrollIntoView(ctx context.Context) error {
+	const script = `return arguments[0].scrollIntoView(true);`
+	args := []interface{}{e.ToMap()}
+	return e.driver.ExecuteScript(ctx, script, args, nil)
+}
+
+// Bounds returns the bounds of the WebElement within the viewport.
+// This will not scroll the element into the viewport first.
+// Will return an error if the element is not in the viewport.
+func (e *webElement) Bounds(ctx context.Context) (image.Rectangle, error) {
+	const script = `
+var element = arguments[0];
+var rect = element.getBoundingClientRect();
+var top = rect.top; var left = rect.left;
+element = window.frameElement;
+var currentWindow = window.parent;
+while (element != null) {
+  var currentRect = element.getBoundingClientRect();
+  top += currentRect.top;
+  left += currentRect.left;
+  element = currentWindow.frameElement;
+  currentWindow = currentWindow.parent;
+}
+return {"X0": Math.round(left), "Y0": Math.round(top), "X1": Math.round(left + rect.width), "Y1": Math.round(top + rect.height)};
+`
+	bounds := struct {
+		X0 int
+		Y0 int
+		X1 int
+		Y1 int
+	}{}
+	args := []interface{}{e.ToMap()}
+	err := e.driver.ExecuteScript(ctx, script, args, &bounds)
+	log.Printf("Err: %v", err)
+	return image.Rect(bounds.X0, bounds.Y0, bounds.X1, bounds.Y1), err
 }

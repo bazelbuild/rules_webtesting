@@ -36,6 +36,7 @@ go_binary(
         "//go/launcher/environments:firefox",
         "//go/launcher/proxy",
         "//go/launcher/proxy:driverhub",
+        "//go/launcher/proxy:googlescreenshot",        
         "//go/launcher/proxy:quithandler",        
         "//go/launcher/proxy:screenshot",
         "//go/metadata",

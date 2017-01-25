@@ -25,6 +25,7 @@ import (
 	"net/http"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/util/cropper"
 )
 
@@ -32,12 +33,7 @@ const sizeScript = `return {"width": screen.width, "height": screen.height};`
 
 // ProviderFunc provides a handler for /screenshot command that crops the image if Chrome mobile emulation is enabled.
 func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-	chromeOptions, ok := desired["chromeOptions"].(map[string]interface{})
-	if !ok {
-		return base, false
-	}
-
-	if _, ok := chromeOptions["mobileEmulation"]; !ok {
+	if !MobileEmulationEnabled(desired) {
 		return base, false
 	}
 
@@ -45,37 +41,59 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 		if rq.Method != http.MethodGet || len(rq.Path) != 1 || rq.Path[0] != "screenshot" {
 			return base(ctx, rq)
 		}
-		img, err := session.Screenshot(ctx)
+
+		img, err := GetMobileScreenshot(ctx, session.WebDriver)
 		if err != nil {
 			return driverhub.ResponseFromError(err)
 		}
 
-		val := struct {
-			Width  int
-			Height int
-		}{}
-
-		if err := session.ExecuteScript(ctx, sizeScript, nil, &val); err != nil {
-			return driverhub.ResponseFromError(err)
-		}
-
-		cropped, err := cropper.Crop(img, image.Rect(0, 0, val.Width, val.Height))
-		if err != nil {
-			return driverhub.ResponseFromError(err)
-		}
-
-		buffer := &bytes.Buffer{}
-		b64 := base64.NewEncoder(base64.StdEncoding, buffer)
-
-		if err := png.Encode(b64, cropped); err != nil {
-			return driverhub.ResponseFromError(err)
-		}
-
-		b64.Close()
-
-		return driverhub.Response{
-			Status: http.StatusOK,
-			Body:   []byte(fmt.Sprintf(`{"status": 0, "value": %q}`, buffer.String())),
-		}, nil
+		return CreateResponse(img)
 	}, true
+}
+
+func MobileEmulationEnabled(caps map[string]interface{}) bool {
+	chromeOptions, ok := caps["chromeOptions"].(map[string]interface{})
+	if !ok {
+		return false
+	}
+
+	if _, ok := chromeOptions["mobileEmulation"]; !ok {
+		return false
+	}
+
+	return true
+}
+
+func GetMobileScreenshot(ctx context.Context, driver webdriver.WebDriver) (image.Image, error) {
+	img, err := driver.Screenshot(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	val := struct {
+		Width  int
+		Height int
+	}{}
+
+	if err := driver.ExecuteScript(ctx, sizeScript, nil, &val); err != nil {
+		return nil, err
+	}
+
+	return cropper.Crop(img, image.Rect(0, 0, val.Width, val.Height))
+}
+
+func CreateResponse(img image.Image) (driverhub.Response, error) {
+	buffer := &bytes.Buffer{}
+	b64 := base64.NewEncoder(base64.StdEncoding, buffer)
+
+	if err := png.Encode(b64, img); err != nil {
+		return driverhub.ResponseFromError(err)
+	}
+
+	b64.Close()
+
+	return driverhub.Response{
+		Status: http.StatusOK,
+		Body:   []byte(fmt.Sprintf(`{"status": 0, "value": %q}`, buffer.String())),
+	}, nil
 }
