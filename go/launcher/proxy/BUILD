@@ -104,6 +104,19 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         ":driverhub",
+        ":webdriver",
+        "//go/util:cropper",
+    ],
+)
+
+go_library(
+    name = "googlescreenshot",
+    srcs = ["google_screenshot.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":driverhub",
+        ":screenshot",
+        ":webdriver",
         "//go/util:cropper",
     ],
 )

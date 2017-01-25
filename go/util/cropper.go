@@ -18,6 +18,7 @@ package cropper
 import (
 	"errors"
 	"image"
+	"image/draw"
 )
 
 type subImageSupported interface {
@@ -33,4 +34,16 @@ func Crop(src image.Image, bounds image.Rectangle) (image.Image, error) {
 	}
 
 	return s.SubImage(bounds), nil
+}
+
+// Blackout replaces a given rectangle in the image with a black rectangle.
+// The function may modify the original image.
+func Blackout(src image.Image, bounds image.Rectangle) (image.Image, error) {
+	s, ok := src.(draw.Image)
+	if !ok {
+		return nil, errors.New("crop only works with images that implement draw.Image")
+	}
+
+	draw.Draw(s, bounds, image.Black, image.ZP, draw.Src)
+	return s, nil
 }

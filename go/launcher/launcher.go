@@ -109,9 +109,6 @@ func Run(d diagnostics.Diagnostics) int {
 	if err != nil {
 		log.Printf("Unable to create new temp dir for test: %v", err)
 		return -1
-	} else {
-		// cleanup tmpDir after test is done.
-		defer os.RemoveAll(tmpDir)
 	}
 
 	testCmd := exec.Command(testExe, flag.Args()...)
