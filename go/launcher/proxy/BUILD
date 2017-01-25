@@ -54,7 +54,7 @@ go_library(
         "//go/launcher/environments:environment",
         "//go/metadata",
         "//go/util:httphelper",
-        "@com_github_gorilla_mux//:mux",
+        "@com_github_gorilla_mux",
     ],
 )
 
@@ -94,7 +94,7 @@ go_web_test_suite(
     deps = [
         "//go:webtest",
         "//go/util:bazel",
-        "@com_github_tebeka_selenium//:selenium",
+        "@com_github_tebeka_selenium",
     ],
 )
 
@@ -141,7 +141,7 @@ go_web_test_suite(
     deps = [
         "//go:webtest",
         "//go/util:bazel",
-        "@com_github_tebeka_selenium//:selenium",
+        "@com_github_tebeka_selenium",
     ],
 )
 
