@@ -153,11 +153,11 @@ def com_github_tebeka_selenium():
   native.new_http_archive(
       name = "com_github_tebeka_selenium",
       build_file = str(Label("//build_files:selenium_go.BUILD")),
-      sha256 = "84949fd190b82935af672732b02709b9291933d7d2f5916dcae8b4668c0004cc",
-      strip_prefix = "selenium-0.9.3",
+      sha256 = "c33decb47a9b81d5221cda29c8f040ca5cf874956bbb002ef82b06e07ed78c3d",
+      strip_prefix = "selenium-f6f9a3638fa049f85b0aaf42e693e1c4ab257d4f",
       urls = [
-          "http://bazel-mirror.storage.googleapis.com/github.com/tebeka/selenium/archive/v0.9.3.tar.gz",
-          "https://github.com/tebeka/selenium/archive/v0.9.3.tar.gz",
+          "http://bazel-mirror.storage.googleapis.com/github.com/tebeka/selenium/archive/f6f9a3638fa049f85b0aaf42e693e1c4ab257d4f.tar.gz",
+          "https://github.com/tebeka/selenium/archive/f6f9a3638fa049f85b0aaf42e693e1c4ab257d4f.tar.gz",
       ],
   )
 
