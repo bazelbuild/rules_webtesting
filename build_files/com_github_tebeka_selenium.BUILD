@@ -14,22 +14,24 @@
 #
 ################################################################################
 #
-licenses(["notice"])
+licenses(["notice"])  # MIT.
 
 exports_files(["LICENSE"])
 
 load("@io_bazel_rules_go//go:def.bzl", "go_prefix", "go_library")
 
-go_prefix("github.com/gorilla/mux")
+go_prefix("github.com/tebeka/selenium")
 
 go_library(
-    name = "mux",
-    srcs = [
-        "context_native.go",
-        "doc.go",
-        "mux.go",
-        "regexp.go",
-        "route.go",
-    ],
+    name = "selenium",
+    srcs = glob(
+        ["*.go"],
+        exclude = ["*_test.go"],
+    ),
+)
+
+alias(
+    name = "com_github_tebeka_selenium",
+    actual = ":selenium",
     visibility = ["//visibility:public"],
 )

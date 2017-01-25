@@ -139,7 +139,7 @@ def cglib_nodep():
 def com_github_gorilla_mux():
   native.new_http_archive(
       name = "com_github_gorilla_mux",
-      build_file = str(Label("//build_files:gorilla_mux.BUILD")),
+      build_file = str(Label("//build_files:com_github_gorilla_mux.BUILD")),
       sha256 = "a32c13a36c58cb321136231ae8b67b0c6ad3c5f462e65eb6771f59c44b44ccba",
       strip_prefix = "mux-757bef944d0f21880861c2dd9c871ca543023cba",
       urls = [
@@ -152,7 +152,7 @@ def com_github_gorilla_mux():
 def com_github_tebeka_selenium():
   native.new_http_archive(
       name = "com_github_tebeka_selenium",
-      build_file = str(Label("//build_files:selenium_go.BUILD")),
+      build_file = str(Label("//build_files:com_github_tebeka_selenium.BUILD")),
       sha256 = "c33decb47a9b81d5221cda29c8f040ca5cf874956bbb002ef82b06e07ed78c3d",
       strip_prefix = "selenium-f6f9a3638fa049f85b0aaf42e693e1c4ab257d4f",
       urls = [
@@ -422,7 +422,7 @@ def org_mozilla_geckodriver():
 def org_seleniumhq_py():
   native.new_http_archive(
       name = "org_seleniumhq_py",
-      build_file = str(Label("//build_files:selenium_py.BUILD")),
+      build_file = str(Label("//build_files:org_seleniumhq_py.BUILD")),
       sha256 = "85daad4d09be86bddd4f45579986ac316c1909c3b4653ed471ea4519eb413c8f",
       strip_prefix = "selenium-3.0.2/py",
       urls = [

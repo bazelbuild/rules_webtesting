@@ -14,19 +14,15 @@
 #
 ################################################################################
 #
-licenses(["notice"])  # MIT.
+licenses(["notice"])  # Apache 2
 
-exports_files(["LICENSE"])
-
-load("@io_bazel_rules_go//go:def.bzl", "go_prefix", "go_library")
-
-go_prefix("github.com/tebeka/selenium")
-
-go_library(
-    name = "selenium",
-    srcs = glob(
-        ["*.go"],
-        exclude = ["*_test.go"],
+py_library(
+    name = "org_seleniumhq_py",
+    srcs = glob(["**/*.py"]),
+    data = glob(
+        ["**/*"],
+        exclude = ["**/*.py"],
     ),
+    srcs_version = "PY2AND3",
     visibility = ["//visibility:public"],
 )

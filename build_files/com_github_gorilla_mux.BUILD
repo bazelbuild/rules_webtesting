@@ -14,15 +14,27 @@
 #
 ################################################################################
 #
-licenses(["notice"])  # Apache 2
+licenses(["notice"])
 
-py_library(
-    name = "selenium",
-    srcs = glob(["**/*.py"]),
-    data = glob(
-        ["**/*"],
-        exclude = ["**/*.py"],
-    ),
-    srcs_version = "PY2AND3",
+exports_files(["LICENSE"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_prefix", "go_library")
+
+go_prefix("github.com/gorilla/mux")
+
+go_library(
+    name = "mux",
+    srcs = [
+        "context_native.go",
+        "doc.go",
+        "mux.go",
+        "regexp.go",
+        "route.go",
+    ],
+)
+
+alias(
+    name = "com_github_gorilla_mux",
+    actual = ":mux",
     visibility = ["//visibility:public"],
 )

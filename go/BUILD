@@ -28,7 +28,7 @@ go_library(
     deps = [
         "//go/metadata",
         "//go/util:bazel",
-        "@com_github_tebeka_selenium//:selenium",
+        "@com_github_tebeka_selenium",
     ],
 )
 
@@ -53,5 +53,5 @@ go_web_test_suite(
     library = ":webtest",
     local = True,
     tags = ["noci"],
-    deps = ["@com_github_tebeka_selenium//:selenium"],
+    deps = ["@com_github_tebeka_selenium"],
 )

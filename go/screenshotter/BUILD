@@ -16,6 +16,8 @@
 #
 package(default_testonly = True)
 
+licenses(["notice"])  # Apache 2.0
+
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("//web:go.bzl", "go_web_test_suite")
 
@@ -24,7 +26,7 @@ go_library(
     srcs = ["screenshotter.go"],
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_tebeka_selenium//:selenium",
+        "@com_github_tebeka_selenium",
     ],
 )
 
@@ -43,6 +45,6 @@ go_web_test_suite(
     deps = [
         "//go:webtest",
         "//go/util:bazel",
-        "@com_github_tebeka_selenium//:selenium",
+        "@com_github_tebeka_selenium",
     ],
 )
