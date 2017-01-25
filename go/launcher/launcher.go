@@ -22,11 +22,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
@@ -45,7 +48,7 @@ func main() {
 
 	d := diagnostics.NoOP()
 
-	status := Run(d)
+	status := Run(d, *test, *metadataFileFlag)
 
 	d.Close()
 	os.Exit(status)
@@ -57,58 +60,51 @@ func RegisterEnvProviderFunc(name string, p envProvider) {
 }
 
 // Run runs the test.
-func Run(d diagnostics.Diagnostics) int {
-	metadataFile, err := bazel.Runfile(*metadataFileFlag)
+func Run(d diagnostics.Diagnostics, testPath, mdPath string) int {
+	ctx := context.Background()
+
+	testTerminated := make(chan os.Signal)
+	signal.Notify(testTerminated, syscall.SIGTERM, syscall.SIGINT)
+
+	proxyStarted := make(chan error)
+	envStarted := make(chan error)
+	testFinished := make(chan int)
+	envShutdown := make(chan error)
+
+	mdFile, err := bazel.Runfile(mdPath)
 	if err != nil {
-		log.Printf("Error locating metadata file: %v", err)
+		log.Print(err)
 		return 127
 	}
 
-	m, err := metadata.FromFile(metadataFile, nil)
+	md, err := metadata.FromFile(mdFile, nil)
 	if err != nil {
-		log.Printf("Error reading metadata file: %v", err)
+		d.Severe(err)
 		return 127
 	}
 
-	env, err := buildEnv(m, d)
+	testExe, err := bazel.Runfile(testPath)
 	if err != nil {
-		log.Printf("Error building environment: %v", err)
+		d.Severe(err)
 		return 127
 	}
 
-	if err := env.SetUp(context.Background()); err != nil {
-		log.Printf("Error setting up environment: %v", err)
-		return 127
-	}
-
-	defer func() {
-		if err := env.TearDown(context.Background()); err != nil {
-			log.Printf("Error tearing down environment: %v", err)
-		}
-	}()
-
-	p, err := proxy.New(env, m, d)
+	env, err := buildEnv(md, d)
 	if err != nil {
-		log.Printf("Error creating proxy: %v", err)
+		d.Severe(err)
 		return 127
 	}
 
-	if err := p.Start(context.Background()); err != nil {
-		log.Printf("Error starting proxy: %v", err)
-		return 127
-	}
-
-	testExe, err := bazel.Runfile(*test)
+	p, err := proxy.New(env, md, d)
 	if err != nil {
-		log.Printf("unable to find %s", *test)
+		d.Severe(err)
 		return 127
 	}
 
-	// Temporary directory where WEB_TEST infrastructure writes it tmp files.
 	tmpDir, err := bazel.NewTmpDir("test")
 	if err != nil {
-		log.Printf("Unable to create new temp dir for test: %v", err)
-		return -1
+		d.Severe(err)
+		return 127
 	}
 
 	testCmd := exec.Command(testExe, flag.Args()...)
@@ -122,16 +118,83 @@ func Run(d diagnostics.Diagnostics) int {
 	testCmd.Stderr = os.Stderr
 	testCmd.Stdin = os.Stdin
 
-	if status := testCmd.Run(); status != nil {
-		log.Printf("test failed %v", status)
-		if ee, ok := err.(*exec.ExitError); ok {
-			if ws, ok := ee.Sys().(syscall.WaitStatus); ok {
-				return ws.ExitStatus()
+	go func() {
+		envStarted <- env.SetUp(ctx)
+	}()
+
+	shutdownFunc := func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		// When the environment shutdowns or fails to shutdown, a message will be sent to envShutdown.
+		go func() {
+			envShutdown <- env.TearDown(ctx)
+		}()
+
+		select {
+		case <-testTerminated:
+			d.Warning(errors.New("WTL", "test timed out during environment shutdown."))
+		case <-ctx.Done():
+			d.Warning(errors.New("WTL", "environment shutdown took longer than 5 seconds."))
+		case err := <-envShutdown:
+			if err != nil {
+				d.Warning(err)
 			}
 		}
-		return 1
+
 	}
-	return 0
+
+	go func() {
+		proxyStarted <- p.Start(ctx)
+	}()
+
+	for done := false; !done; {
+		select {
+		case <-testTerminated:
+			return 0x8f
+		case err := <-proxyStarted:
+			if err != nil {
+				d.Severe(err)
+				return 127
+			}
+			done = true
+		case err := <-envStarted:
+			if err != nil {
+				d.Severe(err)
+				return 127
+			}
+			defer shutdownFunc()
+		}
+	}
+
+	go func() {
+		if status := testCmd.Run(); status != nil {
+			log.Printf("test failed %v", status)
+			if ee, ok := err.(*exec.ExitError); ok {
+				if ws, ok := ee.Sys().(syscall.WaitStatus); ok {
+					testFinished <- ws.ExitStatus()
+					return
+				}
+			}
+			testFinished <- 1
+			return
+		}
+		testFinished <- 0
+	}()
+
+	for {
+		select {
+		case <-testTerminated:
+			return 0x8f
+		case err := <-envStarted:
+			if err != nil {
+				d.Severe(err)
+				return 127
+			}
+			defer shutdownFunc()
+		case status := <-testFinished:
+			return status
+		}
+	}
 }
 
 func buildEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error) {

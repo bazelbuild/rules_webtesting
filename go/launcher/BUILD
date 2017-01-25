@@ -30,6 +30,7 @@ go_binary(
     deps = [
         ":cmdhelper",
         ":diagnostics",
+        ":errors",
         "//go/launcher/environments:chrome",
         "//go/launcher/environments:environment",
         "//go/launcher/environments:external",
