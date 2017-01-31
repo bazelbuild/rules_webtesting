@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"regexp"
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
@@ -183,7 +184,8 @@ func (m *Metadata) GetFilePath(name string) (string, error) {
 var varRegExp = regexp.MustCompile(`%\w+%`)
 
 // ResolvedCapabilities returns Capabilities with any strings/substrings
-// of the form %NAME% resolved to a file path retrieved with GetFilePath.
+// of the form %NAME% resolved to a file path retrieved with GetFilePath
+// and performs environment variable expansion on $VAR or ${VAR}.
 func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
 	var resolve func(v interface{}) (interface{}, error)
 
@@ -223,7 +225,7 @@ func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
 			previous = match[1]
 		}
 		result += s[previous:]
-		return result, nil
+		return os.ExpandEnv(result), nil
 	}
 	resolve = func(v interface{}) (interface{}, error) {
 		switch tv := v.(type) {

@@ -18,6 +18,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/chrome"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/external"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/firefox"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/sauce"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/googlescreenshot"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/quithandler"
@@ -34,4 +35,5 @@ func init() {
 	RegisterEnvProviderFunc("external", external.NewEnv)
 	RegisterEnvProviderFunc("chrome", chrome.NewEnv)
 	RegisterEnvProviderFunc("firefox", firefox.NewEnv)
+	RegisterEnvProviderFunc("sauce", sauce.NewEnv)
 }

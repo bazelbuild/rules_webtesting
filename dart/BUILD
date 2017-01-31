@@ -33,7 +33,15 @@ dart_library(
 dart_web_test_suite(
     name = "webtest_test",
     srcs = glob(["test/**/*.dart"]),
-    browsers = ["//browsers:chromium-native"],
+    browser_overrides = {
+        "//browsers:chrome55-win10-sauce": {
+            "tags": ["noci", "requires-network"],
+        },
+    },
+    browsers = [
+        "//browsers:chrome55-win10-sauce",
+        "//browsers:chromium-native",
+    ],
     dart_test_tags = [
         "manual",
         "noci",
