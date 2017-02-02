@@ -70,3 +70,14 @@ go_library(
         "//go/metadata",
     ],
 )
+
+go_library(
+    name = "sauce",
+    srcs = ["sauce.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":environment",
+        "//go/launcher:diagnostics",
+        "//go/metadata",
+    ],
+)

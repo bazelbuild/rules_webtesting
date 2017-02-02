@@ -40,6 +40,13 @@ browser(
 )
 
 browser(
+    name = "chrome55-win10-sauce",
+    metadata = "chrome55-win10-sauce.json",
+    required_tags = ["requires-network"],
+    visibility = ["//visibility:public"],
+)
+
+browser(
     name = "chrome-external",
     metadata = "chrome-external.json",
     required_tags = ["requires-network"],

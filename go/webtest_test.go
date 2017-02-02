@@ -78,6 +78,10 @@ func TestGetInfo(t *testing.T) {
 	}
 
 	switch {
+	case strings.Contains(i.BrowserLabel, "sauce"):
+		if i.Environment != "sauce" {
+			t.Errorf(`got Environment = %q, expected "sauce"`, i.Environment)
+		}
 	case strings.Contains(i.BrowserLabel, "chrome"):
 		if i.Environment != "chrome" {
 			t.Errorf(`got Environment = %q, expected "chrome"`, i.Environment)

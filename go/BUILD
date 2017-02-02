@@ -42,7 +42,13 @@ go_test(
 go_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.go"],
+    browser_overrides = {
+        "//browsers:chrome55-win10-sauce": {
+            "tags": ["requires-network"],
+        },
+    },
     browsers = [
+        "//browsers:chrome55-win10-sauce",
         "//browsers:chromium-native",
         "//browsers:firefox-native",
     ],

@@ -23,7 +23,13 @@ licenses(["notice"])  # Apache 2.0
 java_web_test_suite(
     name = "WebTestTest",
     srcs = ["WebTestTest.java"],
+    browser_overrides = {
+        "//browsers:chrome55-win10-sauce": {
+            "tags": ["requires-network"],
+        },
+    },
     browsers = [
+        "//browsers:chrome55-win10-sauce",
         "//browsers:chromium-native",
         "//browsers:firefox-native",
     ],
