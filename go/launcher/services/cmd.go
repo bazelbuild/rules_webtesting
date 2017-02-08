@@ -16,14 +16,15 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"sync"
 	"syscall"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 )
 
@@ -39,7 +40,7 @@ type Cmd struct {
 }
 
 // NewCmd creates a new service for starting an external server on the host machine.
-func NewCmd(name, exe string, xvfb bool, env map[string]string, args ...string) (*Cmd, error) {
+func NewCmd(name string, d diagnostics.Diagnostics, exe string, xvfb bool, env map[string]string, args ...string) (*Cmd, error) {
 	if xvfb {
 		args = append([]string{"-a", exe}, args...)
 		exe = "/usr/bin/xvfb-run"
@@ -52,7 +53,7 @@ func NewCmd(name, exe string, xvfb bool, env map[string]string, args ...string) 
 	cmd.Stderr = os.Stderr
 
 	return &Cmd{
-		Base: NewBase(name),
+		Base: NewBase(name, d),
 		cmd:  cmd,
 		done: make(chan interface{}),
 	}, nil
@@ -86,11 +87,11 @@ func (c *Cmd) Stop(ctx context.Context) error {
 // Kill kills the process.
 func (c *Cmd) Kill() {
 	if c.cmd.Process == nil {
-		log.Printf("unable to kill %s; process is nil", c.Name())
+		c.Warning(errors.New(c.Name(), "unable to kill; process is nil"))
 		return
 	}
 	if err := c.cmd.Process.Kill(); err != nil {
-		log.Printf("unable to kill %s: %v", c.Name(), err)
+		c.Warning(errors.New(c.Name(), fmt.Errorf("unable to kill: %v", err)))
 	}
 }
 
@@ -134,7 +135,7 @@ func (c *Cmd) Monitor() {
 	if signal == syscall.SIGKILL || signal == syscall.SIGTERM || exitCode == 0x80|0x09 || exitCode == 0x80|0x0f {
 		return
 	}
-	log.Printf("%s has exited prematurely with status: %v", c.Name(), err)
+	c.Warning(errors.New(c.Name(), fmt.Errorf("exited prematurely with status: %v", err)))
 }
 
 // StdinPipe returns a pipe that will be connected to the command's standard input when the command starts.

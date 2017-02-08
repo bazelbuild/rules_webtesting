@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/util/httphelper"
@@ -40,7 +41,7 @@ type Server struct {
 
 // NewServer creates a new service for starting an external server on the host machine.
 // Args should contain {port}, which will be replaced with the selected port number.
-func NewServer(name, exe, healthPattern string, xvfb bool, timeout time.Duration, env map[string]string, args ...string) (*Server, error) {
+func NewServer(name string, d diagnostics.Diagnostics, exe, healthPattern string, xvfb bool, timeout time.Duration, env map[string]string, args ...string) (*Server, error) {
 	port, err := portpicker.PickUnusedPort()
 	if err != nil {
 		return nil, errors.New(name, err)
@@ -50,7 +51,7 @@ func NewServer(name, exe, healthPattern string, xvfb bool, timeout time.Duration
 		updatedArgs = append(updatedArgs, strings.Replace(arg, "{port}", strconv.Itoa(port), -1))
 	}
 
-	cmd, err := NewCmd(name, exe, xvfb, env, updatedArgs...)
+	cmd, err := NewCmd(name, d, exe, xvfb, env, updatedArgs...)
 	if err != nil {
 		return nil, err
 	}
