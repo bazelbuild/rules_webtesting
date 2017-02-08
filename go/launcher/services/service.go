@@ -20,6 +20,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 )
@@ -36,6 +37,7 @@ type Service interface {
 
 // Base is a base struct for defining a service.
 type Base struct {
+	diagnostics.Diagnostics
 	name    string
 	mu      sync.RWMutex
 	started bool
@@ -43,8 +45,8 @@ type Base struct {
 }
 
 // NewBase creates a new Base service with the given component name.
-func NewBase(name string) *Base {
-	return &Base{name: name}
+func NewBase(name string, d diagnostics.Diagnostics) *Base {
+	return &Base{Diagnostics: d, name: name}
 }
 
 // Start makes this service as started, failing if it has already been started.

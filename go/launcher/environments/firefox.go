@@ -45,7 +45,7 @@ func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, e
 	if err != nil {
 		return nil, err
 	}
-	gd, err := geckodriver.New(m, useXvfb())
+	gd, err := geckodriver.New(d, m, useXvfb())
 	if err != nil {
 		return nil, err
 	}

@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/services/service"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
@@ -29,7 +30,7 @@ type ChromeDriver struct {
 }
 
 // New creates a new service.Server instance that manages chromedriver.
-func New(m *metadata.Metadata, xvfb bool) (*ChromeDriver, error) {
+func New(d diagnostics.Diagnostics, m *metadata.Metadata, xvfb bool) (*ChromeDriver, error) {
 	chromeDriverPath, err := m.GetFilePath("CHROMEDRIVER")
 	if err != nil {
 		return nil, errors.New("ChromeDriver", err)
@@ -37,6 +38,7 @@ func New(m *metadata.Metadata, xvfb bool) (*ChromeDriver, error) {
 
 	server, err := service.NewServer(
 		"ChromeDriver",
+		d,
 		chromeDriverPath,
 		"http://%s/status",
 		xvfb,

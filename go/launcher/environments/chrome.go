@@ -45,7 +45,7 @@ func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, e
 	if err != nil {
 		return nil, err
 	}
-	cd, err := chromedriver.New(m, useXvfb())
+	cd, err := chromedriver.New(d, m, useXvfb())
 	if err != nil {
 		return nil, err
 	}

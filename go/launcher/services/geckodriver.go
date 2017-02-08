@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/services/service"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
@@ -29,7 +30,7 @@ type GeckoDriver struct {
 }
 
 // New creates a new service.Server instance that manages GeckoDriver.
-func New(m *metadata.Metadata, xvfb bool) (*GeckoDriver, error) {
+func New(d diagnostics.Diagnostics, m *metadata.Metadata, xvfb bool) (*GeckoDriver, error) {
 	driverPath, err := m.GetFilePath("GECKODRIVER")
 	if err != nil {
 		return nil, errors.New("GeckoDriver", err)
@@ -42,6 +43,7 @@ func New(m *metadata.Metadata, xvfb bool) (*GeckoDriver, error) {
 
 	server, err := service.NewServer(
 		"GeckoDriver",
+		d,
 		driverPath,
 		"",
 		xvfb,
