@@ -15,7 +15,7 @@
 
 load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
-
+load("//web/internal:go_repository.bzl", "go_repository")
 
 def web_test_repositories(
     omit_cglib_nodep=False,
@@ -137,11 +137,13 @@ def cglib_nodep():
 
 
 def com_github_gorilla_mux():
-  native.new_http_archive(
+  go_repository(
       name="com_github_gorilla_mux",
-      build_file=str(Label("//build_files:com_github_gorilla_mux.BUILD")),
+      import_name="github.com/gorilla/mux",
       sha256="a32c13a36c58cb321136231ae8b67b0c6ad3c5f462e65eb6771f59c44b44ccba",
       strip_prefix="mux-757bef944d0f21880861c2dd9c871ca543023cba",
+      excluded_srcs = ["context_gorilla.go"],
+      license = "licenses([\"notice\"])",
       urls=[
           "http://bazel-mirror.storage.googleapis.com/github.com/gorilla/mux/archive/757bef944d0f21880861c2dd9c871ca543023cba.tar.gz",
           "https://github.com/gorilla/mux/archive/757bef944d0f21880861c2dd9c871ca543023cba.tar.gz",
@@ -149,11 +151,12 @@ def com_github_gorilla_mux():
 
 
 def com_github_tebeka_selenium():
-  native.new_http_archive(
+  go_repository(
       name="com_github_tebeka_selenium",
-      build_file=str(Label("//build_files:com_github_tebeka_selenium.BUILD")),
+      import_name="github.com/tebeka/selenium",
       sha256="c33decb47a9b81d5221cda29c8f040ca5cf874956bbb002ef82b06e07ed78c3d",
       strip_prefix="selenium-f6f9a3638fa049f85b0aaf42e693e1c4ab257d4f",
+      license="licenses([\"notice\"])  # MIT.",
       urls=[
           "http://bazel-mirror.storage.googleapis.com/github.com/tebeka/selenium/archive/f6f9a3638fa049f85b0aaf42e693e1c4ab257d4f.tar.gz",
           "https://github.com/tebeka/selenium/archive/f6f9a3638fa049f85b0aaf42e693e1c4ab257d4f.tar.gz",

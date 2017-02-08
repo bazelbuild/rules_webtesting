@@ -31,7 +31,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/util/httphelper"
-	"github.com/gorilla/mux/mux"
+	"github.com/gorilla/mux"
 )
 
 const envTimeout = 5 * time.Minute // some environments such as Android take a long time to start up.

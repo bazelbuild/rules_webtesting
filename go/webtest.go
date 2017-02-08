@@ -36,7 +36,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
-	"github.com/tebeka/selenium/selenium"
+	"github.com/tebeka/selenium"
 )
 
 var info *BrowserInfo
