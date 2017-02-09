@@ -43,6 +43,7 @@ func TestCreateSessionFails(t *testing.T) {
 		"moz:firefoxOptions": map[string]interface{}{
 			"binary": "a-binary",
 		},
+		"commandTimeout": "10000000",
 	})
 	if err == nil {
 		t.Error("got nil err from CreateSession with bad capabilities")

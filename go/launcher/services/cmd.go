@@ -49,8 +49,6 @@ func NewCmd(name string, d diagnostics.Diagnostics, exe string, xvfb bool, env m
 	if env != nil {
 		cmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), env)
 	}
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 
 	return &Cmd{
 		Base: NewBase(name, d),
@@ -62,6 +60,12 @@ func NewCmd(name string, d diagnostics.Diagnostics, exe string, xvfb bool, env m
 // Start starts the executable, waits for it to become healhy, and monitors it to ensure that it
 // stays healthy.
 func (c *Cmd) Start(ctx context.Context) error {
+	if c.cmd.Stdout == nil {
+		c.cmd.Stdout = os.Stdout
+	}
+	if c.cmd.Stderr == nil {
+		c.cmd.Stderr = os.Stderr
+	}
 	if err := c.Base.Start(ctx); err != nil {
 		return err
 	}
@@ -138,13 +142,21 @@ func (c *Cmd) Monitor() {
 	c.Warning(errors.New(c.Name(), fmt.Errorf("exited prematurely with status: %v", err)))
 }
 
-// StdinPipe returns a pipe that will be connected to the command's standard input when the command starts.
-func (c *Cmd) StdinPipe() (io.WriteCloser, error) {
-	pipe, err := c.cmd.StdinPipe()
+func (c *Cmd) StdoutPipe() (io.ReadCloser, error) {
+	stdout, err := c.cmd.StdoutPipe()
 	if err != nil {
 		return nil, errors.New(c.Name(), err)
 	}
-	return pipe, nil
+	return stdout, nil
+}
+
+// StdinPipe returns a pipe that will be connected to the command's standard input when the command starts.
+func (c *Cmd) StdinPipe() (io.WriteCloser, error) {
+	stdin, err := c.cmd.StdinPipe()
+	if err != nil {
+		return nil, errors.New(c.Name(), err)
+	}
+	return stdin, nil
 }
 
 // StopMonitoring turns off reporting of infrastructure failures should this process exit.

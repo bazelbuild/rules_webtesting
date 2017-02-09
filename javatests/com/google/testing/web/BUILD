@@ -25,7 +25,10 @@ java_web_test_suite(
     srcs = ["WebTestTest.java"],
     browser_overrides = {
         "//browsers:chrome55-win10-sauce": {
-            "tags": ["requires-network"],
+            "tags": [
+                "requires-network",
+                "exclusive",
+            ],
         },
     },
     browsers = [

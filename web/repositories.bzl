@@ -17,9 +17,11 @@ load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("//web/internal:go_repository.bzl", "go_repository")
 
+
 def web_test_repositories(
     omit_cglib_nodep=False,
     omit_com_github_gorilla_mux=False,
+    omit_com_github_pborman_uuid=False,
     omit_com_github_tebeka_selenium=False,
     omit_com_google_code_findbugs_jsr305=False,
     omit_com_google_code_gson=False,
@@ -66,6 +68,8 @@ def web_test_repositories(
     cglib_nodep()
   if not omit_com_github_gorilla_mux:
     com_github_gorilla_mux()
+  if not omit_com_github_pborman_uuid:
+    com_github_pborman_uuid()
   if not omit_com_github_tebeka_selenium:
     com_github_tebeka_selenium()
   if not omit_com_google_code_findbugs_jsr305:
@@ -104,7 +108,7 @@ def web_test_repositories(
     org_seleniumhq_selenium_remote_driver()
 
 
-def browser_repositories(firefox=False, chromium=False):
+def browser_repositories(firefox=False, chromium=False, sauce=True):
   """Sets up repositories for browsers defined in //browsers/....
 
   This should only be used on an experimental basis; projects should define
@@ -121,6 +125,8 @@ def browser_repositories(firefox=False, chromium=False):
   if firefox:
     org_mozilla_firefox()
     org_mozilla_geckodriver()
+  if sauce:
+    com_saucelabs_connect()
 
 
 def cglib_nodep():
@@ -142,11 +148,24 @@ def com_github_gorilla_mux():
       import_name="github.com/gorilla/mux",
       sha256="a32c13a36c58cb321136231ae8b67b0c6ad3c5f462e65eb6771f59c44b44ccba",
       strip_prefix="mux-757bef944d0f21880861c2dd9c871ca543023cba",
-      excluded_srcs = ["context_gorilla.go"],
-      license = "licenses([\"notice\"])",
+      excluded_srcs=["context_gorilla.go"],
+      license="licenses([\"notice\"])",
       urls=[
           "http://bazel-mirror.storage.googleapis.com/github.com/gorilla/mux/archive/757bef944d0f21880861c2dd9c871ca543023cba.tar.gz",
           "https://github.com/gorilla/mux/archive/757bef944d0f21880861c2dd9c871ca543023cba.tar.gz",
+      ])
+
+
+def com_github_pborman_uuid():
+  go_repository(
+      name="com_github_pborman_uuid",
+      import_name="github.com/pborman/uuid",
+      sha256="54da54d54a914e569fb2b31132e0c458ece12d7cd70c14a33adf95731e07afe7",
+      strip_prefix="uuid-1b00554d822231195d1babd97ff4a781231955c9",
+      license="licenses([\"notice\"])  # BSD",
+      urls=[
+          "http://bazel-mirror.storage.googleapis.com/github.com/pborman/uuid/archive/1b00554d822231195d1babd97ff4a781231955c9.tar.gz",
+          "https://github.com/pborman/uuid/archive/1b00554d822231195d1babd97ff4a781231955c9.tar.gz",
       ])
 
 
@@ -215,6 +234,15 @@ def com_google_guava():
           "@com_google_code_findbugs_jsr305",
           "@com_google_errorprone_error_prone_annotations",
       ])
+
+
+def com_saucelabs_connect():
+  platform_http_file(
+      name="com_saucelabs_connect",
+      amd64_sha256="9bf0913b0001abdad015b32acd05477b28e65ea5d24d61f2793d5948d3629165",
+      amd64_urls=["https://saucelabs.com/downloads/sc-4.4.3-linux.tar.gz"],
+      macos_sha256="1e5cdc19d7ed821eae958bfe939287e6f9a32758e32a648a40b6d80117418b68",
+      macos_urls=["https://saucelabs.com/downloads/sc-4.4.3-osx.zip"])
 
 
 def commons_codec():

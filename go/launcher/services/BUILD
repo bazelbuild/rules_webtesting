@@ -61,3 +61,17 @@ go_library(
         "//go/metadata",
     ],
 )
+
+go_library(
+    name = "sauceconnect",
+    srcs = ["sauceconnect.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":service",
+        "//go/launcher:diagnostics",        
+        "//go/launcher:errors",
+        "//go/metadata",
+        "//go/util:portpicker",
+        "@com_github_pborman_uuid",
+    ],
+)

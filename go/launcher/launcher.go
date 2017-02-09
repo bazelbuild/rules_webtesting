@@ -73,7 +73,7 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string) int {
 
 	mdFile, err := bazel.Runfile(mdPath)
 	if err != nil {
-		log.Print(err)
+		d.Severe(err)
 		return 127
 	}
 

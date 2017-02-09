@@ -77,7 +77,10 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         ":environment",
+        "//go/launcher:cmdhelper",
         "//go/launcher:diagnostics",
+        "//go/launcher/services:sauceconnect",
         "//go/metadata",
+        "//go/metadata:capabilities",
     ],
 )

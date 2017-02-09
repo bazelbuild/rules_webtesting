@@ -24,7 +24,6 @@ import (
 	"image"
 	"image/png"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -66,7 +65,6 @@ func New(driver selenium.WebDriver) (Screenshotter, error) {
 
 // Of returns a copy of Screenshotter configured to crop the screenshot using the given WebElement.
 func (s *screenshotter) Of(e selenium.WebElement) Screenshotter {
-	log.Printf("e: %+v", e)
 	return &screenshotter{
 		url:     s.url,
 		Element: e,

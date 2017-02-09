@@ -15,20 +15,45 @@
 package quithandler
 
 import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/util/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 	"github.com/tebeka/selenium"
 )
 
-func TestCloseOneWindow(t *testing.T) {
-	testpage, err := bazel.Runfile("go/launcher/proxy/testdata/testpage.html")
+var testpage = ""
+
+func TestMain(m *testing.M) {
+	port, err := portpicker.PickUnusedPort()
 	if err != nil {
-		t.Fatal(err)
+		log.Fatal(err)
 	}
 
+	dir, err := bazel.RunfilesPath()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dir = filepath.Join(dir, bazel.TestWorkspace())
+
+	go func() {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
+	}()
+
+	testpage = fmt.Sprintf("http://localhost:%d/go/launcher/proxy/testdata/testpage.html", port)
+
+	os.Exit(m.Run())
+}
+
+func TestCloseOneWindow(t *testing.T) {
 	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
@@ -36,7 +61,7 @@ func TestCloseOneWindow(t *testing.T) {
 
 	defer driver.Quit()
 
-	if err := driver.Get("file://" + testpage); err != nil {
+	if err := driver.Get(testpage); err != nil {
 		t.Fatal(err)
 	}
 
@@ -50,11 +75,6 @@ func TestCloseOneWindow(t *testing.T) {
 }
 
 func TestQuit(t *testing.T) {
-	testpage, err := bazel.Runfile("go/launcher/proxy/testdata/testpage.html")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
@@ -62,7 +82,7 @@ func TestQuit(t *testing.T) {
 
 	defer driver.Quit()
 
-	if err := driver.Get("file://" + testpage); err != nil {
+	if err := driver.Get(testpage); err != nil {
 		t.Fatal(err)
 	}
 
@@ -85,11 +105,6 @@ func TestQuit(t *testing.T) {
 }
 
 func TestCloseTwoWindows(t *testing.T) {
-	testpage, err := bazel.Runfile("go/launcher/proxy/testdata/testpage.html")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
@@ -97,7 +112,7 @@ func TestCloseTwoWindows(t *testing.T) {
 
 	defer driver.Quit()
 
-	if err := driver.Get("file://" + testpage); err != nil {
+	if err := driver.Get(testpage); err != nil {
 		t.Fatal(err)
 	}
 

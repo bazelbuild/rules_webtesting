@@ -478,6 +478,5 @@ return {"X0": Math.round(left), "Y0": Math.round(top), "X1": Math.round(left + r
 	}{}
 	args := []interface{}{e.ToMap()}
 	err := e.driver.ExecuteScript(ctx, script, args, &bounds)
-	log.Printf("Err: %v", err)
 	return image.Rect(bounds.X0, bounds.Y0, bounds.X1, bounds.Y1), err
 }

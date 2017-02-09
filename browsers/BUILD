@@ -41,9 +41,11 @@ browser(
 
 browser(
     name = "chrome55-win10-sauce",
+    environment = {"LAUNCH_SAUCE_CONNECT": "1"},
     metadata = "chrome55-win10-sauce.json",
-    required_tags = ["requires-network"],
+    required_tags = ["requires-network", "exclusive"],
     visibility = ["//visibility:public"],
+    deps = ["//third_party/sauceconnect"],
 )
 
 browser(

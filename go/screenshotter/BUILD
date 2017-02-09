@@ -33,7 +33,7 @@ go_library(
 go_web_test_suite(
     name = "screenshotter_test",
     srcs = ["screenshotter_test.go"],
-    browsers = ["//browsers:chromium-native"],
+    browsers = ["//browsers:chrome55-win10-sauce"],
     data = ["//go/launcher/proxy/testdata:testpage.html"],
     go_test_tags = [
         "manual",
@@ -41,10 +41,11 @@ go_web_test_suite(
     ],
     library = ":screenshotter",
     local = True,
-    tags = ["noci"],
+    tags = ["requires-network", "exclusive"],
     deps = [
         "//go:webtest",
         "//go/util:bazel",
+        "//go/util:portpicker",
         "@com_github_tebeka_selenium",
     ],
 )

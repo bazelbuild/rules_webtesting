@@ -18,11 +18,11 @@ workspace(name = "io_bazel_rules_webtesting")
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "ef1aa6a368808d3aa18cbe588924f15fb8fac75d80860080355595e75eb9a529",
-    strip_prefix = "rules_go-0.4.0",
+    sha256 = "c1c773999796e012eca60dc195e52bb5b5b8fc0eda733fdf286d124d36dbfc35",
+    strip_prefix = "rules_go-adfad77dabd529ed9d90a4e7b823323628e908d9",
     urls = [
-        "http://bazel-mirror.storage.googleapis.com/github.com/bazelbuild/rules_go/archive/0.4.0.tar.gz",
-        "https://github.com/bazelbuild/rules_go/archive/0.4.0.tar.gz",
+        "http://bazel-mirror.storage.googleapis.com/github.com/bazelbuild/rules_go/archive/adfad77dabd529ed9d90a4e7b823323628e908d9.tar.gz",
+        "https://github.com/bazelbuild/rules_go/archive/adfad77dabd529ed9d90a4e7b823323628e908d9.tar.gz",
     ],
 )
 
@@ -37,6 +37,7 @@ web_test_repositories()
 browser_repositories(
     chromium = True,
     firefox = True,
+    sauce = True,
 )
 
 http_archive(
