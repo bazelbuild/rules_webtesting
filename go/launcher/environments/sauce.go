@@ -25,7 +25,6 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/services/sauceconnect"
-	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
@@ -99,17 +98,6 @@ func (s *sauce) Healthy(ctx context.Context) error {
 		}
 	}
 	return nil
-}
-
-func (s *sauce) StartSession(ctx context.Context, id int, caps map[string]interface{}) (map[string]interface{}, error) {
-	desired, err := s.Base.StartSession(ctx, id, caps)
-	if err != nil {
-		return nil, err
-	}
-	if s.sc != nil {
-		desired = capabilities.Merge(desired, map[string]interface{}{"tunnel-identifier": s.sc.TunnelID()})
-	}
-	return desired, nil
 }
 
 // WDAddress returns the user-provided selenium address.

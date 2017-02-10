@@ -43,7 +43,7 @@ go_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.go"],
     browser_overrides = {
-        "//browsers:chrome55-win10-sauce": {
+        "//browsers/sauce:chrome55-win10": {
             "tags": [
                 "requires-network",
                 "exclusive",
@@ -51,9 +51,9 @@ go_web_test_suite(
         },
     },
     browsers = [
-        "//browsers:chrome55-win10-sauce",
         "//browsers:chromium-native",
         "//browsers:firefox-native",
+        "//browsers/sauce:chrome55-win10",
     ],
     go_test_tags = [
         "manual",

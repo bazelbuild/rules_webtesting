@@ -83,7 +83,7 @@ go_library(
 go_web_test_suite(
     name = "quithandler_test",
     srcs = ["quit_handler_test.go"],
-    browsers = ["//browsers:chrome55-win10-sauce"],
+    browsers = ["//browsers/sauce:chrome55-win10"],
     data = ["//go/launcher/proxy/testdata:testpage.html"],
     go_test_tags = [
         "manual",
@@ -96,7 +96,7 @@ go_web_test_suite(
     deps = [
         "//go:webtest",
         "//go/util:bazel",
-        "//go/util:portpicker",        
+        "//go/util:portpicker",
         "@com_github_tebeka_selenium",
     ],
 )
@@ -132,7 +132,7 @@ web_test_config(
 go_web_test_suite(
     name = "screenshot_test",
     srcs = ["screenshot_test.go"],
-    browsers = ["//browsers:chrome55-win10-sauce"],
+    browsers = ["//browsers/sauce:chrome55-win10"],
     config = ":screenshot_test_config",
     data = ["//go/launcher/proxy/testdata:testpage.html"],
     go_test_tags = [
@@ -146,7 +146,7 @@ go_web_test_suite(
     deps = [
         "//go:webtest",
         "//go/util:bazel",
-        "//go/util:portpicker",        
+        "//go/util:portpicker",
         "@com_github_tebeka_selenium",
     ],
 )
@@ -156,7 +156,7 @@ go_web_test_suite(
     size = "large",
     srcs = ["webdriver_test.go"],
     browsers = [
-        "//browsers:chrome55-win10-sauce",
+        "//browsers/sauce:chrome55-win10",
     ],
     go_test_tags = [
         "manual",

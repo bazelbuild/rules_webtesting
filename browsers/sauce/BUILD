@@ -16,35 +16,18 @@
 #
 package(default_testonly = True)
 
-load("//web:java.bzl", "java_web_test_suite")
+load("//web:web.bzl", "browser")
 
 licenses(["notice"])  # Apache 2.0
 
-java_web_test_suite(
-    name = "WebTestTest",
-    srcs = ["WebTestTest.java"],
-    browser_overrides = {
-        "//browsers/sauce:chrome55-win10": {
-            "tags": [
-                "requires-network",
-                "exclusive",
-            ],
-        },
-    },
-    browsers = [
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-        "//browsers/sauce:chrome55-win10",
+browser(
+    name = "chrome55-win10",
+    environment = {"LAUNCH_SAUCE_CONNECT": "1"},
+    metadata = "chrome55-win10.json",
+    required_tags = [
+        "requires-network",
+        "exclusive",
     ],
-    java_test_tags = [
-        "manual",
-        "noci",
-    ],
-    local = True,
-    tags = ["noci"],
-    deps = [
-        "//java/com/google/testing/web",
-        "@junit",
-        "@org_seleniumhq_selenium_api",
-    ],
+    visibility = ["//visibility:public"],
+    deps = ["//third_party/sauceconnect"],
 )

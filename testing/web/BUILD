@@ -35,7 +35,7 @@ py_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.py"],
     browser_overrides = {
-        "//browsers:chrome55-win10-sauce": {
+        "//browsers/sauce:chrome55-win10": {
             "tags": [
                 "requires-network",
                 "exclusive",
@@ -43,9 +43,9 @@ py_web_test_suite(
         },
     },
     browsers = [
-        "//browsers:chrome55-win10-sauce",
         "//browsers:chromium-native",
         "//browsers:firefox-native",
+        "//browsers/sauce:chrome55-win10",
     ],
     local = True,
     py_test_tags = [

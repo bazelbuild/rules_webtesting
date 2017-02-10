@@ -62,8 +62,7 @@ web_test_archive = rule(
                 cfg="data",
                 mandatory=True),
         "data":
-            attr.label_list(
-                allow_files=True, cfg="data"),
+            attr.label_list(allow_files=True, cfg="data"),
         "deps":
             attr.label_list(providers=["web_test"]),
         "merger":

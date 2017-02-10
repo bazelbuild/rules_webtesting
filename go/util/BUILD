@@ -47,7 +47,7 @@ go_library(
 go_test(
     name = "cropper_test",
     srcs = ["cropper_test.go"],
+    data = ["//go/util/testdata"],
     library = ":cropper",
     deps = [":bazel"],
-    data = ["//go/util/testdata"]
 )

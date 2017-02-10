@@ -81,6 +81,5 @@ go_library(
         "//go/launcher:diagnostics",
         "//go/launcher/services:sauceconnect",
         "//go/metadata",
-        "//go/metadata:capabilities",
     ],
 )
