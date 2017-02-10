@@ -18,7 +18,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tebeka/selenium/selenium"
+	"github.com/tebeka/selenium"
 )
 
 func TestProvisionBrowser_NoCaps(t *testing.T) {

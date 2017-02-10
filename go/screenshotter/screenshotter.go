@@ -29,7 +29,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/tebeka/selenium/selenium"
+	"github.com/tebeka/selenium"
 )
 
 // Screenshotter allows configurable screenshotting.

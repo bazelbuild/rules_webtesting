@@ -26,7 +26,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
-	"github.com/gorilla/mux/mux"
+	"github.com/gorilla/mux"
 )
 
 // WebDriverSession is an http.Handler for forwarding requests to a WebDriver session.

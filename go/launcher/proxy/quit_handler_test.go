@@ -20,7 +20,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
-	"github.com/tebeka/selenium/selenium"
+	"github.com/tebeka/selenium"
 )
 
 func TestCloseOneWindow(t *testing.T) {
