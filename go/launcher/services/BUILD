@@ -30,7 +30,7 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         "//go/launcher:cmdhelper",
-        "//go/launcher:diagnostics",        
+        "//go/launcher:diagnostics",
         "//go/launcher:errors",
         "//go/launcher:healthreporter",
         "//go/util:httphelper",
@@ -44,7 +44,7 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         ":service",
-        "//go/launcher:diagnostics",        
+        "//go/launcher:diagnostics",
         "//go/launcher:errors",
         "//go/metadata",
     ],
@@ -56,8 +56,21 @@ go_library(
     visibility = ["//go:__subpackages__"],
     deps = [
         ":service",
-        "//go/launcher:diagnostics",        
+        "//go/launcher:diagnostics",
         "//go/launcher:errors",
         "//go/metadata",
+    ],
+)
+
+go_library(
+    name = "sauceconnect",
+    srcs = ["sauceconnect.go"],
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        ":service",
+        "//go/launcher:diagnostics",
+        "//go/launcher:errors",
+        "//go/metadata",
+        "//go/util:portpicker",
     ],
 )

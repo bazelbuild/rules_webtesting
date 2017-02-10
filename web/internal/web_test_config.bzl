@@ -41,16 +41,14 @@ def _web_test_config_impl(ctx):
     metadata.create_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
 
   return struct(
-      runfiles=ctx.runfiles(
-          collect_data=True, collect_default=True),
+      runfiles=ctx.runfiles(collect_data=True, collect_default=True),
       web_test=struct(metadata=ctx.outputs.web_test_metadata))
 
 
 web_test_config = rule(
     attrs={
         "data":
-            attr.label_list(
-                allow_files=True, cfg="data"),
+            attr.label_list(allow_files=True, cfg="data"),
         "deps":
             attr.label_list(providers=["web_test"]),
         "merger":

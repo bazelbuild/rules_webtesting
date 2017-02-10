@@ -21,18 +21,22 @@ import (
 	"context"
 	"os"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/services/sauceconnect"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
 )
 
 const (
-	name = "Sauce WebDriver Environment"
+	name            = "Sauce WebDriver Environment"
+	sauceConnectEnv = "LAUNCH_SAUCE_CONNECT"
 )
 
 type sauce struct {
 	*environment.Base
 	address string
+	sc      *sauceconnect.SauceConnect
 }
 
 // NewEnv creates a new environment that uses an externally started Selenium Server.
@@ -43,11 +47,57 @@ func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, e
 	if err != nil {
 		return nil, err
 	}
+	var sc *sauceconnect.SauceConnect
+
+	if cmdhelper.IsTruthyEnv(sauceConnectEnv) {
+		s, err := sauceconnect.New(d, m)
+		if err != nil {
+			return nil, err
+		}
+		sc = s
+	}
 
 	return &sauce{
 		Base:    base,
 		address: address,
+		sc:      sc,
 	}, nil
+}
+
+func (s *sauce) SetUp(ctx context.Context) error {
+	if err := s.Base.SetUp(ctx); err != nil {
+		return err
+	}
+	if s.sc != nil {
+		if err := s.sc.Start(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *sauce) TearDown(ctx context.Context) error {
+	if err := s.Base.TearDown(ctx); err != nil {
+		return err
+	}
+	if s.sc != nil {
+		if err := s.sc.Stop(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *sauce) Healthy(ctx context.Context) error {
+	if err := s.Base.Healthy(ctx); err != nil {
+		return err
+	}
+	if s.sc != nil {
+		if err := s.sc.Healthy(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // WDAddress returns the user-provided selenium address.

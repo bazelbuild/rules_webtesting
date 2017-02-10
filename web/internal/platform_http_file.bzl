@@ -11,18 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Downloads files based on local platform."""
 
 
 def _impl(repository_ctx):
-  if repository_ctx.os.name.lower().startswith('mac os'):
+  if repository_ctx.os.name.lower().startswith("mac os"):
     urls = repository_ctx.attr.macos_urls
     sha256 = repository_ctx.attr.macos_sha256
   else:
     urls = repository_ctx.attr.amd64_urls
     sha256 = repository_ctx.attr.amd64_sha256
-  basename = urls[0][urls[0].rindex('/') + 1:]
+  basename = urls[0][urls[0].rindex("/") + 1:]
   repository_ctx.download(urls, basename, sha256)
   repository_ctx.symlink(basename, "file/" + basename)
   repository_ctx.file("file/BUILD", "\n".join([

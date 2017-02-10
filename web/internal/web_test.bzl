@@ -128,17 +128,13 @@ def _generate_default_test(ctx):
 web_test = rule(
     attrs={
         "browser":
-            attr.label(
-                cfg="data", mandatory=True, providers=["web_test"]),
+            attr.label(cfg="data", mandatory=True, providers=["web_test"]),
         "config":
-            attr.label(
-                cfg="data", mandatory=True, providers=["web_test"]),
+            attr.label(cfg="data", mandatory=True, providers=["web_test"]),
         "data":
-            attr.label_list(
-                allow_files=True, cfg="data"),
+            attr.label_list(allow_files=True, cfg="data"),
         "launcher":
-            attr.label(
-                cfg="data", executable=True),
+            attr.label(cfg="data", executable=True),
         "merger":
             attr.label(
                 cfg="host",
@@ -149,14 +145,15 @@ web_test = rule(
                 allow_single_file=True,
                 default=Label("//web/internal:noop_web_test.sh.template")),
         "test":
-            attr.label(
-                cfg="data", executable=True, mandatory=True),
+            attr.label(cfg="data", executable=True, mandatory=True),
         "web_test_template":
             attr.label(
                 allow_single_file=True,
                 default=Label("//web/internal:web_test.sh.template")),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json",},
+    outputs={
+        "web_test_metadata": "%{name}.gen.json",
+    },
     test=True,
     implementation=_web_test_impl)
 """Runs a provided test against a provided browser configuration.

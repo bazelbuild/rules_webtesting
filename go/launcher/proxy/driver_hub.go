@@ -18,8 +18,8 @@ package driverhub
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -125,7 +125,6 @@ func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
 
 func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log.Print("Creating session\n\n")
 	var desired map[string]interface{}
 
 	if err := h.waitForHealthyEnv(ctx); err != nil {
@@ -161,12 +160,11 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Caps: %+v", desired)
 	// TODO(fisherii) parameterize attempts based on browser metadata
 	driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, desired)
 	if err != nil {
 		if err2 := h.Env.StopSession(ctx, id); err2 != nil {
-			log.Printf("error stopping session after failing to launch webdriver: %v", err2)
+			h.Warning(errors.New(h.Name(), fmt.Errorf("error stopping session after failing to launch webdriver: %v", err2)))
 		}
 		sessionNotCreated(w, err)
 		return
