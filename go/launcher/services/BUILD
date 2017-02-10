@@ -72,6 +72,5 @@ go_library(
         "//go/launcher:errors",
         "//go/metadata",
         "//go/util:portpicker",
-        "@com_github_pborman_uuid",
     ],
 )

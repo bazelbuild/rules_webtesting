@@ -21,7 +21,6 @@ load("//web/internal:go_repository.bzl", "go_repository")
 def web_test_repositories(
     omit_cglib_nodep=False,
     omit_com_github_gorilla_mux=False,
-    omit_com_github_pborman_uuid=False,
     omit_com_github_tebeka_selenium=False,
     omit_com_google_code_findbugs_jsr305=False,
     omit_com_google_code_gson=False,
@@ -68,8 +67,6 @@ def web_test_repositories(
     cglib_nodep()
   if not omit_com_github_gorilla_mux:
     com_github_gorilla_mux()
-  if not omit_com_github_pborman_uuid:
-    com_github_pborman_uuid()
   if not omit_com_github_tebeka_selenium:
     com_github_tebeka_selenium()
   if not omit_com_google_code_findbugs_jsr305:
@@ -153,19 +150,6 @@ def com_github_gorilla_mux():
       urls=[
           "http://bazel-mirror.storage.googleapis.com/github.com/gorilla/mux/archive/757bef944d0f21880861c2dd9c871ca543023cba.tar.gz",
           "https://github.com/gorilla/mux/archive/757bef944d0f21880861c2dd9c871ca543023cba.tar.gz",
-      ])
-
-
-def com_github_pborman_uuid():
-  go_repository(
-      name="com_github_pborman_uuid",
-      import_name="github.com/pborman/uuid",
-      sha256="54da54d54a914e569fb2b31132e0c458ece12d7cd70c14a33adf95731e07afe7",
-      strip_prefix="uuid-1b00554d822231195d1babd97ff4a781231955c9",
-      license="licenses([\"notice\"])  # BSD",
-      urls=[
-          "http://bazel-mirror.storage.googleapis.com/github.com/pborman/uuid/archive/1b00554d822231195d1babd97ff4a781231955c9.tar.gz",
-          "https://github.com/pborman/uuid/archive/1b00554d822231195d1babd97ff4a781231955c9.tar.gz",
       ])
 
 
