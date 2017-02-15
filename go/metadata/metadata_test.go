@@ -17,7 +17,7 @@ package metadata
 import (
 	"testing"
 
-	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
 )
 
 const (
@@ -367,42 +367,42 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 		{
 			"unnormalizable WebTestFiles",
 			[]*WebTestFiles{
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "X"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "X"}},
 			},
 			nil,
 		},
 		{
 			"normalizable WebTestFiles",
 			[]*WebTestFiles{
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
 			},
 			[]*WebTestFiles{
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
 			},
 		},
 		{
 			"multiple WebTestFiles, success",
 			[]*WebTestFiles{
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
-				&WebTestFiles{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D"}},
-				&WebTestFiles{ArchiveFile: "c", NamedFiles: map[string]string{"c": "C"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D"}},
+				{ArchiveFile: "c", NamedFiles: map[string]string{"c": "C"}},
 			},
 			[]*WebTestFiles{
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D"}},
-				&WebTestFiles{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
-				&WebTestFiles{ArchiveFile: "c", NamedFiles: map[string]string{"c": "C"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A", "d": "D"}},
+				{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
+				{ArchiveFile: "c", NamedFiles: map[string]string{"c": "C"}},
 			},
 		},
 		{
 			"multiple WebTestFiles, failure",
 			[]*WebTestFiles{
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
-				&WebTestFiles{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
-				&WebTestFiles{ArchiveFile: "a", NamedFiles: map[string]string{"d": "D"}},
-				&WebTestFiles{ArchiveFile: "c", NamedFiles: map[string]string{"a": "A", "c": "C"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
+				{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
+				{ArchiveFile: "a", NamedFiles: map[string]string{"d": "D"}},
+				{ArchiveFile: "c", NamedFiles: map[string]string{"a": "A", "c": "C"}},
 			},
 			nil,
 		},

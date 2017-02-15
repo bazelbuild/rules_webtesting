@@ -22,7 +22,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 	"github.com/tebeka/selenium"
 )

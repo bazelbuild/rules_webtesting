@@ -16,40 +16,25 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
-
 licenses(["notice"])  # Apache 2.0
 
-go_binary(
-    name = "merger",
-    srcs = ["merger.go"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":metadata",
-    ],
-)
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
-    name = "metadata",
+    name = "go_default_library",
     srcs = [
         "metadata.go",
         "web_test_files.go",
     ],
-    visibility = ["//go:__subpackages__"],
+    visibility = ["//visibility:public"],
     deps = [
-        ":capabilities",
-        "//go/util:bazel",
+        "//go/bazel:go_default_library",
+        "//go/metadata/capabilities:go_default_library",
     ],
 )
 
-go_library(
-    name = "capabilities",
-    srcs = ["capabilities.go"],
-    visibility = ["//go:__subpackages__"],
-)
-
 go_test(
-    name = "metadata_test",
+    name = "go_default_test",
     srcs = [
         "extension_test.go",
         "metadata_test.go",
@@ -62,28 +47,6 @@ go_test(
         "//go/metadata/testdata:extension.json",
         "//go/metadata/testdata:merge-from-file-result.json",
     ],
-    library = ":metadata",
-    deps = [
-        "//go/util:bazel",
-    ],
-)
-
-go_test(
-    name = "capabilities_test",
-    srcs = ["capabilities_test.go"],
-    library = ":capabilities",
-)
-
-sh_test(
-    name = "merger_test",
-    srcs = ["merger_test.sh"],
-    data = [
-        ":merger",
-        "//go/metadata/testdata:android-browser-gingerbread-nexus-s.json",
-        "//go/metadata/testdata:bad-named-files.json",
-        "//go/metadata/testdata:chrome-linux.json",
-        "//go/metadata/testdata:merger-result.json",
-        "//go/metadata/testdata:named-files1.json",
-        "//go/metadata/testdata:named-files2.json",
-    ],
+    library = ":go_default_library",
+    deps = ["//go/bazel:go_default_library"],
 )

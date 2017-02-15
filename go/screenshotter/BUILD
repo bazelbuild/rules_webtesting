@@ -18,20 +18,18 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 load("//web:go.bzl", "go_web_test_suite")
 
 go_library(
-    name = "screenshotter",
+    name = "go_default_library",
     srcs = ["screenshotter.go"],
     visibility = ["//visibility:public"],
-    deps = [
-        "@com_github_tebeka_selenium",
-    ],
+    deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )
 
 go_web_test_suite(
-    name = "screenshotter_test",
+    name = "go_default_test",
     srcs = ["screenshotter_test.go"],
     browsers = ["//browsers:chromium-native"],
     data = ["//go/launcher/proxy/testdata:testpage.html"],
@@ -39,12 +37,12 @@ go_web_test_suite(
         "manual",
         "noci",
     ],
-    library = ":screenshotter",
+    library = ":go_default_library",
     local = True,
     tags = ["noci"],
     deps = [
-        "//go:webtest",
-        "//go/util:bazel",
-        "@com_github_tebeka_selenium",
+        "//go/bazel:go_default_library",
+        "//go/webtest:go_default_library",
+        "@com_github_tebeka_selenium//:go_default_library",
     ],
 )

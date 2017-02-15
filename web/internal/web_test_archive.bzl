@@ -62,15 +62,14 @@ web_test_archive = rule(
                 cfg="data",
                 mandatory=True),
         "data":
-            attr.label_list(
-                allow_files=True, cfg="data"),
+            attr.label_list(allow_files=True, cfg="data"),
         "deps":
             attr.label_list(providers=["web_test"]),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger")),
+                default=Label("//go/metadata/main")),
         "named_files":
             attr.string_dict(mandatory=True),
     },

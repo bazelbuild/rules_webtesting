@@ -16,48 +16,4 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
-load("//web:go.bzl", "go_web_test_suite")
-
 licenses(["notice"])  # Apache 2.0
-
-go_library(
-    name = "webtest",
-    srcs = ["webtest.go"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//go/metadata",
-        "//go/util:bazel",
-        "@com_github_tebeka_selenium",
-    ],
-)
-
-go_test(
-    name = "browserinfo_test",
-    srcs = ["browserinfo_test.go"],
-    data = ["//go/metadata/testdata:all-fields.json"],
-    library = ":webtest",
-)
-
-go_web_test_suite(
-    name = "webtest_test",
-    srcs = ["webtest_test.go"],
-    browser_overrides = {
-        "//browsers:chrome55-win10-sauce": {
-            "tags": ["requires-network"],
-        },
-    },
-    browsers = [
-        "//browsers:chrome55-win10-sauce",
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-    ],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
-    library = ":webtest",
-    local = True,
-    tags = ["noci"],
-    deps = ["@com_github_tebeka_selenium"],
-)

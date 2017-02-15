@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
 )
 
 var extensionFile = "io_bazel_rules_webtesting/go/metadata/testdata/extension.json"

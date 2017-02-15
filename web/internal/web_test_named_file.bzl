@@ -47,18 +47,16 @@ web_test_named_file = rule(
         "alt_name":
             attr.string(),
         "data":
-            attr.label_list(
-                allow_files=True, cfg="data"),
+            attr.label_list(allow_files=True, cfg="data"),
         "deps":
             attr.label_list(providers=["web_test"]),
         "file":
-            attr.label(
-                allow_single_file=True, cfg="data", mandatory=True),
+            attr.label(allow_single_file=True, cfg="data", mandatory=True),
         "merger":
             attr.label(
                 executable=True,
                 cfg="host",
-                default=Label("//go/metadata:merger")),
+                default=Label("//go/metadata/main")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_web_test_named_file_impl)
