@@ -3,7 +3,7 @@
     "capabilities": {
         "browserName": "chrome",
         "platform": "Windows 10",
-        "version": "55.0",
-        "tunnel-identifier": "${TUNNEL_IDENTIFIER}"
+        "tunnel-identifier": "${TUNNEL_IDENTIFIER}",        
+        "version": "55.0"
     }
 }
