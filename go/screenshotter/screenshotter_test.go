@@ -15,24 +15,46 @@
 package screenshotter
 
 import (
+	"fmt"
 	"image/png"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 	"github.com/tebeka/selenium"
 )
 
-func TestOfElement(t *testing.T) {
-	testpage, err := bazel.Runfile("go/launcher/proxy/testdata/testpage.html")
+var testpage = ""
+
+func TestMain(m *testing.M) {
+	port, err := portpicker.PickUnusedPort()
 	if err != nil {
-		t.Fatal(err)
+		log.Fatal(err)
 	}
 
+	dir, err := bazel.RunfilesPath()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dir = filepath.Join(dir, bazel.TestWorkspace())
+
+	go func() {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
+	}()
+
+	testpage = fmt.Sprintf("http://localhost:%d/go/launcher/proxy/testdata/testpage.html", port)
+
+	os.Exit(m.Run())
+}
+
+func TestOfElement(t *testing.T) {
 	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +64,7 @@ func TestOfElement(t *testing.T) {
 
 	shotter, err := New(driver)
 
-	if err := driver.Get("file://" + testpage); err != nil {
+	if err := driver.Get(testpage); err != nil {
 		t.Fatal(err)
 	}
 
@@ -87,11 +109,6 @@ func TestOfElement(t *testing.T) {
 }
 
 func TestExcluding(t *testing.T) {
-	testpage, err := bazel.Runfile("go/launcher/proxy/testdata/testpage.html")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
 	if err != nil {
 		t.Fatal(err)
@@ -101,7 +118,7 @@ func TestExcluding(t *testing.T) {
 
 	shotter, err := New(driver)
 
-	if err := driver.Get("file://" + testpage); err != nil {
+	if err := driver.Get(testpage); err != nil {
 		t.Fatal(err)
 	}
 

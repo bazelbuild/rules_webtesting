@@ -33,23 +33,6 @@ func TestCreateSessionAndQuit(t *testing.T) {
 	}
 }
 
-func TestCreateSessionFails(t *testing.T) {
-	ctx := context.Background()
-
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{
-		"chromeOptions": map[string]interface{}{
-			"binary": "a-binary",
-		},
-		"moz:firefoxOptions": map[string]interface{}{
-			"binary": "a-binary",
-		},
-	})
-	if err == nil {
-		t.Error("got nil err from CreateSession with bad capabilities")
-		d.Quit(ctx)
-	}
-}
-
 func TestHealthy(t *testing.T) {
 	ctx := context.Background()
 

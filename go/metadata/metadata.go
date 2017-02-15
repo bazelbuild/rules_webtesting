@@ -38,10 +38,14 @@ type Metadata struct {
 	Capabilities map[string]interface{} `json:"capabilities,omitempty"`
 	// The Environment that web test launcher should use to to launch the browser.
 	Environment string `json:"environment,omitempty"`
+	// Label for the web_test rule.
+	Label string `json:"label,omitempty"`
 	// Browser label set in the web_test rule.
 	BrowserLabel string `json:"browserLabel,omitempty"`
 	// Test label set in the web_test rule.
 	TestLabel string `json:"testLabel,omitempty"`
+	// Config label set in the web_test rule.
+	ConfigLabel string `json:"configLabel,omitempty"`
 	// A list of WebTestFiles with named files in them.
 	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
 	// An object for any additinal metadata fields on this object.
@@ -69,6 +73,11 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		environment = m2.Environment
 	}
 
+	label := m1.Label
+	if m2.Label != "" {
+		label = m2.Label
+	}
+
 	browserLabel := m1.BrowserLabel
 	if m2.BrowserLabel != "" {
 		browserLabel = m2.BrowserLabel
@@ -77,6 +86,11 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 	testLabel := m1.TestLabel
 	if m2.TestLabel != "" {
 		testLabel = m2.TestLabel
+	}
+
+	configLabel := m1.ConfigLabel
+	if m2.ConfigLabel != "" {
+		configLabel = m2.ConfigLabel
 	}
 
 	webTestFiles := []*WebTestFiles{}
@@ -102,8 +116,10 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 	return &Metadata{
 		Capabilities: capabilities,
 		Environment:  environment,
+		Label:        label,
 		BrowserLabel: browserLabel,
 		TestLabel:    testLabel,
+		ConfigLabel:  configLabel,
 		WebTestFiles: webTestFiles,
 		Extension:    extension,
 	}, nil
@@ -183,9 +199,11 @@ func (m *Metadata) GetFilePath(name string) (string, error) {
 
 var varRegExp = regexp.MustCompile(`%\w+%`)
 
-// ResolvedCapabilities returns Capabilities with any strings/substrings
-// of the form %NAME% resolved to a file path retrieved with GetFilePath
-// and performs environment variable expansion on $VAR or ${VAR}.
+// ResolvedCapabilities returns Capabilities with any strings updated such that:
+//   1. %NAME% will be replaced:
+//      if NAME one of LABEL, TEST_LABEL, BROWSER_LABEL, CONFIG_LABEL, ENVIRONMENT then the corresponding field on m.
+//      otherwise the value m.GetFilePath(NAME).
+//   2. $ENV_VAR or ${ENV_VAR} will be replaced with the value of the environment variable ENV_VAR.
 func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
 	var resolve func(v interface{}) (interface{}, error)
 
@@ -216,12 +234,26 @@ func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
 		previous := 0
 		for _, match := range varRegExp.FindAllStringIndex(s, -1) {
 			result += s[previous:match[0]]
-			name := s[match[0]+1 : match[1]-1]
-			path, err := m.GetFilePath(name)
-			if err != nil {
-				return "", err
+			value := ""
+			switch name := s[match[0]+1 : match[1]-1]; name {
+			case "LABEL":
+				value = m.Label
+			case "TEST_LABEL":
+				value = m.TestLabel
+			case "BROWSER_LABEL":
+				value = m.BrowserLabel
+			case "CONFIG_LABEL":
+				value = m.ConfigLabel
+			case "ENVIRONMENT":
+				value = m.Environment
+			default:
+				path, err := m.GetFilePath(name)
+				if err != nil {
+					return "", err
+				}
+				value = path
 			}
-			result += path
+			result += value
 			previous = match[1]
 		}
 		result += s[previous:]

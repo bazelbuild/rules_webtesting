@@ -44,7 +44,9 @@ def _create_file(ctx,
                  output,
                  browser_label=None,
                  capabilities=None,
+                 config_label=None,
                  environment=None,
+                 label=None,
                  test_label=None,
                  web_test_files=None,
                  extension=None):
@@ -62,13 +64,16 @@ def _create_file(ctx,
       metadata file.
   """
   fields = {}
-
-  if capabilities:
-    fields["capabilities"] = capabilities
-  if environment:
-    fields["environment"] = environment
   if browser_label:
     fields["browserLabel"] = str(browser_label)
+  if capabilities:
+    fields["capabilities"] = capabilities
+  if config_label:
+    fields["configLabel"] = str(config_label)
+  if environment:
+    fields["environment"] = environment
+  if label:
+    fields["label"] = str(label)
   if test_label:
     fields["testLabel"] = str(test_label)
   if web_test_files:

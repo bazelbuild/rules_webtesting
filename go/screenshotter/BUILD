@@ -29,19 +29,20 @@ go_library(
 )
 
 go_web_test_suite(
-    name = "go_default_test",
+    name = "screenshotter_test",
     srcs = ["screenshotter_test.go"],
-    browsers = ["//browsers:chromium-native"],
-    data = ["//go/launcher/proxy/testdata:testpage.html"],
+    browsers = ["//browsers/sauce:chrome55-win10"],
+    data = ["//go/launcher/proxy/testdata"],
     go_test_tags = [
         "manual",
         "noci",
     ],
     library = ":go_default_library",
     local = True,
-    tags = ["noci"],
+    tags = ["requires-network"],
     deps = [
         "//go/bazel:go_default_library",
+        "//go/portpicker:go_default_library",        
         "//go/webtest:go_default_library",
         "@com_github_tebeka_selenium//:go_default_library",
     ],
