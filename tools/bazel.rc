@@ -4,3 +4,4 @@ test --test_env=DISPLAY
 # For running sauce-based configs.
 test --test_env=SAUCE_USERNAME
 test --test_env=SAUCE_ACCESS_KEY
+test --test_env=TUNNEL_IDENTIFIER
