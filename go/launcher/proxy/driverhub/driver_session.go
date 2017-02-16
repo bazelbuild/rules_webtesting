@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -196,6 +197,15 @@ func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request
 		Body:   body,
 	}
 	resp, err := s.handler(ctx, req)
+	if err == context.Canceled {
+		log.Printf("[%s] request %+v was canceled.", s.Name(), req)
+		return
+	}
+	if err == context.DeadlineExceeded {
+		s.Warning(errors.New(s.Name(), fmt.Errorf("request %+v exceeded deadline", req)))
+		timeout(w, r.URL.Path)
+		return
+	}
 	if err != nil {
 		s.Severe(errors.New(s.Name(), err))
 		unknownError(w, err)
