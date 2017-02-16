@@ -123,3 +123,21 @@ func invalidSessionID(w http.ResponseWriter, id string) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write(body)
 }
+
+func timeout(w http.ResponseWriter, endpoint string) {
+	message := fmt.Sprintf("request to %q timed out", endpoint)
+	body, err := json.Marshal(map[string]interface{}{
+		"status":  21,
+		"error":   "timeout",
+		"message": message,
+		"value": map[string]string{
+			"message": message,
+		},
+	})
+	if err != nil {
+		log.Printf("Error marshalling json: %v", err)
+	}
+	w.Header().Set("Content-Type", contentType)
+	w.WriteHeader(http.StatusRequestTimeout)
+	w.Write(body)
+}
