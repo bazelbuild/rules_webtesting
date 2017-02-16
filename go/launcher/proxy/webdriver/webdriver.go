@@ -172,8 +172,8 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 			}
 
 			if err := d.Healthy(ctx); err != nil {
-				if err2 := d.Quit(ctx); err != nil {
-					log.Printf("error quitting WebDriver session: %v", err2)
+				if err := d.Quit(ctx); err != nil {
+					log.Printf("error quitting WebDriver session: %v", err)
 				}
 				return nil, err
 			}

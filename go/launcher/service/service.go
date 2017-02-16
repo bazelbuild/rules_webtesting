@@ -87,7 +87,7 @@ func (b *Base) Healthy(context.Context) error {
 	return nil
 }
 
-// Component returns the component name used in error messages.
+// Name returns the component name used in error messages.
 func (b *Base) Name() string {
 	return b.name
 }

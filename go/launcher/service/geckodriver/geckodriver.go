@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package chromedriver provides a service.Server for managing an instance of GeckoDriver.
+// Package geckodriver provides a service.Server for managing an instance of GeckoDriver.
 package geckodriver
 
 import (
@@ -25,6 +25,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 )
 
+// GeckoDriver is a service.Server for launching geckoDriver.
 type GeckoDriver struct {
 	*service.Server
 }
@@ -57,6 +58,7 @@ func New(d diagnostics.Diagnostics, m *metadata.Metadata, xvfb bool) (*GeckoDriv
 	return &GeckoDriver{server}, nil
 }
 
+// Address returns the address of geckodriver (http://localhost:%port%).
 func (c *GeckoDriver) Address() string {
 	return fmt.Sprintf("http://%s/", c.Server.Address())
 }

@@ -123,6 +123,7 @@ func (s *Server) Port() string {
 	return fmt.Sprintf("%d", s.port)
 }
 
+// Address returns the address of the server (localhost:%port%).
 func (s *Server) Address() string {
 	return s.address
 }
