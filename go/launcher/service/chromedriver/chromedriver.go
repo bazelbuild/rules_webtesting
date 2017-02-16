@@ -25,6 +25,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 )
 
+// ChromeDriver is service.Server for launching chromedriver.
 type ChromeDriver struct {
 	*service.Server
 }
@@ -51,6 +52,7 @@ func New(d diagnostics.Diagnostics, m *metadata.Metadata, xvfb bool) (*ChromeDri
 	return &ChromeDriver{server}, nil
 }
 
+// Address returns the address of chromedriver (http://localhost:%port%).
 func (c *ChromeDriver) Address() string {
 	return fmt.Sprintf("http://%s/", c.Server.Address())
 }

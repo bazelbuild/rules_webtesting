@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package external works with an externally started WebDriver server
+// located at EXTERNAL_WEBDRIVER_SERVER_ADDRESS.
 package external
 
 import (
@@ -26,8 +28,8 @@ import (
 )
 
 const (
-	name            = "External WebDriver Environment"
-	address_env_var = "EXTERNAL_WEBDRIVER_SERVER_ADDRESS"
+	name          = "External WebDriver Environment"
+	addressEnvVar = "EXTERNAL_WEBDRIVER_SERVER_ADDRESS"
 )
 
 type external struct {
@@ -37,9 +39,9 @@ type external struct {
 
 // NewEnv creates a new environment that uses an externally started Selenium Server.
 func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error) {
-	address, ok := os.LookupEnv(address_env_var)
+	address, ok := os.LookupEnv(addressEnvVar)
 	if !ok {
-		return nil, errors.New(name, fmt.Errorf("environment variable %q not set", address_env_var))
+		return nil, errors.New(name, fmt.Errorf("environment variable %q not set", addressEnvVar))
 	}
 
 	base, err := environment.NewBase(name, m, d)

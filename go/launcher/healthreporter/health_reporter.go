@@ -40,7 +40,7 @@ type HealthReporter interface {
 	Healthy(context.Context) error
 }
 
-// ForHealthy waits until ctx is Done or h is Healthy, returning an error
+// WaitForHealthy waits until ctx is Done or h is Healthy, returning an error
 // if h does not become healthy.
 func WaitForHealthy(ctx context.Context, h HealthReporter) error {
 	poll := pollDefault

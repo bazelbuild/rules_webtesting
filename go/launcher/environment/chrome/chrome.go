@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package native provides an Env for launching a chrome browser locally using
+// Package chrome provides an Env for launching a chrome browser locally using
 // ChromeDriver.
 package chrome
 
