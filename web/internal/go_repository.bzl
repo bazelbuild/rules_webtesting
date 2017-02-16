@@ -21,7 +21,7 @@ def go_repository(name,
                   import_name,
                   strip_prefix=None,
                   excluded_srcs=None,
-                  license_file="LICENSE",
+                  license_file='LICENSE',
                   deps=None,
                   testonly=None):
   """go_repository downloads a go package and makes it available for import.
@@ -75,6 +75,7 @@ go_library(
         ],
     ),
     testonly = {testonly},
+    visibility = ["//visibility:public"],
     deps = [
         {deps}
     ],

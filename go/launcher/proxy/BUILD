@@ -16,148 +16,22 @@
 #
 package(default_testonly = True)
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-load("//web:web.bzl", "web_test_config")
-load("//web:go.bzl", "go_web_test_suite")
-
 licenses(["notice"])  # Apache 2.0
 
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
 go_library(
-    name = "proxy",
+    name = "go_default_library",
     srcs = ["proxy.go"],
-    visibility = ["//go:__subpackages__"],
+    visibility = ["//visibility:public"],
     deps = [
-        ":driverhub",
-        "//go/launcher:diagnostics",
-        "//go/launcher:errors",
-        "//go/launcher:healthreporter",
-        "//go/launcher/environments:environment",
-        "//go/metadata",
-        "//go/util:httphelper",
-        "//go/util:portpicker",
+        "//go/httphelper:go_default_library",
+        "//go/launcher/diagnostics:go_default_library",
+        "//go/launcher/environment:go_default_library",
+        "//go/launcher/errors:go_default_library",
+        "//go/launcher/healthreporter:go_default_library",
+        "//go/launcher/proxy/driverhub:go_default_library",
+        "//go/metadata:go_default_library",
+        "//go/portpicker:go_default_library",
     ],
-)
-
-go_library(
-    name = "driverhub",
-    srcs = [
-        "driver_hub.go",
-        "driver_responses.go",
-        "driver_session.go",
-    ],
-    visibility = ["//go:__subpackages__"],
-    deps = [
-        ":webdriver",
-        "//go/launcher:diagnostics",
-        "//go/launcher:errors",
-        "//go/launcher:healthreporter",
-        "//go/launcher/environments:environment",
-        "//go/metadata",
-        "//go/util:httphelper",
-        "@com_github_gorilla_mux",
-    ],
-)
-
-go_library(
-    name = "webdriver",
-    srcs = [
-        "webdriver.go",
-        "webdriver_error.go",
-    ],
-    visibility = ["//go:__subpackages__"],
-    deps = [
-        "//go/launcher:errors",
-        "//go/launcher:healthreporter",
-    ],
-)
-
-go_library(
-    name = "quithandler",
-    srcs = ["quit_handler.go"],
-    visibility = ["//go:__subpackages__"],
-    deps = [
-        ":driverhub",
-    ],
-)
-
-go_web_test_suite(
-    name = "quithandler_test",
-    srcs = ["quit_handler_test.go"],
-    browsers = ["//browsers:chromium-native"],
-    data = ["//go/launcher/proxy/testdata:testpage.html"],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
-    local = True,
-    tags = ["noci"],
-    deps = [
-        "//go:webtest",
-        "//go/util:bazel",
-        "@com_github_tebeka_selenium",
-    ],
-)
-
-go_library(
-    name = "screenshot",
-    srcs = ["screenshot.go"],
-    visibility = ["//go:__subpackages__"],
-    deps = [
-        ":driverhub",
-        ":webdriver",
-        "//go/util:cropper",
-    ],
-)
-
-go_library(
-    name = "googlescreenshot",
-    srcs = ["google_screenshot.go"],
-    visibility = ["//go:__subpackages__"],
-    deps = [
-        ":driverhub",
-        ":screenshot",
-        ":webdriver",
-        "//go/util:cropper",
-    ],
-)
-
-web_test_config(
-    name = "screenshot_test_config",
-    metadata = "screenshot_test.json",
-)
-
-go_web_test_suite(
-    name = "screenshot_test",
-    srcs = ["screenshot_test.go"],
-    browsers = ["//browsers:chromium-native"],
-    config = ":screenshot_test_config",
-    data = ["//go/launcher/proxy/testdata:testpage.html"],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
-    local = True,
-    tags = ["noci"],
-    deps = [
-        "//go:webtest",
-        "//go/util:bazel",
-        "@com_github_tebeka_selenium",
-    ],
-)
-
-go_web_test_suite(
-    name = "webdriver_test",
-    size = "large",
-    srcs = ["webdriver_test.go"],
-    browsers = [
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-    ],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
-    library = ":webdriver",
-    local = True,
-    tags = ["noci"],
 )

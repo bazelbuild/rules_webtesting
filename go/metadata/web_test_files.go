@@ -22,7 +22,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bazelbuild/rules_webtesting/go/util/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
 )
 
 // WebTestFiles defines a set of namedFiles located either in the runfiles directory or

@@ -26,14 +26,14 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environments/environment"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
-	"github.com/bazelbuild/rules_webtesting/go/metadata/metadata"
-	"github.com/bazelbuild/rules_webtesting/go/util/httphelper"
-	"github.com/bazelbuild/rules_webtesting/go/util/portpicker"
+	"github.com/bazelbuild/rules_webtesting/go/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 )
 
 const (
