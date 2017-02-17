@@ -47,4 +47,5 @@ go_web_test_suite(
     ],
     library = ":go_default_library",
     local = True,
+    tags = ["noci"],
 )
