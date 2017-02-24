@@ -19,7 +19,6 @@ package proxy
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -40,15 +39,15 @@ const (
 	timeout  = 1 * time.Second
 )
 
-var handlerProviders = map[string]HandlerProvider{}
+var handlerProviders = map[string]HTTPHandlerProvider{}
 
-type HTTPHandlerProvider func(*Proxy) (Handler, error)
+type HTTPHandlerProvider func(*Proxy) (HTTPHandler, error)
 
-type Handler interface {
+type HTTPHandler interface {
 	http.Handler
 
 	// Shutdown is called when the proxy is in the process of shutting down.
-    Shutdown(context.Context) error
+	Shutdown(context.Context) error
 }
 
 func AddHTTPHandlerProvider(route string, provider HTTPHandlerProvider) {
@@ -58,12 +57,12 @@ func AddHTTPHandlerProvider(route string, provider HTTPHandlerProvider) {
 // Proxy starts a WebDriver protocol proxy.
 type Proxy struct {
 	Diagnostics diagnostics.Diagnostics
-	Env environment.Env
-	Metadata *metadata.Metadata
-	Address  string
-	handlers []Handler
-	srv *http.Server
-	port     int
+	Env         environment.Env
+	Metadata    *metadata.Metadata
+	Address     string
+	handlers    []HTTPHandler
+	srv         *http.Server
+	port        int
 }
 
 // New creates a new Proxy object.
@@ -80,7 +79,7 @@ func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (
 		port:        port,
 	}
 
-	mux := NewServeMux()
+	mux := http.NewServeMux()
 
 	for route, provider := range handlerProviders {
 		h, err := provider(p)
@@ -91,7 +90,8 @@ func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (
 		mux.Handle(route, h)
 	}
 
-	p.srv = &Http.Server{
+	p.srv = &http.Server{
+		Addr:    ":" + strconv.Itoa(p.port),
 		Handler: mux,
 	}
 
@@ -108,7 +108,7 @@ func (p *Proxy) Start(ctx context.Context) error {
 	log.Printf("launching server at: %v", p.Address)
 
 	go func() {
-		log.Printf("Proxy has exited: %v", p.srv.ListenAndServe(":"+strconv.Itoa(p.port), nil))
+		log.Printf("Proxy has exited: %v", p.srv.ListenAndServe())
 	}()
 
 	healthyCtx, cancel := context.WithTimeout(ctx, timeout)
@@ -132,12 +132,11 @@ func (p *Proxy) Healthy(ctx context.Context) error {
 
 // Shutdown calls Shutdown on all handlers, then shuts the HTTP server down.
 func (p *Proxy) Shutdown(ctx context.Context) error {
-	for _, handler := p.handlers {
+	for _, handler := range p.handlers {
 		if err := handler.Shutdown(ctx); err != nil {
 			p.Diagnostics.Warning(err)
 		}
 	}
-	if err := p.srv.Shutdown(ctx); err != nil {
-		return err
-	}
+	// TODO(DrMarcII) figure out why Shutdown doesn't work.
+	return nil
 }

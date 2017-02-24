@@ -32,16 +32,12 @@ go_library(
     ],
 )
 
-go_test(
-    name = "browserinfo_test",
-    srcs = ["browserinfo_test.go"],
-    data = ["//go/metadata/testdata:all-fields.json"],
-    library = ":go_default_library",
-)
-
 go_web_test_suite(
-    name = "webtest_test",
-    srcs = ["webtest_test.go"],
+    name = "go_default_test",
+    srcs = [
+        "browserinfo_test.go",
+        "webtest_test.go",
+    ],
     browser_overrides = {
         "//browsers:chrome55-win10-sauce": {
             "tags": ["requires-network"],
@@ -52,6 +48,7 @@ go_web_test_suite(
         "//browsers:chromium-native",
         "//browsers:firefox-native",
     ],
+    data = ["//go/metadata/testdata:all-fields.json"],
     go_test_tags = [
         "manual",
         "noci",

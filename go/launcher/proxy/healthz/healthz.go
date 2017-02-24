@@ -29,7 +29,7 @@ func HTTPHandlerProvider(*proxy.Proxy) (proxy.HTTPHandler, error) {
 	return &healthz{}, nil
 }
 
-func (h *healthz) Shutdown(context.context) error {
+func (h *healthz) Shutdown(context.Context) error {
 	return nil
 }
 

@@ -30,7 +30,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/gorilla/mux"
 )
@@ -53,7 +53,7 @@ type WebDriverHub struct {
 }
 
 // NewHandler creates a handler for /wd/hub paths that delegates to a WebDriver server instance provided by env.
-func HTTPHandlerProvider(p *proxy.Proxy) (*WebDriverHub, error) {
+func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 	h := &WebDriverHub{
 		Router:      mux.NewRouter(),
 		Env:         p.Env,
@@ -113,7 +113,7 @@ func (h *WebDriverHub) NextID() int {
 	return id
 }
 
-func (h *WebDriverHub) Shutdown(ctx context.context) error {
+func (h *WebDriverHub) Shutdown(ctx context.Context) error {
 	// Shutdown sessions
 	return nil
 }

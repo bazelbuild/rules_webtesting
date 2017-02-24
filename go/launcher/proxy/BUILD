@@ -30,7 +30,6 @@ go_library(
         "//go/launcher/environment:go_default_library",
         "//go/launcher/errors:go_default_library",
         "//go/launcher/healthreporter:go_default_library",
-        "//go/launcher/proxy/driverhub:go_default_library",
         "//go/metadata:go_default_library",
         "//go/portpicker:go_default_library",
     ],

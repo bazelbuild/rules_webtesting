@@ -26,7 +26,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/cropper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 )
 
 const sizeScript = `return {"width": screen.width, "height": screen.height};`

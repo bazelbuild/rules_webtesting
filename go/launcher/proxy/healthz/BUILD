@@ -22,12 +22,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["google_screenshot.go"],
+    srcs = ["healthz.go"],
     visibility = ["//visibility:public"],
-    deps = [
-        "//go/cropper:go_default_library",
-        "//go/launcher/proxy/driverhub:go_default_library",
-        "//go/launcher/proxy/screenshot:go_default_library",
-        "//go/launcher/proxy/webdriver:go_default_library",
-    ],
+    deps = ["//go/launcher/proxy:go_default_library"],
 )
