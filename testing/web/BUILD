@@ -16,9 +16,9 @@
 #
 package(default_testonly = True)
 
-load("//web:py.bzl", "py_web_test_suite")
-
 licenses(["notice"])  # Apache 2.0
+
+load("//web:py.bzl", "py_web_test_suite")
 
 py_library(
     name = "web",
@@ -34,22 +34,13 @@ py_library(
 py_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.py"],
-    browser_overrides = {
-        "//browsers:chrome55-win10-sauce": {
-            "tags": ["requires-network"],
-        },
-    },
-    browsers = [
-        "//browsers:chrome55-win10-sauce",
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-    ],
+    browsers = ["//browsers/sauce:chrome55-win10"],
     local = True,
     py_test_tags = [
         "manual",
         "noci",
     ],
     srcs_version = "PY2AND3",
-    tags = ["noci"],
+    tags = ["requires-network"],
     deps = [":web"],
 )

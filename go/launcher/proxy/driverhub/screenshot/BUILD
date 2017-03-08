@@ -41,18 +41,19 @@ web_test_config(
 go_web_test_suite(
     name = "screenshot_test",
     srcs = ["screenshot_test.go"],
-    browsers = ["//browsers:chromium-native"],
+    browsers = ["//browsers/sauce:chrome55-win10"],
     config = ":screenshot_test_config",
-    data = ["//go/launcher/proxy/testdata:testpage.html"],
+    data = ["//go/launcher/proxy/testdata"],
     go_test_tags = [
         "manual",
         "noci",
     ],
     library = ":go_default_library",
     local = True,
-    tags = ["noci"],
+    tags = ["requires-network"],
     deps = [
         "//go/bazel:go_default_library",
+        "//go/portpicker:go_default_library",
         "//go/webtest:go_default_library",
         "@com_github_tebeka_selenium//:go_default_library",
     ],

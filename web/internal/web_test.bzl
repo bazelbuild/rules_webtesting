@@ -86,7 +86,12 @@ def _generate_noop_test(ctx, reason, status=0):
 
 def _generate_default_test(ctx):
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  metadata.create_file(ctx=ctx, output=patch, test_label=ctx.attr.test.label)
+  metadata.create_file(
+      ctx=ctx,
+      output=patch,
+      config_label=ctx.attr.config.label,
+      label=ctx.label,
+      test_label=ctx.attr.test.label)
 
   metadata.merge_files(
       ctx=ctx,

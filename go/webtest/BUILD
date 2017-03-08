@@ -39,16 +39,16 @@ go_web_test_suite(
         "webtest_test.go",
     ],
     browser_overrides = {
-        "//browsers:chrome55-win10-sauce": {
+        "//browsers/sauce:chrome55-win10": {
             "tags": ["requires-network"],
         },
     },
     browsers = [
-        "//browsers:chrome55-win10-sauce",
+        "//browsers/sauce:chrome55-win10",
         "//browsers:chromium-native",
         "//browsers:firefox-native",
     ],
-    data = ["//go/metadata/testdata:all-fields.json"],
+    data = ["//go/metadata/testdata"],
     go_test_tags = [
         "manual",
         "noci",

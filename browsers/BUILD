@@ -16,9 +16,9 @@
 #
 package(default_testonly = True)
 
-load("//web:web.bzl", "browser")
-
 licenses(["notice"])  # Apache 2.0
+
+load("//web:web.bzl", "browser")
 
 config_setting(
     name = "mac",
@@ -35,13 +35,6 @@ config_setting(
 browser(
     name = "firefox-external",
     metadata = "firefox-external.json",
-    required_tags = ["requires-network"],
-    visibility = ["//visibility:public"],
-)
-
-browser(
-    name = "chrome55-win10-sauce",
-    metadata = "chrome55-win10-sauce.json",
     required_tags = ["requires-network"],
     visibility = ["//visibility:public"],
 )

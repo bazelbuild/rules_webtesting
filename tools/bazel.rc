@@ -2,6 +2,7 @@
 test --test_env=DISPLAY
 
 # For running sauce-based configs.
-test --test_env=SAUCE_USERNAME=bazel_rules_webtesting
-test --test_env=SAUCE_ACCESS_KEY=c5bed09c-a8a6-44c8-af02-a545905f957f
+test --test_env=SAUCE_USERNAME
+test --test_env=SAUCE_ACCESS_KEY
 test --test_env=TUNNEL_IDENTIFIER
+test --test_env=BUILD_TAG

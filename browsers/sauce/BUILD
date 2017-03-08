@@ -18,26 +18,11 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//web:web.bzl", "browser")
 
-go_library(
-    name = "go_default_library",
-    srcs = ["merger.go"],
-    visibility = ["//visibility:private"],
-    deps = ["//go/metadata:go_default_library"],
-)
-
-go_binary(
-    name = "main",
-    library = ":go_default_library",
+browser(
+    name = "chrome55-win10",
+    metadata = "chrome55-win10.json",
+    required_tags = ["requires-network"],
     visibility = ["//visibility:public"],
-)
-
-sh_test(
-    name = "merger_test",
-    srcs = ["merger_test.sh"],
-    data = [
-        ":main",
-        "//go/metadata/testdata",
-    ],
 )

@@ -16,29 +16,20 @@
 #
 package(default_testonly = True)
 
-load("//web:java.bzl", "java_web_test_suite")
-
 licenses(["notice"])  # Apache 2.0
+
+load("//web:java.bzl", "java_web_test_suite")
 
 java_web_test_suite(
     name = "WebTestTest",
     srcs = ["WebTestTest.java"],
-    browser_overrides = {
-        "//browsers:chrome55-win10-sauce": {
-            "tags": ["requires-network"],
-        },
-    },
-    browsers = [
-        "//browsers:chrome55-win10-sauce",
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-    ],
+    browsers = ["//browsers/sauce:chrome55-win10"],
     java_test_tags = [
         "manual",
         "noci",
     ],
     local = True,
-    tags = ["noci"],
+    tags = ["requires-network"],
     deps = [
         "//java/com/google/testing/web",
         "@junit",

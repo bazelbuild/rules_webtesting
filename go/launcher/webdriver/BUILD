@@ -37,15 +37,12 @@ go_library(
 go_web_test_suite(
     name = "webdriver_test",
     srcs = ["webdriver_test.go"],
-    browsers = [
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-    ],
+    browsers = ["//browsers/sauce:chrome55-win10"],
     go_test_tags = [
         "manual",
         "noci",
     ],
     library = ":go_default_library",
     local = True,
-    tags = ["noci"],
+    tags = ["requires-network"],
 )

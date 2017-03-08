@@ -39,14 +39,7 @@ go_test(
         "extension_test.go",
         "metadata_test.go",
     ],
-    data = [
-        "//go/metadata/testdata:all-fields.json",
-        "//go/metadata/testdata:android-browser-gingerbread-nexus-s.json",
-        "//go/metadata/testdata:bad-named-files.json",
-        "//go/metadata/testdata:chrome-linux.json",
-        "//go/metadata/testdata:extension.json",
-        "//go/metadata/testdata:merge-from-file-result.json",
-    ],
+    data = ["//go/metadata/testdata"],
     library = ":go_default_library",
     deps = ["//go/bazel:go_default_library"],
 )
