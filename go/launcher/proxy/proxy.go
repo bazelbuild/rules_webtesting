@@ -19,7 +19,6 @@ package proxy
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -31,24 +30,39 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 )
 
 const (
-	compName   = "WebDriver proxy"
-	timeout    = 1 * time.Second
-	envTimeout = 1 * time.Second // some environments such as Android take a long time to start up.
+	compName = "WebDriver proxy"
+	timeout  = 1 * time.Second
 )
+
+var handlerProviders = map[string]HTTPHandlerProvider{}
+
+type HTTPHandlerProvider func(*Proxy) (HTTPHandler, error)
+
+type HTTPHandler interface {
+	http.Handler
+
+	// Shutdown is called when the proxy is in the process of shutting down.
+	Shutdown(context.Context) error
+}
+
+func AddHTTPHandlerProvider(route string, provider HTTPHandlerProvider) {
+	handlerProviders[route] = provider
+}
 
 // Proxy starts a WebDriver protocol proxy.
 type Proxy struct {
-	diagnostics.Diagnostics
-	env      environment.Env
-	metadata *metadata.Metadata
-	Address  string
-	port     int
+	Diagnostics diagnostics.Diagnostics
+	Env         environment.Env
+	Metadata    *metadata.Metadata
+	Address     string
+	handlers    []HTTPHandler
+	srv         *http.Server
+	port        int
 }
 
 // New creates a new Proxy object.
@@ -57,13 +71,31 @@ func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (
 	if err != nil {
 		return nil, errors.New(compName, err)
 	}
-	return &Proxy{
+	p := &Proxy{
 		Diagnostics: d,
-		env:         env,
-		metadata:    m,
+		Env:         env,
+		Metadata:    m,
 		Address:     net.JoinHostPort("localhost", strconv.Itoa(port)),
 		port:        port,
-	}, nil
+	}
+
+	mux := http.NewServeMux()
+
+	for route, provider := range handlerProviders {
+		h, err := provider(p)
+		if err != nil {
+			return nil, err
+		}
+		p.handlers = append(p.handlers, h)
+		mux.Handle(route, h)
+	}
+
+	p.srv = &http.Server{
+		Addr:    ":" + strconv.Itoa(p.port),
+		Handler: mux,
+	}
+
+	return p, nil
 }
 
 // Component returns the name used in error messages.
@@ -75,15 +107,8 @@ func (*Proxy) Name() string {
 func (p *Proxy) Start(ctx context.Context) error {
 	log.Printf("launching server at: %v", p.Address)
 
-	http.Handle("/wd/hub/", driverhub.NewHandler(p.env, p.metadata, p.Diagnostics))
-
-	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain")
-		io.WriteString(w, "ok")
-	})
-
 	go func() {
-		log.Printf("Proxy has exited: %v", http.ListenAndServe(":"+strconv.Itoa(p.port), nil))
+		log.Printf("Proxy has exited: %v", p.srv.ListenAndServe())
 	}()
 
 	healthyCtx, cancel := context.WithTimeout(ctx, timeout)
@@ -102,5 +127,16 @@ func (p *Proxy) Healthy(ctx context.Context) error {
 	if resp.StatusCode != http.StatusOK {
 		return errors.New(p.Name(), fmt.Errorf("request to %s returned status %v", url, resp.StatusCode))
 	}
+	return nil
+}
+
+// Shutdown calls Shutdown on all handlers, then shuts the HTTP server down.
+func (p *Proxy) Shutdown(ctx context.Context) error {
+	for _, handler := range p.handlers {
+		if err := handler.Shutdown(ctx); err != nil {
+			p.Diagnostics.Warning(err)
+		}
+	}
+	// TODO(DrMarcII) figure out why Shutdown doesn't work.
 	return nil
 }

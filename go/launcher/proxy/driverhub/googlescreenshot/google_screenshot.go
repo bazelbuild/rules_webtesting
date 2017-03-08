@@ -24,8 +24,8 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/cropper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/screenshot"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/screenshot"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 )
 
 type request struct {

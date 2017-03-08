@@ -22,21 +22,12 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = [
-        "driver_hub.go",
-        "driver_responses.go",
-        "driver_session.go",
-    ],
+    srcs = ["google_screenshot.go"],
     visibility = ["//visibility:public"],
     deps = [
-        "//go/httphelper:go_default_library",
-        "//go/launcher/diagnostics:go_default_library",
-        "//go/launcher/environment:go_default_library",
-        "//go/launcher/errors:go_default_library",
-        "//go/launcher/healthreporter:go_default_library",
-        "//go/launcher/proxy:go_default_library",
+        "//go/cropper:go_default_library",
+        "//go/launcher/proxy/driverhub:go_default_library",
+        "//go/launcher/proxy/driverhub/screenshot:go_default_library",
         "//go/launcher/webdriver:go_default_library",
-        "//go/metadata:go_default_library",
-        "@com_github_gorilla_mux//:go_default_library",
     ],
 )

@@ -39,9 +39,10 @@ go_library(
         "//go/launcher/errors:go_default_library",
         "//go/launcher/proxy:go_default_library",
         "//go/launcher/proxy/driverhub:go_default_library",
-        "//go/launcher/proxy/googlescreenshot:go_default_library",
-        "//go/launcher/proxy/quithandler:go_default_library",
-        "//go/launcher/proxy/screenshot:go_default_library",
+        "//go/launcher/proxy/driverhub/googlescreenshot:go_default_library",
+        "//go/launcher/proxy/driverhub/quithandler:go_default_library",
+        "//go/launcher/proxy/driverhub/screenshot:go_default_library",
+        "//go/launcher/proxy/healthz:go_default_library",
         "//go/metadata:go_default_library",
     ],
 )

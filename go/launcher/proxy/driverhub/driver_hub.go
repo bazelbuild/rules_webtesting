@@ -29,7 +29,8 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environment"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/gorilla/mux"
 )
@@ -52,14 +53,14 @@ type WebDriverHub struct {
 }
 
 // NewHandler creates a handler for /wd/hub paths that delegates to a WebDriver server instance provided by env.
-func NewHandler(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) http.Handler {
+func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 	h := &WebDriverHub{
 		Router:      mux.NewRouter(),
-		Env:         env,
+		Env:         p.Env,
 		sessions:    map[string]http.Handler{},
 		Client:      &http.Client{},
-		Diagnostics: d,
-		Metadata:    m,
+		Diagnostics: p.Diagnostics,
+		Metadata:    p.Metadata,
 	}
 
 	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(h.createSession)
@@ -68,7 +69,7 @@ func NewHandler(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnos
 	h.PathPrefix("/wd/hub/{command}").HandlerFunc(h.defaultForward)
 	h.PathPrefix("/").HandlerFunc(unknownCommand)
 
-	return h
+	return h, nil
 }
 
 // Name is the name of the component used in error messages.
@@ -110,6 +111,11 @@ func (h *WebDriverHub) NextID() int {
 	id := h.nextID
 	h.nextID++
 	return id
+}
+
+func (h *WebDriverHub) Shutdown(ctx context.Context) error {
+	// Shutdown sessions
+	return nil
 }
 
 func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
