@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package healthx provides an HTTPHandler that always returns the string "ok".
 package healthz
 
 import (

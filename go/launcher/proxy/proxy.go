@@ -41,8 +41,10 @@ const (
 
 var handlerProviders = map[string]HTTPHandlerProvider{}
 
+// A HTTPHandlerProvider is a function that provides a HTTPHandler.
 type HTTPHandlerProvider func(*Proxy) (HTTPHandler, error)
 
+// A HTTPHandler implements http.Handler plus a Shutdown method.
 type HTTPHandler interface {
 	http.Handler
 
@@ -50,6 +52,8 @@ type HTTPHandler interface {
 	Shutdown(context.Context) error
 }
 
+// AddHTTPHandlerProvider adds a HTTPHandlerProvider used to create handlers for
+// specified routes in any Proxy structs creates by New.
 func AddHTTPHandlerProvider(route string, provider HTTPHandlerProvider) {
 	handlerProviders[route] = provider
 }

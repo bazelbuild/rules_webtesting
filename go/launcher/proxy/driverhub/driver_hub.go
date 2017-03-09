@@ -113,6 +113,7 @@ func (h *WebDriverHub) NextID() int {
 	return id
 }
 
+// Shutdown is a no-op on WebDriverHub.
 func (h *WebDriverHub) Shutdown(ctx context.Context) error {
 	// Shutdown sessions
 	return nil
