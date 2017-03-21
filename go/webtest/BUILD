@@ -44,9 +44,9 @@ go_web_test_suite(
         },
     },
     browsers = [
-        "//browsers/sauce:chrome55-win10",
         "//browsers:chromium-native",
         "//browsers:firefox-native",
+        "//browsers/sauce:chrome55-win10",
     ],
     data = ["//go/metadata/testdata"],
     go_test_tags = [

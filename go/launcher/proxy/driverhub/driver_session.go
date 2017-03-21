@@ -101,9 +101,9 @@ func createHandler(session *WebDriverSession, desired map[string]interface{}) Ha
 }
 
 // CreateSession creates a WebDriverSession object.
-func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desired map[string]interface{}) (http.Handler, error) {
+func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desired map[string]interface{}) (*WebDriverSession, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
-	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter()}
+  session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter()}
 
 	session.handler = createHandler(session, desired)
 	// Route for commands for this session.
@@ -126,7 +126,7 @@ func (s *WebDriverSession) Name() string {
 func (s *WebDriverSession) wrongSession(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	s.Severe(errors.New(s.Name(), "request routed to wrong session handler"))
-	unknownError(w, fmt.Errorf("request for session %q was routed to handler for %q", vars["sessionID"], s.SessionID()))
+  unknownError(w, fmt.Errorf("request for session %q was routed to handler for %q", vars["sessionID"], s.SessionID()))
 }
 
 func (s *WebDriverSession) unknownCommand(w http.ResponseWriter, r *http.Request) {
@@ -225,7 +225,7 @@ func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	// TODO(fisherii): needed to play nice with Dart Sync WebDriver. Delete when Dart Sync WebDriver is deleted.
+  // TODO(fisherii): needed to play nice with Dart Sync WebDriver. Delete when Dart Sync WebDriver is deleted.
 	w.Header().Set("Transfer-Encoding", "identity")
 	w.Header().Set("Content-Length", strconv.Itoa(len(resp.Body)))
 

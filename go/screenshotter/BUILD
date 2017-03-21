@@ -42,7 +42,7 @@ go_web_test_suite(
     tags = ["requires-network"],
     deps = [
         "//go/bazel:go_default_library",
-        "//go/portpicker:go_default_library",        
+        "//go/portpicker:go_default_library",
         "//go/webtest:go_default_library",
         "@com_github_tebeka_selenium//:go_default_library",
     ],

@@ -102,17 +102,25 @@ func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (
 	return p, nil
 }
 
-// Component returns the name used in error messages.
+// Name returns the name used in error messages.
 func (*Proxy) Name() string {
 	return compName
 }
 
 // Start configures the proxy with handlers, starts its listen loop, and waits for it to respond to a health check.
 func (p *Proxy) Start(ctx context.Context) error {
+	start := time.Now()
+	defer func() {
+		if err := p.Diagnostics.Timing(p.Name(), "start", "", start, time.Now()); err != nil {
+			log.Print(err)
+		}
+	}()
+
 	log.Printf("launching server at: %v", p.Address)
 
 	go func() {
-		log.Printf("Proxy has exited: %v", p.srv.ListenAndServe())
+		err := errors.New(p.Name(), p.srv.ListenAndServe())
+		p.Diagnostics.Severe(err)
 	}()
 
 	healthyCtx, cancel := context.WithTimeout(ctx, timeout)
@@ -129,7 +137,7 @@ func (p *Proxy) Healthy(ctx context.Context) error {
 	}
 	resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return errors.New(p.Name(), fmt.Errorf("request to %s returned status %v", url, resp.StatusCode))
+    return errors.New(p.Name(), fmt.Errorf("request to %s returned status %v", url, resp.StatusCode))
 	}
 	return nil
 }

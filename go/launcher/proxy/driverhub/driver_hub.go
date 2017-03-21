@@ -48,7 +48,7 @@ type WebDriverHub struct {
 	healthyOnce sync.Once
 
 	mu       sync.RWMutex
-	sessions map[string]http.Handler
+	sessions map[string]*WebDriverSession
 	nextID   int
 }
 
@@ -57,7 +57,7 @@ func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 	h := &WebDriverHub{
 		Router:      mux.NewRouter(),
 		Env:         p.Env,
-		sessions:    map[string]http.Handler{},
+		sessions:    map[string]*WebDriverSession{},
 		Client:      &http.Client{},
 		Diagnostics: p.Diagnostics,
 		Metadata:    p.Metadata,
@@ -78,11 +78,11 @@ func (h *WebDriverHub) Name() string {
 }
 
 // AddSession adds a session to WebDriverHub.
-func (h *WebDriverHub) AddSession(id string, session http.Handler) {
+func (h *WebDriverHub) AddSession(id string, session *WebDriverSession) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	if h.sessions == nil {
-		h.sessions = map[string]http.Handler{}
+		h.sessions = map[string]*WebDriverSession{}
 	}
 	h.sessions[id] = session
 }
@@ -92,13 +92,13 @@ func (h *WebDriverHub) RemoveSession(id string) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	if h.sessions == nil {
-		h.sessions = map[string]http.Handler{}
+		return
 	}
 	delete(h.sessions, id)
 }
 
 // GetSession gets the session for a given WebDriver session id..
-func (h *WebDriverHub) GetSession(id string) http.Handler {
+func (h *WebDriverHub) GetSession(id string) *WebDriverSession {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	return h.sessions[id]
@@ -111,6 +111,17 @@ func (h *WebDriverHub) NextID() int {
 	id := h.nextID
 	h.nextID++
 	return id
+}
+
+// GetActiveSessions returns the ids for all currently active sessions.
+func (h *WebDriverHub) GetActiveSessions() []string {
+	result := []string{}
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	for id := range h.sessions {
+		result = append(result, id)
+	}
+	return result
 }
 
 // Shutdown is a no-op on WebDriverHub.
@@ -156,7 +167,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if j.Desired == nil {
-		sessionNotCreated(w, errors.New(h.Name(), "new session request body missing desired capabilities"))
+    sessionNotCreated(w, errors.New(h.Name(), "new session request body missing desired capabilities"))
 		return
 	}
 
