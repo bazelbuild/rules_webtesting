@@ -126,7 +126,7 @@ func (h *WebDriverHub) GetActiveSessions() []string {
 	return result
 }
 
-// Shutdown is shutdowns any running sessions.
+// Shutdown  shuts down any running sessions.
 func (h *WebDriverHub) Shutdown(ctx context.Context) error {
 	for _, id := range h.GetActiveSessions() {
 		session := h.GetSession(id)
@@ -156,11 +156,12 @@ func (h *WebDriverHub) GetReusableSession(caps map[string]interface{}) (*WebDriv
 }
 
 // AddReusableSession adds a session that can be reused.
-func (h *WebDriverHub) AddReusableSession(session *WebDriverSession) {
+func (h *WebDriverHub) AddReusableSession(session *WebDriverSession) error {
 	if !capabilities.CanReuseSession(session.Desired) {
-		return
+		return errors.New(h.Name(), "session is not reusable.")
 	}
 	h.reusableSessions = append(h.reusableSessions, session)
+	return nil
 }
 
 func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
