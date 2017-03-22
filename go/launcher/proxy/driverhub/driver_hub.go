@@ -32,6 +32,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/gorilla/mux"
 )
 
@@ -47,9 +48,10 @@ type WebDriverHub struct {
 
 	healthyOnce sync.Once
 
-	mu       sync.RWMutex
-	sessions map[string]*WebDriverSession
-	nextID   int
+	mu               sync.RWMutex
+	sessions         map[string]*WebDriverSession
+	reusableSessions []*WebDriverSession
+	nextID           int
 }
 
 // NewHandler creates a handler for /wd/hub paths that delegates to a WebDriver server instance provided by env.
@@ -124,10 +126,41 @@ func (h *WebDriverHub) GetActiveSessions() []string {
 	return result
 }
 
-// Shutdown is a no-op on WebDriverHub.
+// Shutdown is shutdowns any running sessions.
 func (h *WebDriverHub) Shutdown(ctx context.Context) error {
-	// Shutdown sessions
+	for _, id := range h.GetActiveSessions() {
+		session := h.GetSession(id)
+		session.quit(ctx, false)
+	}
+	for _, session := range h.reusableSessions {
+		session.quit(ctx, false)
+	}
 	return nil
+}
+
+// GetReusableSession grabs a reusable session if one is available that matches caps.
+func (h *WebDriverHub) GetReusableSession(caps map[string]interface{}) (*WebDriverSession, bool) {
+	if !capabilities.CanReuseSession(caps) {
+		return nil, false
+	}
+
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	for i, session := range h.reusableSessions {
+		if capabilities.Equals(caps, session.Desired) {
+			h.reusableSessions = append(h.reusableSessions[:i], h.reusableSessions[i+1:]...)
+			return session, true
+		}
+	}
+	return nil, false
+}
+
+// AddReusableSession adds a session that can be reused.
+func (h *WebDriverHub) AddReusableSession(session *WebDriverSession) {
+	if !capabilities.CanReuseSession(session.Desired) {
+		return
+	}
+	h.reusableSessions = append(h.reusableSessions, session)
 }
 
 func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
@@ -167,7 +200,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if j.Desired == nil {
-    sessionNotCreated(w, errors.New(h.Name(), "new session request body missing desired capabilities"))
+		sessionNotCreated(w, errors.New(h.Name(), "new session request body missing desired capabilities"))
 		return
 	}
 
@@ -180,28 +213,38 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Caps: %+v", desired)
-	// TODO(fisherii) parameterize attempts based on browser metadata
-	driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, desired)
-	if err != nil {
-		if err2 := h.Env.StopSession(ctx, id); err2 != nil {
-			log.Printf("error stopping session after failing to launch webdriver: %v", err2)
+
+	var session *WebDriverSession
+
+	if reusable, ok := h.GetReusableSession(desired); ok {
+		reusable.ID = id
+		reusable.stopped = false
+		session = reusable
+	} else {
+		// TODO(DrMarcII) parameterize attempts based on browser metadata
+		driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, desired)
+		if err != nil {
+			if err2 := h.Env.StopSession(ctx, id); err2 != nil {
+				log.Printf("error stopping session after failing to launch webdriver: %v", err2)
+			}
+			sessionNotCreated(w, err)
+			return
 		}
-		sessionNotCreated(w, err)
-		return
+
+		s, err := CreateSession(id, h, driver, desired)
+		if err != nil {
+			sessionNotCreated(w, err)
+			return
+		}
+		session = s
 	}
 
-	session, err := CreateSession(id, h, driver, desired)
-	if err != nil {
-		sessionNotCreated(w, err)
-		return
-	}
-
-	h.AddSession(driver.SessionID(), session)
+	h.AddSession(session.WebDriver.SessionID(), session)
 
 	respJSON := map[string]interface{}{
 		"status":    0,
-		"sessionId": driver.SessionID(),
-		"value":     driver.Capabilities(),
+		"sessionId": session.WebDriver.SessionID(),
+		"value":     session.WebDriver.Capabilities(),
 	}
 
 	bytes, err := json.Marshal(respJSON)

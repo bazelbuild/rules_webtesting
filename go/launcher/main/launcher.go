@@ -127,7 +127,22 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string) int {
 		defer cancel()
 		// When the environment shutdowns or fails to shutdown, a message will be sent to envShutdown.
 		go func() {
-			envShutdown <- env.TearDown(ctx)
+			var errors []error
+
+			if err := p.Shutdown(ctx); err != nil {
+				errors = append(errors, err)
+			}
+			if err := env.TearDown(ctx); err != nil {
+				errors = append(errors, err)
+			}
+			switch len(errors) {
+			case 0:
+				envShutdown <- nil
+			case 1:
+				envShutdown <- errors[0]
+			default:
+				envShutdown <- fmt.Errorf("errors shutting down environment: %v", errors)
+			}
 		}()
 
 		select {

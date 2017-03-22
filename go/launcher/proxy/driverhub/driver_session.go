@@ -27,6 +27,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/gorilla/mux"
 )
 
@@ -38,6 +39,7 @@ type WebDriverSession struct {
 	ID          int
 	handler     HandlerFunc
 	sessionPath string
+	Desired     map[string]interface{}
 
 	mu      sync.RWMutex
 	stopped bool
@@ -103,7 +105,7 @@ func createHandler(session *WebDriverSession, desired map[string]interface{}) Ha
 // CreateSession creates a WebDriverSession object.
 func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desired map[string]interface{}) (*WebDriverSession, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
-  session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter()}
+	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter(), Desired: desired}
 
 	session.handler = createHandler(session, desired)
 	// Route for commands for this session.
@@ -126,7 +128,7 @@ func (s *WebDriverSession) Name() string {
 func (s *WebDriverSession) wrongSession(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	s.Severe(errors.New(s.Name(), "request routed to wrong session handler"))
-  unknownError(w, fmt.Errorf("request for session %q was routed to handler for %q", vars["sessionID"], s.SessionID()))
+	unknownError(w, fmt.Errorf("request for session %q was routed to handler for %q", vars["sessionID"], s.SessionID()))
 }
 
 func (s *WebDriverSession) unknownCommand(w http.ResponseWriter, r *http.Request) {
@@ -135,15 +137,31 @@ func (s *WebDriverSession) unknownCommand(w http.ResponseWriter, r *http.Request
 }
 
 // Quit can be called by handlers to quit this session.
-func (s *WebDriverSession) Quit(ctx context.Context, rq Request) (Response, error) {
+func (s *WebDriverSession) Quit(ctx context.Context, _ Request) (Response, error) {
+	if err := s.quit(ctx, capabilities.CanReuseSession(s.Desired)); err != nil {
+		return ResponseFromError(err)
+	}
+
+	return Response{
+		Status: http.StatusOK,
+		Body:   []byte(`{"status": 0}`),
+	}, nil
+}
+
+// Quit can be called by handlers to quit this session.
+func (s *WebDriverSession) quit(ctx context.Context, reusable bool) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	s.stopped = true
 
-	wdErr := s.WebDriver.Quit(ctx)
-	if wdErr != nil {
-		s.Warning(wdErr)
+	var wdErr error
+
+	if !reusable {
+		wdErr = s.WebDriver.Quit(ctx)
+		if wdErr != nil {
+			s.Warning(wdErr)
+		}
 	}
 
 	envErr := s.WebDriverHub.Env.StopSession(ctx, s.ID)
@@ -154,16 +172,17 @@ func (s *WebDriverSession) Quit(ctx context.Context, rq Request) (Response, erro
 	s.WebDriverHub.RemoveSession(s.SessionID())
 
 	if wdErr != nil {
-		return ResponseFromError(wdErr)
+		return wdErr
 	}
 	if envErr != nil {
-		return ResponseFromError(envErr)
+		return envErr
 	}
 
-	return Response{
-		Status: http.StatusOK,
-		Body:   []byte(`{"status": 0}`),
-	}, nil
+	if reusable {
+		s.WebDriverHub.AddReusableSession(s)
+	}
+
+	return nil
 }
 
 func (s *WebDriverSession) commandPathTokens(path string) []string {
@@ -225,7 +244,7 @@ func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-  // TODO(fisherii): needed to play nice with Dart Sync WebDriver. Delete when Dart Sync WebDriver is deleted.
+	// TODO(fisherii): needed to play nice with Dart Sync WebDriver. Delete when Dart Sync WebDriver is deleted.
 	w.Header().Set("Transfer-Encoding", "identity")
 	w.Header().Set("Content-Length", strconv.Itoa(len(resp.Body)))
 
