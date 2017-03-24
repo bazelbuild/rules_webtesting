@@ -33,7 +33,7 @@ go_library(
 )
 
 go_web_test_suite(
-    name = "go_default_test",
+    name = "webtest_test",
     srcs = [
         "browserinfo_test.go",
         "webtest_test.go",

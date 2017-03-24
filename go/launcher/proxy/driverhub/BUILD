@@ -37,6 +37,7 @@ go_library(
         "//go/launcher/proxy:go_default_library",
         "//go/launcher/webdriver:go_default_library",
         "//go/metadata:go_default_library",
+        "//go/metadata/capabilities:go_default_library",
         "@com_github_gorilla_mux//:go_default_library",
     ],
 )

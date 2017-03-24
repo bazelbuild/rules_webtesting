@@ -92,3 +92,44 @@ func TestGetInfo(t *testing.T) {
 		}
 	}
 }
+
+func TestReusableBrowser(t *testing.T) {
+	wd1, err := NewWebDriverSession(selenium.Capabilities{
+		"google.canReuseSession": true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id1 := wd1.SessionID()
+	if err := wd1.Quit(); err != nil {
+		t.Error(err)
+	}
+
+	wd2, err := NewWebDriverSession(selenium.Capabilities{
+		"google.canReuseSession": true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if id1 != wd2.SessionID() {
+		t.Errorf("got different ids %q, %q, expected them to be the same.", id1, wd2.SessionID())
+	}
+
+	if err := wd2.Get("about:"); err != nil {
+		t.Error(err)
+	}
+
+	url, err := wd2.CurrentURL()
+	if err != nil {
+		t.Error(err)
+	}
+	if url == "" {
+		t.Error("Got empty url")
+	}
+
+	if err := wd2.Quit(); err != nil {
+		t.Error(err)
+	}
+}

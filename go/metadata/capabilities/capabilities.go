@@ -105,3 +105,10 @@ func sliceEquals(e, v []interface{}) bool {
 	}
 	return true
 }
+
+// CanReuseSession returns whether the google.canReuseSession capability is set.
+func CanReuseSession(caps map[string]interface{}) bool {
+	// default value is false
+	v, _ := caps["google.canReuseSession"].(bool)
+	return v
+}
