@@ -24,7 +24,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/cropper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/screenshot"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/mobileemulation"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 )
 
@@ -35,7 +35,7 @@ type request struct {
 
 // ProviderFunc provides a handler for an advanced screenshot endpoint at POST google/screenshot.
 func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-	useMobile := screenshot.MobileEmulationEnabled(desired)
+	useMobile := mobileemulation.MobileEmulationEnabled(desired)
 
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 		if rq.Method != http.MethodPost || len(rq.Path) != 2 || rq.Path[0] != "google" || rq.Path[1] != "screenshot" {
@@ -55,7 +55,7 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 			return driverhub.ResponseFromError(err)
 		}
 
-		return screenshot.CreateResponse(img)
+		return mobileemulation.CreateResponse(img)
 	}, true
 }
 
@@ -71,7 +71,7 @@ func captureScreenshot(ctx context.Context, driver webdriver.WebDriver, r reques
 	// TODO(DrMarcII): stabilization to ensure that we have finished scrolling?
 	var img image.Image
 	if useMobile {
-		i, err := screenshot.GetMobileScreenshot(ctx, driver)
+		i, err := mobileemulation.GetMobileScreenshot(ctx, driver)
 		if err != nil {
 			return nil, err
 		}

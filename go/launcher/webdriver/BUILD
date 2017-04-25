@@ -46,3 +46,9 @@ go_web_test_suite(
     local = True,
     tags = ["requires-network"],
 )
+
+go_test(
+    name = "go_default_test",
+    srcs = ["webdriver_test.go"],
+    library = ":go_default_library",
+)
