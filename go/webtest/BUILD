@@ -58,13 +58,3 @@ go_web_test_suite(
     tags = ["noci"],
     deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )
-
-go_test(
-    name = "go_default_test",
-    srcs = [
-        "browserinfo_test.go",
-        "webtest_test.go",
-    ],
-    library = ":go_default_library",
-    deps = ["@com_github_tebeka_selenium//:go_default_library"],
-)
