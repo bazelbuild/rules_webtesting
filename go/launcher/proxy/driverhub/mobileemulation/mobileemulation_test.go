@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package screenshot
+package mobileemulation
 
 import (
 	"fmt"
@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
@@ -96,5 +97,59 @@ func TestScreenshot(t *testing.T) {
 
 	if config.Width != 200 || config.Height != 200 {
 		t.Fatalf("got size == %d, %d, expected 200, 200", config.Width, config.Height)
+	}
+}
+
+func TestResize(t *testing.T) {
+	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer driver.Quit()
+
+	initial, err := driver.ExecuteScript(`return {"Width": window.outerWidth, "Height": window.outerHeight};`, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := driver.ResizeWindow("current", 200, 200); err != nil {
+		t.Fatal(err)
+	}
+
+	current, err := driver.ExecuteScript(`return {"Width": window.outerWidth, "Height": window.outerHeight};`, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !reflect.DeepEqual(current, initial) {
+		t.Errorf("Got %+v, expected %+v", current, initial)
+	}
+}
+
+func TestMaximize(t *testing.T) {
+	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer driver.Quit()
+
+	initial, err := driver.ExecuteScript(`return {"Width": window.outerWidth, "Height": window.outerHeight};`, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := driver.MaximizeWindow("currentqq"); err != nil {
+		t.Fatal(err)
+	}
+
+	current, err := driver.ExecuteScript(`return {"Width": window.outerWidth, "Height": window.outerHeight};`, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !reflect.DeepEqual(current, initial) {
+		t.Errorf("Got %+v, expected %+v", current, initial)
 	}
 }

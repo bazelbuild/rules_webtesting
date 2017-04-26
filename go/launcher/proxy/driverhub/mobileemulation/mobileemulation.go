@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package screenshot includes a handler for the WebDriver screenshot operation.
-package screenshot
+// Package mobileemulation includes a handler that modifies some WebDriver
+// commands when Chrome Mobile Emulation is enabled.
+package mobileemulation
 
 import (
 	"bytes"
@@ -22,6 +23,7 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"log"
 	"net/http"
 
 	"github.com/bazelbuild/rules_webtesting/go/cropper"
@@ -38,17 +40,46 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
 	}
 
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
-		if rq.Method != http.MethodGet || len(rq.Path) != 1 || rq.Path[0] != "screenshot" {
+		switch {
+		case rq.Method == http.MethodGet && len(rq.Path) == 1 && rq.Path[0] == "screenshot":
+			return screenshot(ctx, session.WebDriver)
+
+		case rq.Method == http.MethodPost && len(rq.Path) == 2 && rq.Path[0] == "window" && rq.Path[1] == "rect":
+			return noOp("set rect")
+		case rq.Method == http.MethodPost && len(rq.Path) == 2 && rq.Path[0] == "window" && rq.Path[1] == "maximize":
+			return noOp("maximize")
+		case rq.Method == http.MethodPost && len(rq.Path) == 2 && rq.Path[0] == "window" && rq.Path[1] == "minimize":
+			return noOp("minimize")
+		case rq.Method == http.MethodPost && len(rq.Path) == 2 && rq.Path[0] == "window" && rq.Path[1] == "fullscreen":
+			return noOp("fullscreen")
+		case rq.Method == http.MethodPost && len(rq.Path) == 3 && rq.Path[0] == "window" && rq.Path[2] == "size":
+			return noOp("set size")
+		case rq.Method == http.MethodPost && len(rq.Path) == 3 && rq.Path[0] == "window" && rq.Path[2] == "position":
+			return noOp("set position")
+		case rq.Method == http.MethodPost && len(rq.Path) == 3 && rq.Path[0] == "window" && rq.Path[2] == "maximize":
+			return noOp("maximize")
+
+		default:
 			return base(ctx, rq)
 		}
-
-		img, err := GetMobileScreenshot(ctx, session.WebDriver)
-		if err != nil {
-			return driverhub.ResponseFromError(err)
-		}
-
-		return CreateResponse(img)
 	}, true
+}
+
+func screenshot(ctx context.Context, driver webdriver.WebDriver) (driverhub.Response, error) {
+	img, err := GetMobileScreenshot(ctx, driver)
+	if err != nil {
+		return driverhub.ResponseFromError(err)
+	}
+
+	return CreateResponse(img)
+}
+
+func noOp(c string) (driverhub.Response, error) {
+	log.Printf("Window %s is unsupported when mobile emulation is enabled", c)
+	return driverhub.Response{
+		Status: 200,
+		Body:   []byte(fmt.Sprintf(`{"status": 0, "value": "window %s is unsupported."}`, c)),
+	}, nil
 }
 
 // MobileEmulationEnabled determines if the capabilities define a mobile emulate config.

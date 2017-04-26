@@ -24,7 +24,7 @@ load("//web:web.bzl", "web_test_config")
 
 go_library(
     name = "go_default_library",
-    srcs = ["screenshot.go"],
+    srcs = ["mobileemulation.go"],
     visibility = ["//visibility:public"],
     deps = [
         "//go/cropper:go_default_library",
@@ -34,15 +34,15 @@ go_library(
 )
 
 web_test_config(
-    name = "screenshot_test_config",
-    metadata = "screenshot_test.json",
+    name = "mobileemulation_test_config",
+    metadata = "mobileemulation_test.json",
 )
 
 go_web_test_suite(
-    name = "screenshot_test",
-    srcs = ["screenshot_test.go"],
+    name = "mobileemulation_test",
+    srcs = ["mobileemulation_test.go"],
     browsers = ["//browsers/sauce:chrome55-win10"],
-    config = ":screenshot_test_config",
+    config = ":mobileemulation_test_config",
     data = ["//go/launcher/proxy/testdata"],
     go_test_tags = [
         "manual",

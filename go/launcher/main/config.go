@@ -22,8 +22,8 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/googlescreenshot"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/mobileemulation"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/quithandler"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/screenshot"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/healthz"
 )
 
@@ -39,7 +39,7 @@ func init() {
 	proxy.AddHTTPHandlerProvider("/healthz", healthz.HTTPHandlerProvider)
 
 	// Configure WebDriver handlers.
-	driverhub.HandlerProviderFunc(screenshot.ProviderFunc)
+	driverhub.HandlerProviderFunc(mobileemulation.ProviderFunc)
 	driverhub.HandlerProviderFunc(quithandler.ProviderFunc)
 	driverhub.HandlerProviderFunc(googlescreenshot.ProviderFunc)
 }
