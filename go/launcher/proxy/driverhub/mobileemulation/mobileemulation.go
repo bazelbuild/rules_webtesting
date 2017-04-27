@@ -84,6 +84,11 @@ func noOp(c string) (driverhub.Response, error) {
 
 // MobileEmulationEnabled determines if the capabilities define a mobile emulate config.
 func MobileEmulationEnabled(caps map[string]interface{}) bool {
+	browserName, _ := caps["browserName"].(string)
+	if browserName != "chrome" {
+		return false
+	}
+
 	chromeOptions, ok := caps["chromeOptions"].(map[string]interface{})
 	if !ok {
 		return false

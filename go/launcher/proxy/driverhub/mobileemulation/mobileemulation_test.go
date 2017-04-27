@@ -140,7 +140,7 @@ func TestMaximize(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := driver.MaximizeWindow("currentqq"); err != nil {
+	if err := driver.MaximizeWindow("current"); err != nil {
 		t.Fatal(err)
 	}
 
