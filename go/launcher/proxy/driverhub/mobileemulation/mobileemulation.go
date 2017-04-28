@@ -35,7 +35,7 @@ const sizeScript = `return {"width": screen.width, "height": screen.height};`
 
 // ProviderFunc provides a handler for /screenshot command that crops the image if Chrome mobile emulation is enabled.
 func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-	if !MobileEmulationEnabled(desired) {
+	if !Enabled(desired) {
 		return base, false
 	}
 
@@ -83,7 +83,7 @@ func noOp(c string) (driverhub.Response, error) {
 }
 
 // MobileEmulationEnabled determines if the capabilities define a mobile emulate config.
-func MobileEmulationEnabled(caps map[string]interface{}) bool {
+func Enabled(caps map[string]interface{}) bool {
 	browserName, _ := caps["browserName"].(string)
 	if browserName != "chrome" {
 		return false

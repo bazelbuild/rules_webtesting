@@ -35,7 +35,7 @@ type request struct {
 
 // ProviderFunc provides a handler for an advanced screenshot endpoint at POST google/screenshot.
 func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-	useMobile := mobileemulation.MobileEmulationEnabled(desired)
+	useMobile := mobileemulation.Enabled(desired)
 
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 		if rq.Method != http.MethodPost || len(rq.Path) != 2 || rq.Path[0] != "google" || rq.Path[1] != "screenshot" {

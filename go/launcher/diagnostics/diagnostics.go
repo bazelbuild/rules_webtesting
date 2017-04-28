@@ -84,5 +84,5 @@ func (d *noOPDiagnostics) Close() error {
 
 // String returns a string representation of the diagnostics.
 func (d *noOPDiagnostics) String() string {
-  return "No-OP Diagnostics"
+	return "No-OP Diagnostics"
 }

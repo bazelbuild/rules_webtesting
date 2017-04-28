@@ -193,12 +193,24 @@ func (s *WebDriverSession) commandPathTokens(path string) []string {
 	return strings.Split(commandPath, "/")
 }
 
+// Unpause makes the session usable again and associates it with the given session id.
+func (s *WebDriverSession) Unpause(id int) {
+	s.mu.Lock()
+	s.stopped = false
+	s.ID = id
+	s.mu.Unlock()
+}
+
 func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	vars := mux.Vars(r)
 	pathTokens := s.commandPathTokens(r.URL.Path)
 
-	if s.stopped {
+	s.mu.Lock()
+	stopped := s.stopped
+	s.mu.Unlock()
+
+	if stopped {
 		invalidSessionID(w, vars["sessionID"])
 		return
 	}
