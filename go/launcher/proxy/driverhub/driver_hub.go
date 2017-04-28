@@ -139,7 +139,7 @@ func (h *WebDriverHub) Shutdown(ctx context.Context) error {
 }
 
 // GetReusableSession grabs a reusable session if one is available that matches caps.
-func (h *WebDriverHub) GetReusableSession(caps map[string]interface{}) (*WebDriverSession, bool) {
+func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps map[string]interface{}) (*WebDriverSession, bool) {
 	if !capabilities.CanReuseSession(caps) {
 		return nil, false
 	}
@@ -149,6 +149,9 @@ func (h *WebDriverHub) GetReusableSession(caps map[string]interface{}) (*WebDriv
 	for i, session := range h.reusableSessions {
 		if capabilities.Equals(caps, session.Desired) {
 			h.reusableSessions = append(h.reusableSessions[:i], h.reusableSessions[i+1:]...)
+			if err := session.WebDriver.Healthy(ctx); err == nil {
+				return session, true
+			}
 			return session, true
 		}
 	}
@@ -217,9 +220,8 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 
 	var session *WebDriverSession
 
-	if reusable, ok := h.GetReusableSession(desired); ok {
-		reusable.ID = id
-		reusable.stopped = false
+	if reusable, ok := h.GetReusableSession(ctx, desired); ok {
+		reusable.Unpause(id)
 		session = reusable
 	} else {
 		// TODO(DrMarcII) parameterize attempts based on browser metadata

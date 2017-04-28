@@ -16,10 +16,10 @@
 #
 package(default_testonly = True)
 
+licenses(["notice"])  # Apache 2.0
+
 # load("@io_bazel_rules_dart//dart/build_rules:core.bzl", "dart_library")
 # load("//web:dart.bzl", "dart_web_test_suite")
-
-# licenses(["notice"])  # Apache 2.0
 
 # dart_library(
 #     name = "dart",

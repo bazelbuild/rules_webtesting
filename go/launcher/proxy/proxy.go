@@ -137,7 +137,7 @@ func (p *Proxy) Healthy(ctx context.Context) error {
 	}
 	resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-    return errors.New(p.Name(), fmt.Errorf("request to %s returned status %v", url, resp.StatusCode))
+		return errors.New(p.Name(), fmt.Errorf("request to %s returned status %v", url, resp.StatusCode))
 	}
 	return nil
 }
