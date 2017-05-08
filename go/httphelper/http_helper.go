@@ -19,8 +19,10 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -97,4 +99,29 @@ func constructURL(base, path, prefix string) (*url.URL, error) {
 	}
 
 	return u.ResolveReference(ref), err
+}
+
+func FQDN() (string, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", err
+	}
+
+	addrs, err := net.LookupHost(hostname)
+	if err != nil {
+		return hostname, nil
+	}
+
+	for _, addr := range addrs {
+		if names, err := net.LookupAddr(addr); err != nil && len(names) >= 0 {
+			for _, name := range names {
+				if strings.HasPrefix(name, hostname) {
+					return name, nil
+				}
+			}
+			return names[0], nil
+		}
+	}
+
+	return hostname, nil
 }

@@ -75,11 +75,17 @@ func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (
 	if err != nil {
 		return nil, errors.New(compName, err)
 	}
+
+	fqdn, err := httphelper.FQDN()
+	if err != nil {
+		return nil, errors.New(compName, err)
+	}
+
 	p := &Proxy{
 		Diagnostics: d,
 		Env:         env,
 		Metadata:    m,
-		Address:     net.JoinHostPort("localhost", strconv.Itoa(port)),
+		Address:     net.JoinHostPort(fqdn, strconv.Itoa(port)),
 		port:        port,
 	}
 
