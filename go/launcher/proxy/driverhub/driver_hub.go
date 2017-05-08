@@ -45,6 +45,7 @@ type WebDriverHub struct {
 	*metadata.Metadata
 	*http.Client
 	diagnostics.Diagnostics
+	Proxy proxy.Proxy
 
 	healthyOnce sync.Once
 
@@ -63,6 +64,7 @@ func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 		Client:      &http.Client{},
 		Diagnostics: p.Diagnostics,
 		Metadata:    p.Metadata,
+		Proxy:       p,
 	}
 
 	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(h.createSession)
