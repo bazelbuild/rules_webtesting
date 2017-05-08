@@ -45,7 +45,7 @@ type WebDriverHub struct {
 	*metadata.Metadata
 	*http.Client
 	diagnostics.Diagnostics
-	Proxy proxy.Proxy
+	Proxy *proxy.Proxy
 
 	healthyOnce sync.Once
 
