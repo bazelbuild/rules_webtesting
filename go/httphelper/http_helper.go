@@ -101,6 +101,7 @@ func constructURL(base, path, prefix string) (*url.URL, error) {
 	return u.ResolveReference(ref), err
 }
 
+// FQDN returns the fully-qualified domain name (or os.Hostname if lookup fails).
 func FQDN() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
