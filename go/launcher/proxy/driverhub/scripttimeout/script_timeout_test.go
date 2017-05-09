@@ -75,7 +75,7 @@ func TestSetScriptTimeout(t *testing.T) {
     t.Fatal("got nil err, expected timeout err")
   }
   if run := time.Now().Sub(start); run < 1*time.Second {
-    t.Fatal("got runtime %v, expected to be at least 1 seconds", run)
+    t.Fatalf("got runtime %v, expected to be at least 1 seconds", run)
   }
 
   if err := driver.SetAsyncScriptTimeout(5 * time.Second); err != nil {
@@ -87,7 +87,7 @@ func TestSetScriptTimeout(t *testing.T) {
     t.Fatal("got nil err, expected timeout err")
   }
   if run := time.Now().Sub(start); run < 5*time.Second {
-    t.Fatal("got runtime %v, expected to be at least 1 seconds", run)
+    t.Fatalf("got runtime %v, expected to be at least 1 seconds", run)
   }
 
 }
