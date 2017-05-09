@@ -19,6 +19,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestCreateSessionAndQuit(t *testing.T) {
@@ -218,6 +219,66 @@ func TestQuit(t *testing.T) {
 
 	if _, err := driver.WindowHandles(ctx); err == nil {
 		t.Fatal("Got nil err, expected unknown session err")
+	}
+}
+
+func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	if err := d.SetScriptTimeout(ctx, 5*time.Second); err != nil {
+		t.Fatal(err)
+	}
+
+	start := time.Now()
+	if err := d.ExecuteScriptAsyncWithTimeout(ctx, time.Second, "return;", nil, nil); err == nil {
+		t.Error("Got nil err, expected timeout err")
+	}
+	if run := time.Now().Sub(start); run < time.Second || run > 5*time.Second {
+		t.Errorf("Got runtime %s, expected < 1 and < 5 seconds")
+	}
+
+	start = time.Now()
+	if err := d.ExecuteScriptAsync(ctx, "return;", nil, nil); err == nil {
+		t.Error("Got nil err, expected timeout err")
+	}
+	if run := time.Now().Sub(start); run < 5*time.Second {
+		t.Errorf("Got runtime %s, expected > 5 seconds", run)
+	}
+}
+
+func TestExecuteScriptAsyncWithTimeoutWithCaps(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{
+		"timeouts": map[string]interface{}{
+			"script": 5000,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	start := time.Now()
+	if err := d.ExecuteScriptAsyncWithTimeout(ctx, time.Second, "return;", nil, nil); err == nil {
+		t.Error("Got nil err, expected timeout err")
+	}
+	if run := time.Now().Sub(start); run < time.Second || run > 5*time.Second {
+		t.Errorf("Got runtime %s, expected < 1 and < 5 seconds")
+	}
+
+	start = time.Now()
+	if err := d.ExecuteScriptAsync(ctx, "return;", nil, nil); err == nil {
+		t.Error("Got nil err, expected timeout err")
+	}
+	if run := time.Now().Sub(start); run < 5*time.Second {
+		t.Errorf("Got runtime %s, expected > 5 seconds", run)
 	}
 }
 

@@ -42,6 +42,7 @@ go_library(
         "//go/launcher/proxy/driverhub/googlescreenshot:go_default_library",
         "//go/launcher/proxy/driverhub/mobileemulation:go_default_library",
         "//go/launcher/proxy/driverhub/quithandler:go_default_library",
+        "//go/launcher/proxy/driverhub/scripttimeout:go_default_library",
         "//go/launcher/proxy/healthz:go_default_library",
         "//go/metadata:go_default_library",
     ],
