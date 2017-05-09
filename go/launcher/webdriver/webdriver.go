@@ -49,6 +49,9 @@ type WebDriver interface {
 	ExecuteScript(ctx context.Context, script string, args []interface{}, value interface{}) error
 	// ExecuteScriptAsync executes script asynchronously inside the browser's current execution context.
 	ExecuteScriptAsync(ctx context.Context, script string, args []interface{}, value interface{}) error
+	// ExecuteScriptAsyncWithTimeout executes the script asynchronously, but sets the script timeout to timeout before,
+	// and attempts to restore it to its previous value after.
+	ExecuteScriptAsyncWithTimeout(ctx context.Context, timeout time.Duration, script string, args []interface{}, value interface{}) error
 	// Quit closes the WebDriver session.
 	Quit(ctx context.Context) error
 	// CommandURL builds a fully resolved URL for the specified end-point.
@@ -95,10 +98,11 @@ type LogEntry struct {
 }
 
 type webDriver struct {
-	address      *url.URL
-	sessionID    string
-	capabilities map[string]interface{}
-	client       *http.Client
+	address       *url.URL
+	sessionID     string
+	capabilities  map[string]interface{}
+	client        *http.Client
+	scriptTimeout time.Duration
 }
 
 type webElement struct {
@@ -165,10 +169,11 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 			}
 
 			d := &webDriver{
-				address:      fullURL.ResolveReference(sessionURL),
-				sessionID:    session,
-				capabilities: caps,
-				client:       client,
+				address:       fullURL.ResolveReference(sessionURL),
+				sessionID:     session,
+				capabilities:  caps,
+				client:        client,
+				scriptTimeout: scriptTimeout(desired),
 			}
 
 			if err := d.Healthy(ctx); err != nil {
@@ -235,6 +240,27 @@ func (d *webDriver) ExecuteScriptAsync(ctx context.Context, script string, args 
 	return err
 }
 
+func (d *webDriver) ExecuteScriptAsyncWithTimeout(ctx context.Context, timeout time.Duration, script string, args []interface{}, value interface{}) error {
+	if err := d.setScriptTimeout(ctx, timeout); err != nil {
+		log.Printf("error setting script timeout to %v", timeout)
+	}
+	if d.scriptTimeout != 0 {
+		defer func() {
+			if err := d.setScriptTimeout(ctx, d.scriptTimeout); err != nil {
+				log.Printf("error restoring script timeout to %v", d.scriptTimeout)
+			}
+		}()
+	}
+	if args == nil {
+		args = []interface{}{}
+	}
+	body := map[string]interface{}{
+		"script": script,
+		"args":   args,
+	}
+	return d.post(ctx, "execute_async", body, value)
+}
+
 // Screenshot takes a screenshot of the current browser window.
 func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
 	var value string
@@ -290,6 +316,11 @@ func (d *webDriver) CommandURL(endpoint ...string) (*url.URL, error) {
 }
 
 func (d *webDriver) SetScriptTimeout(ctx context.Context, timeout time.Duration) error {
+	d.scriptTimeout = timeout
+	return d.setScriptTimeout(ctx, timeout)
+}
+
+func (d *webDriver) setScriptTimeout(ctx context.Context, timeout time.Duration) error {
 	body := map[string]interface{}{
 		"type": "script",
 		"ms":   int(timeout / time.Millisecond),
@@ -480,4 +511,21 @@ return {"X0": Math.round(left), "Y0": Math.round(top), "X1": Math.round(left + r
 	err := e.driver.ExecuteScript(ctx, script, args, &bounds)
 	log.Printf("Err: %v", err)
 	return image.Rect(bounds.X0, bounds.Y0, bounds.X1, bounds.Y1), err
+}
+
+func scriptTimeout(desired map[string]interface{}) time.Duration {
+	timeouts, ok := desired["timeouts"].(map[string]interface{})
+	if !ok {
+		return 0
+	}
+
+	if script, ok := timeouts["script"].(int); ok {
+		return time.Duration(script) * time.Millisecond
+	}
+
+	if script, ok := timeouts["script"].(float64); ok {
+		return time.Duration(script) * time.Millisecond
+	}
+
+	return 0
 }
