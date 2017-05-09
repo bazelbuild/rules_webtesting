@@ -48,6 +48,22 @@ func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interf
         }
       }
 
+      if t, ok := request["type"].(string); ok && t == "script" {
+        if timeout, ok := request["ms"].(int); ok {
+          if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+            delete(request, "ms")
+            delete(request, "type")
+          }
+        }
+
+        if timeout, ok := request["ms"].(float64); ok {
+          if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+            delete(request, "ms")
+            delete(request, "type")
+          }
+        }
+      }
+
       if len(request) == 0 {
         return driverhub.Response{
           Status: http.StatusOK,
