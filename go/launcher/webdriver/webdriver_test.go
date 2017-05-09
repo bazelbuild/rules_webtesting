@@ -240,7 +240,7 @@ func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
 		t.Error("Got nil err, expected timeout err")
 	}
 	if run := time.Now().Sub(start); run < time.Second || run > 5*time.Second {
-		t.Errorf("Got runtime %s, expected < 1 and < 5 seconds")
+		t.Errorf("Got runtime %s, expected < 1 and < 5 seconds", run)
 	}
 
 	start = time.Now()
