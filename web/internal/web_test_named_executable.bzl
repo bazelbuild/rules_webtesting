@@ -56,7 +56,8 @@ web_test_named_executable = rule(
             attr.label_list(providers=["web_test"]),
         "executable":
             attr.label(
-                allow_files=True, executable=True, cfg="data", mandatory=True),
+                allow_files=True, executable=True, cfg="target",
+                mandatory=True),
         "merger":
             attr.label(
                 executable=True,

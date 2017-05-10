@@ -59,7 +59,7 @@ browser = rule(
                 cfg="host",
                 default=Label("//go/metadata/main")),
         "metadata":
-            attr.label(mandatory=True, allow_single_file=[".json"], cfg="data"),
+            attr.label(mandatory=True, allow_single_file=[".json"]),
         "required_tags":
             attr.string_list(),
     },
@@ -72,10 +72,10 @@ Args:
   deps: Other web_test-related rules that this rule depends on.
   disabled: If set, then a no-op test will be run for all tests using
     this browser.
-  environment: Map of environment variables-values to set for this browser.  
-  merger: Metadata merger executable.  
+  environment: Map of environment variables-values to set for this browser.
+  merger: Metadata merger executable.
   metadata: The web_test metadata file that defines how this browser
-    is launched and default capabilities for this browser.  
+    is launched and default capabilities for this browser.
   required_tags: A list of tags that all web_tests using this browser
     should have. Examples include "requires-network", "local", etc.
 """

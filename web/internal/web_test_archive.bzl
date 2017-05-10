@@ -59,7 +59,6 @@ web_test_archive = rule(
                     ".tar.Z",
                     ".zip",
                 ],
-                cfg="data",
                 mandatory=True),
         "data":
             attr.label_list(allow_files=True, cfg="data"),

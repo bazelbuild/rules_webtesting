@@ -51,7 +51,7 @@ web_test_named_file = rule(
         "deps":
             attr.label_list(providers=["web_test"]),
         "file":
-            attr.label(allow_single_file=True, cfg="data", mandatory=True),
+            attr.label(allow_single_file=True, mandatory=True),
         "merger":
             attr.label(
                 executable=True,

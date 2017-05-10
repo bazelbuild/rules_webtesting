@@ -107,11 +107,9 @@ def _apply_browser_overrides(kwargs, overrides):
   return overridden_kwargs
 
 
-def browser(testonly=True, **kwargs):
+def browser(**kwargs):
   """Wrapper around browser to correctly set defaults."""
-  if testonly == None:
-    testonly = True
-  browser_alias(testonly=testonly, **kwargs)
+  browser_alias(testonly=True, **kwargs)
 
 
 def web_test(
@@ -138,32 +136,24 @@ def web_test(
       **kwargs)
 
 
-def web_test_config(testonly=True, **kwargs):
+def web_test_config(**kwargs):
   """Wrapper around web_test_config to correctly set defaults."""
-  if testonly == None:
-    testonly = True
-  web_test_config_alias(testonly=testonly, **kwargs)
+  web_test_config_alias(testonly=True, **kwargs)
 
 
-def web_test_named_executable(executable, data=None, testonly=True, **kwargs):
+def web_test_named_executable(executable, data=None, **kwargs):
   """Wrapper around web_test_named_executable to correctly set defaults."""
   data = lists.clone(data)
   lists.ensure_contains(data, executable)
-  if testonly == None:
-    testonly = True
   web_test_named_executable_alias(
-      data=data, executable=executable, testonly=testonly, **kwargs)
+      data=data, executable=executable, testonly=True, **kwargs)
 
 
-def web_test_named_file(testonly=True, **kwargs):
+def web_test_named_file(data**kwargs):
   """Wrapper around web_test_named_file to correctly set defaults."""
-  if testonly == None:
-    testonly = True
-  web_test_named_file_alias(testonly=testonly, **kwargs)
+  web_test_named_file_alias(testonly=True, **kwargs)
 
 
-def web_test_archive(testonly=True, **kwargs):
+def web_test_archive(**kwargs):
   """Wrapper around web_test_archive to correctly set defaults."""
-  if testonly == None:
-    testonly = True
-  web_test_archive_alias(testonly=testonly, **kwargs)
+  web_test_archive_alias(testonly=True, **kwargs)
