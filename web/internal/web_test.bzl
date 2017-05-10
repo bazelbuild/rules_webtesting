@@ -133,13 +133,13 @@ def _generate_default_test(ctx):
 web_test = rule(
     attrs={
         "browser":
-            attr.label(cfg="data", mandatory=True, providers=["web_test"]),
+            attr.label(mandatory=True, providers=["web_test"]),
         "config":
-            attr.label(cfg="data", mandatory=True, providers=["web_test"]),
+            attr.label(mandatory=True, providers=["web_test"]),
         "data":
             attr.label_list(allow_files=True, cfg="data"),
         "launcher":
-            attr.label(cfg="data", executable=True),
+            attr.label(cfg="target", executable=True),
         "merger":
             attr.label(
                 cfg="host",
@@ -150,7 +150,7 @@ web_test = rule(
                 allow_single_file=True,
                 default=Label("//web/internal:noop_web_test.sh.template")),
         "test":
-            attr.label(cfg="data", executable=True, mandatory=True),
+            attr.label(cfg="target", executable=True, mandatory=True),
         "web_test_template":
             attr.label(
                 allow_single_file=True,
