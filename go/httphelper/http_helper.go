@@ -101,6 +101,20 @@ func constructURL(base, path, prefix string) (*url.URL, error) {
 	return u.ResolveReference(ref), err
 }
 
+type longestToShortest []string
+
+func (s longestToShortest) Len() int {
+    return len(s)
+}
+
+func (s longestToShortest) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
+
+func (s longestToShortest) Less(i, j int) bool {
+    return len(s[i]) > len(s[j])
+}
+
 // FQDN returns the fully-qualified domain name (or os.Hostname if lookup fails).
 func FQDN() (string, error) {
 	hostname, err := os.Hostname()
@@ -114,8 +128,10 @@ func FQDN() (string, error) {
 	}
 
 	for _, addr := range addrs {
-		if names, err := net.LookupAddr(addr); err != nil && len(names) >= 0 {
+		if names, err := net.LookupAddr(addr); err == nil && len(names) > 0 {
+			sort.Sort(longestToShortest(names))
 			for _, name := range names {
+				name = strings.TrimRight(name, ".")
 				if strings.HasPrefix(name, hostname) {
 					return name, nil
 				}
