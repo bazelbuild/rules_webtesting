@@ -149,7 +149,7 @@ def web_test_named_executable(executable, data=None, **kwargs):
       data=data, executable=executable, testonly=True, **kwargs)
 
 
-def web_test_named_file(data**kwargs):
+def web_test_named_file(**kwargs):
   """Wrapper around web_test_named_file to correctly set defaults."""
   web_test_named_file_alias(testonly=True, **kwargs)
 
