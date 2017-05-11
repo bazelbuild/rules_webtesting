@@ -74,6 +74,8 @@ type WebDriver interface {
 	ElementFromID(string) WebElement
 	// ElementFromMap returns a new WebElement from a map representing a JSON object.
 	ElementFromMap(map[string]interface{}) (WebElement, error)
+	// W3C return true iff connected to a W3C compliant remote end.
+	W3C() bool
 }
 
 // WebElement provides access to a specific DOM element in a WebDriver session.
@@ -103,6 +105,7 @@ type webDriver struct {
 	capabilities  map[string]interface{}
 	client        *http.Client
 	scriptTimeout time.Duration
+	w3c           bool
 }
 
 type webElement struct {
@@ -111,7 +114,7 @@ type webElement struct {
 }
 
 type jsonResp struct {
-	Status     int         `json:"status"`
+	Status     *int        `json:"status"`
 	SessionID  string      `json:"sessionId"`
 	Value      interface{} `json:"value"`
 	Error      string      `json:"error"`
@@ -174,6 +177,7 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 				capabilities:  caps,
 				client:        client,
 				scriptTimeout: scriptTimeout(desired),
+				w3c:           respBody.Status == nil,
 			}
 
 			if err := d.Healthy(ctx); err != nil {
@@ -195,6 +199,10 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 
 	// This should only occur if called with attempts <= 0
 	return nil, errors.New(compName, fmt.Errorf("attempts %d <= 0", attempts))
+}
+
+func (d *webDriver) W3C() bool {
+	return d.w3c
 }
 
 func (d *webDriver) Address() *url.URL {
@@ -321,11 +329,15 @@ func (d *webDriver) SetScriptTimeout(ctx context.Context, timeout time.Duration)
 }
 
 func (d *webDriver) setScriptTimeout(ctx context.Context, timeout time.Duration) error {
-	body := map[string]interface{}{
+	if d.w3c {
+		return d.post(ctx, "timeouts", map[string]interface{}{
+			"script": int(timeout / time.Millisecond),
+		}, nil)
+	}
+	return d.post(ctx, "timeouts", map[string]interface{}{
 		"type": "script",
 		"ms":   int(timeout / time.Millisecond),
-	}
-	return d.post(ctx, "timeouts", body, nil)
+	}, nil)
 }
 
 func (d *webDriver) Logs(ctx context.Context, logType string) ([]LogEntry, error) {
@@ -386,7 +398,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 
 	respBody := &jsonResp{Value: value}
 	var jsonErr error
-	if err := json.Unmarshal(bytes, respBody); err == nil && respBody.Status == 0 && respBody.Error == "" {
+	if err := json.Unmarshal(bytes, respBody); err == nil && (respBody.Status == nil || *respBody.Status == 0) && respBody.Error == "" {
 		// WebDriver returned success, we are done.
 		return respBody, nil
 	} else if err != nil {
@@ -404,7 +416,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, respBody))
 	}
 
-	if errBody.Status == 0 && errBody.Error == "" {
+	if respBody.Status == nil || *respBody.Status == 0 {
 		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", jsonErr, string(bytes)))
 	}
 
