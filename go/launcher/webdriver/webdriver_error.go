@@ -153,7 +153,11 @@ func errDatum(resp *jsonResp) errorDatum {
 			}
 		}
 	}
-	return errorDatum{*resp.Status, resp.Error, 500, false}
+	status := -1
+	if resp.Status != nil {
+		status = *resp.Status
+	}
+	return errorDatum{status, resp.Error, 500, false}
 }
 
 func errMessage(resp *jsonResp) string {

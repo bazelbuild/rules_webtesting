@@ -122,6 +122,10 @@ type jsonResp struct {
 	StackTrace interface{} `json:"stacktrace"`
 }
 
+func (j *jsonResp) isError() bool {
+	return (j.Status != nil && *j.Status != 0) || j.Error != ""
+}
+
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
 // and ensures that the browser connection is working. It retries up to attempts - 1 times.
 func CreateSession(ctx context.Context, addr string, attempts int, desired map[string]interface{}) (WebDriver, error) {
@@ -397,30 +401,29 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 	}
 
 	respBody := &jsonResp{Value: value}
-	var jsonErr error
-	if err := json.Unmarshal(bytes, respBody); err == nil && (respBody.Status == nil || *respBody.Status == 0) && respBody.Error == "" {
-		// WebDriver returned success, we are done.
-		return respBody, nil
-	} else if err != nil {
-		jsonErr = err
-		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
-	}
-	// if no value object was passed in then we can use the parsed Value
-	if value == nil {
-		return respBody, newWebDriverError(respBody)
+	if err := json.Unmarshal(bytes, respBody); err != nil || respBody.isError() {
+		if value != nil {
+			// Reparsing to ensure we have a clean value.
+			respBody = &jsonResp{}
+
+			if err := json.Unmarshal(bytes, respBody); err != nil {
+				// The body was unparseable, so returning an error
+				return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
+			}
+		}
+
+		if respBody.isError() {
+			// The remote end returned an error. Return the body and an error constructed from the body.
+			return respBody, newWebDriverError(respBody)
+		}
+
+		// The body was unparseable with the passed in value, but was otherwise parseable and not an error value.
+		// Return the body and an error indicating that the original parse failed.
+		return respBody, errors.New(compName, fmt.Errorf("%v unmarshalling %+v", err, respBody))
 	}
 
-	// otherwise we can't trust the parsed Value has what we want, so need to re-parse.
-	errBody := &jsonResp{}
-	if err := json.Unmarshal(bytes, errBody); err != nil {
-		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, respBody))
-	}
-
-	if respBody.Status == nil || *respBody.Status == 0 {
-		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", jsonErr, string(bytes)))
-	}
-
-	return errBody, newWebDriverError(errBody)
+	// Everything is good. Return the body.
+	return respBody, nil
 }
 
 func post(ctx context.Context, client *http.Client, command *url.URL, body interface{}, value interface{}) (*jsonResp, error) {
