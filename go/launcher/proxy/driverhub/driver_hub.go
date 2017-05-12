@@ -247,9 +247,12 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	h.AddSession(session.WebDriver.SessionID(), session)
 
 	respJSON := map[string]interface{}{
-		"status":    0,
 		"sessionId": session.WebDriver.SessionID(),
 		"value":     session.WebDriver.Capabilities(),
+	}
+
+	if !session.WebDriver.W3C() {
+		respJSON["status"] = 0
 	}
 
 	bytes, err := json.Marshal(respJSON)

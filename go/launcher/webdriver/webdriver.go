@@ -74,6 +74,8 @@ type WebDriver interface {
 	ElementFromID(string) WebElement
 	// ElementFromMap returns a new WebElement from a map representing a JSON object.
 	ElementFromMap(map[string]interface{}) (WebElement, error)
+	// W3C return true iff connected to a W3C compliant remote end.
+	W3C() bool
 }
 
 // WebElement provides access to a specific DOM element in a WebDriver session.
@@ -103,6 +105,7 @@ type webDriver struct {
 	capabilities  map[string]interface{}
 	client        *http.Client
 	scriptTimeout time.Duration
+	w3c           bool
 }
 
 type webElement struct {
@@ -111,12 +114,16 @@ type webElement struct {
 }
 
 type jsonResp struct {
-	Status     int         `json:"status"`
+	Status     *int        `json:"status"`
 	SessionID  string      `json:"sessionId"`
 	Value      interface{} `json:"value"`
 	Error      string      `json:"error"`
 	Message    string      `json:"message"`
 	StackTrace interface{} `json:"stacktrace"`
+}
+
+func (j *jsonResp) isError() bool {
+	return (j.Status != nil && *j.Status != 0) || j.Error != ""
 }
 
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
@@ -174,6 +181,7 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 				capabilities:  caps,
 				client:        client,
 				scriptTimeout: scriptTimeout(desired),
+				w3c:           respBody.Status == nil,
 			}
 
 			if err := d.Healthy(ctx); err != nil {
@@ -195,6 +203,10 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 
 	// This should only occur if called with attempts <= 0
 	return nil, errors.New(compName, fmt.Errorf("attempts %d <= 0", attempts))
+}
+
+func (d *webDriver) W3C() bool {
+	return d.w3c
 }
 
 func (d *webDriver) Address() *url.URL {
@@ -321,11 +333,15 @@ func (d *webDriver) SetScriptTimeout(ctx context.Context, timeout time.Duration)
 }
 
 func (d *webDriver) setScriptTimeout(ctx context.Context, timeout time.Duration) error {
-	body := map[string]interface{}{
+	if d.w3c {
+		return d.post(ctx, "timeouts", map[string]interface{}{
+			"script": int(timeout / time.Millisecond),
+		}, nil)
+	}
+	return d.post(ctx, "timeouts", map[string]interface{}{
 		"type": "script",
 		"ms":   int(timeout / time.Millisecond),
-	}
-	return d.post(ctx, "timeouts", body, nil)
+	}, nil)
 }
 
 func (d *webDriver) Logs(ctx context.Context, logType string) ([]LogEntry, error) {
@@ -385,30 +401,29 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 	}
 
 	respBody := &jsonResp{Value: value}
-	var jsonErr error
-	if err := json.Unmarshal(bytes, respBody); err == nil && respBody.Status == 0 && respBody.Error == "" {
-		// WebDriver returned success, we are done.
-		return respBody, nil
-	} else if err != nil {
-		jsonErr = err
-		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
-	}
-	// if no value object was passed in then we can use the parsed Value
-	if value == nil {
-		return respBody, newWebDriverError(respBody)
+	if err := json.Unmarshal(bytes, respBody); err != nil || respBody.isError() {
+		if value != nil {
+			// Reparsing to ensure we have a clean value.
+			respBody = &jsonResp{}
+
+			if err := json.Unmarshal(bytes, respBody); err != nil {
+				// The body was unparseable, so returning an error
+				return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
+			}
+		}
+
+		if respBody.isError() {
+			// The remote end returned an error. Return the body and an error constructed from the body.
+			return respBody, newWebDriverError(respBody)
+		}
+
+		// The body was unparseable with the passed in value, but was otherwise parseable and not an error value.
+		// Return the body and an error indicating that the original parse failed.
+		return respBody, errors.New(compName, fmt.Errorf("%v unmarshalling %+v", err, respBody))
 	}
 
-	// otherwise we can't trust the parsed Value has what we want, so need to re-parse.
-	errBody := &jsonResp{}
-	if err := json.Unmarshal(bytes, errBody); err != nil {
-		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, respBody))
-	}
-
-	if errBody.Status == 0 && errBody.Error == "" {
-		return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", jsonErr, string(bytes)))
-	}
-
-	return errBody, newWebDriverError(errBody)
+	// Everything is good. Return the body.
+	return respBody, nil
 }
 
 func post(ctx context.Context, client *http.Client, command *url.URL, body interface{}, value interface{}) (*jsonResp, error) {
