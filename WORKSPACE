@@ -21,7 +21,7 @@ http_archive(
     sha256 = "f7e42a4c1f9f31abff9b2bdee6fe4db18bc373287b7e07a5b844446e561e67e2",
     strip_prefix = "rules_go-4c9a52aba0b59511c5646af88d2f93a9c0193647",
     urls = [
-        "http://bazel-mirror.storage.googleapis.com/github.com/bazelbuild/rules_go/archive/4c9a52aba0b59511c5646af88d2f93a9c0193647.tar.gz",
+        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/archive/4c9a52aba0b59511c5646af88d2f93a9c0193647.tar.gz",
         "https://github.com/bazelbuild/rules_go/archive/4c9a52aba0b59511c5646af88d2f93a9c0193647.tar.gz",
     ],
 )
@@ -44,7 +44,7 @@ http_archive(
     sha256 = "4bd44d81747d06e8334570d413b714218b7759db0883df807e28127e9d59fe80",
     strip_prefix = "rules_sass-931508528093364b86abd44a5b9401e5150f1ba7",
     urls = [
-        "http://bazel-mirror.storage.googleapis.com/github.com/bazelbuild/rules_sass/archive/931508528093364b86abd44a5b9401e5150f1ba7.tar.gz",
+        "http://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/931508528093364b86abd44a5b9401e5150f1ba7.tar.gz",
         "https://github.com/bazelbuild/rules_sass/archive/931508528093364b86abd44a5b9401e5150f1ba7.tar.gz",
     ],
 )
@@ -58,7 +58,7 @@ http_archive(
     sha256 = "06d855d8412cae1461d4131481a26d71ba9457914473803df65b110ea4dd6a88",
     strip_prefix = "skydoc-0.1.1",
     urls = [
-        "http://bazel-mirror.storage.googleapis.com/github.com/bazelbuild/skydoc/archive/0.1.1.tar.gz",
+        "http://mirror.bazel.build/github.com/bazelbuild/skydoc/archive/0.1.1.tar.gz",
         "https://github.com/bazelbuild/skydoc/archive/0.1.1.tar.gz",
     ],
 )
@@ -72,7 +72,7 @@ skydoc_repositories()
 #     sha256 = "45abe3e3fb908f7792bc747b380aa5fdf8f9e66a4f86623ed68acbe1042b1e7e",
 #     strip_prefix = "rules_dart-11bca9e70b42470a909782e6369194af38898551",
 #     urls = [
-#         "http://bazel-mirror.storage.googleapis.com/github.com/dart-lang/rules_dart/archive/11bca9e70b42470a909782e6369194af38898551.tar.gz",
+#         "http://mirror.bazel.build/github.com/dart-lang/rules_dart/archive/11bca9e70b42470a909782e6369194af38898551.tar.gz",
 #         "https://github.com/dart-lang/rules_dart/archive/11bca9e70b42470a909782e6369194af38898551.tar.gz",
 #     ],
 # )
@@ -86,7 +86,7 @@ skydoc_repositories()
 #     sha256 = "c593ffdccf5da84f6091e78392b6d08b8068574720c29a105057db22af760d29",
 #     strip_prefix = "webdriver.dart-dc5c129ce550c58fca0d498e51c38edf7e378255",
 #     urls = [
-#         "http://bazel-mirror.storage.googleapis.com/github.com/google/webdriver.dart/archive/dc5c129ce550c58fca0d498e51c38edf7e378255.tar.gz",
+#         "http://mirror.bazel.build/github.com/google/webdriver.dart/archive/dc5c129ce550c58fca0d498e51c38edf7e378255.tar.gz",
 #         "https://github.com/google/webdriver.dart/archive/dc5c129ce550c58fca0d498e51c38edf7e378255.tar.gz",
 #     ],
 # )
