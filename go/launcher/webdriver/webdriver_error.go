@@ -146,14 +146,18 @@ func errDatum(resp *jsonResp) errorDatum {
 			}
 		}
 	}
-	if resp.Status != 0 {
+	if resp.Status != nil && *resp.Status != 0 {
 		for _, cand := range errorData {
-			if cand.Status == resp.Status {
+			if cand.Status == *resp.Status {
 				return cand
 			}
 		}
 	}
-	return errorDatum{resp.Status, resp.Error, 500, false}
+	status := -1
+	if resp.Status != nil {
+		status = *resp.Status
+	}
+	return errorDatum{status, resp.Error, 500, false}
 }
 
 func errMessage(resp *jsonResp) string {
