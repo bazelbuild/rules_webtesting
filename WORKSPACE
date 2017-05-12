@@ -66,31 +66,3 @@ http_archive(
 load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
 
 skydoc_repositories()
-
-# http_archive(
-#     name = "io_bazel_rules_dart",
-#     sha256 = "45abe3e3fb908f7792bc747b380aa5fdf8f9e66a4f86623ed68acbe1042b1e7e",
-#     strip_prefix = "rules_dart-11bca9e70b42470a909782e6369194af38898551",
-#     urls = [
-#         "http://mirror.bazel.build/github.com/dart-lang/rules_dart/archive/11bca9e70b42470a909782e6369194af38898551.tar.gz",
-#         "https://github.com/dart-lang/rules_dart/archive/11bca9e70b42470a909782e6369194af38898551.tar.gz",
-#     ],
-# )
-
-# load("@io_bazel_rules_dart//dart/build_rules:repositories.bzl", "dart_repositories")
-
-# dart_repositories()
-
-# http_archive(
-#     name = "com_github_google_webdriver_dart",
-#     sha256 = "c593ffdccf5da84f6091e78392b6d08b8068574720c29a105057db22af760d29",
-#     strip_prefix = "webdriver.dart-dc5c129ce550c58fca0d498e51c38edf7e378255",
-#     urls = [
-#         "http://mirror.bazel.build/github.com/google/webdriver.dart/archive/dc5c129ce550c58fca0d498e51c38edf7e378255.tar.gz",
-#         "https://github.com/google/webdriver.dart/archive/dc5c129ce550c58fca0d498e51c38edf7e378255.tar.gz",
-#     ],
-# )
-
-# load("@com_github_google_webdriver_dart//:repositories.bzl", "webdriver_dart_repositories")
-
-# webdriver_dart_repositories()
