@@ -333,7 +333,7 @@ func (d *webDriver) SetScriptTimeout(ctx context.Context, timeout time.Duration)
 }
 
 func (d *webDriver) setScriptTimeout(ctx context.Context, timeout time.Duration) error {
-	if d.w3c {
+	if d.W3C() {
 		return d.post(ctx, "timeouts", map[string]interface{}{
 			"script": int(timeout / time.Millisecond),
 		}, nil)
