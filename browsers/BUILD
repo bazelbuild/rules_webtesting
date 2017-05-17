@@ -56,7 +56,6 @@ browser(
     # if not tagged local, then bazel does not exit cleanly
     required_tags = [
         "local",
-        "noci",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -74,7 +73,6 @@ browser(
     metadata = "chromium-native.json",
     required_tags = [
         "local",
-        "noci",
     ],
     visibility = ["//visibility:public"],
     deps = [
