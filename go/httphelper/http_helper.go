@@ -17,6 +17,7 @@ package httphelper
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -27,7 +28,13 @@ import (
 	"strings"
 )
 
-var client = &http.Client{}
+var client = &http.Client{
+	Transport: &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	},
+}
 
 // Forward forwards r to host and writes the response from host to w.
 func Forward(ctx context.Context, host, trimPrefix string, w http.ResponseWriter, r *http.Request) error {
@@ -105,15 +112,15 @@ func constructURL(base, path, prefix string) (*url.URL, error) {
 type longestToShortest []string
 
 func (s longestToShortest) Len() int {
-    return len(s)
+	return len(s)
 }
 
 func (s longestToShortest) Swap(i, j int) {
-    s[i], s[j] = s[j], s[i]
+	s[i], s[j] = s[j], s[i]
 }
 
 func (s longestToShortest) Less(i, j int) bool {
-    return len(s[i]) > len(s[j])
+	return len(s[i]) > len(s[j])
 }
 
 // FQDN returns the fully-qualified domain name (or os.Hostname if lookup fails).

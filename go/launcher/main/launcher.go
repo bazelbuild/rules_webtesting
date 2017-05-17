@@ -108,12 +108,21 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string) int {
 	}
 
 	testCmd := exec.Command(testExe, flag.Args()...)
-	testCmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), map[string]string{
-		"WEB_TEST_WEBDRIVER_SERVER": fmt.Sprintf("http://%s/wd/hub", p.Address),
+
+	envVars := map[string]string{
+		"WEB_TEST_HTTP_SERVER":      fmt.Sprintf("http://%s", p.HTTPAddress),
+		"WEB_TEST_WEBDRIVER_SERVER": fmt.Sprintf("http://%s/wd/hub", p.HTTPAddress),
 		"TEST_TMPDIR":               tmpDir,
 		"WEB_TEST_TMPDIR":           bazel.TestTmpDir(),
 		"WEB_TEST_TARGET":           *test,
-	})
+	}
+
+	if p.HTTPSAddress != "" {
+		envVars["WEB_TEST_HTTPS_SERVER"] = fmt.Sprintf("https://%s", p.HTTPSAddress)
+	}
+
+	testCmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), envVars)
+
 	testCmd.Stdout = os.Stdout
 	testCmd.Stderr = os.Stderr
 	testCmd.Stdin = os.Stdin
@@ -155,7 +164,6 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string) int {
 				d.Warning(err)
 			}
 		}
-
 	}
 
 	go func() {

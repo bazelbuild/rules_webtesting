@@ -17,6 +17,7 @@
 package diagnostics
 
 import (
+	"log"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
@@ -64,6 +65,7 @@ func (d *noOPDiagnostics) Severe(err error) error {
 	if d.closed {
 		return errors.New(d.Name(), "cannot add errors after diagnostics are closed")
 	}
+	log.Print(err)
 	return nil
 }
 
@@ -73,6 +75,7 @@ func (d *noOPDiagnostics) Warning(err error) error {
 	if d.closed {
 		return errors.New(d.Name(), "cannot add errors after diagnostics are closed")
 	}
+	log.Print(err)
 	return nil
 }
 
