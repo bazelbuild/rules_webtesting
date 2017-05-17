@@ -58,35 +58,60 @@ func AddHTTPHandlerProvider(route string, provider HTTPHandlerProvider) {
 	handlerProviders[route] = provider
 }
 
+type certs struct {
+	certFile string
+	keyFile  string
+}
+
 // Proxy starts a WebDriver protocol proxy.
 type Proxy struct {
-	Diagnostics diagnostics.Diagnostics
-	Env         environment.Env
-	Metadata    *metadata.Metadata
-	Address     string
-	handlers    []HTTPHandler
-	srv         *http.Server
-	port        int
+	Diagnostics  diagnostics.Diagnostics
+	Env          environment.Env
+	Metadata     *metadata.Metadata
+	HTTPAddress  string
+	HTTPSAddress string
+	handlers     []HTTPHandler
+	httpSrv      *http.Server
+	httpsSrv     *http.Server
+	httpPort     int
+	httpsPort    int
+	certs        *certs
 }
 
 // New creates a new Proxy object.
 func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (*Proxy, error) {
-	port, err := portpicker.PickUnusedPort()
-	if err != nil {
-		return nil, errors.New(compName, err)
-	}
-
 	fqdn, err := httphelper.FQDN()
 	if err != nil {
 		return nil, errors.New(compName, err)
 	}
 
+	httpPort, err := portpicker.PickUnusedPort()
+	if err != nil {
+		return nil, errors.New(compName, err)
+	}
+
+	httpAddress := net.JoinHostPort(fqdn, strconv.Itoa(httpPort))
+
+	httpsPort := -1
+	httpsAddress := ""
+	certs := newCerts(m)
+	if certs != nil {
+		httpsPort, err = portpicker.PickUnusedPort()
+		if err != nil {
+			return nil, errors.New(compName, err)
+		}
+		httpsAddress = net.JoinHostPort(fqdn, strconv.Itoa(httpsPort))
+	}
+
 	p := &Proxy{
-		Diagnostics: d,
-		Env:         env,
-		Metadata:    m,
-		Address:     net.JoinHostPort(fqdn, strconv.Itoa(port)),
-		port:        port,
+		Diagnostics:  d,
+		Env:          env,
+		Metadata:     m,
+		HTTPAddress:  httpAddress,
+		HTTPSAddress: httpsAddress,
+		httpPort:     httpPort,
+		httpsPort:    httpsPort,
+		certs:        certs,
 	}
 
 	mux := http.NewServeMux()
@@ -100,12 +125,32 @@ func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (
 		mux.Handle(route, h)
 	}
 
-	p.srv = &http.Server{
-		Addr:    ":" + strconv.Itoa(p.port),
+	p.httpSrv = &http.Server{
+		Addr:    ":" + strconv.Itoa(p.httpPort),
 		Handler: mux,
 	}
 
+	if p.certs != nil {
+		p.httpsSrv = &http.Server{
+			Addr:    ":" + strconv.Itoa(p.httpsPort),
+			Handler: mux,
+		}
+	}
+
 	return p, nil
+}
+
+func newCerts(m *metadata.Metadata) *certs {
+	certFile, err := m.GetFilePath("PROXY_TLS_CERT")
+	if err != nil {
+		return nil
+	}
+	keyFile, err := m.GetFilePath("PROXY_TLS_KEY")
+	if err != nil {
+		return nil
+	}
+
+	return &certs{certFile, keyFile}
 }
 
 // Name returns the name used in error messages.
@@ -122,12 +167,19 @@ func (p *Proxy) Start(ctx context.Context) error {
 		}
 	}()
 
-	log.Printf("launching server at: %v", p.Address)
-
 	go func() {
-		err := errors.New(p.Name(), p.srv.ListenAndServe())
+		log.Printf("launching HTTP server at: %v", p.HTTPAddress)
+		err := errors.New(p.Name(), p.httpSrv.ListenAndServe())
 		p.Diagnostics.Severe(err)
 	}()
+
+	if p.httpsSrv != nil {
+		go func() {
+			log.Printf("launching HTTPS server at: %v", p.HTTPSAddress)
+			err := errors.New(p.Name(), p.httpsSrv.ListenAndServeTLS(p.certs.certFile, p.certs.keyFile))
+			p.Diagnostics.Severe(err)
+		}()
+	}
 
 	healthyCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -136,7 +188,33 @@ func (p *Proxy) Start(ctx context.Context) error {
 
 // Healthy returns nil if the proxy is able to receive requests.
 func (p *Proxy) Healthy(ctx context.Context) error {
-	url := fmt.Sprintf("http://%s/healthz", p.Address)
+	if err := p.httpHealthy(ctx); err != nil {
+		return err
+	}
+	if err := p.httpsHealthy(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *Proxy) httpHealthy(ctx context.Context) error {
+	url := fmt.Sprintf("http://%s/healthz", p.HTTPAddress)
+	resp, err := httphelper.Get(ctx, url)
+	if err != nil {
+		return errors.New(p.Name(), fmt.Errorf("error getting %s: %v", url, err))
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New(p.Name(), fmt.Errorf("request to %s returned status %v", url, resp.StatusCode))
+	}
+	return nil
+}
+
+func (p *Proxy) httpsHealthy(ctx context.Context) error {
+	if p.HTTPSAddress == "" {
+		return nil
+	}
+	url := fmt.Sprintf("https://%s/healthz", p.HTTPSAddress)
 	resp, err := httphelper.Get(ctx, url)
 	if err != nil {
 		return errors.New(p.Name(), fmt.Errorf("error getting %s: %v", url, err))
