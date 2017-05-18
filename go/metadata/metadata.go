@@ -48,15 +48,15 @@ type Metadata struct {
 	ConfigLabel string `json:"configLabel,omitempty"`
 	// A list of WebTestFiles with named files in them.
 	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
-	// An object for any additinal metadata fields on this object.
+	// An object for any additional metadata fields on this object.
 	Extension `json:"extension,omitempty"`
 }
 
 // Extension is an interface for adding additional fields that will be parsed as part of the metadata.
 type Extension interface {
-	// Merge merges this extension data with another set of Extension data. It should not mutata either
+	// Merge merges this extension data with another set of Extension data. It should not mutate either
 	// Extension object, but it is allowed to return one of the Extension objects unchanged if needed.
-	// In general value in other should take precedence over values in this object.
+	// In general values in other should take precedence over values in this object.
 	Merge(other Extension) (Extension, error)
 	// Normalize normalizes and validate the extension data.
 	Normalize() error
@@ -126,8 +126,11 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 }
 
 // FromFile reads a Metadata object from a json file.
-func FromFile(filename string, extension Extension) (*Metadata, error) {
-	metadata := &Metadata{Extension: extension}
+func FromFile(filename string, ext Extension) (*Metadata, error) {
+	if ext == nil {
+		ext = &extension{}
+	}
+	metadata := &Metadata{Extension: ext}
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -272,4 +275,41 @@ func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
 		}
 	}
 	return resolveMap(m.Capabilities)
+}
+
+type extension struct {
+	value map[string]interface{}
+}
+
+func (e *extension) Merge(other Extension) (Extension, error) {
+	if other == nil {
+		return e, nil
+	}
+	o, ok := other.(*extension)
+	if !ok {
+		return other, nil
+	}
+	return &extension{capabilities.Merge(e.value, o.value)}, nil
+}
+
+func (e *extension) Normalize() error {
+	return nil
+}
+
+func (e *extension) Equals(other Extension) bool {
+	if other == nil {
+		return false
+	}
+	o, ok := other.(*extension)
+	if !ok {
+		return false
+	}
+	return capabilities.Equals(e.value, o.value)
+}
+
+func (e *extension) UnmarshalJSON(b []byte) error {
+	v := map[string]interface{}{}
+	err := json.Unmarshal(b, &v)
+	e.value = v
+	return err
 }

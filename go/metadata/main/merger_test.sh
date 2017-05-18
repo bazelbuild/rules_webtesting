@@ -25,7 +25,7 @@ $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out.jso
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/chrome-linux.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/android-browser-gingerbread-nexus-s.json
 
-diff $TEST_TMPDIR/out.json \
+diff -b $TEST_TMPDIR/out.json \
 	$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/testdata/merger-result.json
 if [[ $? != 0 ]]; then
 	echo "Merge of chrome-linux.json with android-browser-gingerbread-nexus-s.json didn't equal merger-result.json."
