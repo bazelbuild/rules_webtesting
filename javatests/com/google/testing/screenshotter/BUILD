@@ -18,30 +18,26 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-filegroup(
-    name = "testdata",
-    srcs = glob(["*"]),
-    visibility = ["//:__subpackages__"],
-)
+load("//web:java.bzl", "java_web_test_suite")
 
-load("//web:web.bzl", "web_test_named_file", "web_test_config")
-
-web_test_named_file(
-    name = "PROXY_TLS_KEY",
-    file = "key.pem",
-)
-
-web_test_named_file(
-    name = "PROXY_TLS_CERT",
-    file = "cert.pem",
-)
-
-web_test_config(
-    name = "https",
-    visibility = ["//go/launcher/proxy:__subpackages__"],
+java_web_test_suite(
+    name = "ScreenshotterTest",
+    srcs = ["ScreenshotterTest.java"],
+    browsers = [
+        "//browsers:chromium-native",
+        "//browsers:firefox-native",
+    ],
+    data = ["//go/launcher/proxy/testdata"],
+    java_test_tags = [
+        "manual",
+        "noci",
+    ],
+    local = True,
     deps = [
-        ":PROXY_TLS_CERT",
-        ":PROXY_TLS_KEY",
-        "//web:default_config",
+        "//java/com/google/testing/screenshotter",
+        "//java/com/google/testing/util",
+        "//java/com/google/testing/web",
+        "@junit",
+        "@org_seleniumhq_selenium_api",
     ],
 )

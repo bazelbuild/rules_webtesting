@@ -14,7 +14,7 @@ Add the following to your WORKSPACE file:
 git_repository(
     name = "io_bazel_rules_go",
     remote = "https://github.com/bazelbuild/rules_go.git",
-    tag = "0.2.0",
+    tag = "0.4.4",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
@@ -24,19 +24,14 @@ go_repositories()
 git_repository(
     name = "io_bazel_rules_webtesting",
     remote = "https://github.com/bazelbuild/rules_webtesting.git",
-    tag = "0.1.1",
+    tag = "HEAD",
 )
 
 load("@io_bazel_rules_webtesting//web:repositories.bzl",
     "browser_repositories",
     "web_test_repositories")
 
-web_test_repositories(
-    # specify test languages your project is using.
-    go = True,
-    java = True,
-    python = True,
-)
+web_test_repositories()
 
 # Load repositories for example browser definitions.
 # You should create your own browser definitions and link
@@ -45,28 +40,8 @@ web_test_repositories(
 browser_repositories(
     chromium = True,
     firefox = True,
-    phantomjs = True,
 )
 ```
-
-This will configure the following repositories required to get web_test_suite
-working:
-
-*   [com_github_gorilla_mux](https://github.com/gorilla/mux)
-*   [org_seleniumhq_server](http://www.seleniumhq.org/download/) -- Selenium
-    Standalone Server
-*   [org_seleniumhq_java](http://www.seleniumhq.org/download/) -- Java Client
-    Binding (only if java = True)
-*   [org_json_json](https://mvnrepository.com/artifact/org.json/json) (only if
-    java = True)
-*   [com_google_code_findbugs_jsr305](https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305)
-    (only if java = True)
-*   [com_google_guava_guava](https://mvnrepository.com/artifact/com.google.guava/guava)
-    (only if java = True)
-*   [com_github_tebeka_selenium](https://github.com/tebeka/selenium) (only if
-    go = True)
-*   [org_seleniumhq_py](http://www.seleniumhq.org/download/) -- Python client
-    binding (only if python = True)
 
 ## Write your tests
 
@@ -149,14 +124,15 @@ if __name__ == "__main__":
   unittest.main()
 ```
 
-In your BUILD files, load the correct language specific build rule and create a test target using it:
+In your BUILD files, load the correct language specific build rule and create a
+test target using it:
 
 ```bzl
 load("@io_bazel_rules_webtesting//web:py.bzl", "py_web_test_suite")
 
 py_web_test_suite(
     name = "browser_test",
-    srcs = ["browser_test.py"],    
+    srcs = ["browser_test.py"],
     browsers = [
         # For experimental purposes only. Eventually you should
         # create your own browser definitions.
@@ -166,8 +142,3 @@ py_web_test_suite(
     deps = ["@io_bazel_rules_webtesting//testing/web"],
 )
 ```
-
-## Rules Reference
-
--   [BUILD Rules reference](rules.md)
--   [WORKSPACE Rules reference](repository_rules.md)

@@ -26,6 +26,8 @@ def web_test_repositories(
     omit_com_google_code_gson=False,
     omit_com_google_errorprone_error_prone_annotations=False,
     omit_com_google_guava=False,
+    omit_com_squareup_okhttp=False,
+    omit_com_squareup_okio=False,
     omit_commons_codec=False,
     omit_commons_logging=False,
     omit_junit=False,
@@ -36,6 +38,7 @@ def web_test_repositories(
     omit_org_apache_httpcomponents_httpcore=False,
     omit_org_apache_httpcomponents_httpmime=False,
     omit_org_hamcrest_core=False,
+    omit_org_json=False,
     omit_org_seleniumhq_py=False,
     omit_org_seleniumhq_selenium_api=False,
     omit_org_seleniumhq_selenium_remote_driver=False,
@@ -72,6 +75,10 @@ def web_test_repositories(
     com_google_errorprone_error_prone_annotations()
   if not omit_com_google_guava:
     com_google_guava()
+  if not omit_com_squareup_okhttp:
+    com_squareup_okhttp()
+  if not omit_com_squareup_okio:
+    com_squareup_okio()
   if not omit_commons_codec:
     commons_codec()
   if not omit_commons_logging:
@@ -92,6 +99,8 @@ def web_test_repositories(
     org_apache_httpcomponents_httpmime()
   if not omit_org_hamcrest_core:
     org_hamcrest_core()
+  if not omit_org_json:
+    org_json()
   if not omit_org_seleniumhq_py:
     org_seleniumhq_py()
   if not omit_org_seleniumhq_selenium_api:
@@ -129,7 +138,7 @@ def cglib_nodep():
           "http://maven.ibiblio.org/maven2/cglib/cglib-nodep/3.2.4/cglib-nodep-3.2.4.jar",
           "http://repo1.maven.org/maven2/cglib/cglib-nodep/3.2.4/cglib-nodep-3.2.4.jar",
       ],
-      licenses=["notice"],  # ASF 2.0
+      licenses=["notice"]  # ASF 2.0
   )
 
 
@@ -170,7 +179,7 @@ def com_google_code_findbugs_jsr305():
       ],
       jar_sha256=
       "905721a0eea90a81534abb7ee6ef4ea2e5e645fa1def0a5cd88402df1b46c9ed",
-      licenses=["notice"],  # BSD 3-clause
+      licenses=["notice"]  # BSD 3-clause
   )
 
 
@@ -197,7 +206,7 @@ def com_google_errorprone_error_prone_annotations():
           "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.0.15/error_prone_annotations-2.0.15.jar",
           "http://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.0.15/error_prone_annotations-2.0.15.jar",
       ],
-      licenses=["notice"],  # Apache 2.0
+      licenses=["notice"]  # Apache 2.0
   )
 
 
@@ -218,6 +227,33 @@ def com_google_guava():
       ])
 
 
+def com_squareup_okhttp():
+  java_import_external(
+      name="com_squareup_okhttp",
+      jar_urls=[
+          "http://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.8.0/okhttp-3.8.0.jar",
+      ],
+      jar_sha256=
+      "19e1db51787716ff0046fa19e408fb34ed32a6274baa0c07475bf724b4eb6800",
+      licenses=["notice"],  # Apache 2.0
+      deps=[
+          "@com_squareup_okio",
+          "@com_google_code_findbugs_jsr305",
+      ])
+
+
+def com_squareup_okio():
+  java_import_external(
+      name="com_squareup_okio",
+      jar_urls=[
+          "http://repo1.maven.org/maven2/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar",
+      ],
+      jar_sha256=
+      "734269c3ebc5090e3b23566db558f421f0b4027277c79ad5d176b8ec168bb850",
+      licenses=["notice"],  # Apache 2.0
+      deps=["@com_google_code_findbugs_jsr305"])
+
+
 def commons_codec():
   java_import_external(
       name="commons_codec",
@@ -228,7 +264,7 @@ def commons_codec():
           "http://repo1.maven.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.jar",
           "http://maven.ibiblio.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.jar",
       ],
-      licenses=["notice"],  # Apache License, Version 2.0
+      licenses=["notice"]  # Apache License, Version 2.0
   )
 
 
@@ -242,7 +278,7 @@ def commons_logging():
           "http://maven.ibiblio.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
           "http://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
       ],
-      licenses=["notice"],  # The Apache Software License, Version 2.0
+      licenses=["notice"]  # The Apache Software License, Version 2.0
   )
 
 
@@ -306,7 +342,7 @@ def org_apache_commons_exec():
           "http://repo1.maven.org/maven2/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar",
           "http://maven.ibiblio.org/maven2/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar",
       ],
-      licenses=["notice"],  # Apache License, Version 2.0
+      licenses=["notice"]  # Apache License, Version 2.0
   )
 
 
@@ -338,7 +374,7 @@ def org_apache_httpcomponents_httpcore():
           "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpcore/4.4.4/httpcore-4.4.4.jar",
           "http://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.4/httpcore-4.4.4.jar",
       ],
-      licenses=["notice"],  # Apache License, Version 2.0
+      licenses=["notice"]  # Apache License, Version 2.0
   )
 
 
@@ -399,6 +435,18 @@ def org_hamcrest_core():
       ],
       licenses=["notice"],  # New BSD License
       testonly_=1)
+
+
+def org_json():
+  java_import_external(
+      name="org_json",
+      jar_sha256=
+      "813f37e4820f1854e8a4eb4f80df94bf1b1f2ec6c3b72692f23ab9a556256af6",
+      jar_urls=[
+          "http://repo1.maven.org/maven2/org/json/json/20170516/json-20170516.jar",
+      ],
+      licenses=["notice"]  # MIT-style license
+  )
 
 
 def org_mozilla_firefox():
