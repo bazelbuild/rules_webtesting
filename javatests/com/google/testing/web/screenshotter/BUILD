@@ -33,6 +33,7 @@ java_web_test_suite(
         "noci",
     ],
     local = True,
+    tags = ["noci"],
     deps = [
         "//java/com/google/testing/util",
         "//java/com/google/testing/web",
