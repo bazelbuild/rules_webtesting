@@ -34,6 +34,12 @@ import org.openqa.selenium.remote.Dialect;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 
+/**
+ * API for interacting with advanced screenshot handler installed into Web Test Launcher.
+ *
+ * <p>Screenshotter objects are immutable; methods that return Screenshotter return an new
+ * Screenshotter object that is a copy of the original with appropriate modifications.
+ */
 public final class Screenshotter {
 
   private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -44,6 +50,10 @@ public final class Screenshotter {
   private final Optional<WebElement> element;
   private final ImmutableSet<WebElement> excluding;
 
+  /**
+   * Create a new Screenshotter that interacts with the WebDriver session to which driver is
+   * connected.
+   */
   public Screenshotter(WebDriver driver) {
     this(
         String.format(
@@ -61,10 +71,12 @@ public final class Screenshotter {
     this.excluding = ImmutableSet.copyOf(excluding);
   }
 
+  /** Returns a copy of this configured to take a screenshot of element. */
   public Screenshotter of(WebElement element) {
     return new Screenshotter(this.url, Optional.of(element), this.excluding);
   }
 
+  /** Returns a copy of this configured to blackout elements. */
   public Screenshotter excluding(WebElement... elements) {
     ImmutableSet<WebElement> ex =
         new ImmutableSet.Builder<WebElement>().addAll(this.excluding).add(elements).build();

@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import org.json.JSONObject;
 
+/** A wrapper around a screenshot returned by Screenshotter. */
 @Immutable
 public final class Screenshot {
   private static final String FORMAT = "png";
@@ -35,14 +36,22 @@ public final class Screenshot {
     this.base64 = response.getString("value");
   }
 
+  /** Returns the BASE 64 string returned by the screenshot endpoint. */
   public String asBase64() {
     return base64;
   }
 
+  /**
+   * Returns the decoded bytes for the screenshot. Every call to this returns a new copy of the
+   * decoded bytes.
+   */
   public byte[] asBytes() {
     return Base64.getDecoder().decode(base64);
   }
 
+  /**
+   * Returns a BufferedImage of the screenshot. Every call to this returns a new copy of the image.
+   */
   public BufferedImage asImage() throws IOException {
     ImageReader imageReader = ImageIO.getImageReadersByFormatName(FORMAT).next();
     imageReader.setInput(ImageIO.createImageInputStream(new ByteArrayInputStream(asBytes())), true);
