@@ -14,7 +14,7 @@
 //
 // //////////////////////////////////////////////////////////////////////////////
 //
-package com.google.testing.screenshotter;
+package com.google.testing.web.screenshotter;
 
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;

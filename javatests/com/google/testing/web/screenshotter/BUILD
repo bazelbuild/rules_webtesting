@@ -34,9 +34,9 @@ java_web_test_suite(
     ],
     local = True,
     deps = [
-        "//java/com/google/testing/screenshotter",
         "//java/com/google/testing/util",
         "//java/com/google/testing/web",
+        "//java/com/google/testing/web/screenshotter",
         "@junit",
         "@org_seleniumhq_selenium_api",
     ],

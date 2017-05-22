@@ -14,7 +14,7 @@
 //
 // //////////////////////////////////////////////////////////////////////////////
 //
-package com.google.testing.screenshotter;
+package com.google.testing.web.screenshotter;
 
 import com.google.errorprone.annotations.Immutable;
 import java.awt.image.BufferedImage;
