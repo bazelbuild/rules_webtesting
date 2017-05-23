@@ -16,6 +16,8 @@
 package portpicker
 
 import (
+	"errors"
+	"io"
 	"net"
 	"strconv"
 )
@@ -43,7 +45,10 @@ func PickUnusedPort() (int, error) {
 			return 0, err
 		}
 
-		port = strconv.Atoi(p)
+		port, err := strconv.Atoi(p)
+		if err != nil {
+			return 0, err
+		}
 
 		if !claimedPorts[port] {
 			claimedPorts[port] = true
