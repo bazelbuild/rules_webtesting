@@ -19,7 +19,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -41,8 +40,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	dir = filepath.Join(dir, bazel.TestWorkspace())
 
 	go func() {
 		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))

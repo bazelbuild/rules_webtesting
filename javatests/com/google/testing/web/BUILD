@@ -23,13 +23,29 @@ load("//web:java.bzl", "java_web_test_suite")
 java_web_test_suite(
     name = "WebTestTest",
     srcs = ["WebTestTest.java"],
-    browsers = ["//browsers/sauce:chrome55-win10"],
+    browser_overrides = {
+        "//browsers:chromium-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers:firefox-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome55-win10": {"tags": [
+            "requires-network",
+            "sauce",
+        ]},
+    },
+    browsers = [
+        "//browsers:chromium-native",
+        "//browsers:firefox-native",
+        "//browsers/sauce:chrome55-win10",
+    ],
     java_test_tags = [
         "manual",
         "noci",
     ],
-    local = True,
-    tags = ["requires-network"],
     deps = [
         "//java/com/google/testing/web",
         "@junit",

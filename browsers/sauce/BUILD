@@ -23,6 +23,9 @@ load("//web:web.bzl", "browser")
 browser(
     name = "chrome55-win10",
     metadata = "chrome55-win10.json",
-    required_tags = ["requires-network"],
+    required_tags = [
+        "requires-network",
+        "sauce",
+    ],
     visibility = ["//visibility:public"],
 )

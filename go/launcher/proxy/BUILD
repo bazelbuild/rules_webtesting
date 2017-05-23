@@ -18,7 +18,7 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 load("//web:go.bzl", "go_web_test_suite")
 
 go_library(
@@ -37,14 +37,31 @@ go_library(
 )
 
 go_web_test_suite(
-    name = "proxy_test",
+    name = "go_default_test",
     srcs = ["proxy_test.go"],
-    browsers = ["//browsers:chromium-native"],
+    browser_overrides = {
+        "//browsers:chromium-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers:firefox-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome55-win10": {"tags": [
+            "requires-network",
+            "sauce",
+        ]},
+    },
+    browsers = [
+        "//browsers:chromium-native",
+        "//browsers:firefox-native",
+        "//browsers/sauce:chrome55-win10",
+    ],
     config = "//testdata:https",
     go_test_tags = [
         "manual",
         "noci",
     ],
-    local = True,
     deps = ["//go/httphelper:go_default_library"],
 )

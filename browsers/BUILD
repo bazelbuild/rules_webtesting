@@ -54,7 +54,10 @@ browser(
     }),
     metadata = "firefox-native.json",
     # if not tagged local, then bazel does not exit cleanly
-    required_tags = ["local"],
+    required_tags = [
+        "local",
+        "noci",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         "//third_party/firefox",
@@ -69,6 +72,10 @@ browser(
         ":mac": {"DISABLE_X_DISPLAY": "1"},
     }),
     metadata = "chromium-native.json",
+    required_tags = [
+        "local",
+        "noci",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         "//third_party/chromedriver",

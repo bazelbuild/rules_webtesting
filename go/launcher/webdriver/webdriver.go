@@ -123,7 +123,21 @@ type jsonResp struct {
 }
 
 func (j *jsonResp) isError() bool {
-	return (j.Status != nil && *j.Status != 0) || j.Error != ""
+	if j.Status != nil && *j.Status != 0 {
+		return true
+	}
+
+	if j.Error != "" {
+		return true
+	}
+
+	value, ok := j.Value.(map[string]interface{})
+	if !ok {
+		return false
+	}
+
+	e, ok := value["error"].(string)
+	return ok && e != ""
 }
 
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
@@ -163,9 +177,16 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 
 			session := respBody.SessionID
 			if session == "" {
-				// if we cannot cast to string, then empty string is fine.
-				session, _ = caps["webdriver.remote.sessionid"].(string)
+				for k, v := range caps {
+					if strings.Contains(strings.ToLower(k), "sessionid") {
+						session = v.(string)
+						if session != "" {
+							break
+						}
+					}
+				}
 			}
+
 			if session == "" {
 				return nil, errors.New(compName, fmt.Errorf("no session id specified in %v", respBody))
 			}
@@ -237,7 +258,11 @@ func (d *webDriver) ExecuteScript(ctx context.Context, script string, args []int
 		"script": script,
 		"args":   args,
 	}
-	return d.post(ctx, "execute", body, value)
+	command := "execute"
+	if d.W3C() {
+		command = "execute/sync"
+	}
+	return d.post(ctx, command, body, value)
 }
 
 func (d *webDriver) ExecuteScriptAsync(ctx context.Context, script string, args []interface{}, value interface{}) error {
@@ -248,7 +273,11 @@ func (d *webDriver) ExecuteScriptAsync(ctx context.Context, script string, args 
 		"script": script,
 		"args":   args,
 	}
-	err := d.post(ctx, "execute_async", body, value)
+	command := "execute_async"
+	if d.W3C() {
+		command = "execute/async"
+	}
+	err := d.post(ctx, command, body, value)
 	return err
 }
 
@@ -263,14 +292,7 @@ func (d *webDriver) ExecuteScriptAsyncWithTimeout(ctx context.Context, timeout t
 			}
 		}()
 	}
-	if args == nil {
-		args = []interface{}{}
-	}
-	body := map[string]interface{}{
-		"script": script,
-		"args":   args,
-	}
-	return d.post(ctx, "execute_async", body, value)
+	return d.ExecuteScriptAsync(ctx, script, args, value)
 }
 
 // Screenshot takes a screenshot of the current browser window.
@@ -285,7 +307,11 @@ func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
 // WindowHandles returns a slice of the current window handles.
 func (d *webDriver) WindowHandles(ctx context.Context) ([]string, error) {
 	var value []string
-	if err := d.get(ctx, "window_handles", &value); err != nil {
+	command := "window_handles"
+	if d.W3C() {
+		command = "window/handles"
+	}
+	if err := d.get(ctx, command, &value); err != nil {
 		return nil, err
 	}
 	return value, nil
@@ -400,6 +426,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 		return nil, errors.New(compName, err)
 	}
 
+	fmt.Println("MRF: " + string(bytes) + "\n")
 	respBody := &jsonResp{Value: value}
 	if err := json.Unmarshal(bytes, respBody); err != nil || respBody.isError() {
 		if value != nil {

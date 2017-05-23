@@ -40,7 +40,7 @@ web_test_archive(
     archive = "@org_mozilla_firefox//file",
     named_files = select({
         ":linux": {
-            "FIREFOX": "firefox-sdk/bin/firefox",
+            "FIREFOX": "firefox/firefox",
         },
         ":mac": {
             "FIREFOX": "firefox-sdk/bin/Firefox.app/Contents/MacOS/firefox",
