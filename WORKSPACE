@@ -18,11 +18,11 @@ workspace(name = "io_bazel_rules_webtesting")
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "f7e42a4c1f9f31abff9b2bdee6fe4db18bc373287b7e07a5b844446e561e67e2",
-    strip_prefix = "rules_go-4c9a52aba0b59511c5646af88d2f93a9c0193647",
+    sha256 = "afec53d875013de6cebe0e51943345c587b41263fdff36df5ff651fbf03c1c08",
+    strip_prefix = "rules_go-0.4.4",
     urls = [
-        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/archive/4c9a52aba0b59511c5646af88d2f93a9c0193647.tar.gz",
-        "https://github.com/bazelbuild/rules_go/archive/4c9a52aba0b59511c5646af88d2f93a9c0193647.tar.gz",
+        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/archive/0.4.4.tar.gz",
+        "https://github.com/bazelbuild/rules_go/archive/0.4.4.tar.gz",
     ],
 )
 

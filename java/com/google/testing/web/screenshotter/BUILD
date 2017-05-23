@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2017 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,30 +18,15 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-filegroup(
-    name = "testdata",
-    srcs = glob(["*"]),
-    visibility = ["//:__subpackages__"],
-)
-
-load("//web:web.bzl", "web_test_named_file", "web_test_config")
-
-web_test_named_file(
-    name = "PROXY_TLS_KEY",
-    file = "key.pem",
-)
-
-web_test_named_file(
-    name = "PROXY_TLS_CERT",
-    file = "cert.pem",
-)
-
-web_test_config(
-    name = "https",
-    visibility = ["//go/launcher/proxy:__subpackages__"],
+java_library(
+    name = "screenshotter",
+    srcs = glob(["*.java"]),
+    visibility = ["//visibility:public"],
     deps = [
-        ":PROXY_TLS_CERT",
-        ":PROXY_TLS_KEY",
-        "//web:default_config",
+        "@com_google_guava",
+        "@com_squareup_okhttp",
+        "@org_json",
+        "@org_seleniumhq_selenium_api",
+        "@org_seleniumhq_selenium_remote_driver",
     ],
 )
