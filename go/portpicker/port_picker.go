@@ -20,7 +20,7 @@ import (
 	"strconv"
 )
 
-var claimedPorts = map[string]bool{}
+var claimedPorts = map[int]bool{}
 
 // PickUnusedPort picks an unused TCP port.
 func PickUnusedPort() (int, error) {
@@ -31,7 +31,7 @@ func PickUnusedPort() (int, error) {
 		}
 	}()
 
-	for i := 0; i < len(claimedPorts); i++ {
+	for i := 0; i <= len(claimedPorts); i++ {
 		l, err := net.Listen("tcp", ":0")
 		if err != nil {
 			return 0, err
