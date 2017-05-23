@@ -39,7 +39,6 @@ func TestFromFileWithExtension(t *testing.T) {
 	if !extension.Equals(expected) {
 		t.Errorf("Got %+v, expected %+v", extension, expected)
 	}
-
 }
 
 func TestMergeWithExtension(t *testing.T) {
