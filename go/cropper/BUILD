@@ -29,7 +29,7 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = ["cropper_test.go"],
-    data = ["//go/cropper/testdata"],
+    data = ["//testdata"],
     library = ":go_default_library",
     deps = ["//go/bazel:go_default_library"],
 )

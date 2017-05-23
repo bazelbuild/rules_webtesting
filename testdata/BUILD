@@ -16,13 +16,39 @@
 #
 package(
     default_testonly = True,
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//:__subpackages__"],
 )
 
 licenses(["notice"])  # Apache 2.0
 
-java_library(
-    name = "util",
-    srcs = glob(["*.java"]),
-    deps = ["@com_google_guava"],
+filegroup(
+    name = "testdata",
+    srcs = glob(["*"]),
+)
+
+load("//web:web.bzl", "web_test_named_file", "web_test_config")
+
+web_test_named_file(
+    name = "PROXY_TLS_KEY",
+    file = "key.pem",
+)
+
+web_test_named_file(
+    name = "PROXY_TLS_CERT",
+    file = "cert.pem",
+)
+
+web_test_config(
+    name = "https",
+    deps = [
+        ":PROXY_TLS_CERT",
+        ":PROXY_TLS_KEY",
+        "//web:default_config",
+    ],
+)
+
+web_test_config(
+    name = "mobileemulation",
+    metadata = "mobileemulation.json",
+    deps = ["//web:default_config"],
 )

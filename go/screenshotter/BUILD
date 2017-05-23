@@ -32,7 +32,7 @@ go_web_test_suite(
     name = "screenshotter_test",
     srcs = ["screenshotter_test.go"],
     browsers = ["//browsers/sauce:chrome55-win10"],
-    data = ["//go/launcher/proxy/testdata"],
+    data = ["//testdata"],
     go_test_tags = [
         "manual",
         "noci",

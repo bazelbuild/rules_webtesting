@@ -17,7 +17,7 @@ package webtest
 import "testing"
 
 func TestBrowserInfo(t *testing.T) {
-	i, err := newInfo("io_bazel_rules_webtesting/go/metadata/testdata/all-fields.json")
+	i, err := newInfo("testdata/all-fields.json")
 	if err != nil {
 		t.Fatal(err)
 	}

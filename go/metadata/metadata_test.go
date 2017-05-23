@@ -21,11 +21,11 @@ import (
 )
 
 const (
-	allFields      = "io_bazel_rules_webtesting/go/metadata/testdata/all-fields.json"
-	chromeLinux    = "io_bazel_rules_webtesting/go/metadata/testdata/chrome-linux.json"
-	androidBrowser = "io_bazel_rules_webtesting/go/metadata/testdata/android-browser-gingerbread-nexus-s.json"
-	fakeBrowser    = "io_bazel_rules_webtesting/go/metadata/testdata/merge-from-file-result.json"
-	badNamedFiles  = "io_bazel_rules_webtesting/go/metadata/testdata/bad-named-files.json"
+	allFields      = "testdata/all-fields.json"
+	chromeLinux    = "testdata/chrome-linux.json"
+	androidBrowser = "testdata/android-browser-gingerbread-nexus-s.json"
+	fakeBrowser    = "testdata/merge-from-file-result.json"
+	badNamedFiles  = "testdata/bad-named-files.json"
 )
 
 func TestFromFile(t *testing.T) {

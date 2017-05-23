@@ -21,7 +21,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
 )
 
-var extensionFile = "io_bazel_rules_webtesting/go/metadata/testdata/extension.json"
+var extensionFile = "testdata/extension.json"
 
 func TestFromFileWithExtension(t *testing.T) {
 	f, err := bazel.Runfile(extensionFile)

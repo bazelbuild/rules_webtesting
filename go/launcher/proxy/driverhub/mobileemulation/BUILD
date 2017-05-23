@@ -20,7 +20,6 @@ licenses(["notice"])  # Apache 2.0
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 load("//web:go.bzl", "go_web_test_suite")
-load("//web:web.bzl", "web_test_config")
 
 go_library(
     name = "go_default_library",
@@ -33,17 +32,12 @@ go_library(
     ],
 )
 
-web_test_config(
-    name = "mobileemulation_test_config",
-    metadata = "mobileemulation_test.json",
-)
-
 go_web_test_suite(
     name = "mobileemulation_test",
     srcs = ["mobileemulation_test.go"],
     browsers = ["//browsers/sauce:chrome55-win10"],
-    config = ":mobileemulation_test_config",
-    data = ["//go/launcher/proxy/testdata"],
+    config = "//testdata:mobileemulation",
+    data = ["//testdata"],
     go_test_tags = [
         "manual",
         "noci",

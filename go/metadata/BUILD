@@ -39,7 +39,7 @@ go_test(
         "extension_test.go",
         "metadata_test.go",
     ],
-    data = ["//go/metadata/testdata"],
+    data = ["//testdata"],
     library = ":go_default_library",
     deps = ["//go/bazel:go_default_library"],
 )

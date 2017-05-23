@@ -48,7 +48,7 @@ go_web_test_suite(
         "//browsers:firefox-native",
         "//browsers/sauce:chrome55-win10",
     ],
-    data = ["//go/metadata/testdata"],
+    data = ["//testdata"],
     go_test_tags = [
         "manual",
         "noci",

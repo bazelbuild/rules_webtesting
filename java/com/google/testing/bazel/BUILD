@@ -14,12 +14,15 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
+package(
+    default_testonly = True,
+    default_visibility = ["//visibility:public"],
+)
 
 licenses(["notice"])  # Apache 2.0
 
-filegroup(
-    name = "testdata",
-    srcs = glob(["*"]),
-    visibility = ["//go/cropper:__pkg__"],
+java_library(
+    name = "bazel",
+    srcs = glob(["*.java"]),
+    deps = ["@com_google_guava"],
 )

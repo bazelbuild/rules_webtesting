@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	dir, err := bazel.RunfilesPath()
+	dir, err := bazel.Runfile("testdata/")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
 	}()
 
-	testpage = fmt.Sprintf("http://localhost:%d/go/launcher/proxy/testdata/testpage.html", port)
+	testpage = fmt.Sprintf("http://localhost:%d/testpage.html", port)
 
 	os.Exit(m.Run())
 }

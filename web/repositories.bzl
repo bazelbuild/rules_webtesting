@@ -26,7 +26,7 @@ def web_test_repositories(
     omit_com_google_code_gson=False,
     omit_com_google_errorprone_error_prone_annotations=False,
     omit_com_google_guava=False,
-    omit_com_squareup_okhttp=False,
+    omit_com_squareup_okhttp3_okhttp=False,
     omit_com_squareup_okio=False,
     omit_commons_codec=False,
     omit_commons_logging=False,
@@ -75,8 +75,8 @@ def web_test_repositories(
     com_google_errorprone_error_prone_annotations()
   if not omit_com_google_guava:
     com_google_guava()
-  if not omit_com_squareup_okhttp:
-    com_squareup_okhttp()
+  if not omit_com_squareup_okhttp3_okhttp:
+    com_squareup_okhttp3_okhttp()
   if not omit_com_squareup_okio:
     com_squareup_okio()
   if not omit_commons_codec:
@@ -227,9 +227,9 @@ def com_google_guava():
       ])
 
 
-def com_squareup_okhttp():
+def com_squareup_okhttp3_okhttp():
   java_import_external(
-      name="com_squareup_okhttp",
+      name="com_squareup_okhttp3_okhttp",
       jar_urls=[
           "http://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.8.0/okhttp-3.8.0.jar",
       ],

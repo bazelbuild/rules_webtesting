@@ -40,7 +40,7 @@ go_web_test_suite(
     name = "proxy_test",
     srcs = ["proxy_test.go"],
     browsers = ["//browsers:chromium-native"],
-    config = "//go/launcher/proxy/testdata:https",
+    config = "//testdata:https",
     go_test_tags = [
         "manual",
         "noci",
