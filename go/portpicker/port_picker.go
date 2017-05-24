@@ -16,20 +16,44 @@
 package portpicker
 
 import (
+	"errors"
+	"io"
 	"net"
 	"strconv"
 )
 
+var claimedPorts = map[int]bool{}
+
 // PickUnusedPort picks an unused TCP port.
 func PickUnusedPort() (int, error) {
-	l, err := net.Listen("tcp", ":0")
-	if err != nil {
-		return 0, err
+	var listeners []io.Closer
+	defer func() {
+		for _, c := range listeners {
+			c.Close()
+		}
+	}()
+
+	for i := 0; i <= len(claimedPorts); i++ {
+		l, err := net.Listen("tcp", ":0")
+		if err != nil {
+			return 0, err
+		}
+		listeners = append(listeners, l)
+
+		_, p, err := net.SplitHostPort(l.Addr().String())
+		if err != nil {
+			return 0, err
+		}
+
+		port, err := strconv.Atoi(p)
+		if err != nil {
+			return 0, err
+		}
+
+		if !claimedPorts[port] {
+			claimedPorts[port] = true
+			return port, nil
+		}
 	}
-	defer l.Close()
-	_, port, err := net.SplitHostPort(l.Addr().String())
-	if err != nil {
-		return 0, err
-	}
-	return strconv.Atoi(port)
+	return 0, errors.New("unable to get a port")
 }

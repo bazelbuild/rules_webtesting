@@ -27,7 +27,7 @@ import (
 )
 
 func TestCrop(t *testing.T) {
-	p, err := bazel.Runfile("go/cropper/testdata/example.png")
+	p, err := bazel.Runfile("testdata/example.png")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +83,7 @@ func TestCrop(t *testing.T) {
 }
 
 func TestBlackout(t *testing.T) {
-	p, err := bazel.Runfile("go/cropper/testdata/example.png")
+	p, err := bazel.Runfile("testdata/example.png")
 	if err != nil {
 		t.Fatal(err)
 	}

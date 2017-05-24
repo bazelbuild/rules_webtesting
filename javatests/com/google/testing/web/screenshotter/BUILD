@@ -23,19 +23,27 @@ load("//web:java.bzl", "java_web_test_suite")
 java_web_test_suite(
     name = "ScreenshotterTest",
     srcs = ["ScreenshotterTest.java"],
+    browser_overrides = {
+        "//browsers:chromium-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers:firefox-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+    },
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
     ],
-    data = ["//go/launcher/proxy/testdata"],
+    data = ["//testdata"],
     java_test_tags = [
         "manual",
         "noci",
     ],
-    local = True,
-    tags = ["noci"],
     deps = [
-        "//java/com/google/testing/util",
+        "//java/com/google/testing/bazel",
         "//java/com/google/testing/web",
         "//java/com/google/testing/web/screenshotter",
         "@junit",

@@ -33,28 +33,35 @@ go_library(
 )
 
 go_web_test_suite(
-    name = "webtest_test",
+    name = "go_default_test",
     srcs = [
         "browserinfo_test.go",
         "webtest_test.go",
     ],
     browser_overrides = {
-        "//browsers/sauce:chrome55-win10": {
-            "tags": ["requires-network"],
+        "//browsers:chromium-native": {
+            "local": True,
+            "tags": ["noci"],
         },
+        "//browsers:firefox-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome55-win10": {"tags": [
+            "requires-network",
+            "sauce",
+        ]},
     },
     browsers = [
         "//browsers:chromium-native",
         "//browsers:firefox-native",
         "//browsers/sauce:chrome55-win10",
     ],
-    data = ["//go/metadata/testdata"],
+    data = ["//testdata"],
     go_test_tags = [
         "manual",
         "noci",
     ],
     library = ":go_default_library",
-    local = True,
-    tags = ["noci"],
     deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )

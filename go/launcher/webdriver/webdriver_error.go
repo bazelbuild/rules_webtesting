@@ -146,6 +146,15 @@ func errDatum(resp *jsonResp) errorDatum {
 			}
 		}
 	}
+	if value, ok := resp.Value.(map[string]interface{}); ok {
+		if e, ok := value["error"].(string); ok && e != "" {
+			for _, cand := range errorData {
+				if cand.Error == e {
+					return cand
+				}
+			}
+		}
+	}
 	if resp.Status != nil && *resp.Status != 0 {
 		for _, cand := range errorData {
 			if cand.Status == *resp.Status {

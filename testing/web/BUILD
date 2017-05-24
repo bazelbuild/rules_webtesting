@@ -34,13 +34,29 @@ py_library(
 py_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.py"],
-    browsers = ["//browsers/sauce:chrome55-win10"],
-    local = True,
+    browser_overrides = {
+        "//browsers:chromium-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers:firefox-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome55-win10": {"tags": [
+            "requires-network",
+            "sauce",
+        ]},
+    },
+    browsers = [
+        "//browsers:chromium-native",
+        "//browsers:firefox-native",
+        "//browsers/sauce:chrome55-win10",
+    ],
     py_test_tags = [
         "manual",
         "noci",
     ],
     srcs_version = "PY2AND3",
-    tags = ["requires-network"],
     deps = [":web"],
 )

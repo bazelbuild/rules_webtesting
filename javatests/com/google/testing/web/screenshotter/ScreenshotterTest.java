@@ -18,7 +18,7 @@ package com.google.testing.web.screenshotter;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.testing.util.Bazel;
+import com.google.testing.bazel.Bazel;
 import com.google.testing.web.WebTest;
 import java.awt.Image;
 import java.nio.file.Files;
@@ -49,8 +49,7 @@ public class ScreenshotterTest {
   public void createDriver() throws Exception {
     driver = new WebTest().newWebDriverSession();
     screenshotter = new Screenshotter(driver);
-    driver.get(
-        Bazel.getInstance().runfile("go/launcher/proxy/testdata/testpage.html").toUri().toString());
+    driver.get(Bazel.getInstance().runfile("testdata/testpage.html").toUri().toString());
   }
 
   @After

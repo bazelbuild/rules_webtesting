@@ -23,8 +23,9 @@ java_library(
     srcs = glob(["*.java"]),
     visibility = ["//visibility:public"],
     deps = [
+        "@com_google_errorprone_error_prone_annotations",
         "@com_google_guava",
-        "@com_squareup_okhttp",
+        "@com_squareup_okhttp3_okhttp",
         "@org_json",
         "@org_seleniumhq_selenium_api",
         "@org_seleniumhq_selenium_remote_driver",

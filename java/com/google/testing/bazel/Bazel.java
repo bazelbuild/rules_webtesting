@@ -14,7 +14,7 @@
 //
 // //////////////////////////////////////////////////////////////////////////////
 //
-package com.google.testing.util;
+package com.google.testing.bazel;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
+/** Provides access to various Bazel environment variables. */
 public class Bazel {
 
   private static Bazel instance;
@@ -62,7 +63,7 @@ public class Bazel {
     return instance;
   }
 
-  // Returns the path of the runfile in the default workspace.
+  /** Returns the path of the runfile in the default workspace. */
   public Path runfile(String path) throws IOException {
     Path candidate = runfilesDir.resolve(path);
     if (candidate.toFile().exists()) {
@@ -75,7 +76,7 @@ public class Bazel {
     throw new IOException("Can not find runfile: " + path);
   }
 
-  // Returns a new temporary subdirectory in the test temporary directory.
+  /** Returns a new temporary subdirectory in the test temporary directory. */
   public Path newTmpDir(String prefix) throws IOException {
     if (testTmpDir.isPresent()) {
       return Files.createTempDirectory(testTmpDir.get(), prefix);

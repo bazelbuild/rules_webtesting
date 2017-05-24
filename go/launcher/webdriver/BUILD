@@ -35,14 +35,30 @@ go_library(
 )
 
 go_web_test_suite(
-    name = "webdriver_test",
+    name = "go_default_test",
     srcs = ["webdriver_test.go"],
-    browsers = ["//browsers/sauce:chrome55-win10"],
+    browser_overrides = {
+        "//browsers:chromium-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers:firefox-native": {
+            "local": True,
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome55-win10": {"tags": [
+            "requires-network",
+            "sauce",
+        ]},
+    },
+    browsers = [
+        "//browsers:chromium-native",
+        "//browsers:firefox-native",
+        "//browsers/sauce:chrome55-win10",
+    ],
     go_test_tags = [
         "manual",
         "noci",
     ],
     library = ":go_default_library",
-    local = True,
-    tags = ["requires-network"],
 )

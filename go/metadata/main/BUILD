@@ -38,6 +38,6 @@ sh_test(
     srcs = ["merger_test.sh"],
     data = [
         ":main",
-        "//go/metadata/testdata",
+        "//testdata",
     ],
 )
