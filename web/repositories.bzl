@@ -398,7 +398,7 @@ def org_chromium_chromedriver():
           "http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip"
       ],
       macos_sha256=
-      "70aae3812941ed94ad8065bb4a9432861d7d4ebacdd93ee47bb2c7c57c7e841e",
+      "6c30bba7693ec2d9af7cd9a54729e10aeae85c0953c816d9c4a40a1a72fd8be0",
       macos_urls=[
           "http://chromedriver.storage.googleapis.com/2.29/chromedriver_mac64.zip"
       ])
@@ -414,9 +414,9 @@ def org_chromium_chromium():
           "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/454471/chrome-linux.zip"
       ],
       macos_sha256=
-      "62aeb7a5c6b8a1b7b31400105bf01295bbd45b0627920b8f99f0cc4ca76927ca",
+      "740d691b07855e2aace1e524fd67b8732458e52cc8fca0b4c1bddbbb3aa9ee11",
       macos_urls=[
-          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/454471/chrome-mac.zip"
+          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/454475/chrome-mac.zip"
       ])
 
 
@@ -456,10 +456,10 @@ def org_mozilla_firefox():
           "http://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/53.0.3/linux-x86_64/en-US/firefox-53.0.3.tar.bz2",
       ],
       macos_sha256=
-      "5cd449ebedb44b2f882b37e6e5cee1a814bc5ff3c3f86d1a1019b937aa287441",
+      "b9e9f383fd12d6deb6b36b3c2844647ce065142e1eb934499559a8a9842d01ad",
       macos_urls=[
-          "https://ftp.mozilla.org/pub/firefox/releases/53.0.3/mac/en-US/Firefox%2053.0.3.dmg",
-          "http://mirror.bazel.build/https://ftp.mozilla.org/pub/firefox/releases/53.0.3/mac/en-US/Firefox%2053.0.3.dmg",
+          "https://ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
+          "http://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
       ])
 
 
@@ -473,7 +473,7 @@ def org_mozilla_geckodriver():
           "https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz",
       ],
       macos_sha256=
-      "802cc1a33b8ce6f7c3aeb5116730cb6efc20414959d6f750e74437869d37a150",
+      "eb5a2971e5eb4a2fe74a3b8089f0f2cc96eed548c28526b8351f0f459c080836",
       macos_urls=[
           "http://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-macos.tar.gz",
           "https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-macos.tar.gz",
