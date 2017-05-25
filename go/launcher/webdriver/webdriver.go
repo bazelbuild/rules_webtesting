@@ -53,11 +53,11 @@ type WebDriver interface {
 	// and attempts to restore it to its previous value after.
 	ExecuteScriptAsyncWithTimeout(ctx context.Context, timeout time.Duration, script string, args []interface{}, value interface{}) error
 	// Quit closes the WebDriver session.
-	Quit(ctx context.Context) error
+	Quit(context.Context) error
 	// CommandURL builds a fully resolved URL for the specified end-point.
 	CommandURL(endpoint ...string) (*url.URL, error)
 	// SetScriptTimeout sets the timeout for the callback of an ExecuteScriptAsync call to be called.
-	SetScriptTimeout(ctx context.Context, timeout time.Duration) error
+	SetScriptTimeout(context.Context, time.Duration) error
 	// Logs gets logs of the specified type from the remote end.
 	Logs(ctx context.Context, logType string) ([]LogEntry, error)
 	// SessionID returns the id for this session.
@@ -67,13 +67,21 @@ type WebDriver interface {
 	// Capabilities returns the capabilities returned from the remote end when session was created.
 	Capabilities() map[string]interface{}
 	// Screenshot takes a screenshot of the current browser window.
-	Screenshot(ctx context.Context) (image.Image, error)
+	Screenshot(context.Context) (image.Image, error)
 	// WindowHandles returns a slice of the current window handles.
-	WindowHandles(ctx context.Context) ([]string, error)
+	WindowHandles(context.Context) ([]string, error)
 	// ElementFromID returns a new WebElement object for the given id.
 	ElementFromID(string) WebElement
 	// ElementFromMap returns a new WebElement from a map representing a JSON object.
 	ElementFromMap(map[string]interface{}) (WebElement, error)
+	// GetWindowRect returns the current windows size and location.
+	GetWindowRect(context.Context) (Rectangle, error)
+	// SetWindowRect sets the current window size and location.
+	SetWindowRect(context.Context, Rectangle) error
+	// SetWindowSize sets the current window size.
+	SetWindowSize(ctx context.Context, width, height uint64) error
+	// SetWindowPosition sest the current window position.
+	SetWindowPosition(ctx context.Context, x, y int64) error
 	// W3C return true iff connected to a W3C compliant remote end.
 	W3C() bool
 }
@@ -90,6 +98,13 @@ type WebElement interface {
 	// This will not scroll the element into the viewport first.
 	// Will return an error if the element is not in the viewport.
 	Bounds(ctx context.Context) (image.Rectangle, error)
+}
+
+type Rectangle struct {
+	X      int64  `json:"x"`
+	Y      int64  `json:"y"`
+	Width  uint64 `json:"width"`
+	Height uint64 `json:"height"`
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
@@ -317,6 +332,56 @@ func (d *webDriver) WindowHandles(ctx context.Context) ([]string, error) {
 	return value, nil
 }
 
+func (d *webDriver) GetWindowRect(ctx context.Context) (result Rectangle, err error) {
+	if d.W3C() {
+		err = d.get(ctx, "window/rect", &result)
+		return
+	}
+
+	err = d.get(ctx, "window/current/size", &result)
+	if err != nil {
+		return
+	}
+	err = d.get(ctx, "window/current/position", &result)
+	return
+}
+
+func (d *webDriver) SetWindowRect(ctx context.Context, rect Rectangle) error {
+	if d.W3C() {
+		return d.post(ctx, "window/rect", rect, nil)
+	}
+
+	if err := d.SetWindowSize(ctx, rect.Width, rect.Height); err != nil {
+		return err
+	}
+
+	return d.SetWindowPosition(ctx, rect.X, rect.Y)
+}
+
+func (d *webDriver) SetWindowSize(ctx context.Context, width, height uint64) error {
+	args := map[string]uint64{
+		"width":  width,
+		"height": height,
+	}
+	command := "window/current/size"
+	if d.W3C() {
+		command = "window/rect"
+	}
+	return d.post(ctx, command, args, nil)
+}
+
+func (d *webDriver) SetWindowPosition(ctx context.Context, x, y int64) error {
+	args := map[string]int64{
+		"x": x,
+		"y": y,
+	}
+	command := "window/current/position"
+	if d.W3C() {
+		command = "window/rect"
+	}
+	return d.post(ctx, command, args, nil)
+}
+
 func (d *webDriver) post(ctx context.Context, suffix string, body interface{}, value interface{}) error {
 	c, err := d.CommandURL(suffix)
 	if err != nil {
@@ -426,7 +491,6 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 		return nil, errors.New(compName, err)
 	}
 
-	fmt.Println("MRF: " + string(bytes) + "\n")
 	respBody := &jsonResp{Value: value}
 	if err := json.Unmarshal(bytes, respBody); err != nil || respBody.isError() {
 		if value != nil {

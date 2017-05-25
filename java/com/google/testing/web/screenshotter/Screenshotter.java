@@ -118,7 +118,7 @@ public final class Screenshotter {
     return params;
   }
 
-  private static JSONObject webElementToJSON(WebElement element) {
+  private static JSONObject webElementToJSON(WebElement element) throws JSONException {
     String id = ((RemoteWebElement) element).getId();
     JSONObject object = new JSONObject();
     object.put(Dialect.OSS.getEncodedElementKey(), id);

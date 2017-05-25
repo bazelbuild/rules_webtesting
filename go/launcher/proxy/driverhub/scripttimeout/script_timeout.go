@@ -17,92 +17,92 @@
 package scripttimeout
 
 import (
-  "context"
-  "encoding/json"
-  "net/http"
-  "time"
+	"context"
+	"encoding/json"
+	"net/http"
+	"time"
 
-  "github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 )
 
 // ProviderFunc provides a handler for set script timeout commands.
 func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-  return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
+	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 
-    if rq.Method == http.MethodPost && len(rq.Path) == 1 && rq.Path[0] == "timeouts" {
-      var request map[string]interface{}
+		if rq.Method == http.MethodPost && len(rq.Path) == 1 && rq.Path[0] == "timeouts" {
+			var request map[string]interface{}
 
-      if err := json.Unmarshal(rq.Body, &request); err != nil {
-        return base(ctx, rq)
-      }
+			if err := json.Unmarshal(rq.Body, &request); err != nil {
+				return base(ctx, rq)
+			}
 
-      if timeout, ok := request["script"].(int); ok {
-        if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
-          delete(request, "script")
-        }
-      }
+			if timeout, ok := request["script"].(int); ok {
+				if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+					delete(request, "script")
+				}
+			}
 
-      if timeout, ok := request["script"].(float64); ok {
-        if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
-          delete(request, "script")
-        }
-      }
+			if timeout, ok := request["script"].(float64); ok {
+				if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+					delete(request, "script")
+				}
+			}
 
-      if t, ok := request["type"].(string); ok && t == "script" {
-        if timeout, ok := request["ms"].(int); ok {
-          if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
-            delete(request, "ms")
-            delete(request, "type")
-          }
-        }
+			if t, ok := request["type"].(string); ok && t == "script" {
+				if timeout, ok := request["ms"].(int); ok {
+					if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+						delete(request, "ms")
+						delete(request, "type")
+					}
+				}
 
-        if timeout, ok := request["ms"].(float64); ok {
-          if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
-            delete(request, "ms")
-            delete(request, "type")
-          }
-        }
-      }
+				if timeout, ok := request["ms"].(float64); ok {
+					if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+						delete(request, "ms")
+						delete(request, "type")
+					}
+				}
+			}
 
-      if len(request) == 0 {
-        return driverhub.Response{
-          Status: http.StatusOK,
-          Body:   []byte(`{"status": 0}`),
-        }, nil
-      }
+			if len(request) == 0 {
+				return driverhub.Response{
+					Status: http.StatusOK,
+					Body:   []byte(`{"status": 0}`),
+				}, nil
+			}
 
-      body, err := json.Marshal(request)
-      if err == nil {
-        rq.Body = body
-      }
-    }
+			body, err := json.Marshal(request)
+			if err == nil {
+				rq.Body = body
+			}
+		}
 
-    if rq.Method == http.MethodPost && len(rq.Path) == 2 && rq.Path[0] == "timeouts" && rq.Path[1] == "async_script" {
-      var request map[string]interface{}
+		if rq.Method == http.MethodPost && len(rq.Path) == 2 && rq.Path[0] == "timeouts" && rq.Path[1] == "async_script" {
+			var request map[string]interface{}
 
-      if err := json.Unmarshal(rq.Body, &request); err != nil {
-        return base(ctx, rq)
-      }
+			if err := json.Unmarshal(rq.Body, &request); err != nil {
+				return base(ctx, rq)
+			}
 
-      if timeout, ok := request["ms"].(int); ok {
-        if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
-          return driverhub.Response{
-            Status: http.StatusOK,
-            Body:   []byte(`{"status": 0}`),
-          }, nil
-        }
-      }
+			if timeout, ok := request["ms"].(int); ok {
+				if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+					return driverhub.Response{
+						Status: http.StatusOK,
+						Body:   []byte(`{"status": 0}`),
+					}, nil
+				}
+			}
 
-      if timeout, ok := request["ms"].(float64); ok {
-        if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
-          return driverhub.Response{
-            Status: http.StatusOK,
-            Body:   []byte(`{"status": 0}`),
-          }, nil
-        }
-      }
-    }
+			if timeout, ok := request["ms"].(float64); ok {
+				if err := session.WebDriver.SetScriptTimeout(ctx, time.Duration(timeout)*time.Millisecond); err == nil {
+					return driverhub.Response{
+						Status: http.StatusOK,
+						Body:   []byte(`{"status": 0}`),
+					}, nil
+				}
+			}
+		}
 
-    return base(ctx, rq)
-  }, true
+		return base(ctx, rq)
+	}, true
 }

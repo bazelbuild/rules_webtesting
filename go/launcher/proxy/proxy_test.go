@@ -15,49 +15,49 @@
 package proxy
 
 import (
-  "context"
-  "fmt"
-  "net/http"
-  "os"
-  "testing"
+	"context"
+	"fmt"
+	"net/http"
+	"os"
+	"testing"
 
-  "github.com/bazelbuild/rules_webtesting/go/httphelper"
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 )
 
 func TestHTTPSProxy(t *testing.T) {
-  address, ok := os.LookupEnv("WEB_TEST_HTTPS_SERVER")
-  if !ok {
-    t.Fatal("expected environment variable WEB_TEST_HTTPS_SERVER to be defined")
-  }
+	address, ok := os.LookupEnv("WEB_TEST_HTTPS_SERVER")
+	if !ok {
+		t.Fatal("expected environment variable WEB_TEST_HTTPS_SERVER to be defined")
+	}
 
-  ctx := context.Background()
+	ctx := context.Background()
 
-  url := fmt.Sprintf("%s/healthz", address)
-  resp, err := httphelper.Get(ctx, url)
-  if err != nil {
-    t.Fatal(err)
-  }
-  resp.Body.Close()
-  if resp.StatusCode != http.StatusOK {
-    t.Fatalf("Got status code %d expected %d", resp.StatusCode, http.StatusOK)
-  }
+	url := fmt.Sprintf("%s/healthz", address)
+	resp, err := httphelper.Get(ctx, url)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("Got status code %d expected %d", resp.StatusCode, http.StatusOK)
+	}
 }
 
 func TestHTTPProxy(t *testing.T) {
-  address, ok := os.LookupEnv("WEB_TEST_HTTP_SERVER")
-  if !ok {
-    t.Fatal("expected environment variable WEB_TEST_HTTP_SERVER to be defined")
-  }
+	address, ok := os.LookupEnv("WEB_TEST_HTTP_SERVER")
+	if !ok {
+		t.Fatal("expected environment variable WEB_TEST_HTTP_SERVER to be defined")
+	}
 
-  ctx := context.Background()
+	ctx := context.Background()
 
-  url := fmt.Sprintf("%s/healthz", address)
-  resp, err := httphelper.Get(ctx, url)
-  if err != nil {
-    t.Fatal(err)
-  }
-  resp.Body.Close()
-  if resp.StatusCode != http.StatusOK {
-    t.Fatalf("Got status code %d expected %d", resp.StatusCode, http.StatusOK)
-  }
+	url := fmt.Sprintf("%s/healthz", address)
+	resp, err := httphelper.Get(ctx, url)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("Got status code %d expected %d", resp.StatusCode, http.StatusOK)
+	}
 }

@@ -15,76 +15,76 @@
 package scripttimeout
 
 import (
-  "fmt"
-  "log"
-  "net/http"
-  "os"
-  "testing"
-  "time"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"testing"
+	"time"
 
-  "github.com/bazelbuild/rules_webtesting/go/bazel"
-  "github.com/bazelbuild/rules_webtesting/go/portpicker"
-  "github.com/bazelbuild/rules_webtesting/go/webtest"
-  "github.com/tebeka/selenium"
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
+	"github.com/bazelbuild/rules_webtesting/go/webtest"
+	"github.com/tebeka/selenium"
 )
 
 var testpage = ""
 
 func TestMain(m *testing.M) {
-  port, err := portpicker.PickUnusedPort()
-  if err != nil {
-    log.Fatal(err)
-  }
+	port, err := portpicker.PickUnusedPort()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  dir, err := bazel.Runfile("testdata/")
-  if err != nil {
-    log.Fatal(err)
-  }
+	dir, err := bazel.Runfile("testdata/")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  go func() {
-    log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
-  }()
+	go func() {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
+	}()
 
-  testpage = fmt.Sprintf("http://localhost:%d/testpage.html", port)
+	testpage = fmt.Sprintf("http://localhost:%d/testpage.html", port)
 
-  os.Exit(m.Run())
+	os.Exit(m.Run())
 }
 
 func TestSetScriptTimeout(t *testing.T) {
-  // This test only superficially tests script timeout functionality (e.g. that the timeout still gets set).
-  driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
-  if err != nil {
-    t.Fatal(err)
-  }
+	// This test only superficially tests script timeout functionality (e.g. that the timeout still gets set).
+	driver, err := webtest.NewWebDriverSession(selenium.Capabilities{})
+	if err != nil {
+		t.Fatal(err)
+	}
 
-  defer driver.Quit()
+	defer driver.Quit()
 
-  if err := driver.Get(testpage); err != nil {
-    t.Fatal(err)
-  }
+	if err := driver.Get(testpage); err != nil {
+		t.Fatal(err)
+	}
 
-  if err := driver.SetAsyncScriptTimeout(1 * time.Second); err != nil {
-    t.Fatal(err)
-  }
+	if err := driver.SetAsyncScriptTimeout(1 * time.Second); err != nil {
+		t.Fatal(err)
+	}
 
-  start := time.Now()
-  if _, err := driver.ExecuteScriptAsync("return;", []interface{}{}); err == nil {
-    t.Fatal("got nil err, expected timeout err")
-  }
-  if run := time.Now().Sub(start); run < 1*time.Second {
-    t.Fatalf("got runtime %v, expected to be at least 1 seconds", run)
-  }
+	start := time.Now()
+	if _, err := driver.ExecuteScriptAsync("return;", []interface{}{}); err == nil {
+		t.Fatal("got nil err, expected timeout err")
+	}
+	if run := time.Now().Sub(start); run < 1*time.Second {
+		t.Fatalf("got runtime %v, expected to be at least 1 seconds", run)
+	}
 
-  if err := driver.SetAsyncScriptTimeout(5 * time.Second); err != nil {
-    t.Fatal(err)
-  }
+	if err := driver.SetAsyncScriptTimeout(5 * time.Second); err != nil {
+		t.Fatal(err)
+	}
 
-  start = time.Now()
-  if _, err := driver.ExecuteScriptAsync("return;", []interface{}{}); err == nil {
-    t.Fatal("got nil err, expected timeout err")
-  }
-  if run := time.Now().Sub(start); run < 5*time.Second {
-    t.Fatalf("got runtime %v, expected to be at least 1 seconds", run)
-  }
+	start = time.Now()
+	if _, err := driver.ExecuteScriptAsync("return;", []interface{}{}); err == nil {
+		t.Fatal("got nil err, expected timeout err")
+	}
+	if run := time.Now().Sub(start); run < 5*time.Second {
+		t.Fatalf("got runtime %v, expected to be at least 1 seconds", run)
+	}
 
 }

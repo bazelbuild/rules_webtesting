@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Base64;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /** A wrapper around a screenshot returned by Screenshotter. */
@@ -32,7 +33,7 @@ public final class Screenshot {
 
   private final String base64;
 
-  Screenshot(JSONObject response) {
+  Screenshot(JSONObject response) throws JSONException {
     this.base64 = response.getString("value");
   }
 
