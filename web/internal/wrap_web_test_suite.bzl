@@ -58,7 +58,6 @@ def wrap_web_test_suite(name,
     visibility: List of labels; optional.
     web_test_data: Data dependencies for the web_test.
     wrapped_test_tags: A list of test tag strings to use for the wrapped test
-      target. Defaults to ['manual'].
     **remaining_keyword_args: Arguments for the wrapped test target.
   """
 

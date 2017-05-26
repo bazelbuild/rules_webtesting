@@ -52,10 +52,9 @@ def web_test_suite(name,
     browser_overrides: Dictionary; optional; default is an empty dictionary. A
       dictionary mapping from browser names to browser-specific web_test
       attributes, such as shard_count, flakiness, timeout, etc. For example:
-      {'\\browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
-       '\\browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
-    test_suite_tags: List of strings; optional default = ["manual"]; tags
-      for the generated test_suite rule.
+      {'//browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
+       '//browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
+    test_suite_tags: List of strings; tags for the generated test_suite rule.
     visibility: List of labels; optional.
     **kwargs: Additional arguments for web_test rule.
   """
