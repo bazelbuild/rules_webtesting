@@ -100,6 +100,7 @@ type WebElement interface {
 	Bounds(ctx context.Context) (image.Rectangle, error)
 }
 
+// Rectangle represents a window's position and size.
 type Rectangle struct {
 	X      int64  `json:"x"`
 	Y      int64  `json:"y"`
