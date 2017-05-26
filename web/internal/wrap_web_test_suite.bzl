@@ -14,8 +14,7 @@
 """Definition of wrap_web_test_suite."""
 
 load("//web:web.bzl", "web_test_suite")
-load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS",
-     "DEFAULT_WRAPPED_TEST_TAGS")
+load("//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
 
 
 def wrap_web_test_suite(name,
@@ -29,7 +28,7 @@ def wrap_web_test_suite(name,
                         shard_count=None,
                         size="large",
                         tags=None,
-                        test_suite_tags=DEFAULT_TEST_SUITE_TAGS,
+                        test_suite_tags=None,
                         timeout=None,
                         visibility=None,
                         web_test_data=None,
@@ -45,8 +44,8 @@ def wrap_web_test_suite(name,
     browser_overrides: Dictionary; optional; default is an empty dictionary. A
       dictionary mapping from browser names to browser-specific web_test
       attributes, such as shard_count, flakiness, timeout, etc. For example:
-      {'\\browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
-       '\\browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
+      {'//browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
+       '//browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
     config: Label; optional; Configuration of web test features.
     flaky: A boolean specifying that the test is flaky. If set, the test will
       be retried up to 3 times (default: 0)

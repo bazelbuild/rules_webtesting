@@ -46,10 +46,6 @@ go_web_test_suite(
         "//browsers/sauce:chrome55-win10",
     ],
     data = ["//testdata"],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
     deps = [
         "//go/bazel:go_default_library",
         "//go/portpicker:go_default_library",

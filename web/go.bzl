@@ -17,14 +17,14 @@ load("@io_bazel_rules_go//go:def.bzl", "go_test")
 load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 
 
-def go_web_test_suite(name, go_test_tags=None, glaze_kind="go_test", **kwargs):
+def go_web_test_suite(name, go_test_tags=None, glaze_kind=None, **kwargs):
   """Defines a test_suite of web_test targets that wrap a go_test target.
 
   Args:
     name: The base name of the test.
     go_test_tags: A list of test tag strings to use for the dart_test target.
       Defaults to ['manual'].
-    glaze_kind: for internal google usage.
+    glaze_kind: for internal Google use.
     **kwargs: Arguments for wrapped_web_test_suite
   """
   wrap_web_test_suite(

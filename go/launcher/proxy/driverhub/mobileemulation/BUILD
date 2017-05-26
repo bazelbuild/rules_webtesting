@@ -51,10 +51,6 @@ go_web_test_suite(
     ],
     config = "//testdata:mobileemulation",
     data = ["//testdata"],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
     deps = [
         "//go/bazel:go_default_library",
         "//go/portpicker:go_default_library",

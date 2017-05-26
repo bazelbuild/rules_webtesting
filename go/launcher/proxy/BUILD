@@ -59,9 +59,5 @@ go_web_test_suite(
         "//browsers/sauce:chrome55-win10",
     ],
     config = "//testdata:https",
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
     deps = ["//go/httphelper:go_default_library"],
 )

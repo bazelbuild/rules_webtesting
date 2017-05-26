@@ -53,10 +53,6 @@ py_web_test_suite(
         "//browsers:firefox-native",
         "//browsers/sauce:chrome55-win10",
     ],
-    py_test_tags = [
-        "manual",
-        "noci",
-    ],
     srcs_version = "PY2AND3",
     deps = [":web"],
 )

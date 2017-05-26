@@ -56,10 +56,6 @@ go_web_test_suite(
         "//browsers:firefox-native",
         "//browsers/sauce:chrome55-win10",
     ],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
     library = ":go_default_library",
     deps = ["//go/webtest:go_default_library"],
 )
