@@ -306,3 +306,20 @@ func ResponseFromError(err error) (Response, error) {
 		Body:   body,
 	}, e
 }
+
+// SuccessfulResponse generate a response object indicating success.
+func SuccessfulResponse(value interface{}) (Response, error) {
+	body := map[string]interface{}{
+		"status": 0,
+	}
+
+	if value != nil {
+		body["value"] = value
+	}
+
+	bytes, err := json.Marshal(body)
+	return Response{
+		Status: http.StatusOK,
+		Body:   bytes,
+	}, err
+}
