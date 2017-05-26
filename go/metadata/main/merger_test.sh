@@ -22,37 +22,37 @@ printenv
 error=0
 
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/chrome-linux.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/android-browser-gingerbread-nexus-s.json
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/chrome-linux.json \
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/android-browser-gingerbread-nexus-s.json
 
 diff -b $TEST_TMPDIR/out.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/merger-result.json
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/merger-result.json
 if [[ $? != 0 ]]; then
-	echo "Merge of chrome-linux.json with android-browser-gingerbread-nexus-s.json didn't equal merger-result.json."
-	error=1
+  echo "Merge of chrome-linux.json with android-browser-gingerbread-nexus-s.json didn't equal merger-result.json."
+  error=1
 fi
 
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out2.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json
 if [[ $? != 0 ]]; then
-	echo "Merge of named-files1.json with itself failed."
-	error=1
+  echo "Merge of named-files1.json with itself failed."
+  error=1
 fi
 
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out2.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files2.json
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files2.json
 if [[ $? == 0 ]]; then
-	echo "Expected merge of named-files1.json with named-files2.json to fail."
-	error=1
+  echo "Expected merge of named-files1.json with named-files2.json to fail."
+  error=1
 fi
 
 $TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out2.json \
-	$TEST_SRCDIR/$TEST_WORKSPACE/testdata/bad-named-files.json
+    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/bad-named-files.json
 if [[ $? == 0 ]]; then
-	echo "Expected load of bad-named-files.json to fail."
-	error=1
+  echo "Expected load of bad-named-files.json to fail."
+  error=1
 fi
 
 exit $error
