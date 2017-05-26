@@ -315,7 +315,7 @@ func TestGetWindowRect(t *testing.T) {
 	}
 
 	if rect.Height <= 0 {
-		t.Error("got rect.Height == %d, expected > 0", rect.Height)
+		t.Errorf("got rect.Height == %d, expected > 0", rect.Height)
 	}
 }
 
