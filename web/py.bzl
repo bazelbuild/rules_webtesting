@@ -22,7 +22,6 @@ def py_web_test_suite(name, py_test_tags=None, main=None, **kwargs):
   Args:
     name: The base name of the test.
     py_test_tags: A list of test tag strings to use for the py_test target.
-      Defaults to ['manual'].
     main: Optional; default computed from name.
     **kwargs: Arguments for wrapped_web_test_suite
   """

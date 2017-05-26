@@ -38,10 +38,6 @@ java_web_test_suite(
         "//browsers:firefox-native",
     ],
     data = ["//testdata"],
-    java_test_tags = [
-        "manual",
-        "noci",
-    ],
     deps = [
         "//java/com/google/testing/bazel",
         "//java/com/google/testing/web",

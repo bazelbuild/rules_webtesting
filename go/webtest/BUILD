@@ -58,10 +58,6 @@ go_web_test_suite(
         "//browsers/sauce:chrome55-win10",
     ],
     data = ["//testdata"],
-    go_test_tags = [
-        "manual",
-        "noci",
-    ],
     library = ":go_default_library",
     deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )

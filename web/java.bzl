@@ -22,7 +22,6 @@ def java_web_test_suite(name, java_test_tags=None, test_class=None, **kwargs):
   Args:
     name: The base name of the test.
     java_test_tags: A list of test tag strings to use for the java_test target.
-      Defaults to ['manual'].
     test_class: Optional; default computed from name and blaze package.
     **kwargs: Arguments for wrapped_web_test_suite
   """

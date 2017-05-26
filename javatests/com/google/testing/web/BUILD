@@ -42,10 +42,6 @@ java_web_test_suite(
         "//browsers:firefox-native",
         "//browsers/sauce:chrome55-win10",
     ],
-    java_test_tags = [
-        "manual",
-        "noci",
-    ],
     deps = [
         "//java/com/google/testing/web",
         "@junit",
