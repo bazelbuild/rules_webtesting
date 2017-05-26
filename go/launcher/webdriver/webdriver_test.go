@@ -295,22 +295,6 @@ func TestGetWindowRect(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if rect.X < 0 {
-		t.Errorf("got rect.X == %s, expected >= 0", rect.X)
-	}
-
-	if rect.Y < 0 {
-		t.Errorf("got rect.Y == %s, expected >= 0", rect.Y)
-	}
-
-	if rect.Width <= 0 {
-		t.Errorf("got rect.Width == %d, expected > 0", rect.Width)
-	}
-
-	if rect.Height <= 0 {
-		t.Error("got rect.Height == %d, expected > 0", rect.Height)
-	}
 }
 
 func TestSetWindowRect(t *testing.T) {
