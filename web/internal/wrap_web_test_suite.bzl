@@ -14,6 +14,8 @@
 """Definition of wrap_web_test_suite."""
 
 load("//web:web.bzl", "web_test_suite")
+load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS",
+     "DEFAULT_WRAPPED_TEST_TAGS")
 
 
 def wrap_web_test_suite(name,
@@ -27,11 +29,11 @@ def wrap_web_test_suite(name,
                         shard_count=None,
                         size="large",
                         tags=None,
-                        test_suite_tags=("manual",),
+                        test_suite_tags=DEFAULT_TEST_SUITE_TAGS,
                         timeout=None,
                         visibility=None,
                         web_test_data=None,
-                        wrapped_test_tags=("manual",),
+                        wrapped_test_tags=DEFAULT_WRAPPED_TEST_TAGS,
                         **remaining_keyword_args):
   """Defines a test_suite of web_test targets that wrap a given rule.
 
@@ -60,6 +62,10 @@ def wrap_web_test_suite(name,
       target. Defaults to ['manual'].
     **remaining_keyword_args: Arguments for the wrapped test target.
   """
+
+  if wrapped_test_tags == None:
+    wrapped_test_tags = DEFAULT_WRAPPED_TEST_TAGS
+
   wrapped_test_name = name + "_wrapped_test"
 
   rule(

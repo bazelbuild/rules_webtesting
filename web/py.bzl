@@ -16,7 +16,7 @@
 load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 
 
-def py_web_test_suite(name, py_test_tags=("manual",), main=None, **kwargs):
+def py_web_test_suite(name, py_test_tags=None, main=None, **kwargs):
   """Defines a test_suite of web_test targets that wrap a py_test target.
 
   Args:
