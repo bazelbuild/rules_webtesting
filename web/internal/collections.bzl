@@ -14,7 +14,7 @@
 """Collections module contains util functions for working with collections.
 
 Usage:
-  load("//testing/web/build_defs:collections.bzl", "lists", "maps")
+  load("//web/build_defs:collections.bzl", "lists", "maps")
 
   l = lists.clone(l)
   lists.ensure_contains(l, "//some:target")
