@@ -61,4 +61,5 @@ go_web_test_suite(
         "noci",
     ],
     library = ":go_default_library",
+    deps = ["//go/webtest:go_default_library"],
 )

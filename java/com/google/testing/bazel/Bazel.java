@@ -49,11 +49,11 @@ public class Bazel {
     if (instance == null) {
       String tmpDirPath = System.getenv(TEST_TMPDIR);
       Optional<Path> tmpDir = Optional.empty();
-      if (tmpDirPath != null && !tmpDirPath.equals("")) {
+      if (tmpDirPath != null && !tmpDirPath.isEmpty()) {
         tmpDir = Optional.of(FileSystems.getDefault().getPath(tmpDirPath));
       }
       String testWorkspace = System.getenv(TEST_WORKSPACE);
-      if (testWorkspace == null || testWorkspace.equals("")) {
+      if (testWorkspace == null || testWorkspace.isEmpty()) {
         testWorkspace = DEFAULT_WORKSPACE;
       }
       instance =

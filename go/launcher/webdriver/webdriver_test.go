@@ -20,12 +20,14 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bazelbuild/rules_webtesting/go/webtest"
 )
 
 func TestCreateSessionAndQuit(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +39,7 @@ func TestCreateSessionAndQuit(t *testing.T) {
 func TestHealthy(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +87,7 @@ func TestExecuteScript(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,7 +151,7 @@ func TestExecuteScriptAsync(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +179,7 @@ func TestExecuteScriptAsync(t *testing.T) {
 func TestScreenshot(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -195,7 +197,7 @@ func TestScreenshot(t *testing.T) {
 func TestWindowHandles(t *testing.T) {
 	ctx := context.Background()
 
-	driver, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -211,7 +213,7 @@ func TestWindowHandles(t *testing.T) {
 func TestQuit(t *testing.T) {
 	ctx := context.Background()
 
-	driver, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -225,7 +227,7 @@ func TestQuit(t *testing.T) {
 func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -279,6 +281,272 @@ func TestExecuteScriptAsyncWithTimeoutWithCaps(t *testing.T) {
 	}
 	if run := time.Now().Sub(start); run < 5*time.Second {
 		t.Errorf("Got runtime %s, expected > 5 seconds", run)
+	}
+}
+
+func TestGetWindowRect(t *testing.T) {
+	if bi, _ := webtest.GetBrowserInfo(); bi.Environment == "sauce" {
+		t.Skip("fails on SauceLabs.")
+	}
+
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	rect, err := d.GetWindowRect(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if rect.X < 0 {
+		t.Errorf("got rect.X == %d, expected >= 0", rect.X)
+	}
+
+	if rect.Y < 0 {
+		t.Errorf("got rect.Y == %d, expected >= 0", rect.Y)
+	}
+
+	if rect.Width <= 0 {
+		t.Errorf("got rect.Width == %d, expected > 0", rect.Width)
+	}
+
+	if rect.Height <= 0 {
+		t.Error("got rect.Height == %d, expected > 0", rect.Height)
+	}
+}
+
+func TestSetWindowRect(t *testing.T) {
+	testCases := []struct {
+		name  string
+		rect  Rectangle
+		check bool
+		err   bool
+	}{
+		{
+			"valid",
+			Rectangle{
+				X:      200,
+				Y:      200,
+				Width:  500,
+				Height: 400,
+			},
+			true,
+			false,
+		},
+		{
+			"zeroes",
+			Rectangle{},
+			false,
+			false,
+		},
+		{
+			"negative location",
+			Rectangle{
+				X:      -200,
+				Y:      -200,
+				Width:  500,
+				Height: 400,
+			},
+			false, // what happens is os/wm dependent.
+			false,
+		},
+	}
+
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := d.SetWindowRect(ctx, tc.rect)
+			if tc.err {
+				if err == nil {
+					t.Fatal("got nil err, expected non-nil err")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !tc.check {
+				return
+			}
+
+			rect, err := d.GetWindowRect(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if rect != tc.rect {
+				t.Errorf("got rect == %+v, expected %+v", rect, tc.rect)
+			}
+		})
+	}
+}
+
+func TestSetWindowSize(t *testing.T) {
+	if bi, _ := webtest.GetBrowserInfo(); bi.Environment == "sauce" {
+		t.Skip("fails on SauceLabs.")
+	}
+
+	testCases := []struct {
+		name   string
+		width  uint64
+		height uint64
+		check  bool
+		err    bool
+	}{
+		{
+			"valid",
+			500,
+			400,
+			true,
+			false,
+		},
+		{
+			"zeroes",
+			0,
+			0,
+			false,
+			false,
+		},
+	}
+
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	initial, err := d.GetWindowRect(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := d.SetWindowSize(ctx, tc.width, tc.height)
+			if tc.err {
+				if err == nil {
+					t.Fatal("got nil err, expected non-nil err")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !tc.check {
+				return
+			}
+			rect, err := d.GetWindowRect(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expected := Rectangle{
+				X:      initial.X,
+				Y:      initial.Y,
+				Width:  tc.width,
+				Height: tc.height,
+			}
+
+			if rect != expected {
+				t.Errorf("got rect == %+v, expected %+v", rect, expected)
+			}
+		})
+	}
+}
+
+func TestSetWindowPosition(t *testing.T) {
+	if bi, _ := webtest.GetBrowserInfo(); bi.Environment == "sauce" {
+		t.Skip("fails on SauceLabs.")
+	}
+
+	testCases := []struct {
+		name  string
+		x     int64
+		y     int64
+		check bool
+		err   bool
+	}{
+		{
+			"valid",
+			200,
+			200,
+			true,
+			false,
+		},
+		{
+			"zeroes",
+			0,
+			0,
+			false,
+			false,
+		},
+		{
+			"negative",
+			-200,
+			-200,
+			false, // what happens is os/wm dependent.
+			false,
+		},
+	}
+
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	initial, err := d.GetWindowRect(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := d.SetWindowPosition(ctx, tc.x, tc.y)
+			if tc.err {
+				if err == nil {
+					t.Fatal("got nil err, expected non-nil err")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !tc.check {
+				return
+			}
+
+			rect, err := d.GetWindowRect(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expected := Rectangle{
+				X:      tc.x,
+				Y:      tc.y,
+				Width:  initial.Width,
+				Height: initial.Height,
+			}
+
+			if rect != expected {
+				t.Errorf("got rect == %+v, expected %+v", rect, expected)
+			}
+		})
 	}
 }
 

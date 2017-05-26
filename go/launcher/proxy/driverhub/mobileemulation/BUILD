@@ -55,7 +55,6 @@ go_web_test_suite(
         "manual",
         "noci",
     ],
-    library = ":go_default_library",
     deps = [
         "//go/bazel:go_default_library",
         "//go/portpicker:go_default_library",

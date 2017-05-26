@@ -3,7 +3,7 @@
   "capabilities" : {
     "browserName" : "chrome",
     "chromeOptions" : {
-      "args" : ["--no-sandbox", "--start-maximized"],
+      "args" : ["--no-sandbox"],
       "binary" : "%CHROME%"
     }
   }

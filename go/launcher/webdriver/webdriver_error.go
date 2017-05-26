@@ -302,3 +302,59 @@ func MarshalError(err error) ([]byte, error) {
 
 	return json.Marshal(body)
 }
+
+// ErrorFromStatus constructs a WebDriver error from an OSS status code and message.
+func ErrorFromStatus(status int, message string) error {
+	errDatum := errorDatum{
+		Status:     status,
+		Error:      "",
+		HTTPStatus: 500,
+		W3C:        false,
+	}
+
+	for _, cand := range errorData {
+		if cand.Status == status {
+			errDatum = cand
+			break
+		}
+	}
+
+	var value interface{}
+	if message != "" {
+		value = map[string]interface{}{"message": message}
+	}
+
+	return &webDriverError{
+		errDatum: errDatum,
+		value:    value,
+		message:  message,
+	}
+}
+
+// ErrorFromError constructs a WebDriver error from an W3C error string and message.
+func ErrorFromError(err, message string) error {
+	errDatum := errorDatum{
+		Status:     13,
+		Error:      err,
+		HTTPStatus: 500,
+		W3C:        false,
+	}
+
+	for _, cand := range errorData {
+		if cand.Error == err {
+			errDatum = cand
+			break
+		}
+	}
+
+	var value interface{}
+	if message != "" {
+		value = map[string]interface{}{"message": message}
+	}
+
+	return &webDriverError{
+		errDatum: errDatum,
+		value:    value,
+		message:  message,
+	}
+}
