@@ -158,6 +158,10 @@ func (j *jsonResp) isError() bool {
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
 // and ensures that the browser connection is working. It retries up to attempts - 1 times.
 func CreateSession(ctx context.Context, addr string, attempts int, desired map[string]interface{}) (WebDriver, error) {
+	if desired == nil {
+		desired = map[string]interface{}{}
+	}
+
 	reqBody := map[string]interface{}{"desiredCapabilities": desired}
 
 	urlPrefix, err := url.Parse(addr)

@@ -342,7 +342,7 @@ func ErrorFromError(err, message string) error {
 
 	for _, cand := range errorData {
 		if cand.Error == err {
-			errDatum = command
+			errDatum = cand
 			break
 		}
 	}

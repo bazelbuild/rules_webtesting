@@ -17,6 +17,7 @@ package driverhub
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"

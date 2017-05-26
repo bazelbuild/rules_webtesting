@@ -25,7 +25,7 @@ import (
 func TestCreateSessionAndQuit(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func TestCreateSessionAndQuit(t *testing.T) {
 func TestHealthy(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +85,7 @@ func TestExecuteScript(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,7 +149,7 @@ func TestExecuteScriptAsync(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func TestExecuteScriptAsync(t *testing.T) {
 func TestScreenshot(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -195,7 +195,7 @@ func TestScreenshot(t *testing.T) {
 func TestWindowHandles(t *testing.T) {
 	ctx := context.Background()
 
-	driver, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -211,7 +211,7 @@ func TestWindowHandles(t *testing.T) {
 func TestQuit(t *testing.T) {
 	ctx := context.Background()
 
-	driver, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -225,7 +225,7 @@ func TestQuit(t *testing.T) {
 func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -285,11 +285,7 @@ func TestExecuteScriptAsyncWithTimeoutWithCaps(t *testing.T) {
 func TestGetWindowRect(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{
-		"timeouts": map[string]interface{}{
-			"script": 5000,
-		},
-	})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -349,16 +345,14 @@ func TestSetWindowRect(t *testing.T) {
 				Width:  500,
 				Height: 400,
 			},
-			true,
+			false, // what happens is os/wm dependent.
 			false,
 		},
 	}
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{
-		"timeouts": map[string]interface{}{},
-	})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -379,6 +373,7 @@ func TestSetWindowRect(t *testing.T) {
 			if !tc.check {
 				return
 			}
+
 			rect, err := d.GetWindowRect(ctx)
 			if err != nil {
 				t.Fatal(err)
@@ -408,7 +403,8 @@ func TestSetWindowSize(t *testing.T) {
 		},
 		{
 			"zeroes",
-			0, 0,
+			0,
+			0,
 			false,
 			false,
 		},
@@ -416,9 +412,7 @@ func TestSetWindowSize(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{
-		"timeouts": map[string]interface{}{},
-	})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -480,23 +474,23 @@ func TestSetWindowizePosition(t *testing.T) {
 		},
 		{
 			"zeroes",
-			0, 0,
+			0,
+			0,
 			false,
 			false,
 		},
 		{
 			"negative",
-			-200, -200,
-			true,
+			-200,
+			-200,
+			false, // what happens is os/wm dependent.
 			false,
 		},
 	}
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, map[string]interface{}{
-		"timeouts": map[string]interface{}{},
-	})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -522,6 +516,7 @@ func TestSetWindowizePosition(t *testing.T) {
 			if !tc.check {
 				return
 			}
+
 			rect, err := d.GetWindowRect(ctx)
 			if err != nil {
 				t.Fatal(err)
