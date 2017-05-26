@@ -42,6 +42,12 @@ filegroup(
 )
 
 filegroup(
+    name = "constants",
+    srcs = ["constants.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
     name = "files",
     srcs = ["files.bzl"],
     data = [":collections"],
@@ -103,6 +109,9 @@ filegroup(
 filegroup(
     name = "wrap_web_test_suite",
     srcs = ["wrap_web_test_suite.bzl"],
-    data = ["//web"],
+    data = [
+        ":constants",
+        "//web",
+    ],
     visibility = ["//visibility:public"],
 )

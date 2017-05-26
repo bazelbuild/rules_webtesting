@@ -16,10 +16,7 @@
 load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 
 
-def java_web_test_suite(name,
-                        java_test_tags=("manual",),
-                        test_class=None,
-                        **kwargs):
+def java_web_test_suite(name, java_test_tags=None, test_class=None, **kwargs):
   """Defines a test_suite of web_test targets that wrap a java_test target.
 
   Args:

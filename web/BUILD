@@ -43,6 +43,7 @@ filegroup(
     data = [
         "//web/internal:browser",
         "//web/internal:collections",
+        "//web/internal:constants",
         "//web/internal:web_test",
         "//web/internal:web_test_archive",
         "//web/internal:web_test_config",

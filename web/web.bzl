@@ -17,6 +17,7 @@ load("//web/internal:collections.bzl", "lists", "maps")
 load(
     "//web/internal:browser.bzl",
     browser_alias="browser",)
+load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS")
 load(
     "//web/internal:web_test.bzl",
     web_test_alias="web_test",)
@@ -38,7 +39,7 @@ def web_test_suite(name,
                    browsers,
                    test,
                    browser_overrides=None,
-                   test_suite_tags=("manual",),
+                   test_suite_tags=DEFAULT_TEST_SUITE_TAGS,
                    visibility=None,
                    **kwargs):
   """Defines a test_suite of web_test targets to be run.
@@ -63,6 +64,9 @@ def web_test_suite(name,
          type(browsers))
   if not browsers:
     fail("expected non-empty value for attribute 'browsers'")
+
+  if test_suite_tags == None:
+    test_suite_tags = DEFAULT_TEST_SUITE_TAGS
 
   tests = []
   browser_overrides = browser_overrides or {}
