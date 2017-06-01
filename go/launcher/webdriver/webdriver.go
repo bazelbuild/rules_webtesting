@@ -42,6 +42,22 @@ const (
 	w3cElementKey      = "element-6066-11e4-a52e-4f735466cecf"
 )
 
+// w3cCapNames is a set of all the capability names permitted by the W3C
+// spec. Treat this as a constant.
+// Should match the list of standard capabilities in the spec:
+// https://w3c.github.io/webdriver/webdriver-spec.html#capabilities
+var w3cCapNames = map[string]bool{
+	"acceptInsecureCerts":     true,
+	"browserName":             true,
+	"browserVersion":          true,
+	"platformName":            true,
+	"pageLoadStrategy":        true,
+	"proxy":                   true,
+	"setWindowRect":           true,
+	"timeouts":                true,
+	"unhandledPromptBehavior": true,
+}
+
 // WebDriver provides access to a running WebDriver session
 type WebDriver interface {
 	healthreporter.HealthReporter
@@ -156,6 +172,18 @@ func (j *jsonResp) isError() bool {
 	return ok && e != ""
 }
 
+// filterW3CCaps returns a copy of the given capabilities, omitting capability keys
+// that are not recognized by the W3C spec.
+func filterW3CCaps(caps map[string]interface{}) map[string]interface{} {
+	newCaps := make(map[string]interface{})
+	for k, v := range caps {
+		if w3cCapNames[k] || strings.Contains(k, ":") {
+			newCaps[k] = v
+		}
+	}
+	return newCaps
+}
+
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
 // and ensures that the browser connection is working. It retries up to attempts - 1 times.
 func CreateSession(ctx context.Context, addr string, attempts int, desired map[string]interface{}) (WebDriver, error) {
@@ -163,7 +191,13 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 		desired = map[string]interface{}{}
 	}
 
-	reqBody := map[string]interface{}{"desiredCapabilities": desired}
+	// Send a request that matches both the OSS and W3C formats.
+	reqBody := map[string]interface{}{
+		"desiredCapabilities": desired,
+		"capabilities": map[string]interface{}{
+			"alwaysMatch": filterW3CCaps(desired),
+		},
+	}
 
 	urlPrefix, err := url.Parse(addr)
 	if err != nil {
