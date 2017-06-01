@@ -44,6 +44,8 @@ const (
 
 // w3cCapNames is a set of all the capability names permitted by the W3C
 // spec. Treat this as a constant.
+// Should match the list of standard capabilities in the spec:
+// https://w3c.github.io/webdriver/webdriver-spec.html#capabilities
 var w3cCapNames = map[string]bool{
 	"acceptInsecureCerts":     true,
 	"browserName":             true,
