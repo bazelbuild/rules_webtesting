@@ -31,6 +31,15 @@ func TestCreateSessionAndQuit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if d.SessionID() == "" {
+		t.Error("session ID should be set")
+	}
+	if name, _ := d.Capabilities()["browserName"].(string); name == "" {
+		t.Error("capabilities browserName should be non-empty")
+	}
+	if sid, ok := d.Capabilities()["sessionId"]; ok {
+		t.Errorf("capabilities should not contain session ID; has sessionId key with value %q", sid)
+	}
 	if err := d.Quit(ctx); err != nil {
 		t.Error(err)
 	}

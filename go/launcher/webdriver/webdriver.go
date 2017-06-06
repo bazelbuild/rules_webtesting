@@ -190,25 +190,38 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 				return nil, err
 			}
 
-			caps, ok := respBody.Value.(map[string]interface{})
+			val, ok := respBody.Value.(map[string]interface{})
 			if !ok {
-				caps = make(map[string]interface{})
+				return nil, errors.New(compName, fmt.Errorf("value field must be an object in %+v", respBody))
 			}
+
+			var caps map[string]interface{}
 
 			session := respBody.SessionID
-			if session == "" {
-				for k, v := range caps {
-					if strings.Contains(strings.ToLower(k), "sessionid") {
-						session = v.(string)
-						if session != "" {
-							break
-						}
-					}
+			if session != "" {
+				// OSS protocol puts Session ID at the top level:
+				// {
+				//   "value": { capabilities object },
+				//   "sessionId": "id",
+				//   "status": 0
+				// }
+				caps = val
+			} else {
+				// W3C protocol wraps everything in a "value" key:
+				// {
+				//   "value": {
+				//     "capabilities": { capabilities object },
+				//     "sessionId": "id"
+				//   }
+				// }
+				session, _ = val["sessionId"].(string)
+				if session == "" {
+					return nil, errors.New(compName, fmt.Errorf("no session id specified in %+v", respBody))
 				}
-			}
-
-			if session == "" {
-				return nil, errors.New(compName, fmt.Errorf("no session id specified in %v", respBody))
+				caps, ok = val["capabilities"].(map[string]interface{})
+				if !ok {
+					return nil, errors.New(compName, fmt.Errorf("no capabilities in value of %+v", respBody))
+				}
 			}
 
 			sessionURL, err := url.Parse(session + "/")
