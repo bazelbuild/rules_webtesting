@@ -106,9 +106,26 @@ func sliceEquals(e, v []interface{}) bool {
 	return true
 }
 
-// CanReuseSession returns whether the google.canReuseSession capability is set.
+// GoogleCap returns the value of a Google capability.
+func GoogleCap(caps map[string]interface{}, name string) interface{} {
+	return caps["google."+name]
+}
+
+// HasGoogleCap returns whether the named Google capability is present.
+func HasGoogleCap(caps map[string]interface{}, name string) bool {
+	_, ok := caps["google."+name]
+	return ok
+}
+
+// SetGoogleCap mutates the given caps by setting a Google capability.
+func SetGoogleCap(caps map[string]interface{}, name string, value interface{}) {
+	caps["google."+name] = value
+}
+
+// CanReuseSession returns whether the Google capability "canReuseSession" is
+// set.
 func CanReuseSession(caps map[string]interface{}) bool {
 	// default value is false
-	v, _ := caps["google.canReuseSession"].(bool)
+	v, _ := GoogleCap(caps, "canReuseSession").(bool)
 	return v
 }
