@@ -200,3 +200,76 @@ func TestEquals(t *testing.T) {
 		})
 	}
 }
+
+type kv struct {
+	k string
+	v interface{}
+}
+
+func TestGoogleCap(t *testing.T) {
+	testCases := []struct {
+		caps  map[string]interface{}
+		wants []kv
+	}{
+		{
+			map[string]interface{}{},
+			[]kv{{"capName", nil}, {"otherCapName", nil}},
+		},
+		{
+			map[string]interface{}{"google.capName": "vvvvvv"},
+			[]kv{{"capName", "vvvvvv"}},
+		},
+		{
+			map[string]interface{}{"capName": "vvvvvv"},
+			[]kv{{"capName", nil}},
+		},
+	}
+
+	for _, tc := range testCases {
+		for _, want := range tc.wants {
+			if got := GoogleCap(tc.caps, want.k); got != want.v {
+				t.Errorf("GoogleCap(%v %q) is %v, want %v", tc.caps, want.k, got, want.v)
+			}
+			has := want.v != nil
+			if got := HasGoogleCap(tc.caps, want.k); got != has {
+				t.Errorf("HasGoogleCap(%v, %q) is %v, want %v", tc.caps, want.k, got, has)
+			}
+		}
+	}
+}
+
+func TestSetGoogleCap(t *testing.T) {
+	testCases := []struct {
+		desc string
+		caps map[string]interface{}
+		k    string
+		v    interface{}
+		want map[string]interface{}
+	}{
+		{
+			"set cap",
+			map[string]interface{}{},
+			"capName", "vvvvvv",
+			map[string]interface{}{"google.capName": "vvvvvv"},
+		},
+		{
+			"overwrite cap",
+			map[string]interface{}{"google.capName": "xyz"},
+			"capName", "vvvvvv",
+			map[string]interface{}{"google.capName": "vvvvvv"},
+		},
+		{
+			"overwrite google.* cap only",
+			map[string]interface{}{"capName": "xyz"},
+			"capName", "vvvvvv",
+			map[string]interface{}{"google.capName": "vvvvvv", "capName": "xyz"},
+		},
+	}
+
+	for _, tc := range testCases {
+		SetGoogleCap(tc.caps, tc.k, tc.v)
+		if !Equals(tc.caps, tc.want) {
+			t.Errorf("[%v] got %v, want %v", tc.desc, tc.caps, tc.want)
+		}
+	}
+}
