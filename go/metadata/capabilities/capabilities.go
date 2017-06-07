@@ -15,6 +15,17 @@
 // Package capabilities performs operations on maps representing WebDriver capabilities.
 package capabilities
 
+// Spec is a specification of capabilities, such as that included in the New
+// Session request. Specs may include slightly different capabilities for
+// different WebDriver protocol dialects.
+//
+// Any field may be nil if the request does not contain any capabilities for
+// a dialect, i.e., the requestor does not support that dialect.
+type Spec struct {
+	OSSCaps map[string]interface{}
+	W3CCaps map[string]interface{}
+}
+
 // Merge takes two JSON objects, and merges them.
 //
 // The resulting object will have all of the keys in the two input objects.
@@ -39,6 +50,20 @@ func Merge(m1, m2 map[string]interface{}) map[string]interface{} {
 		nm[k] = mergeValues(nm[k], v2)
 	}
 	return nm
+}
+
+// MergeSpecOntoCaps merges a set of capabilities and a capabilities spec. For
+// each capabilities set C in spec, C is merged on top of caps. That is,
+// capability values in the spec take precedence.
+func MergeSpecOntoCaps(caps map[string]interface{}, spec Spec) Spec {
+	newSpec := Spec{}
+	if spec.OSSCaps != nil {
+		newSpec.OSSCaps = Merge(caps, spec.OSSCaps)
+	}
+	if spec.W3CCaps != nil {
+		newSpec.W3CCaps = Merge(caps, spec.W3CCaps)
+	}
+	return newSpec
 }
 
 func mergeValues(j1, j2 interface{}) interface{} {
@@ -68,8 +93,17 @@ func mergeLists(m1, m2 []interface{}) []interface{} {
 	return nl
 }
 
-// Equals compares two JSON objects, and returns true iff they are the same.
-func Equals(e, v map[string]interface{}) bool {
+// SpecEquals compares two Specs, and returns true iff all the component JSON
+// objects are the same.
+func SpecEquals(e, v Spec) bool {
+	return JSONEquals(e.OSSCaps, v.OSSCaps) && JSONEquals(e.W3CCaps, v.W3CCaps)
+}
+
+// JSONEquals compares two JSON objects, and returns true iff they are the same.
+func JSONEquals(e, v map[string]interface{}) bool {
+	if e == nil || v == nil {
+		return e == nil && v == nil
+	}
 	if len(e) != len(v) {
 		return false
 	}
@@ -88,7 +122,7 @@ func valueEquals(e, v interface{}) bool {
 		return ok && sliceEquals(te, tv)
 	case map[string]interface{}:
 		tv, ok := v.(map[string]interface{})
-		return ok && Equals(te, tv)
+		return ok && JSONEquals(te, tv)
 	default:
 		return e == v
 	}
@@ -106,25 +140,28 @@ func sliceEquals(e, v []interface{}) bool {
 	return true
 }
 
-// GoogleCap returns the value of a Google capability.
-func GoogleCap(caps map[string]interface{}, name string) interface{} {
-	return caps["google."+name]
+// GoogleCap returns the value of a Google capability from the given
+// Spec. Google capabilities are currently only extracted from the OSS specs,
+// but this will eventually change to recognize vendor-prefixed capabilities in
+// the W3C spec as well.
+func GoogleCap(caps Spec, name string) interface{} {
+	return caps.OSSCaps["google."+name]
 }
 
 // HasGoogleCap returns whether the named Google capability is present.
-func HasGoogleCap(caps map[string]interface{}, name string) bool {
-	_, ok := caps["google."+name]
+func HasGoogleCap(caps Spec, name string) bool {
+	_, ok := caps.OSSCaps["google."+name]
 	return ok
 }
 
-// SetGoogleCap mutates the given caps by setting a Google capability.
-func SetGoogleCap(caps map[string]interface{}, name string, value interface{}) {
-	caps["google."+name] = value
+// SetGoogleCap mutates the given Spec by setting a Google capability.
+func SetGoogleCap(caps Spec, name string, value interface{}) {
+	caps.OSSCaps["google."+name] = value
 }
 
 // CanReuseSession returns whether the Google capability "canReuseSession" is
 // set.
-func CanReuseSession(caps map[string]interface{}) bool {
+func CanReuseSession(caps Spec) bool {
 	// default value is false
 	v, _ := GoogleCap(caps, "canReuseSession").(bool)
 	return v

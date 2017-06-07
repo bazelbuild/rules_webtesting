@@ -40,9 +40,11 @@ func TestFromFile(t *testing.T) {
 		}
 
 		expected := &Metadata{
+			Capabilities: map[string]interface{}{},
 			Environment:  "chromeos",
 			BrowserLabel: "//browsers:figaro",
 			TestLabel:    "//go/launcher:tests",
+			Extension:    &extension{},
 		}
 
 		if !Equals(expected, file) {

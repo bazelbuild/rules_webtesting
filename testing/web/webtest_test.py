@@ -30,8 +30,8 @@ class BrowserTest(unittest.TestCase):
 
   def testBrowserProvisioningWithCaps(self):
     capabilities = {
-        "unexpectedAlertBehaviour": "dismiss",
-        "elementScrollBehavior": 1,
+        "acceptInsecureCerts": false,
+        "pageLoadStrategy": "normal",
     }
     driver = webtest.new_webdriver_session(capabilities)
 
