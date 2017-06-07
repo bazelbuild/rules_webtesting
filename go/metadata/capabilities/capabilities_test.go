@@ -208,39 +208,45 @@ type kv struct {
 
 func TestGoogleCap(t *testing.T) {
 	testCases := []struct {
+		name  string
 		caps  map[string]interface{}
 		wants []kv
 	}{
 		{
+			"not found",
 			map[string]interface{}{},
 			[]kv{{"capName", nil}, {"otherCapName", nil}},
 		},
 		{
+			"found",
 			map[string]interface{}{"google.capName": "vvvvvv"},
 			[]kv{{"capName", "vvvvvv"}},
 		},
 		{
+			"requires google prefix",
 			map[string]interface{}{"capName": "vvvvvv"},
 			[]kv{{"capName", nil}},
 		},
 	}
 
 	for _, tc := range testCases {
-		for _, want := range tc.wants {
-			if got := GoogleCap(tc.caps, want.k); got != want.v {
-				t.Errorf("GoogleCap(%v %q) is %v, want %v", tc.caps, want.k, got, want.v)
+		t.Run(tc.name, func(t *testing.T) {
+			for _, want := range tc.wants {
+				if got := GoogleCap(tc.caps, want.k); got != want.v {
+					t.Errorf("GoogleCap(%v %q) is %v, want %v", tc.caps, want.k, got, want.v)
+				}
+				has := want.v != nil
+				if got := HasGoogleCap(tc.caps, want.k); got != has {
+					t.Errorf("HasGoogleCap(%v, %q) is %v, want %v", tc.caps, want.k, got, has)
+				}
 			}
-			has := want.v != nil
-			if got := HasGoogleCap(tc.caps, want.k); got != has {
-				t.Errorf("HasGoogleCap(%v, %q) is %v, want %v", tc.caps, want.k, got, has)
-			}
-		}
+		})
 	}
 }
 
 func TestSetGoogleCap(t *testing.T) {
 	testCases := []struct {
-		desc string
+		name string
 		caps map[string]interface{}
 		k    string
 		v    interface{}
@@ -267,9 +273,11 @@ func TestSetGoogleCap(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		SetGoogleCap(tc.caps, tc.k, tc.v)
-		if !Equals(tc.caps, tc.want) {
-			t.Errorf("[%v] got %v, want %v", tc.desc, tc.caps, tc.want)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			SetGoogleCap(tc.caps, tc.k, tc.v)
+			if !Equals(tc.caps, tc.want) {
+				t.Errorf("got %v, want %v", tc.caps, tc.want)
+			}
+		})
 	}
 }
