@@ -46,8 +46,8 @@ func TestProvisionBrowser_NoCaps(t *testing.T) {
 
 func TestProvisionBrowser_WithCaps(t *testing.T) {
 	wd, err := NewWebDriverSession(selenium.Capabilities{
-		"unexpectedAlertBehaviour": "dismiss",
-		"elementScrollBehavior":    1,
+		"acceptInsecureCerts": false,
+		"pageLoadStrategy":    "normal",
 	})
 	if err != nil {
 		t.Fatal(err)

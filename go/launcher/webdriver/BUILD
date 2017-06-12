@@ -31,6 +31,7 @@ go_library(
     deps = [
         "//go/launcher/errors:go_default_library",
         "//go/launcher/healthreporter:go_default_library",
+        "//go/metadata/capabilities:go_default_library",
     ],
 )
 

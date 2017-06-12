@@ -34,6 +34,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
 
 const (
@@ -158,12 +159,29 @@ func (j *jsonResp) isError() bool {
 
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
 // and ensures that the browser connection is working. It retries up to attempts - 1 times.
-func CreateSession(ctx context.Context, addr string, attempts int, desired map[string]interface{}) (WebDriver, error) {
-	if desired == nil {
-		desired = map[string]interface{}{}
+func CreateSession(ctx context.Context, addr string, attempts int, spec capabilities.Spec) (WebDriver, error) {
+	if spec.OSSCaps == nil && spec.W3CCaps == nil {
+		spec = capabilities.Spec{
+			OSSCaps: map[string]interface{}{},
+			W3CCaps: map[string]interface{}{},
+		}
 	}
 
-	reqBody := map[string]interface{}{"desiredCapabilities": desired}
+	reqBody := map[string]interface{}{}
+	if spec.OSSCaps != nil {
+		reqBody["desiredCapabilities"] = spec.OSSCaps
+	}
+	if spec.W3CCaps != nil {
+		reqBody["capabilities"] = map[string]interface{}{"alwaysMatch": spec.W3CCaps}
+	}
+	if len(reqBody) == 0 {
+		reqBody = map[string]interface{}{
+			"desiredCapabilities": map[string]interface{}{},
+			"capabilities": map[string]interface{}{
+				"alwaysMatch": map[string]interface{}{},
+			},
+		}
+	}
 
 	urlPrefix, err := url.Parse(addr)
 	if err != nil {
@@ -234,7 +252,7 @@ func CreateSession(ctx context.Context, addr string, attempts int, desired map[s
 				sessionID:     session,
 				capabilities:  caps,
 				client:        client,
-				scriptTimeout: scriptTimeout(desired),
+				scriptTimeout: scriptTimeout(spec),
 				w3c:           respBody.Status == nil,
 			}
 
@@ -637,8 +655,8 @@ return {"X0": Math.round(left), "Y0": Math.round(top), "X1": Math.round(left + r
 	return image.Rect(bounds.X0, bounds.Y0, bounds.X1, bounds.Y1), err
 }
 
-func scriptTimeout(desired map[string]interface{}) time.Duration {
-	timeouts, ok := desired["timeouts"].(map[string]interface{})
+func scriptTimeout(caps capabilities.Spec) time.Duration {
+	timeouts, ok := caps.OSSCaps["timeouts"].(map[string]interface{})
 	if !ok {
 		return 0
 	}

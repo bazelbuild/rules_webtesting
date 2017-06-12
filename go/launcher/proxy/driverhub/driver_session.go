@@ -37,10 +37,10 @@ type WebDriverSession struct {
 	*mux.Router
 	*WebDriverHub
 	webdriver.WebDriver
-	ID          int
-	handler     HandlerFunc
-	sessionPath string
-	Desired     map[string]interface{}
+	ID            int
+	handler       HandlerFunc
+	sessionPath   string
+	RequestedCaps capabilities.Spec
 
 	mu      sync.RWMutex
 	stopped bool
@@ -48,7 +48,8 @@ type WebDriverSession struct {
 
 // A handlerProvider wraps another HandlerFunc to create a new HandlerFunc.
 // If the second return value is false, then the provider did not construct a new HandlerFunc.
-type handlerProvider func(session *WebDriverSession, desired map[string]interface{}, base HandlerFunc) (HandlerFunc, bool)
+// TODO(juangj): Update type of caps to capabilities.Spec.
+type handlerProvider func(session *WebDriverSession, caps map[string]interface{}, base HandlerFunc) (HandlerFunc, bool)
 
 // HandlerFunc is a func for handling a request to a WebDriver session.
 type HandlerFunc func(context.Context, Request) (Response, error)
@@ -86,17 +87,18 @@ var providers = []handlerProvider{}
 //   HandlerProviderFunc(hp3)
 //
 // The generated handler will be constructed as follows:
-//   hp3(session, desired, hp2(session, desired, hp1(session, desired, base)))
+//   hp3(session, caps, hp2(session, caps, hp1(session, caps, base)))
 // where base is the a default function that forwards commands to WebDriver unchanged.
 func HandlerProviderFunc(provider handlerProvider) {
 	providers = append(providers, provider)
 }
 
-func createHandler(session *WebDriverSession, desired map[string]interface{}) HandlerFunc {
+func createHandler(session *WebDriverSession, caps capabilities.Spec) HandlerFunc {
 	handler := createBaseHandler(session.WebDriver)
 
 	for _, provider := range providers {
-		if h, ok := provider(session, desired, handler); ok {
+		// TODO(juangj): Modify all handler providers to deal with capabilities.Specs.
+		if h, ok := provider(session, caps.OSSCaps, handler); ok {
 			handler = h
 		}
 	}
@@ -104,11 +106,11 @@ func createHandler(session *WebDriverSession, desired map[string]interface{}) Ha
 }
 
 // CreateSession creates a WebDriverSession object.
-func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, desired map[string]interface{}) (*WebDriverSession, error) {
+func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, caps capabilities.Spec) (*WebDriverSession, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
-	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter(), Desired: desired}
+	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter(), RequestedCaps: caps}
 
-	session.handler = createHandler(session, desired)
+	session.handler = createHandler(session, caps)
 	// Route for commands for this session.
 	session.PathPrefix(sessionPath).HandlerFunc(session.defaultHandler)
 	// Route for commands for some other session. If this happens, the hub has
@@ -139,7 +141,7 @@ func (s *WebDriverSession) unknownCommand(w http.ResponseWriter, r *http.Request
 
 // Quit can be called by handlers to quit this session.
 func (s *WebDriverSession) Quit(ctx context.Context, _ Request) (Response, error) {
-	if err := s.quit(ctx, capabilities.CanReuseSession(s.Desired)); err != nil {
+	if err := s.quit(ctx, capabilities.CanReuseSession(s.RequestedCaps)); err != nil {
 		return ResponseFromError(err)
 	}
 

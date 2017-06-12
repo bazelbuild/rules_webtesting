@@ -165,12 +165,19 @@ func (m *Metadata) ToFile(filename string) error {
 
 // Equals compares two Metadata object and return true iff they are the same.
 func Equals(e, a *Metadata) bool {
+	var extsEqual bool
+	if e.Extension == nil {
+		extsEqual = (a.Extension == nil)
+	} else {
+		extsEqual = e.Extension.Equals(a.Extension)
+	}
 	// TODO(DrMarcII): should consider equality of WebTestFiles.
-	return capabilities.Equals(e.Capabilities, a.Capabilities) &&
+	return capabilities.JSONEquals(e.Capabilities, a.Capabilities) &&
 		e.Environment == a.Environment &&
 		e.BrowserLabel == a.BrowserLabel &&
 		e.TestLabel == a.TestLabel &&
-		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles)
+		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles) &&
+		extsEqual
 }
 
 func mapEquals(e, a map[string]string) bool {
@@ -304,7 +311,7 @@ func (e *extension) Equals(other Extension) bool {
 	if !ok {
 		return false
 	}
-	return capabilities.Equals(e.value, o.value)
+	return capabilities.JSONEquals(e.value, o.value)
 }
 
 func (e *extension) UnmarshalJSON(b []byte) error {

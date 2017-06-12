@@ -98,14 +98,122 @@ func TestMerge(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if result := Merge(tc.input1, tc.input2); !Equals(tc.result, result) {
+			if result := Merge(tc.input1, tc.input2); !JSONEquals(tc.result, result) {
 				t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, result, tc.result)
 			}
 		})
 	}
 }
 
-func TestEquals(t *testing.T) {
+func TestMergeSpecOntoCaps(t *testing.T) {
+	testCases := []struct {
+		name   string
+		caps   map[string]interface{}
+		spec   Spec
+		result Spec
+	}{
+		{
+			name:   "all nil",
+			caps:   map[string]interface{}{"v": 1},
+			spec:   Spec{},
+			result: Spec{},
+		},
+		{
+			name:   "empty, not nil",
+			caps:   map[string]interface{}{"v": 1},
+			spec:   Spec{OSSCaps: map[string]interface{}{}, W3CCaps: map[string]interface{}{}},
+			result: Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 1}},
+		},
+		{
+			name:   "nil OSS",
+			caps:   map[string]interface{}{"v": 1},
+			spec:   Spec{W3CCaps: map[string]interface{}{"x": 2}},
+			result: Spec{W3CCaps: map[string]interface{}{"v": 1, "x": 2}},
+		},
+		{
+			name:   "nil W3C",
+			caps:   map[string]interface{}{"v": 1},
+			spec:   Spec{OSSCaps: map[string]interface{}{"x": 2}},
+			result: Spec{OSSCaps: map[string]interface{}{"v": 1, "x": 2}},
+		},
+		{
+			name: "both present",
+			caps: map[string]interface{}{"v": 1},
+			spec: Spec{
+				OSSCaps: map[string]interface{}{"type": "oss"},
+				W3CCaps: map[string]interface{}{"type": "w3c"},
+			},
+			result: Spec{
+				OSSCaps: map[string]interface{}{"v": 1, "type": "oss"},
+				W3CCaps: map[string]interface{}{"v": 1, "type": "w3c"},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if result := MergeSpecOntoCaps(tc.caps, tc.spec); !SpecEquals(tc.result, result) {
+				t.Errorf("Got MergeSpecOntoCaps(%+v, %+v) == %+v, expected %+v", tc.caps, tc.spec, result, tc.result)
+			}
+		})
+	}
+}
+
+func TestSpecEquals(t *testing.T) {
+	testCases := []struct {
+		name   string
+		input1 Spec
+		input2 Spec
+		result bool
+	}{
+		{
+			"all nil",
+			Spec{},
+			Spec{},
+			true,
+		},
+		{
+			"nil is not the same as empty",
+			Spec{},
+			Spec{W3CCaps: map[string]interface{}{}},
+			false,
+		},
+		{
+			"nil vs non-empty",
+			Spec{},
+			Spec{W3CCaps: map[string]interface{}{"v": 1}},
+			false,
+		},
+		{
+			"equal",
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
+			true,
+		},
+		{
+			"one dialect unequal",
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 999}},
+			false,
+		},
+		{
+			"dialects swapped",
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
+			Spec{OSSCaps: map[string]interface{}{"v": 2}, W3CCaps: map[string]interface{}{"v": 1}},
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if result := SpecEquals(tc.input1, tc.input2); result != tc.result {
+				t.Errorf("Got SpecEquals(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
+			}
+		})
+	}
+}
+
+func TestJSONEquals(t *testing.T) {
 	testCases := []struct {
 		name   string
 		input1 map[string]interface{}
@@ -117,6 +225,24 @@ func TestEquals(t *testing.T) {
 			map[string]interface{}{},
 			map[string]interface{}{},
 			true,
+		},
+		{
+			"nil map,nil map",
+			nil,
+			nil,
+			true,
+		},
+		{
+			"nil map,empty map",
+			nil,
+			map[string]interface{}{},
+			false,
+		},
+		{
+			"nil map,non-empty",
+			nil,
+			map[string]interface{}{"v": nil},
+			false,
 		},
 		{
 			"int,nil",
@@ -194,8 +320,8 @@ func TestEquals(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if result := Equals(tc.input1, tc.input2); result != tc.result {
-				t.Errorf("Got Equals(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
+			if result := JSONEquals(tc.input1, tc.input2); result != tc.result {
+				t.Errorf("Got JSONEquals(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
 			}
 		})
 	}
@@ -209,22 +335,22 @@ type kv struct {
 func TestGoogleCap(t *testing.T) {
 	testCases := []struct {
 		name  string
-		caps  map[string]interface{}
+		caps  Spec
 		wants []kv
 	}{
 		{
 			"not found",
-			map[string]interface{}{},
+			Spec{},
 			[]kv{{"capName", nil}, {"otherCapName", nil}},
 		},
 		{
 			"found",
-			map[string]interface{}{"google.capName": "vvvvvv"},
+			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv"}},
 			[]kv{{"capName", "vvvvvv"}},
 		},
 		{
 			"requires google prefix",
-			map[string]interface{}{"capName": "vvvvvv"},
+			Spec{OSSCaps: map[string]interface{}{"capName": "vvvvvv"}},
 			[]kv{{"capName", nil}},
 		},
 	}
@@ -247,35 +373,35 @@ func TestGoogleCap(t *testing.T) {
 func TestSetGoogleCap(t *testing.T) {
 	testCases := []struct {
 		name string
-		caps map[string]interface{}
+		caps Spec
 		k    string
 		v    interface{}
-		want map[string]interface{}
+		want Spec
 	}{
 		{
 			"set cap",
-			map[string]interface{}{},
+			Spec{OSSCaps: map[string]interface{}{}},
 			"capName", "vvvvvv",
-			map[string]interface{}{"google.capName": "vvvvvv"},
+			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv"}},
 		},
 		{
 			"overwrite cap",
-			map[string]interface{}{"google.capName": "xyz"},
+			Spec{OSSCaps: map[string]interface{}{"google.capName": "xyz"}},
 			"capName", "vvvvvv",
-			map[string]interface{}{"google.capName": "vvvvvv"},
+			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv"}},
 		},
 		{
 			"overwrite google.* cap only",
-			map[string]interface{}{"capName": "xyz"},
+			Spec{OSSCaps: map[string]interface{}{"capName": "xyz"}},
 			"capName", "vvvvvv",
-			map[string]interface{}{"google.capName": "vvvvvv", "capName": "xyz"},
+			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "capName": "xyz"}},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			SetGoogleCap(tc.caps, tc.k, tc.v)
-			if !Equals(tc.caps, tc.want) {
+			if !SpecEquals(tc.caps, tc.want) {
 				t.Errorf("got %v, want %v", tc.caps, tc.want)
 			}
 		})

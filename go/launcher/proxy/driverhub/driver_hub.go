@@ -141,7 +141,7 @@ func (h *WebDriverHub) Shutdown(ctx context.Context) error {
 }
 
 // GetReusableSession grabs a reusable session if one is available that matches caps.
-func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps map[string]interface{}) (*WebDriverSession, bool) {
+func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps capabilities.Spec) (*WebDriverSession, bool) {
 	if !capabilities.CanReuseSession(caps) {
 		return nil, false
 	}
@@ -149,7 +149,7 @@ func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps map[string]i
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	for i, session := range h.reusableSessions {
-		if capabilities.Equals(caps, session.Desired) {
+		if capabilities.SpecEquals(caps, session.RequestedCaps) {
 			h.reusableSessions = append(h.reusableSessions[:i], h.reusableSessions[i+1:]...)
 			if err := session.WebDriver.Healthy(ctx); err == nil {
 				return session, true
@@ -162,7 +162,7 @@ func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps map[string]i
 
 // AddReusableSession adds a session that can be reused.
 func (h *WebDriverHub) AddReusableSession(session *WebDriverSession) error {
-	if !capabilities.CanReuseSession(session.Desired) {
+	if !capabilities.CanReuseSession(session.RequestedCaps) {
 		return errors.New(h.Name(), "session is not reusable.")
 	}
 	h.reusableSessions = append(h.reusableSessions, session)
@@ -183,7 +183,6 @@ func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
 func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log.Print("Creating session\n\n")
-	var desired map[string]interface{}
 
 	if err := h.waitForHealthyEnv(ctx); err != nil {
 		sessionNotCreated(w, err)
@@ -197,7 +196,13 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	j := struct {
+		// OSS capabilities
 		Desired map[string]interface{} `json:"desiredCapabilities"`
+		// W3C capabilities
+		Capabilities struct {
+			Always map[string]interface{}   `json:"alwaysMatch"`
+			First  []map[string]interface{} `json:"firstMatch"`
+		} `json:"capabilities"`
 	}{}
 
 	if err := json.Unmarshal(body, &j); err != nil {
@@ -205,29 +210,38 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if j.Desired == nil {
-		sessionNotCreated(w, errors.New(h.Name(), "new session request body missing desired capabilities"))
+	if j.Desired == nil && j.Capabilities.Always == nil {
+		sessionNotCreated(w, errors.New(h.Name(), "new session request body missing capabilities"))
 		return
+	}
+	if !isEmptyish(j.Capabilities.First) {
+		sessionNotCreated(w, errors.New(h.Name(), "firstMatch capabilities are not yet supported"))
+		return
+	}
+
+	requestedCaps := capabilities.Spec{
+		OSSCaps: j.Desired,
+		W3CCaps: j.Capabilities.Always,
 	}
 
 	id := h.NextID()
 
-	desired, err = h.Env.StartSession(ctx, id, j.Desired)
+	caps, err := h.Env.StartSession(ctx, id, requestedCaps)
 	if err != nil {
 		sessionNotCreated(w, err)
 		return
 	}
 
-	log.Printf("Caps: %+v", desired)
+	log.Printf("Caps: %+v", caps)
 
 	var session *WebDriverSession
 
-	if reusable, ok := h.GetReusableSession(ctx, desired); ok {
+	if reusable, ok := h.GetReusableSession(ctx, caps); ok {
 		reusable.Unpause(id)
 		session = reusable
 	} else {
 		// TODO(DrMarcII) parameterize attempts based on browser metadata
-		driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, desired)
+		driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, caps)
 		if err != nil {
 			if err2 := h.Env.StopSession(ctx, id); err2 != nil {
 				log.Printf("error stopping session after failing to launch webdriver: %v", err2)
@@ -236,7 +250,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		s, err := CreateSession(id, h, driver, desired)
+		s, err := CreateSession(id, h, driver, caps)
 		if err != nil {
 			sessionNotCreated(w, err)
 			return
@@ -246,13 +260,21 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 
 	h.AddSession(session.WebDriver.SessionID(), session)
 
-	respJSON := map[string]interface{}{
-		"sessionId": session.WebDriver.SessionID(),
-		"value":     session.WebDriver.Capabilities(),
-	}
+	var respJSON map[string]interface{}
 
-	if !session.WebDriver.W3C() {
-		respJSON["status"] = 0
+	if session.WebDriver.W3C() {
+		respJSON = map[string]interface{}{
+			"value": map[string]interface{}{
+				"capabilities": session.WebDriver.Capabilities(),
+				"sessionId":    session.WebDriver.SessionID(),
+			},
+		}
+	} else {
+		respJSON = map[string]interface{}{
+			"value":     session.WebDriver.Capabilities(),
+			"sessionId": session.WebDriver.SessionID(),
+			"status":    0,
+		}
 	}
 
 	bytes, err := json.Marshal(respJSON)
@@ -285,4 +307,17 @@ func (h *WebDriverHub) waitForHealthyEnv(ctx context.Context) error {
 		healthreporter.WaitForHealthy(healthyCtx, h.Env)
 	})
 	return h.Env.Healthy(ctx)
+}
+
+// isEmptyish returns whether a firstMatch capabilities list is effectively empty.
+func isEmptyish(x []map[string]interface{}) bool {
+	if len(x) == 0 {
+		return true
+	}
+	if len(x) == 1 && len(x[0]) == 0 {
+		// A list containing a single empty object, i.e., [{}], means to leave the
+		// alwaysMatch capabilities unmodified.
+		return true
+	}
+	return false
 }
