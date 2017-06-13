@@ -30,7 +30,7 @@ class BrowserTest(unittest.TestCase):
 
   def testBrowserProvisioningWithCaps(self):
     capabilities = {
-        "acceptInsecureCerts": false,
+        "acceptInsecureCerts": False,
         "pageLoadStrategy": "normal",
     }
     driver = webtest.new_webdriver_session(capabilities)
