@@ -19,11 +19,19 @@ package capabilities
 // Session request. Specs may include slightly different capabilities for
 // different WebDriver protocol dialects.
 //
+// A Spec contains an optional set of OSS capabilities, and a list of zero or
+// more sets of W3C capabilities. The W3C capabilities are expressed in two
+// parts: the "always match" object that contains key-value pairs shared by
+// every set of capabilites, and a list of "first match" objects that contain
+// just the keys that differ.
+//
 // Any field may be nil if the request does not contain any capabilities for
 // a dialect, i.e., the requestor does not support that dialect.
 type Spec struct {
 	OSSCaps map[string]interface{}
-	W3CCaps map[string]interface{}
+	// W3C spec capabilities
+	Always map[string]interface{}
+	First  []map[string]interface{}
 }
 
 // Merge takes two JSON objects, and merges them.
@@ -60,8 +68,31 @@ func MergeSpecOntoCaps(caps map[string]interface{}, spec Spec) Spec {
 	if spec.OSSCaps != nil {
 		newSpec.OSSCaps = Merge(caps, spec.OSSCaps)
 	}
-	if spec.W3CCaps != nil {
-		newSpec.W3CCaps = Merge(caps, spec.W3CCaps)
+	if spec.Always == nil {
+		return newSpec
+	}
+
+	// No key is allowed to appear in both alwaysMatch and firstMatch. Any key in
+	// caps that is present in ANY of the firstMatch maps must be merged into each
+	// firstMatch map, rather than into the alwaysMatch map.
+	firstMatchKeys := map[string]bool{}
+	for _, f := range spec.First {
+		for fk := range f {
+			firstMatchKeys[fk] = true
+		}
+	}
+	alwaysMerge := map[string]interface{}{}
+	firstMerge := map[string]interface{}{}
+	for k, v := range caps {
+		if firstMatchKeys[k] {
+			firstMerge[k] = v
+		} else {
+			alwaysMerge[k] = v
+		}
+	}
+	newSpec.Always = Merge(alwaysMerge, spec.Always)
+	for _, f := range spec.First {
+		newSpec.First = append(newSpec.First, Merge(firstMerge, f))
 	}
 	return newSpec
 }
@@ -96,7 +127,20 @@ func mergeLists(m1, m2 []interface{}) []interface{} {
 // SpecEquals compares two Specs, and returns true iff all the component JSON
 // objects are the same.
 func SpecEquals(e, v Spec) bool {
-	return JSONEquals(e.OSSCaps, v.OSSCaps) && JSONEquals(e.W3CCaps, v.W3CCaps)
+	return JSONEquals(e.OSSCaps, v.OSSCaps) && JSONEquals(e.Always, v.Always) && firstsEqual(e.First, v.First)
+}
+
+func firstsEqual(e, v []map[string]interface{}) bool {
+	if len(e) != len(v) {
+		return false
+	}
+	for i, em := range e {
+		vm := v[i]
+		if !JSONEquals(em, vm) {
+			return false
+		}
+	}
+	return true
 }
 
 // JSONEquals compares two JSON objects, and returns true iff they are the same.
