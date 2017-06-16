@@ -121,14 +121,14 @@ func TestMergeSpecOntoCaps(t *testing.T) {
 		{
 			name:   "empty, not nil",
 			caps:   map[string]interface{}{"v": 1},
-			spec:   Spec{OSSCaps: map[string]interface{}{}, W3CCaps: map[string]interface{}{}},
-			result: Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 1}},
+			spec:   Spec{OSSCaps: map[string]interface{}{}, Always: map[string]interface{}{}},
+			result: Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 1}},
 		},
 		{
 			name:   "nil OSS",
 			caps:   map[string]interface{}{"v": 1},
-			spec:   Spec{W3CCaps: map[string]interface{}{"x": 2}},
-			result: Spec{W3CCaps: map[string]interface{}{"v": 1, "x": 2}},
+			spec:   Spec{Always: map[string]interface{}{"x": 2}},
+			result: Spec{Always: map[string]interface{}{"v": 1, "x": 2}},
 		},
 		{
 			name:   "nil W3C",
@@ -141,11 +141,49 @@ func TestMergeSpecOntoCaps(t *testing.T) {
 			caps: map[string]interface{}{"v": 1},
 			spec: Spec{
 				OSSCaps: map[string]interface{}{"type": "oss"},
-				W3CCaps: map[string]interface{}{"type": "w3c"},
+				Always:  map[string]interface{}{"type": "w3c"},
 			},
 			result: Spec{
 				OSSCaps: map[string]interface{}{"v": 1, "type": "oss"},
-				W3CCaps: map[string]interface{}{"v": 1, "type": "w3c"},
+				Always:  map[string]interface{}{"v": 1, "type": "w3c"},
+			},
+		},
+		{
+			name: "no overlaps with firstMatch",
+			caps: map[string]interface{}{"three": 3, "four": 999},
+			spec: Spec{
+				Always: map[string]interface{}{"type": "w3c", "four": 4},
+				First: []map[string]interface{}{
+					map[string]interface{}{"one": 1},
+					map[string]interface{}{"two": 2},
+				},
+			},
+			result: Spec{
+				Always: map[string]interface{}{"type": "w3c", "three": 3, "four": 4},
+				First: []map[string]interface{}{
+					map[string]interface{}{"one": 1},
+					map[string]interface{}{"two": 2},
+				},
+			},
+		},
+		{
+			name: "firstMatch key collision",
+			caps: map[string]interface{}{"zero": 0, "one": 999},
+			spec: Spec{
+				Always: map[string]interface{}{"type": "w3c"},
+				First: []map[string]interface{}{
+					map[string]interface{}{"one": 1},
+					map[string]interface{}{"two": 2},
+					map[string]interface{}{"three": 3},
+				},
+			},
+			result: Spec{
+				Always: map[string]interface{}{"type": "w3c", "zero": 0},
+				First: []map[string]interface{}{
+					map[string]interface{}{"one": 1},
+					map[string]interface{}{"two": 2, "one": 999},
+					map[string]interface{}{"three": 3, "one": 999},
+				},
 			},
 		},
 	}
@@ -175,31 +213,71 @@ func TestSpecEquals(t *testing.T) {
 		{
 			"nil is not the same as empty",
 			Spec{},
-			Spec{W3CCaps: map[string]interface{}{}},
+			Spec{Always: map[string]interface{}{}},
 			false,
 		},
 		{
 			"nil vs non-empty",
 			Spec{},
-			Spec{W3CCaps: map[string]interface{}{"v": 1}},
+			Spec{Always: map[string]interface{}{"v": 1}},
 			false,
 		},
 		{
-			"equal",
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
+			"equal with First absent",
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
+			true,
+		},
+		{
+			"equal, all fields present",
+			Spec{
+				OSSCaps: map[string]interface{}{"v": 1},
+				Always:  map[string]interface{}{"v": 2},
+				First: []map[string]interface{}{
+					map[string]interface{}{"first": 1},
+					map[string]interface{}{"second": 2},
+				},
+			},
+			Spec{
+				OSSCaps: map[string]interface{}{"v": 1},
+				Always:  map[string]interface{}{"v": 2},
+				First: []map[string]interface{}{
+					map[string]interface{}{"first": 1},
+					map[string]interface{}{"second": 2},
+				},
+			},
 			true,
 		},
 		{
 			"one dialect unequal",
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 999}},
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 999}},
 			false,
 		},
 		{
 			"dialects swapped",
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, W3CCaps: map[string]interface{}{"v": 2}},
-			Spec{OSSCaps: map[string]interface{}{"v": 2}, W3CCaps: map[string]interface{}{"v": 1}},
+			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
+			Spec{OSSCaps: map[string]interface{}{"v": 2}, Always: map[string]interface{}{"v": 1}},
+			false,
+		},
+		{
+			"First order matters",
+			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
+				map[string]interface{}{"first": 1}, map[string]interface{}{"second": 2},
+			}},
+			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
+				map[string]interface{}{"second": 2}, map[string]interface{}{"first": 1},
+			}},
+			false,
+		},
+		{
+			"First uneven length",
+			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
+				map[string]interface{}{"first": 1}, map[string]interface{}{"second": 2},
+			}},
+			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
+				map[string]interface{}{"first": 1},
+			}},
 			false,
 		},
 	}

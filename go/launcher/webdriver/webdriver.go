@@ -160,19 +160,16 @@ func (j *jsonResp) isError() bool {
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
 // and ensures that the browser connection is working. It retries up to attempts - 1 times.
 func CreateSession(ctx context.Context, addr string, attempts int, spec capabilities.Spec) (WebDriver, error) {
-	if spec.OSSCaps == nil && spec.W3CCaps == nil {
-		spec = capabilities.Spec{
-			OSSCaps: map[string]interface{}{},
-			W3CCaps: map[string]interface{}{},
-		}
-	}
-
 	reqBody := map[string]interface{}{}
 	if spec.OSSCaps != nil {
 		reqBody["desiredCapabilities"] = spec.OSSCaps
 	}
-	if spec.W3CCaps != nil {
-		reqBody["capabilities"] = map[string]interface{}{"alwaysMatch": spec.W3CCaps}
+	if spec.Always != nil {
+		w3cMap := map[string]interface{}{"alwaysMatch": spec.Always}
+		if spec.First != nil {
+			w3cMap["firstMatch"] = spec.First
+		}
+		reqBody["capabilities"] = w3cMap
 	}
 	if len(reqBody) == 0 {
 		reqBody = map[string]interface{}{

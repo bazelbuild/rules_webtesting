@@ -214,14 +214,11 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		sessionNotCreated(w, errors.New(h.Name(), "new session request body missing capabilities"))
 		return
 	}
-	if !isEmptyish(j.Capabilities.First) {
-		sessionNotCreated(w, errors.New(h.Name(), "firstMatch capabilities are not yet supported"))
-		return
-	}
 
 	requestedCaps := capabilities.Spec{
 		OSSCaps: j.Desired,
-		W3CCaps: j.Capabilities.Always,
+		Always:  j.Capabilities.Always,
+		First:   j.Capabilities.First,
 	}
 
 	id := h.NextID()
@@ -307,17 +304,4 @@ func (h *WebDriverHub) waitForHealthyEnv(ctx context.Context) error {
 		healthreporter.WaitForHealthy(healthyCtx, h.Env)
 	})
 	return h.Env.Healthy(ctx)
-}
-
-// isEmptyish returns whether a firstMatch capabilities list is effectively empty.
-func isEmptyish(x []map[string]interface{}) bool {
-	if len(x) == 0 {
-		return true
-	}
-	if len(x) == 1 && len(x[0]) == 0 {
-		// A list containing a single empty object, i.e., [{}], means to leave the
-		// alwaysMatch capabilities unmodified.
-		return true
-	}
-	return false
 }
