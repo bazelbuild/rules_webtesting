@@ -83,7 +83,7 @@ Example Test (Go):
 import (
     "testing"
 
-    "github.com/tebeka/selenium/selenium"
+    "github.com/tebeka/selenium"
     "github.com/bazelbuild/rules_webtesting/go/webtest"
 )
 
