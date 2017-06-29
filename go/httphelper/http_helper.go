@@ -123,16 +123,18 @@ func (s longestToShortest) Less(i, j int) bool {
 	return len(s[i]) > len(s[j])
 }
 
-// FQDN returns the fully-qualified domain name (or os.Hostname if lookup fails).
+// FQDN returns the fully-qualified domain name (or localhost if lookup 
+// according to the hostname fails).
 func FQDN() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
+		// Fail if the kernel fails to report a hostname.
 		return "", err
 	}
 
 	addrs, err := net.LookupHost(hostname)
 	if err != nil {
-		return hostname, nil
+		return "localhost", nil
 	}
 
 	for _, addr := range addrs {
@@ -148,5 +150,5 @@ func FQDN() (string, error) {
 		}
 	}
 
-	return hostname, nil
+	return "localhost", nil
 }

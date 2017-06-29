@@ -20,6 +20,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_repository")
 
 def web_test_repositories(
     omit_cglib_nodep=False,
+    omit_com_github_gorilla_context=False,
     omit_com_github_gorilla_mux=False,
     omit_com_github_tebeka_selenium=False,
     omit_com_google_code_findbugs_jsr305=False,
@@ -63,6 +64,8 @@ def web_test_repositories(
     print("The following parameters are deprecated: " + str(kwargs.keys()))
   if not omit_cglib_nodep:
     cglib_nodep()
+  if not omit_com_github_gorilla_context:
+    com_github_gorilla_context();
   if not omit_com_github_gorilla_mux:
     com_github_gorilla_mux()
   if not omit_com_github_tebeka_selenium:
@@ -140,6 +143,16 @@ def cglib_nodep():
       ],
       licenses=["notice"]  # ASF 2.0
   )
+
+
+def com_github_gorilla_context():
+  go_repository(
+      name="com_github_gorilla_context",
+      importpath="github.com/gorilla/context",
+      sha256="12a849b4e9a08619233d4490a281aa2d34a69f9eaf85c2295f5357927e4d1763",
+      strip_prefix="context-1.1",
+      build_tags=["go1.9"],
+      urls=["https://github.com/gorilla/context/archive/v1.1.tar.gz"])
 
 
 def com_github_gorilla_mux():
