@@ -149,20 +149,17 @@ def com_github_gorilla_mux():
       sha256="1a1b35782b0e38534b81d90bb86993fe830a7c1c3974a562554399f850ccdfcd",
       strip_prefix="mux-1.4.0",
       build_tags=["go1.9"],
-      tag="v1.4.0",  # TODO(DrMarcII) remove when no longer needed
-      url="https://github.com/gorilla/mux/archive/v1.4.0.tar.gz")
+      urls=["https://github.com/gorilla/mux/archive/v1.4.0.tar.gz"])
 
 
 def com_github_tebeka_selenium():
   go_repository(
       name="com_github_tebeka_selenium",
-      # TODO(DrMarcII) Remove when no longer needed
-      commit="8f4861d1f09c100da29ceec85424c3c96df15170",
       importpath="github.com/tebeka/selenium",
       sha256="345f204a3ece2469dcc82b59860dec095006e179b1c2ba3e9433b14c90dae167",
       strip_prefix="selenium-8f4861d1f09c100da29ceec85424c3c96df15170",
-      url=
-      "https://github.com/tebeka/selenium/archive/8f4861d1f09c100da29ceec85424c3c96df15170.tar.gz"
+      urls=
+      ["https://github.com/tebeka/selenium/archive/8f4861d1f09c100da29ceec85424c3c96df15170.tar.gz"]
   )
 
 
