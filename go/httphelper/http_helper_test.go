@@ -29,7 +29,7 @@ func TestFQDN(t *testing.T) {
 
 	name, _ := os.Hostname()
 
-	if !strings.HasPrefix(fqdn, name) {
-		t.Errorf("Got %q, expected to start with %q", fqdn, name)
+	if !strings.HasPrefix(fqdn, name) && fqdn != "localhost" {
+		t.Errorf("Got %q, expected localhost or to start with %q", fqdn, name)
 	}
 }
