@@ -36,7 +36,7 @@ import (
 
 const (
 	compName = "WebDriver proxy"
-	timeout  = 1 * time.Second
+	timeout  = 3 * time.Second
 )
 
 var handlerProviders = map[string]HTTPHandlerProvider{}
