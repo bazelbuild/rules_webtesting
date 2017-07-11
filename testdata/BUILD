@@ -26,23 +26,21 @@ filegroup(
     srcs = glob(["*"]),
 )
 
-load("//web:web.bzl", "web_test_named_file", "web_test_config")
+load("//web:web.bzl", "web_test_files", "web_test_config")
 
-web_test_named_file(
-    name = "PROXY_TLS_KEY",
-    file = "key.pem",
-)
-
-web_test_named_file(
-    name = "PROXY_TLS_CERT",
-    file = "cert.pem",
+web_test_files(
+    name = "keys",
+    files = {
+        "key.pem": "PROXY_TLS_KEY",
+        "cert.pem": "PROXY_TLS_CERT",
+    },
 )
 
 web_test_config(
     name = "https",
+    visibility = ["//go/launcher/proxy:__subpackages__"],
     deps = [
-        ":PROXY_TLS_CERT",
-        ":PROXY_TLS_KEY",
+        ":keys",
         "//web:default_config",
     ],
 )

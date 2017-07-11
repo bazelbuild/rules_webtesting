@@ -23,7 +23,7 @@ load(
     web_test_alias="web_test",)
 load(
     "//web/internal:web_test_config.bzl",
-    web_test_config_alias="web_test_config",)
+    web_test_config_alias="web_test_config")
 load(
     "//web/internal:web_test_named_executable.bzl",
     web_test_named_executable_alias="web_test_named_executable")
@@ -33,6 +33,7 @@ load(
 load(
     "//web/internal:web_test_archive.bzl",
     web_test_archive_alias="web_test_archive")
+load("//web/internal:web_test_files.bzl", web_test_files_alias="web_test_files")
 
 
 def web_test_suite(name,
@@ -160,3 +161,8 @@ def web_test_named_file(**kwargs):
 def web_test_archive(**kwargs):
   """Wrapper around web_test_archive to correctly set defaults."""
   web_test_archive_alias(testonly=True, **kwargs)
+
+
+def web_test_files(**kwargs):
+  """Wrapper around web_test_files to correctly set defaults."""
+  web_test_files_alias(testonly=True, **kwargs)
