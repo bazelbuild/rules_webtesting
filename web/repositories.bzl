@@ -65,7 +65,7 @@ def web_test_repositories(
   if not omit_cglib_nodep:
     cglib_nodep()
   if not omit_com_github_gorilla_context:
-    com_github_gorilla_context();
+    com_github_gorilla_context()
   if not omit_com_github_gorilla_mux:
     com_github_gorilla_mux()
   if not omit_com_github_tebeka_selenium:
@@ -151,7 +151,6 @@ def com_github_gorilla_context():
       importpath="github.com/gorilla/context",
       sha256="12a849b4e9a08619233d4490a281aa2d34a69f9eaf85c2295f5357927e4d1763",
       strip_prefix="context-1.1",
-      build_tags=["go1.9"],
       urls=["https://github.com/gorilla/context/archive/v1.1.tar.gz"])
 
 
@@ -161,7 +160,6 @@ def com_github_gorilla_mux():
       importpath="github.com/gorilla/mux",
       sha256="1a1b35782b0e38534b81d90bb86993fe830a7c1c3974a562554399f850ccdfcd",
       strip_prefix="mux-1.4.0",
-      build_tags=["go1.9"],
       urls=["https://github.com/gorilla/mux/archive/v1.4.0.tar.gz"])
 
 
@@ -171,9 +169,9 @@ def com_github_tebeka_selenium():
       importpath="github.com/tebeka/selenium",
       sha256="345f204a3ece2469dcc82b59860dec095006e179b1c2ba3e9433b14c90dae167",
       strip_prefix="selenium-8f4861d1f09c100da29ceec85424c3c96df15170",
-      urls=
-      ["https://github.com/tebeka/selenium/archive/8f4861d1f09c100da29ceec85424c3c96df15170.tar.gz"]
-  )
+      urls=[
+          "https://github.com/tebeka/selenium/archive/8f4861d1f09c100da29ceec85424c3c96df15170.tar.gz"
+      ])
 
 
 def com_google_code_findbugs_jsr305():

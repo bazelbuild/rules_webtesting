@@ -11,20 +11,28 @@ WebDriver.
 Add the following to your WORKSPACE file:
 
 ```bzl
-git_repository(
+# Load rules_go at master for example purposes only. You should specify
+# a specific version in your project.
+http_archive(
     name = "io_bazel_rules_go",
-    remote = "https://github.com/bazelbuild/rules_go.git",
-    tag = "0.4.4",
+    strip_prefix = "rules_go-master",
+    urls = [
+        "https://github.com/bazelbuild/rules_go/archive/master.tar.gz",
+    ],
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
 
 go_repositories()
 
-git_repository(
+# Load rules_webtesting at master for example purposes only. You should specify
+# a specific version in your project.
+http_archive(
     name = "io_bazel_rules_webtesting",
-    remote = "https://github.com/bazelbuild/rules_webtesting.git",
-    tag = "HEAD",
+    strip_prefix = "rules_webtesting-master",
+    urls = [
+        "https://github.com/bazelbuild/rules_webtesting/archive/master.tar.gz",
+    ],
 )
 
 load("@io_bazel_rules_webtesting//web:repositories.bzl",
