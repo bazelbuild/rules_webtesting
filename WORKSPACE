@@ -16,22 +16,15 @@
 #
 workspace(name = "io_bazel_rules_webtesting")
 
-# TODO(#159): switch back to http_archive once rules_go-0.5.2 is released
-git_repository(
+http_archive(
     name = "io_bazel_rules_go",
-    commit = "06375ea860e0836214b43792903cffe8e98b8f65",
-    remote = "https://github.com/bazelbuild/rules_go.git",
+    sha256 = "ac11234356438be4ffe1504356a3a3392f097cdaea8aba4fbb33d8aaea744605",
+    strip_prefix = "rules_go-0.5.2",
+    urls = [
+        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/archive/0.5.2.tar.gz",
+        "https://github.com/bazelbuild/rules_go/archive/0.5.2.tar.gz",
+    ],
 )
-
-#http_archive(
-#    name = "io_bazel_rules_go",
-#    sha256 = "2b1011eb81affe4344bc5b90636c66ea4edcc4dea69677981c759f3bd73a3953",
-#    strip_prefix = "rules_go-0.5.1",
-#    urls = [
-#        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/archive/0.5.1.tar.gz",
-#        "https://github.com/bazelbuild/rules_go/archive/0.5.1.tar.gz",
-#    ],
-#)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
 
