@@ -100,6 +100,7 @@ func TestMergeFromFile(t *testing.T) {
 }
 
 func TestMerge(t *testing.T) {
+
 	testCases := []struct {
 		name   string
 		input1 *Metadata
@@ -141,6 +142,24 @@ func TestMerge(t *testing.T) {
 			&Metadata{TestLabel: "//browsers:figaro"},
 			&Metadata{TestLabel: ""},
 			&Metadata{TestLabel: "//browsers:figaro"},
+		},
+		{
+			"EnableDebugger, no override",
+			&Metadata{DebuggerPort: 1},
+			&Metadata{DebuggerPort: 0},
+			&Metadata{DebuggerPort: 1},
+		},
+		{
+			"EnableDebugger, override",
+			&Metadata{DebuggerPort: 1},
+			&Metadata{DebuggerPort: 2},
+			&Metadata{DebuggerPort: 2},
+		},
+		{
+			"EnableDebugger, not set",
+			&Metadata{DebuggerPort: 0},
+			&Metadata{DebuggerPort: 0},
+			&Metadata{DebuggerPort: 0},
 		},
 	}
 

@@ -26,6 +26,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
@@ -35,7 +36,8 @@ import (
 // WebDriverSession is an http.Handler for forwarding requests to a WebDriver session.
 type WebDriverSession struct {
 	*mux.Router
-	*WebDriverHub
+	diagnostics.Diagnostics
+	hub *WebDriverHub
 	webdriver.WebDriver
 	ID            int
 	handler       HandlerFunc
@@ -108,7 +110,7 @@ func createHandler(session *WebDriverSession, caps capabilities.Spec) HandlerFun
 // CreateSession creates a WebDriverSession object.
 func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, caps capabilities.Spec) (*WebDriverSession, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
-	session := &WebDriverSession{ID: id, WebDriverHub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter(), RequestedCaps: caps}
+	session := &WebDriverSession{ID: id, Diagnostics: hub.Diagnostics, hub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter(), RequestedCaps: caps}
 
 	session.handler = createHandler(session, caps)
 	// Route for commands for this session.
@@ -167,12 +169,12 @@ func (s *WebDriverSession) quit(ctx context.Context, reusable bool) error {
 		}
 	}
 
-	envErr := s.WebDriverHub.Env.StopSession(ctx, s.ID)
+	envErr := s.hub.Env.StopSession(ctx, s.ID)
 	if envErr != nil {
 		s.Warning(envErr)
 	}
 
-	s.WebDriverHub.RemoveSession(s.SessionID())
+	s.hub.RemoveSession(s.SessionID())
 
 	if wdErr != nil {
 		return wdErr
@@ -182,7 +184,7 @@ func (s *WebDriverSession) quit(ctx context.Context, reusable bool) error {
 	}
 
 	if reusable {
-		s.WebDriverHub.AddReusableSession(s)
+		s.hub.AddReusableSession(s)
 	}
 
 	return nil

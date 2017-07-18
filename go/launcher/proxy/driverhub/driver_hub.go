@@ -30,6 +30,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/debugger"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
@@ -45,7 +46,8 @@ type WebDriverHub struct {
 	*metadata.Metadata
 	*http.Client
 	diagnostics.Diagnostics
-	Proxy *proxy.Proxy
+	Proxy    *proxy.Proxy
+	debugger *debugger.Debugger
 
 	healthyOnce sync.Once
 
@@ -57,6 +59,10 @@ type WebDriverHub struct {
 
 // NewHandler creates a handler for /wd/hub paths that delegates to a WebDriver server instance provided by env.
 func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
+	var d *debugger.Debugger
+	if p.Metadata.DebuggerPort != 0 {
+		d = debugger.New(p.Metadata.DebuggerPort)
+	}
 	h := &WebDriverHub{
 		Router:      mux.NewRouter(),
 		Env:         p.Env,
@@ -65,6 +71,7 @@ func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 		Diagnostics: p.Diagnostics,
 		Metadata:    p.Metadata,
 		Proxy:       p,
+		debugger:    d,
 	}
 
 	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(h.createSession)
@@ -76,9 +83,25 @@ func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 	return h, nil
 }
 
+func (h *WebDriverHub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if h.debugger != nil {
+		// allow debugger to pause for breakpoint, log to debugger front-end.
+		h.debugger.Request(r)
+	}
+	// TODO(DrMarcII) add support for breakpointing on responses.
+	h.Router.ServeHTTP(w, r)
+}
+
 // Name is the name of the component used in error messages.
 func (h *WebDriverHub) Name() string {
 	return "WebDriver Hub"
+}
+
+func (h *WebDriverHub) Healthy(ctx context.Context) error {
+	if h.debugger != nil {
+		return h.debugger.Healthy(ctx)
+	}
+	return nil
 }
 
 // AddSession adds a session to WebDriverHub.

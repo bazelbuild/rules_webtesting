@@ -38,4 +38,29 @@ fi
 
 printenv
 
-"$TEST_SRCDIR/%TEMPLATED_launcher%" --metadata="%TEMPLATED_metadata%" --test="%TEMPLATED_test%"
+args=()
+portatnext=0
+debuggerport=0
+
+for var in $@; do
+  if [[ $portatnext > 0 ]]; then
+    debuggerport=$var
+    portatnext=0
+    continue
+  fi
+  if [[ $var = --debugger_port=* ]]; then
+    debuggerport=${var#--debugger_port=}
+    continue
+  fi
+  if [[ $var == "--debugger_port" ]];  then
+    portatnext=1
+    continue
+  fi
+  args+=($var)
+done
+
+"$TEST_SRCDIR/%TEMPLATED_launcher%" \
+  --metadata="%TEMPLATED_metadata%" \
+  --test="%TEMPLATED_test%" \
+  --debugger_port="$debuggerport" \
+  -- "$args"

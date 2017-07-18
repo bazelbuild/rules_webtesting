@@ -1,0 +1,274 @@
+// Copyright 2016 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Package debugger enables wTL Debugger.
+package debugger
+
+import (
+  "context"
+  "encoding/json"
+  "fmt"
+  "log"
+  "net"
+  "net/http"
+  "os"
+  "regexp"
+  "sync"
+
+  "github.com/bazelbuild/rules_webtesting/go/launcher/errors"
+)
+
+type breakpoint struct {
+  ID        int    `json:"id,omitempty"`
+  Path      string `json:"path,omitempty"`
+  pathRegex *regexp.Regexp
+  Methods   []string `json:"methods,omitempty"`
+}
+
+type command struct {
+  ID         int         `json:"id"`
+  Command    string      `json:"command,omitempty"`
+  Breakpoint *breakpoint `json:"breakpoint,omitempty"`
+}
+
+type request struct {
+  Method string `json:"method,omitempty"`
+  Path   string `json:"path,omitempty"`
+}
+
+type response struct {
+  ID      int     `json:"id,omitempty"`
+  Status  string  `json:"status,omitempty"`
+  Request request `json:"request,omitempty"`
+}
+
+// Debugger is an implementation of the WTL Debugger server.
+type Debugger struct {
+  mu          sync.RWMutex
+  failed      error
+  healthy     bool
+  conn        net.Conn
+  step        bool
+  breakpoints map[int]*breakpoint
+  waiting     chan<- interface{}
+}
+
+func New(port int) *Debugger {
+  d := &Debugger{
+    breakpoints: map[int]*breakpoint{},
+  }
+
+  go d.waitForConnection(port)
+  return d
+}
+
+// Name is the name of this component used in errors and logging.
+func (*Debugger) Name() string {
+  return "WTL Debugger Server"
+}
+
+// Healthy returns nil iff a frontend has connected and has sent a step or continue command.
+func (d *Debugger) Healthy(context.Context) error {
+  d.mu.RLock()
+  defer d.mu.RUnlock()
+
+  if d.failed != nil {
+    return d.failed
+  }
+
+  if !d.healthy {
+    return errors.New(d.Name(), "debugger frontend is not connected.")
+  }
+  return nil
+}
+
+// Request logs r to the debugger frontend. If r matches a breakpoint or the debugger is in step mode,
+// Request will not return until a continue message from the front-end is received.
+func (d *Debugger) Request(r *http.Request) {
+  d.mu.RLock()
+  step := d.step
+
+  if !step {
+    for _, bp := range d.breakpoints {
+      if bp.matches(r) {
+        step = true
+        break
+      }
+    }
+  }
+
+  d.mu.RUnlock()
+
+  resp := &response{
+    Request: request{
+      Method: r.Method,
+      Path:   r.URL.Path,
+    },
+  }
+
+  if step {
+    resp.Status = "waiting"
+  } else {
+    resp.Status = "running"
+  }
+
+  bytes, err := json.Marshal(resp)
+  if err != nil {
+    log.Print(err)
+    return
+  }
+
+  if _, err := d.conn.Write(bytes); err != nil {
+    log.Print(err)
+  }
+
+  if _, err := d.conn.Write([]byte("\n")); err != nil {
+    log.Print(err)
+  }
+
+  if !step {
+    return
+  }
+
+  // TODO(DrMarcII): fix race condition...
+  waiting := make(chan interface{})
+  d.mu.Lock()
+  d.waiting = waiting
+  d.mu.Unlock()
+
+  <-waiting
+  d.mu.Lock()
+  d.waiting = nil
+  d.mu.Unlock()
+}
+
+func (d *Debugger) waitForConnection(port int) {
+  l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+  if err != nil {
+    d.mu.Lock()
+    defer d.mu.Unlock()
+    d.failed = errors.NewPermanent(d.Name(), err)
+    return
+  }
+
+  fmt.Printf("Waiting for connect on port %d\n", port)
+
+  conn, err := l.Accept()
+  d.mu.Lock()
+  defer d.mu.Unlock()
+  if err != nil {
+    d.failed = errors.NewPermanent(d.Name(), err)
+    return
+  }
+  d.conn = conn
+
+  go d.readLoop()
+}
+
+func (d *Debugger) readLoop() {
+  decoder := json.NewDecoder(d.conn)
+
+  for {
+    cmd := &command{}
+    if err := decoder.Decode(cmd); err != nil {
+      // do something here...
+      log.Print(err)
+      continue
+    }
+
+    d.processCommand(cmd)
+  }
+}
+
+func (d *Debugger) processCommand(cmd *command) {
+  d.mu.Lock()
+  defer d.mu.Unlock()
+
+  fmt.Printf("Cmd: %+v\n", cmd)
+
+  response := &response{ID: cmd.ID, Status: "error"}
+
+  switch cmd.Command {
+  case "continue":
+    d.healthy = true
+    d.step = false
+    if d.waiting != nil {
+      close(d.waiting)
+    }
+    response.Status = "running"
+
+  case "step":
+    d.healthy = true
+    d.step = true
+    if d.waiting != nil {
+      close(d.waiting)
+    }
+    response.Status = "running"
+
+  case "stop":
+    os.Exit(-1)
+  case "set breakpoint":
+    if cmd.Breakpoint == nil {
+      break
+    }
+    bp := cmd.Breakpoint
+    if bp.Path != "" {
+      r, err := regexp.Compile(bp.Path)
+      if err != nil {
+        break
+      }
+      bp.pathRegex = r
+    }
+    d.breakpoints[bp.ID] = bp
+    response.Status = "waiting"
+
+  case "delete breakpoint":
+    if cmd.Breakpoint == nil {
+      break
+    }
+    delete(d.breakpoints, cmd.Breakpoint.ID)
+    response.Status = "waiting"
+  }
+
+  bytes, err := json.Marshal(response)
+  if err != nil {
+    log.Print(err)
+    return
+  }
+
+  if _, err := d.conn.Write(bytes); err != nil {
+    log.Print(err)
+  }
+}
+
+func (bp *breakpoint) matches(r *http.Request) bool {
+  if bp.pathRegex != nil && bp.pathRegex.FindString(r.URL.Path) == "" {
+    return false
+  }
+
+  if len(bp.Methods) != 0 {
+    found := false
+    for _, method := range bp.Methods {
+      if r.Method == method {
+        found = true
+        break
+      }
+    }
+    if !found {
+      return false
+    }
+  }
+
+  return true
+}

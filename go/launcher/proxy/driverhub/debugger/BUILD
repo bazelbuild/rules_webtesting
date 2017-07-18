@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,23 +22,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = [
-        "driver_hub.go",
-        "driver_responses.go",
-        "driver_session.go",
-    ],
+    srcs = ["debugger.go"],
     visibility = ["//visibility:public"],
     deps = [
-        "//go/httphelper:go_default_library",
-        "//go/launcher/diagnostics:go_default_library",
-        "//go/launcher/environment:go_default_library",
         "//go/launcher/errors:go_default_library",
-        "//go/launcher/healthreporter:go_default_library",
-        "//go/launcher/proxy:go_default_library",
-        "//go/launcher/proxy/driverhub/debugger:go_default_library",
-        "//go/launcher/webdriver:go_default_library",
-        "//go/metadata:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
-        "@com_github_gorilla_mux//:go_default_library",
     ],
 )

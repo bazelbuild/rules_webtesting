@@ -46,6 +46,8 @@ type Metadata struct {
 	TestLabel string `json:"testLabel,omitempty"`
 	// Config label set in the web_test rule.
 	ConfigLabel string `json:"configLabel,omitempty"`
+	// Whether the WTL Debugger should be enabled.
+	DebuggerPort int `json:"debuggerPort,omitempty"`
 	// A list of WebTestFiles with named files in them.
 	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
 	// An object for any additional metadata fields on this object.
@@ -93,6 +95,11 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		configLabel = m2.ConfigLabel
 	}
 
+	debuggerPort := m1.DebuggerPort
+	if m2.DebuggerPort != 0 {
+		debuggerPort = m2.DebuggerPort
+	}
+
 	webTestFiles := []*WebTestFiles{}
 	webTestFiles = append(webTestFiles, m1.WebTestFiles...)
 	webTestFiles = append(webTestFiles, m2.WebTestFiles...)
@@ -120,6 +127,7 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		BrowserLabel: browserLabel,
 		TestLabel:    testLabel,
 		ConfigLabel:  configLabel,
+		DebuggerPort: debuggerPort,
 		WebTestFiles: webTestFiles,
 		Extension:    extension,
 	}, nil
@@ -174,8 +182,11 @@ func Equals(e, a *Metadata) bool {
 	// TODO(DrMarcII): should consider equality of WebTestFiles.
 	return capabilities.JSONEquals(e.Capabilities, a.Capabilities) &&
 		e.Environment == a.Environment &&
+		e.Label == a.Label &&
 		e.BrowserLabel == a.BrowserLabel &&
 		e.TestLabel == a.TestLabel &&
+		e.ConfigLabel == a.ConfigLabel &&
+		e.DebuggerPort == a.DebuggerPort &&
 		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles) &&
 		extsEqual
 }
