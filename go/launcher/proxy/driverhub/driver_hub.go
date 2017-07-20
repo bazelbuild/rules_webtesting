@@ -97,6 +97,7 @@ func (h *WebDriverHub) Name() string {
 	return "WebDriver Hub"
 }
 
+// Healthy returns nil if the WebDriverHub is ready for use, and an error otherwise.
 func (h *WebDriverHub) Healthy(ctx context.Context) error {
 	if h.debugger != nil {
 		return h.debugger.Healthy(ctx)
