@@ -59,4 +59,4 @@ done
   --metadata="%TEMPLATED_metadata%" \
   --test="%TEMPLATED_test%" \
   --debugger_port="$debuggerport" \
-  -- "$args"
+  -- "${args[@]}"
