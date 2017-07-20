@@ -38,7 +38,7 @@ import (
 type WebDriverSession struct {
 	*mux.Router
 	diagnostics.Diagnostics
-	hub *WebDriverHub
+	WebDriverHub *WebDriverHub
 	webdriver.WebDriver
 	ID            int
 	handler       HandlerFunc
@@ -115,7 +115,7 @@ func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, caps c
 	session := &WebDriverSession{
 		ID:            id,
 		Diagnostics:   hub.Diagnostics,
-		hub:           hub,
+		WebDriverHub:  hub,
 		WebDriver:     driver,
 		sessionPath:   sessionPath,
 		Router:        mux.NewRouter(),
@@ -180,12 +180,12 @@ func (s *WebDriverSession) quit(ctx context.Context, reusable bool) error {
 		}
 	}
 
-	envErr := s.hub.Env.StopSession(ctx, s.ID)
+	envErr := s.WebDriverHub.Env.StopSession(ctx, s.ID)
 	if envErr != nil {
 		s.Warning(envErr)
 	}
 
-	s.hub.RemoveSession(s.SessionID())
+	s.WebDriverHub.RemoveSession(s.SessionID())
 
 	if wdErr != nil {
 		return wdErr
@@ -195,7 +195,7 @@ func (s *WebDriverSession) quit(ctx context.Context, reusable bool) error {
 	}
 
 	if reusable {
-		s.hub.AddReusableSession(s)
+		s.WebDriverHub.AddReusableSession(s)
 	}
 
 	return nil
