@@ -66,6 +66,7 @@ type Debugger struct {
   waiting     chan<- interface{}
 }
 
+// New returns a Debugger waiting for a connection on TCP port.
 func New(port int) *Debugger {
   d := &Debugger{
     breakpoints: map[int]*breakpoint{},
