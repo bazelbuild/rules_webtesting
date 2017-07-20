@@ -47,7 +47,7 @@ type WebDriverHub struct {
 	*http.Client
 	diagnostics.Diagnostics
 	Proxy    *proxy.Proxy
-	debugger *debugger.Debugger
+	Debugger *debugger.Debugger
 
 	healthyOnce sync.Once
 
@@ -71,7 +71,7 @@ func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 		Diagnostics: p.Diagnostics,
 		Metadata:    p.Metadata,
 		Proxy:       p,
-		debugger:    d,
+		Debugger:    d,
 	}
 
 	h.Path("/wd/hub/session").Methods("POST").HandlerFunc(h.createSession)
@@ -84,9 +84,9 @@ func HTTPHandlerProvider(p *proxy.Proxy) (proxy.HTTPHandler, error) {
 }
 
 func (h *WebDriverHub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h.debugger != nil {
+	if h.Debugger != nil {
 		// allow debugger to pause for breakpoint, log to debugger front-end.
-		h.debugger.Request(r)
+		h.Debugger.Request(r)
 	}
 	// TODO(DrMarcII) add support for breakpointing on responses.
 	h.Router.ServeHTTP(w, r)
@@ -99,8 +99,8 @@ func (h *WebDriverHub) Name() string {
 
 // Healthy returns nil if the WebDriverHub is ready for use, and an error otherwise.
 func (h *WebDriverHub) Healthy(ctx context.Context) error {
-	if h.debugger != nil {
-		return h.debugger.Healthy(ctx)
+	if h.Debugger != nil {
+		return h.Debugger.Healthy(ctx)
 	}
 	return nil
 }
