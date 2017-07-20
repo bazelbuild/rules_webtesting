@@ -42,21 +42,17 @@ args=()
 portatnext=0
 debuggerport=0
 
-for var in $@; do
-  if [[ $portatnext > 0 ]]; then
-    debuggerport=$var
+for var in "$@"; do
+  if (( "$portatnext" )); then
+    debuggerport="$var"
     portatnext=0
-    continue
-  fi
-  if [[ $var = --debugger_port=* ]]; then
-    debuggerport=${var#--debugger_port=}
-    continue
-  fi
-  if [[ $var == "--debugger_port" ]];  then
+  elif [[ "$var" == --debugger_port=* ]]; then
+    debuggerport="${var#--debugger_port=}"
+  elif [[ $var == "--debugger_port" ]];  then
     portatnext=1
-    continue
+  else
+    args+=("$var")
   fi
-  args+=($var)
 done
 
 "$TEST_SRCDIR/%TEMPLATED_launcher%" \

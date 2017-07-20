@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc.
+// Copyright 2017 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package debugger enables wTL Debugger.
+// Package debugger enables WTL Debugger.
 package debugger
 
 import (
@@ -30,15 +30,16 @@ import (
 )
 
 type breakpoint struct {
-  ID        int    `json:"id,omitempty"`
-  Path      string `json:"path,omitempty"`
+  ID      int      `json:"id"`
+  Path    string   `json:"path,omitempty"`
+  Methods []string `json:"methods,omitempty"`
+
   pathRegex *regexp.Regexp
-  Methods   []string `json:"methods,omitempty"`
 }
 
 type command struct {
   ID         int         `json:"id"`
-  Command    string      `json:"command,omitempty"`
+  Command    string      `json:"command"`
   Breakpoint *breakpoint `json:"breakpoint,omitempty"`
 }
 
@@ -48,17 +49,18 @@ type request struct {
 }
 
 type response struct {
-  ID      int     `json:"id,omitempty"`
-  Status  string  `json:"status,omitempty"`
+  ID      int     `json:"id"`
+  Status  string  `json:"status"`
   Request request `json:"request,omitempty"`
 }
 
 // Debugger is an implementation of the WTL Debugger server.
 type Debugger struct {
+  conn net.Conn
+
   mu          sync.RWMutex
-  failed      error
+  connError   error
   healthy     bool
-  conn        net.Conn
   step        bool
   breakpoints map[int]*breakpoint
   waiting     chan<- interface{}
@@ -78,13 +80,13 @@ func (*Debugger) Name() string {
   return "WTL Debugger Server"
 }
 
-// Healthy returns nil iff a frontend has connected and has sent a step or continue command.
+// Healthy returns nil iff a frontend is connected and has sent a step or continue command.
 func (d *Debugger) Healthy(context.Context) error {
   d.mu.RLock()
   defer d.mu.RUnlock()
 
-  if d.failed != nil {
-    return d.failed
+  if d.connError != nil {
+    return d.connError
   }
 
   if !d.healthy {
@@ -141,7 +143,7 @@ func (d *Debugger) Request(r *http.Request) {
     return
   }
 
-  // TODO(DrMarcII): fix race condition...
+  // TODO(DrMarcII): Race condition here, but it is racing a human, so not too worried about it.
   waiting := make(chan interface{})
   d.mu.Lock()
   d.waiting = waiting
@@ -158,17 +160,23 @@ func (d *Debugger) waitForConnection(port int) {
   if err != nil {
     d.mu.Lock()
     defer d.mu.Unlock()
-    d.failed = errors.NewPermanent(d.Name(), err)
+    d.connError = errors.NewPermanent(d.Name(), err)
     return
   }
 
-  fmt.Printf("Waiting for connect on port %d\n", port)
+  fmt.Printf(`
+***********************************************
+
+Waiting for debugger connection on port %d.
+
+***********************************************
+`, port)
 
   conn, err := l.Accept()
   d.mu.Lock()
   defer d.mu.Unlock()
   if err != nil {
-    d.failed = errors.NewPermanent(d.Name(), err)
+    d.connError = errors.NewPermanent(d.Name(), err)
     return
   }
   d.conn = conn
@@ -183,8 +191,7 @@ func (d *Debugger) readLoop() {
     cmd := &command{}
     if err := decoder.Decode(cmd); err != nil {
       // do something here...
-      log.Print(err)
-      continue
+      log.Fatalf("Error reading from debugger: %v", err)
     }
 
     d.processCommand(cmd)
@@ -223,12 +230,8 @@ func (d *Debugger) processCommand(cmd *command) {
       break
     }
     bp := cmd.Breakpoint
-    if bp.Path != "" {
-      r, err := regexp.Compile(bp.Path)
-      if err != nil {
-        break
-      }
-      bp.pathRegex = r
+    if err := bp.initialize(); err != nil {
+      break
     }
     d.breakpoints[bp.ID] = bp
     response.Status = "waiting"
@@ -250,6 +253,17 @@ func (d *Debugger) processCommand(cmd *command) {
   if _, err := d.conn.Write(bytes); err != nil {
     log.Print(err)
   }
+}
+
+func (bp *breakpoint) initialize() error {
+  if bp.Path != "" {
+    r, err := regexp.Compile(bp.Path)
+    if err != nil {
+      return err
+    }
+    bp.pathRegex = r
+  }
+  return nil
 }
 
 func (bp *breakpoint) matches(r *http.Request) bool {

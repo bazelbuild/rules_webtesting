@@ -46,7 +46,7 @@ type Metadata struct {
 	TestLabel string `json:"testLabel,omitempty"`
 	// Config label set in the web_test rule.
 	ConfigLabel string `json:"configLabel,omitempty"`
-	// Whether the WTL Debugger should be enabled.
+	// Port to connect debugger to. If 0, debugger will not be started.
 	DebuggerPort int `json:"debuggerPort,omitempty"`
 	// A list of WebTestFiles with named files in them.
 	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
