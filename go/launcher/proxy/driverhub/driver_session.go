@@ -29,6 +29,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/gorilla/mux"
 )
@@ -43,6 +44,7 @@ type WebDriverSession struct {
 	handler       HandlerFunc
 	sessionPath   string
 	RequestedCaps capabilities.Spec
+	Metadata      *metadata.Metadata
 
 	mu      sync.RWMutex
 	stopped bool
@@ -110,7 +112,16 @@ func createHandler(session *WebDriverSession, caps capabilities.Spec) HandlerFun
 // CreateSession creates a WebDriverSession object.
 func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, caps capabilities.Spec) (*WebDriverSession, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
-	session := &WebDriverSession{ID: id, Diagnostics: hub.Diagnostics, hub: hub, WebDriver: driver, sessionPath: sessionPath, Router: mux.NewRouter(), RequestedCaps: caps}
+	session := &WebDriverSession{
+		ID:            id,
+		Diagnostics:   hub.Diagnostics,
+		hub:           hub,
+		WebDriver:     driver,
+		sessionPath:   sessionPath,
+		Router:        mux.NewRouter(),
+		RequestedCaps: caps,
+		Metadata:      hub.Metadata,
+	}
 
 	session.handler = createHandler(session, caps)
 	// Route for commands for this session.
