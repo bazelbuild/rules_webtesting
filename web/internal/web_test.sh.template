@@ -48,7 +48,7 @@ for var in "$@"; do
     portatnext=0
   elif [[ "$var" == --debugger_port=* ]]; then
     debuggerport="${var#--debugger_port=}"
-  elif [[ $var == "--debugger_port" ]];  then
+  elif [[ "$var" == "--debugger_port" ]];  then
     portatnext=1
   else
     args+=("$var")

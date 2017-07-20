@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2017 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,4 +21,6 @@ licenses(["notice"])  # Apache 2.0
 py_binary(
     name = "debugger",
     srcs = glob(["*.py"]),
+    default_python_version = "PY3",
+    srcs_version = "PY2AND3",
 )
