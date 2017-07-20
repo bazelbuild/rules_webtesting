@@ -14,12 +14,14 @@
 """Tests for testing.web.webtest."""
 
 import unittest
+
 from testing.web import webtest
 
 
 class BrowserTest(unittest.TestCase):
 
   def testBrowserProvisioningNoCaps(self):
+    pass
     driver = webtest.new_webdriver_session()
 
     try:

@@ -36,7 +36,7 @@ import (
 
 const (
 	compName = "WebDriver proxy"
-	timeout  = 3 * time.Second
+	timeout  = 60 * time.Second
 )
 
 var handlerProviders = map[string]HTTPHandlerProvider{}
@@ -47,6 +47,7 @@ type HTTPHandlerProvider func(*Proxy) (HTTPHandler, error)
 // A HTTPHandler implements http.Handler plus a Shutdown method.
 type HTTPHandler interface {
 	http.Handler
+	healthreporter.HealthReporter
 
 	// Shutdown is called when the proxy is in the process of shutting down.
 	Shutdown(context.Context) error
@@ -188,6 +189,11 @@ func (p *Proxy) Start(ctx context.Context) error {
 
 // Healthy returns nil if the proxy is able to receive requests.
 func (p *Proxy) Healthy(ctx context.Context) error {
+	for _, h := range p.handlers {
+		if err := h.Healthy(ctx); err != nil {
+			return err
+		}
+	}
 	if err := p.httpHealthy(ctx); err != nil {
 		return err
 	}

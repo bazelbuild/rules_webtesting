@@ -40,6 +40,7 @@ type envProvider func(m *metadata.Metadata, d diagnostics.Diagnostics) (environm
 var (
 	test             = flag.String("test", "", "Test script to launch")
 	metadataFileFlag = flag.String("metadata", "", "metadata file")
+	debuggerPort     = flag.Int("debugger_port", 0, "Start WTL debugger on given port")
 	envProviders     = map[string]envProvider{}
 )
 
@@ -48,7 +49,7 @@ func main() {
 
 	d := diagnostics.NoOP()
 
-	status := Run(d, *test, *metadataFileFlag)
+	status := Run(d, *test, *metadataFileFlag, *debuggerPort)
 
 	d.Close()
 	os.Exit(status)
@@ -60,7 +61,7 @@ func RegisterEnvProviderFunc(name string, p envProvider) {
 }
 
 // Run runs the test.
-func Run(d diagnostics.Diagnostics, testPath, mdPath string) int {
+func Run(d diagnostics.Diagnostics, testPath, mdPath string, debuggerPort int) int {
 	ctx := context.Background()
 
 	testTerminated := make(chan os.Signal)
@@ -81,6 +82,10 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string) int {
 	if err != nil {
 		d.Severe(err)
 		return 127
+	}
+
+	if debuggerPort != 0 {
+		md.DebuggerPort = debuggerPort
 	}
 
 	testExe, err := bazel.Runfile(testPath)
