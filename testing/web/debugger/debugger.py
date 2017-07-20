@@ -24,7 +24,7 @@ class Debugger:
 
   def __init__(self, port, host="localhost"):
     self._conn = socket.create_connection(address=(host, port))
-    self._file = self._conn.makefile()
+    self._file = self._conn.makefile(mode="w")
     self._decoder = json.JSONDecoder()
     self._next_id = 1
     self._buffer = ""
@@ -43,7 +43,7 @@ class Debugger:
         return obj
       except:
         pass
-      s = self._conn.recv(4096)
+      s = self._conn.recv(4096).decode("utf-8")
       if s == "":
         quit()
       self._buffer = self._buffer + s

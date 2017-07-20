@@ -203,8 +203,6 @@ func (d *Debugger) processCommand(cmd *command) {
   d.mu.Lock()
   defer d.mu.Unlock()
 
-  fmt.Printf("Cmd: %+v\n", cmd)
-
   response := &response{ID: cmd.ID, Status: "error"}
 
   switch cmd.Command {
