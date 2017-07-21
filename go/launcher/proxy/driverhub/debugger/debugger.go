@@ -16,9 +16,12 @@
 package debugger
 
 import (
+  "bytes"
   "context"
   "encoding/json"
   "fmt"
+  "io"
+  "io/ioutil"
   "log"
   "net"
   "net/http"
@@ -33,8 +36,10 @@ type breakpoint struct {
   ID      int      `json:"id"`
   Path    string   `json:"path,omitempty"`
   Methods []string `json:"methods,omitempty"`
+  Body    string   `josn:"body,omitempty"`
 
   pathRegex *regexp.Regexp
+  bodyRegex *regexp.Regexp
 }
 
 type command struct {
@@ -46,12 +51,13 @@ type command struct {
 type request struct {
   Method string `json:"method,omitempty"`
   Path   string `json:"path,omitempty"`
+  Body   string `json:"body,omitempty"`
 }
 
 type response struct {
-  ID      int     `json:"id"`
-  Status  string  `json:"status"`
-  Request request `json:"request,omitempty"`
+  ID      int      `json:"id"`
+  Status  string   `json:"status"`
+  Request *request `json:"request,omitempty"`
 }
 
 // Debugger is an implementation of the WTL Debugger server.
@@ -99,12 +105,28 @@ func (d *Debugger) Healthy(context.Context) error {
 // Request logs r to the debugger frontend. If r matches a breakpoint or the debugger is in step mode,
 // Request will not return until a continue message from the front-end is received.
 func (d *Debugger) Request(r *http.Request) {
+  // Capture request body
+  body, err := capture(r.Body)
+  if err != nil {
+    log.Fatalf("Error reading request body: %v", err)
+  }
+  r.Body = body
+
+  resp := &response{
+    Request: &request{
+      Method: r.Method,
+      Path:   r.URL.Path,
+      Body:   body.captured,
+    },
+  }
+
+  // Identify if we should be continuing or waiting
   d.mu.RLock()
   step := d.step
 
   if !step {
     for _, bp := range d.breakpoints {
-      if bp.matches(r) {
+      if bp.matches(resp.Request) {
         step = true
         break
       }
@@ -113,19 +135,13 @@ func (d *Debugger) Request(r *http.Request) {
 
   d.mu.RUnlock()
 
-  resp := &response{
-    Request: request{
-      Method: r.Method,
-      Path:   r.URL.Path,
-    },
-  }
-
   if step {
     resp.Status = "waiting"
   } else {
     resp.Status = "running"
   }
 
+  // Send request info to client client
   bytes, err := json.Marshal(resp)
   if err != nil {
     log.Print(err)
@@ -140,9 +156,12 @@ func (d *Debugger) Request(r *http.Request) {
     log.Print(err)
   }
 
+  // Not stepping, so return.
   if !step {
     return
   }
+
+  // Wait for step/continue command from front end.
 
   // TODO(DrMarcII): Race condition here, but it is racing a human, so not too worried about it.
   waiting := make(chan interface{})
@@ -262,11 +281,23 @@ func (bp *breakpoint) initialize() error {
     }
     bp.pathRegex = r
   }
+
+  if bp.Body != "" {
+    r, err := regexp.Compile(bp.Body)
+    if err != nil {
+      return err
+    }
+    bp.bodyRegex = r
+  }
   return nil
 }
 
-func (bp *breakpoint) matches(r *http.Request) bool {
-  if bp.pathRegex != nil && bp.pathRegex.FindString(r.URL.Path) == "" {
+func (bp *breakpoint) matches(r *request) bool {
+  if bp.pathRegex != nil && bp.pathRegex.FindString(r.Path) == "" {
+    return false
+  }
+
+  if bp.bodyRegex != nil && bp.bodyRegex.FindString(r.Body) == "" {
     return false
   }
 
@@ -284,4 +315,22 @@ func (bp *breakpoint) matches(r *http.Request) bool {
   }
 
   return true
+}
+
+type capturedReader struct {
+  io.Reader
+  io.Closer
+  captured string
+}
+
+func capture(r io.ReadCloser) (*capturedReader, error) {
+  c, err := ioutil.ReadAll(r)
+  if err != nil {
+    return nil, err
+  }
+  return &capturedReader{
+    bytes.NewReader(c),
+    r,
+    string(c),
+  }, nil
 }
