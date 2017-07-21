@@ -21,6 +21,5 @@ licenses(["notice"])  # Apache 2.0
 py_binary(
     name = "debugger",
     srcs = glob(["*.py"]),
-    default_python_version = "PY3",
     srcs_version = "PY2AND3",
 )
