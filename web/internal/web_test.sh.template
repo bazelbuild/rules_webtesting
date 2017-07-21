@@ -38,27 +38,26 @@ fi
 
 printenv
 
-# Split arguments into WTL_ARGS and TEST_ARGS.
-TEST_ARGS=()
-WTL_ARGS=()
-WTL_ARG_AT_NEXT=0
-ADDRESS_AT_NEXT=0
+# Split arguments into wtl_args and test_args.
+test_args=()
+wtl_args=()
+wtl_arg_at_next=0
 
-for ARG in "$@"; do
-  if (( "$WTL_ARG_AT_NEXT" )); then
-    WTL_ARGS+=("$ARG")
-    WTL_ARG_AT_NEXT=0
-  elif [[ "$ARG" == --wtl_arg=* ]]; then
-    WTL_ARGS+=("${ARG#--wtl_arg=}")
-  elif [[ "$ARG" == "--wtl_arg" ]];  then
-    WTL_ARG_AT_NEXT=1
+for arg in "$@"; do
+  if (( "$wtl_arg_at_next" )); then
+    wtl_args+=("$arg")
+    wtl_arg_at_next=0
+  elif [[ "$arg" == --wtl_arg=* ]]; then
+    wtl_args+=("${arg#--wtl_arg=}")
+  elif [[ "$arg" == "--wtl_arg" ]];  then
+    wtl_arg_at_next=1
   else
-    TEST_ARGS+=("$ARG")
+    test_args+=("$arg")
   fi
 done
 
 "$TEST_SRCDIR/%TEMPLATED_launcher%" \
   --metadata="%TEMPLATED_metadata%" \
   --test="%TEMPLATED_test%" \
-  "${WTL_ARGS[@]}" \
-  -- "${TEST_ARGS[@]}"
+  "${wtl_args[@]}" \
+  -- "${test_args[@]}"
