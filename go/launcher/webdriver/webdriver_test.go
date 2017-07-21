@@ -411,8 +411,8 @@ func TestSetWindowSize(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		width  uint64
-		height uint64
+		width  float64
+		height float64
 		check  bool
 		err    bool
 	}{
@@ -486,8 +486,8 @@ func TestSetWindowPosition(t *testing.T) {
 
 	testCases := []struct {
 		name  string
-		x     int64
-		y     int64
+		x     float64
+		y     float64
 		check bool
 		err   bool
 	}{
