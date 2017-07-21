@@ -14,9 +14,12 @@
 """Web Test Launcher Debugger Front-End."""
 
 import code
+import getpass
+import hashlib
 import json
 import socket
 import sys
+import urllib
 
 
 class Debugger:
@@ -130,6 +133,17 @@ class Debugger:
     self._read_until_waiting()
 
 
+def collect_analytics():
+  try:
+    urllib.urlopen(
+        "http://www.google-analytics.com/collect?v=1&aip=1&tid=UA-52159295-3"
+        "&t=screenview&cd=start&an=WTL+Debugger&uid=" +
+        hashlib.md5(getpass.getuser()).hexdigest()).close
+  except:
+    # Error collecting usage
+    pass
+
+
 def main(args):
   host = "localhost"
   if len(args) == 2:
@@ -142,6 +156,8 @@ def main(args):
     quit()
 
   wtl = Debugger(host=host, port=port)
+
+  collect_analytics()
 
   code.interact(
       """
