@@ -76,13 +76,15 @@ class Debugger:
     self._file.flush()
     quit()
 
-  def set_breakpoint(self, path=None, methods=None):
+  def set_breakpoint(self, path=None, methods=None, body=None):
     """Set a WTL breakpoint.
 
     Args:
       path: string, Go regular expression to compare to WebDriver command
         paths.
       methods: list of strings, a list of HTTP methods ("POST", "GET", etc).
+      body: string, Go regular expression to compare to body of WebDriver
+        command.
     Returns:
       int, id of the breakpoint (can be used in delete_breakpoint command).
     """
@@ -93,6 +95,8 @@ class Debugger:
       bp["path"] = path
     if methods:
       bp["methods"] = methods
+    if body:
+      bp["body"] = body
 
     json.dump(
         obj={

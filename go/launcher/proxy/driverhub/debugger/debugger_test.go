@@ -15,8 +15,10 @@
 package debugger
 
 import (
-  "net/http"
-  "net/url"
+  "errors"
+  "io"
+  "io/ioutil"
+  "strings"
   "testing"
 )
 
@@ -24,13 +26,13 @@ func TestBreakpointMatches(t *testing.T) {
   testCases := []struct {
     name       string
     breakpoint *breakpoint
-    request    *http.Request
+    request    *request
     matches    bool
   }{
     {
       "empty breakpoint matches everything",
       &breakpoint{},
-      &http.Request{},
+      &request{},
       true,
     },
     {
@@ -38,7 +40,7 @@ func TestBreakpointMatches(t *testing.T) {
       &breakpoint{
         Methods: []string{"POST", "GET"},
       },
-      &http.Request{
+      &request{
         Method: "POST",
       },
       true,
@@ -48,7 +50,7 @@ func TestBreakpointMatches(t *testing.T) {
       &breakpoint{
         Methods: []string{"POST", "GET"},
       },
-      &http.Request{
+      &request{
         Method: "DELETE",
       },
       false,
@@ -58,10 +60,8 @@ func TestBreakpointMatches(t *testing.T) {
       &breakpoint{
         Path: "url",
       },
-      &http.Request{
-        URL: &url.URL{
-          Path: "/wd/hub/session/abc/url",
-        },
+      &request{
+        Path: "/wd/hub/session/abc/url",
       },
       true,
     },
@@ -70,10 +70,8 @@ func TestBreakpointMatches(t *testing.T) {
       &breakpoint{
         Path: "url",
       },
-      &http.Request{
-        URL: &url.URL{
-          Path: "/wd/hub/session/abc/elements",
-        },
+      &request{
+        Path: "/wd/hub/session/abc/elements",
       },
       false,
     },
@@ -83,11 +81,9 @@ func TestBreakpointMatches(t *testing.T) {
         Methods: []string{"POST", "GET"},
         Path:    "url",
       },
-      &http.Request{
+      &request{
         Method: "DELETE",
-        URL: &url.URL{
-          Path: "/wd/hub/session/abc/url",
-        },
+        Path:   "/wd/hub/session/abc/url",
       },
       false,
     },
@@ -97,11 +93,9 @@ func TestBreakpointMatches(t *testing.T) {
         Methods: []string{"POST", "GET"},
         Path:    "url",
       },
-      &http.Request{
+      &request{
         Method: "POST",
-        URL: &url.URL{
-          Path: "/wd/hub/session/abc/elements",
-        },
+        Path:   "/wd/hub/session/abc/elements",
       },
       false,
     },
@@ -111,11 +105,9 @@ func TestBreakpointMatches(t *testing.T) {
         Methods: []string{"POST", "GET"},
         Path:    "url",
       },
-      &http.Request{
+      &request{
         Method: "DELETE",
-        URL: &url.URL{
-          Path: "/wd/hub/session/abc/url",
-        },
+        Path:   "/wd/hub/session/abc/url",
       },
       false,
     },
@@ -125,11 +117,29 @@ func TestBreakpointMatches(t *testing.T) {
         Methods: []string{"POST", "GET"},
         Path:    "url",
       },
-      &http.Request{
+      &request{
         Method: "DELETE",
-        URL: &url.URL{
-          Path: "/wd/hub/session/abc/elements",
-        },
+        Path:   "/wd/hub/session/abc/elements",
+      },
+      false,
+    },
+    {
+      "matching body",
+      &breakpoint{
+        Body: `http://www\.google\.com`,
+      },
+      &request{
+        Body: `{"url": "http://www.google.com"}`,
+      },
+      true,
+    },
+    {
+      "non-matching body",
+      &breakpoint{
+        Body: `http://www\.google\.com`,
+      },
+      &request{
+        Body: `{"url": "http://wwwagoogle.com"}`,
       },
       false,
     },
@@ -144,5 +154,49 @@ func TestBreakpointMatches(t *testing.T) {
         t.Fatalf("got %+v.matches(%+v) == %v, expected %v", tc.breakpoint, tc.request, m, tc.matches)
       }
     })
+  }
+}
+
+type fakeReadCloser struct {
+  io.Reader
+  closed bool
+}
+
+func (f *fakeReadCloser) Close() error {
+  if f.closed {
+    return errors.New("Close called multiple times")
+  }
+  f.closed = true
+  return nil
+}
+
+func TestCapture(t *testing.T) {
+  f := &fakeReadCloser{
+    Reader: strings.NewReader("a test string"),
+  }
+
+  c, err := capture(f)
+  if err != nil {
+    t.Fatal(err)
+  }
+
+  if c.captured != "a test string" {
+    t.Errorf(`Got c.captured == %q, expected "a test string"`, c.captured)
+  }
+
+  b, err := ioutil.ReadAll(c)
+  if err != nil {
+    t.Fatal(err)
+  }
+  if string(b) != "a test string" {
+    t.Errorf(`Got ioutil.ReadAll(c) == %q, expected "a test string"`, string(b))
+  }
+
+  if err := c.Close(); err != nil {
+    t.Fatal(err)
+  }
+
+  if !f.closed {
+    t.Errorf("Got f.closed == false, expected true")
   }
 }
