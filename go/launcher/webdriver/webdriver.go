@@ -80,9 +80,9 @@ type WebDriver interface {
 	// SetWindowRect sets the current window size and location.
 	SetWindowRect(context.Context, Rectangle) error
 	// SetWindowSize sets the current window size.
-	SetWindowSize(ctx context.Context, width, height uint64) error
+	SetWindowSize(ctx context.Context, width, height float64) error
 	// SetWindowPosition sest the current window position.
-	SetWindowPosition(ctx context.Context, x, y int64) error
+	SetWindowPosition(ctx context.Context, x, y float64) error
 	// W3C return true iff connected to a W3C compliant remote end.
 	W3C() bool
 }
@@ -103,10 +103,10 @@ type WebElement interface {
 
 // Rectangle represents a window's position and size.
 type Rectangle struct {
-	X      int64  `json:"x"`
-	Y      int64  `json:"y"`
-	Width  uint64 `json:"width"`
-	Height uint64 `json:"height"`
+	X      float64 `json:"x"`
+	Y      float64 `json:"y"`
+	Width  float64 `json:"width"`
+	Height float64 `json:"height"`
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
@@ -391,8 +391,8 @@ func (d *webDriver) SetWindowRect(ctx context.Context, rect Rectangle) error {
 	return d.SetWindowPosition(ctx, rect.X, rect.Y)
 }
 
-func (d *webDriver) SetWindowSize(ctx context.Context, width, height uint64) error {
-	args := map[string]uint64{
+func (d *webDriver) SetWindowSize(ctx context.Context, width, height float64) error {
+	args := map[string]float64{
 		"width":  width,
 		"height": height,
 	}
@@ -403,8 +403,8 @@ func (d *webDriver) SetWindowSize(ctx context.Context, width, height uint64) err
 	return d.post(ctx, command, args, nil)
 }
 
-func (d *webDriver) SetWindowPosition(ctx context.Context, x, y int64) error {
-	args := map[string]int64{
+func (d *webDriver) SetWindowPosition(ctx context.Context, x, y float64) error {
+	args := map[string]float64{
 		"x": x,
 		"y": y,
 	}
