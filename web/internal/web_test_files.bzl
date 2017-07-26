@@ -21,7 +21,7 @@ load("//web/internal:metadata.bzl", "metadata")
 
 def _web_test_files_impl(ctx):
   named_files = {}
-  files = set()
+  files = depset()
 
   for target, name in ctx.attr.files.items():
     if name in named_files:

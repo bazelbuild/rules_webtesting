@@ -22,8 +22,8 @@ Usage:
 
 
 def _is_list_like(val):
-  """Checks is val is a list-like (list, set, tuple) value."""
-  return type(val) in [type([]), type(set()), type(())]
+  """Checks is val is a list-like (list, depset, tuple) value."""
+  return type(val) in [type([]), type(depset()), type(())]
 
 
 def _list_ensure_contains(lst, item):
