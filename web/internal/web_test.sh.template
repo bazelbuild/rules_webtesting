@@ -38,26 +38,30 @@ fi
 
 printenv
 
-# Split arguments into wtl_args and test_args.
-test_args=()
-wtl_args=()
+# Split arguments into wtl_launcher_args and wtl_test_args. These variables are
+# prefixed "wtl_" to reduce the chance of colliding with environment variables
+# that the user intends to pass through to the wrapped test. (It's uncommon to
+# name environment variables with lowercase letters, and yet, we had a bug
+# report where this collision occurred.)
+wtl_test_args=()
+wtl_launcher_args=()
 wtl_arg_at_next=0
 
 for arg in "$@"; do
   if (( "$wtl_arg_at_next" )); then
-    wtl_args+=("$arg")
+    wtl_launcher_args+=("$arg")
     wtl_arg_at_next=0
   elif [[ "$arg" == --wtl_arg=* ]]; then
-    wtl_args+=("${arg#--wtl_arg=}")
+    wtl_launcher_args+=("${arg#--wtl_arg=}")
   elif [[ "$arg" == "--wtl_arg" ]];  then
     wtl_arg_at_next=1
   else
-    test_args+=("$arg")
+    wtl_test_args+=("$arg")
   fi
 done
 
 "$TEST_SRCDIR/%TEMPLATED_launcher%" \
   --metadata="%TEMPLATED_metadata%" \
   --test="%TEMPLATED_test%" \
-  "${wtl_args[@]}" \
-  -- "${test_args[@]}"
+  "${wtl_launcher_args[@]}" \
+  -- "${wtl_test_args[@]}"
