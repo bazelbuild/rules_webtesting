@@ -54,7 +54,7 @@ func (b *Base) Start(context.Context) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.started {
-		return errors.NewPermanent(b.Name(), "has already started")
+		return errors.NewPermanent(b.Name(), "cannot be started; it has already been started once")
 	}
 	b.started = true
 	return nil
@@ -65,10 +65,10 @@ func (b *Base) Stop(context.Context) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if !b.started {
-		return errors.NewPermanent(b.Name(), "has not been started")
+		return errors.NewPermanent(b.Name(), "cannot be stopped; it was never started")
 	}
 	if b.stopped {
-		return errors.NewPermanent(b.Name(), "has already stopped")
+		return errors.NewPermanent(b.Name(), "cannot be stopped; it was already stopped once")
 	}
 	b.stopped = true
 	return nil

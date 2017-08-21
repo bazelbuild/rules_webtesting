@@ -33,17 +33,15 @@ type Env interface {
 	healthreporter.HealthReporter
 	// SetUp is called once at the beginning of the test run, and should start a
 	// WebDriver server. It is not necessary that the environment be healthy when
-	// this returns. capsFile is the location of capabilities that should be merged
-	// client-specified capabilities when provisioning a browser.
+	// this returns.
 	SetUp(ctx context.Context) error
-	// StartSession is called for each new WebDriver session, before
-	// the new session command is sent to the WebDriver server.
-	// caps is the capabilities sent to the proxy from the client, and
-	// the return value is the capabilities that should be actually
-	// sent to the WebDriver server new session command.
+	// StartSession is called for each new WebDriver session, before the new
+	// session command is sent to the WebDriver server. caps is the capabilities
+	// sent to the proxy from the client, and the return value is the capabilities
+	// that should be actually sent to the WebDriver server new session command.
 	StartSession(ctx context.Context, id int, caps capabilities.Spec) (capabilities.Spec, error)
-	// StartSession is called for each new WebDriver session, before
-	// the delete session command is sent to the WebDriver server.
+	// StopSession is called for each new WebDriver session, before the delete
+	// session command is sent to the WebDriver server.
 	StopSession(ctx context.Context, id int) error
 	// TearDown is called at the end of the test run.
 	TearDown(ctx context.Context) error
@@ -72,12 +70,12 @@ func NewBase(name string, m *metadata.Metadata, d diagnostics.Diagnostics) (*Bas
 	}, nil
 }
 
-// SetUp starts the URLService.
+// SetUp starts the Environment.
 func (b *Base) SetUp(ctx context.Context) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.started {
-		return errors.NewPermanent(b.Name(), "already started")
+		return errors.NewPermanent(b.Name(), "cannot be started; it has already been started once")
 	}
 	b.started = true
 	return nil
@@ -108,24 +106,25 @@ func (b *Base) TearDown(ctx context.Context) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if !b.started {
-		return errors.NewPermanent(b.Name(), "not been started")
+		return errors.NewPermanent(b.Name(), "cannot be stopped; it was never started")
 	}
 	if b.stopped {
-		return errors.NewPermanent(b.Name(), "already stopped")
+		return errors.NewPermanent(b.Name(), "cannot be stopped; it was already stopped once")
 	}
 	b.stopped = true
 	return nil
 }
 
-// Healthy always returns nil.
+// Healthy returns nil (i.e., healthy) iff the environment has been started and
+// has not yet been stopped.
 func (b *Base) Healthy(context.Context) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 	if !b.started {
-		return errors.NewPermanent(b.Name(), "not been started")
+		return errors.NewPermanent(b.Name(), "has not been started")
 	}
 	if b.stopped {
-		return errors.NewPermanent(b.Name(), "already stopped")
+		return errors.NewPermanent(b.Name(), "has been stopped")
 	}
 	return nil
 }
