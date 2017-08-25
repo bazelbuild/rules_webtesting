@@ -18,6 +18,7 @@ package driverhub
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -327,5 +328,9 @@ func (h *WebDriverHub) waitForHealthyEnv(ctx context.Context) error {
 		// ignore error here as we will call and return Healthy below.
 		healthreporter.WaitForHealthy(healthyCtx, h.Env)
 	})
-	return h.Env.Healthy(ctx)
+	err := h.Env.Healthy(ctx)
+	if err != nil {
+		err = errors.New(h.Name(), fmt.Sprintf("environment is unhealthy: %v", err))
+	}
+	return err
 }
