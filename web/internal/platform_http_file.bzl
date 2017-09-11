@@ -18,6 +18,9 @@ def _impl(repository_ctx):
   if repository_ctx.os.name.lower().startswith("mac os"):
     urls = repository_ctx.attr.macos_urls
     sha256 = repository_ctx.attr.macos_sha256
+  elif repository_ctx.os.name.lower().startswith("windows"):
+    urls = repository_ctx.attr.windows_urls
+    sha256 = repository_ctx.attr.windows_sha256
   else:
     urls = repository_ctx.attr.amd64_urls
     sha256 = repository_ctx.attr.amd64_sha256
@@ -42,4 +45,6 @@ platform_http_file = repository_rule(
         "amd64_sha256": attr.string(),
         "macos_urls": attr.string_list(),
         "macos_sha256": attr.string(),
+        "windows_urls": attr.string_list(),
+        "windows_sha256": attr.string(),
     })

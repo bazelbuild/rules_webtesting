@@ -32,6 +32,12 @@ config_setting(
     visibility = ["//:__subpackages__"],
 )
 
+config_setting(
+    name = "windows",
+    values = {"cpu": "x64_windows"},
+    visibility = ["//:__subpackages__"],
+)
+
 browser(
     name = "firefox-external",
     metadata = "firefox-external.json",
@@ -69,6 +75,7 @@ browser(
     environment = select({
         ":linux": None,
         ":mac": {"DISABLE_X_DISPLAY": "1"},
+        ":windows": {"DISABLE_X_DISPLAY": "1"},
     }),
     metadata = "chromium-native.json",
     required_tags = [

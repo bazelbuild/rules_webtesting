@@ -409,6 +409,11 @@ def org_chromium_chromedriver():
       "6c30bba7693ec2d9af7cd9a54729e10aeae85c0953c816d9c4a40a1a72fd8be0",
       macos_urls=[
           "http://chromedriver.storage.googleapis.com/2.29/chromedriver_mac64.zip"
+      ],
+      windows_sha256=
+      "d04084021ddd87400e9eddbee8648c97d429f038f54fe06b279584eee441a4b1",
+      windows_urls=[
+          "http://chromedriver.storage.googleapis.com/2.29/chromedriver_win32.zip"
       ])
 
 
@@ -425,6 +430,11 @@ def org_chromium_chromium():
       "740d691b07855e2aace1e524fd67b8732458e52cc8fca0b4c1bddbbb3aa9ee11",
       macos_urls=[
           "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/454475/chrome-mac.zip"
+      ],
+      windows_sha256=
+      "1093602bb16a2a68bdd9b6dba1d3a998b2a6bfbdf3a0afff613c38a960e37d9c",
+      windows_urls=[
+          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/454494/chrome-win32.zip"
       ])
 
 
