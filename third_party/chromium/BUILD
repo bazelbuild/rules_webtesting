@@ -35,6 +35,11 @@ config_setting(
     values = {"cpu": "k8"},
 )
 
+config_setting(
+    name = "windows",
+    values = {"cpu": "x64_windows"},
+)
+
 web_test_archive(
     name = "chromium",
     archive = "@org_chromium_chromium//file",
@@ -44,6 +49,9 @@ web_test_archive(
         },
         ":mac": {
             "CHROME": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
+        },
+        ":windows": {
+            "CHROME": "chrome-win32/chrome.exe",
         },
     }),
 )
