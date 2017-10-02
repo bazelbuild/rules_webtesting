@@ -121,7 +121,7 @@ func (b *Base) Healthy(context.Context) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 	if !b.started {
-		return errors.NewPermanent(b.Name(), "has not been started")
+		return errors.New(b.Name(), "has not been started")
 	}
 	if b.stopped {
 		return errors.NewPermanent(b.Name(), "has been stopped")
