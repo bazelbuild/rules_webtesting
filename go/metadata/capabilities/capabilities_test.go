@@ -422,8 +422,21 @@ func TestGoogleCap(t *testing.T) {
 			[]kv{{"capName", nil}, {"otherCapName", nil}},
 		},
 		{
-			"found",
-			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv"}},
+			"found only in oss caps",
+			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "google:otherCap": "xxx"}},
+			[]kv{{"capName", "vvvvvv"}, {"otherCap", "xxx"}},
+		},
+		{
+			"found only in w3c caps",
+			Spec{Always: map[string]interface{}{"google:capName": "vvvvvv"}},
+			[]kv{{"capName", "vvvvvv"}},
+		},
+		{
+			"w3c caps value takes precedence",
+			Spec{
+				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
+				OSSCaps: map[string]interface{}{"google:capName": "xxx"},
+			},
 			[]kv{{"capName", "vvvvvv"}},
 		},
 		{
@@ -437,7 +450,7 @@ func TestGoogleCap(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, want := range tc.wants {
 				if got := GoogleCap(tc.caps, want.k); got != want.v {
-					t.Errorf("GoogleCap(%v %q) is %v, want %v", tc.caps, want.k, got, want.v)
+					t.Errorf("GoogleCap(%v, %q) is %v, want %v", tc.caps, want.k, got, want.v)
 				}
 				has := want.v != nil
 				if got := HasGoogleCap(tc.caps, want.k); got != has {
@@ -458,21 +471,59 @@ func TestSetGoogleCap(t *testing.T) {
 	}{
 		{
 			"set cap",
-			Spec{OSSCaps: map[string]interface{}{}},
+			Spec{
+				OSSCaps: map[string]interface{}{},
+				Always:  map[string]interface{}{},
+			},
 			"capName", "vvvvvv",
-			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv"}},
+			Spec{
+				OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "google:capName": "vvvvvv"},
+				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
+			},
+		},
+		{
+			"nil OSS caps are ignored",
+			Spec{
+				Always: map[string]interface{}{},
+			},
+			"capName", "vvvvvv",
+			Spec{
+				Always: map[string]interface{}{"google:capName": "vvvvvv"},
+			},
+		},
+		{
+			"nil W3C caps are ignored",
+			Spec{
+				OSSCaps: map[string]interface{}{},
+			},
+			"capName", "vvvvvv",
+			Spec{
+				OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "google:capName": "vvvvvv"},
+			},
 		},
 		{
 			"overwrite cap",
-			Spec{OSSCaps: map[string]interface{}{"google.capName": "xyz"}},
+			Spec{
+				OSSCaps: map[string]interface{}{"google:capName": "xyz"},
+				Always:  map[string]interface{}{"google:capName": "xyz"},
+			},
 			"capName", "vvvvvv",
-			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv"}},
+			Spec{
+				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv", "google.capName": "vvvvvv"},
+				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
+			},
 		},
 		{
-			"overwrite google.* cap only",
-			Spec{OSSCaps: map[string]interface{}{"capName": "xyz"}},
+			"overwrite google-prefixed cap only",
+			Spec{
+				OSSCaps: map[string]interface{}{"capName": "xyz"},
+				Always:  map[string]interface{}{"capName": "xyz"},
+			},
 			"capName", "vvvvvv",
-			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "capName": "xyz"}},
+			Spec{
+				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv", "google.capName": "vvvvvv", "capName": "xyz"},
+				Always:  map[string]interface{}{"google:capName": "vvvvvv", "capName": "xyz"},
+			},
 		},
 	}
 
