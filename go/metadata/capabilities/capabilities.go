@@ -189,18 +189,41 @@ func sliceEquals(e, v []interface{}) bool {
 // but this will eventually change to recognize vendor-prefixed capabilities in
 // the W3C spec as well.
 func GoogleCap(caps Spec, name string) interface{} {
-	return caps.OSSCaps["google."+name]
+	if v, ok := caps.Always["google:"+name]; ok {
+		return v
+	}
+	if v, ok := caps.OSSCaps["google:"+name]; ok {
+		return v
+	}
+	if v, ok := caps.OSSCaps["google."+name]; ok {
+		return v
+	}
+	return nil
 }
 
 // HasGoogleCap returns whether the named Google capability is present.
 func HasGoogleCap(caps Spec, name string) bool {
-	_, ok := caps.OSSCaps["google."+name]
-	return ok
+	if _, ok := caps.Always["google:"+name]; ok {
+		return true
+	}
+	if _, ok := caps.OSSCaps["google:"+name]; ok {
+		return true
+	}
+	if _, ok := caps.OSSCaps["google."+name]; ok {
+		return true
+	}
+	return false
 }
 
 // SetGoogleCap mutates the given Spec by setting a Google capability.
 func SetGoogleCap(caps Spec, name string, value interface{}) {
-	caps.OSSCaps["google."+name] = value
+	if caps.OSSCaps != nil {
+		caps.OSSCaps["google:"+name] = value
+		caps.OSSCaps["google."+name] = value
+	}
+	if caps.Always != nil {
+		caps.Always["google:"+name] = value
+	}
 }
 
 // CanReuseSession returns whether the Google capability "canReuseSession" is
