@@ -29,6 +29,7 @@ go_library(
         "//go/cropper:go_default_library",
         "//go/launcher/proxy/driverhub:go_default_library",
         "//go/launcher/webdriver:go_default_library",
+        "//go/metadata/capabilities:go_default_library",
     ],
 )
 
