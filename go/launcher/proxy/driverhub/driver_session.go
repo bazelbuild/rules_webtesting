@@ -52,8 +52,7 @@ type WebDriverSession struct {
 
 // A handlerProvider wraps another HandlerFunc to create a new HandlerFunc.
 // If the second return value is false, then the provider did not construct a new HandlerFunc.
-// TODO(juangj): Update type of caps to capabilities.Spec.
-type handlerProvider func(session *WebDriverSession, caps map[string]interface{}, base HandlerFunc) (HandlerFunc, bool)
+type handlerProvider func(session *WebDriverSession, caps capabilities.Spec, base HandlerFunc) (HandlerFunc, bool)
 
 // HandlerFunc is a func for handling a request to a WebDriver session.
 type HandlerFunc func(context.Context, Request) (Response, error)
@@ -101,8 +100,7 @@ func createHandler(session *WebDriverSession, caps capabilities.Spec) HandlerFun
 	handler := createBaseHandler(session.WebDriver)
 
 	for _, provider := range providers {
-		// TODO(juangj): Modify all handler providers to deal with capabilities.Specs.
-		if h, ok := provider(session, caps.OSSCaps, handler); ok {
+		if h, ok := provider(session, caps, handler); ok {
 			handler = h
 		}
 	}
