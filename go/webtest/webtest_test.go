@@ -95,7 +95,7 @@ func TestGetInfo(t *testing.T) {
 
 func TestReusableBrowser(t *testing.T) {
 	wd1, err := NewWebDriverSession(selenium.Capabilities{
-		"google.canReuseSession": true,
+		"google:canReuseSession": true,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -107,7 +107,7 @@ func TestReusableBrowser(t *testing.T) {
 	}
 
 	wd2, err := NewWebDriverSession(selenium.Capabilities{
-		"google.canReuseSession": true,
+		"google:canReuseSession": true,
 	})
 	if err != nil {
 		t.Fatal(err)
