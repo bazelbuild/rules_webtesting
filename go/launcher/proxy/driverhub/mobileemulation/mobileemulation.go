@@ -29,13 +29,14 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/cropper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
 
 const sizeScript = `return {"width": screen.width, "height": screen.height};`
 
 // ProviderFunc provides a handler for /screenshot command that crops the image if Chrome mobile emulation is enabled.
-func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-	if !Enabled(desired) {
+func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+	if !Enabled(caps) {
 		return base, false
 	}
 
@@ -82,14 +83,22 @@ func noOp(c string) (driverhub.Response, error) {
 	}, nil
 }
 
+func getCap(caps capabilities.Spec, key string) interface{} {
+	if v, ok := caps.Always[key]; ok {
+		return v
+	}
+	v, _ := caps.OSSCaps[key]
+	return v
+}
+
 // MobileEmulationEnabled determines if the capabilities define a mobile emulate config.
-func Enabled(caps map[string]interface{}) bool {
-	browserName, _ := caps["browserName"].(string)
+func Enabled(caps capabilities.Spec) bool {
+	browserName, _ := getCap(caps, "browserName").(string)
 	if browserName != "chrome" {
 		return false
 	}
 
-	chromeOptions, ok := caps["chromeOptions"].(map[string]interface{})
+	chromeOptions, ok := getCap(caps, "chromeOptions").(map[string]interface{})
 	if !ok {
 		return false
 	}

@@ -26,6 +26,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/mobileemulation"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
 
 type request struct {
@@ -34,8 +35,8 @@ type request struct {
 }
 
 // ProviderFunc provides a handler for an advanced screenshot endpoint at POST google/screenshot.
-func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-	useMobile := mobileemulation.Enabled(desired)
+func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+	useMobile := mobileemulation.Enabled(caps)
 
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 		if rq.Method != http.MethodPost || len(rq.Path) != 2 || rq.Path[0] != "google" || rq.Path[1] != "screenshot" {

@@ -21,10 +21,11 @@ import (
 	"net/http"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
 
 // ProviderFunc provides a handler for quit and close commands that end the session within the environment when the browser exits.
-func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 		// If quit command, then quit.
 		if rq.Method == http.MethodDelete && len(rq.Path) == 0 {

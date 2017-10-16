@@ -23,10 +23,11 @@ import (
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
 
 // ProviderFunc provides a handler for set script timeout commands.
-func ProviderFunc(session *driverhub.WebDriverSession, desired map[string]interface{}, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 
 		if rq.Method == http.MethodPost && len(rq.Path) == 1 && rq.Path[0] == "timeouts" {
