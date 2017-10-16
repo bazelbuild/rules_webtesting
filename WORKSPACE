@@ -18,17 +18,18 @@ workspace(name = "io_bazel_rules_webtesting")
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "8c333df68fb0096221e2127eda2807384e00cc211ee7e7ea4ed08d212e6a69c1",
-    strip_prefix = "rules_go-0.5.4",
+    sha256 = "ba6feabc94a5d205013e70792accb6cce989169476668fbaf98ea9b342e13b59",
     urls = [
-        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/archive/0.5.4.tar.gz",
-        "https://github.com/bazelbuild/rules_go/archive/0.5.4.tar.gz",
+        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/0.6.0/rules_go-0.6.0.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/0.6.0/rules_go-0.6.0.tar.gz",
     ],
 )
 
-load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
 
-go_repositories()
+go_rules_dependencies()
+
+go_register_toolchains()
 
 load("//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
@@ -38,31 +39,3 @@ browser_repositories(
     chromium = True,
     firefox = True,
 )
-
-http_archive(
-    name = "io_bazel_rules_sass",
-    sha256 = "4bd44d81747d06e8334570d413b714218b7759db0883df807e28127e9d59fe80",
-    strip_prefix = "rules_sass-931508528093364b86abd44a5b9401e5150f1ba7",
-    urls = [
-        "http://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/931508528093364b86abd44a5b9401e5150f1ba7.tar.gz",
-        "https://github.com/bazelbuild/rules_sass/archive/931508528093364b86abd44a5b9401e5150f1ba7.tar.gz",
-    ],
-)
-
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_repositories")
-
-sass_repositories()
-
-http_archive(
-    name = "io_bazel_skydoc",
-    sha256 = "06d855d8412cae1461d4131481a26d71ba9457914473803df65b110ea4dd6a88",
-    strip_prefix = "skydoc-0.1.1",
-    urls = [
-        "http://mirror.bazel.build/github.com/bazelbuild/skydoc/archive/0.1.1.tar.gz",
-        "https://github.com/bazelbuild/skydoc/archive/0.1.1.tar.gz",
-    ],
-)
-
-load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
-
-skydoc_repositories()
