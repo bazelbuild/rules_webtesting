@@ -18,39 +18,17 @@ load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@io_bazel_rules_go//go:def.bzl", "go_repository")
 
 
-def web_test_repositories(
-    omit_cglib_nodep=False,
-    omit_com_github_gorilla_context=False,
-    omit_com_github_gorilla_mux=False,
-    omit_com_github_tebeka_selenium=False,
-    omit_com_google_code_findbugs_jsr305=False,
-    omit_com_google_code_gson=False,
-    omit_com_google_errorprone_error_prone_annotations=False,
-    omit_com_google_guava=False,
-    omit_com_squareup_okhttp3_okhttp=False,
-    omit_com_squareup_okio=False,
-    omit_commons_codec=False,
-    omit_commons_logging=False,
-    omit_junit=False,
-    omit_net_java_dev_jna=False,
-    omit_net_java_dev_jna_platform=False,
-    omit_org_apache_commons_exec=False,
-    omit_org_apache_httpcomponents_httpclient=False,
-    omit_org_apache_httpcomponents_httpcore=False,
-    omit_org_apache_httpcomponents_httpmime=False,
-    omit_org_hamcrest_core=False,
-    omit_org_json=False,
-    omit_org_seleniumhq_py=False,
-    omit_org_seleniumhq_selenium_api=False,
-    omit_org_seleniumhq_selenium_remote_driver=False,
-    **kwargs):
+def web_test_repositories(**kwargs):
   """Defines external repositories required by Webtesting Rules.
 
   This function exists for other Bazel projects to call from their WORKSPACE
   file when depending on rules_webtesting using http_archive. This function
   makes it easy to import these transitive dependencies into the parent
-  workspace using a blacklist model. Individual dependencies may be excluded
-  with the omit parameters. This is useful for users who want to be rigorous
+  workspace. This will check to see if a repository has been previously defined
+  before defining a new repository.
+
+  Alternatively, individual dependencies may be excluded with an
+  "omit_" + name parameter. This is useful for users who want to be rigorous
   about declaring their own direct dependencies, or when another Bazel project
   is depended upon (e.g. rules_closure) that defines the same dependencies as
   this one (e.g. com_google_guava.) Alternatively, a whitelist model may be
@@ -60,56 +38,79 @@ def web_test_repositories(
   downloaded, unless a target is built that depends on them.
   """
   _check_bazel_version("Web Testing Rules", "0.4.2")
-  if kwargs.keys():
-    print("The following parameters are deprecated: " + str(kwargs.keys()))
-  if not omit_cglib_nodep:
+  if should_create_repository("cglib_nodep", kwargs):
     cglib_nodep()
-  if not omit_com_github_gorilla_context:
+  if should_create_repository("com_github_blang_semver", kwargs):
+    com_github_blang_semver()
+  if should_create_repository("com_github_gorilla_context", kwargs):
     com_github_gorilla_context()
-  if not omit_com_github_gorilla_mux:
+  if should_create_repository("com_github_gorilla_mux", kwargs):
     com_github_gorilla_mux()
-  if not omit_com_github_tebeka_selenium:
+  if should_create_repository("com_github_tebeka_selenium", kwargs):
     com_github_tebeka_selenium()
-  if not omit_com_google_code_findbugs_jsr305:
+  if should_create_repository("com_google_code_findbugs_jsr305", kwargs):
     com_google_code_findbugs_jsr305()
-  if not omit_com_google_code_gson:
+  if should_create_repository("com_google_code_gson", kwargs):
     com_google_code_gson()
-  if not omit_com_google_errorprone_error_prone_annotations:
+  if should_create_repository("com_google_errorprone_error_prone_annotations",
+                              kwargs):
     com_google_errorprone_error_prone_annotations()
-  if not omit_com_google_guava:
+  if should_create_repository("com_google_guava", kwargs):
     com_google_guava()
-  if not omit_com_squareup_okhttp3_okhttp:
+  if should_create_repository("com_squareup_okhttp3_okhttp", kwargs):
     com_squareup_okhttp3_okhttp()
-  if not omit_com_squareup_okio:
+  if should_create_repository("com_squareup_okio", kwargs):
     com_squareup_okio()
-  if not omit_commons_codec:
+  if should_create_repository("commons_codec", kwargs):
     commons_codec()
-  if not omit_commons_logging:
+  if should_create_repository("commons_logging", kwargs):
     commons_logging()
-  if not omit_junit:
+  if should_create_repository("junit", kwargs):
     junit()
-  if not omit_net_java_dev_jna:
+  if should_create_repository("net_bytebuddy", kwargs):
+    net_bytebuddy()
+  if should_create_repository("net_java_dev_jna", kwargs):
     net_java_dev_jna()
-  if not omit_net_java_dev_jna_platform:
+  if should_create_repository("net_java_dev_jna_platform", kwargs):
     net_java_dev_jna_platform()
-  if not omit_org_apache_commons_exec:
+  if should_create_repository("org_apache_commons_exec", kwargs):
     org_apache_commons_exec()
-  if not omit_org_apache_httpcomponents_httpclient:
+  if should_create_repository("org_apache_httpcomponents_httpclient", kwargs):
     org_apache_httpcomponents_httpclient()
-  if not omit_org_apache_httpcomponents_httpcore:
+  if should_create_repository("org_apache_httpcomponents_httpcore", kwargs):
     org_apache_httpcomponents_httpcore()
-  if not omit_org_apache_httpcomponents_httpmime:
+  if should_create_repository("org_apache_httpcomponents_httpmime", kwargs):
     org_apache_httpcomponents_httpmime()
-  if not omit_org_hamcrest_core:
+  if should_create_repository("org_hamcrest_core", kwargs):
     org_hamcrest_core()
-  if not omit_org_json:
+  if should_create_repository("org_json", kwargs):
     org_json()
-  if not omit_org_seleniumhq_py:
+  if should_create_repository("org_seleniumhq_py", kwargs):
     org_seleniumhq_py()
-  if not omit_org_seleniumhq_selenium_api:
+  if should_create_repository("org_seleniumhq_selenium_api", kwargs):
     org_seleniumhq_selenium_api()
-  if not omit_org_seleniumhq_selenium_remote_driver:
+  if should_create_repository("org_seleniumhq_selenium_remote_driver", kwargs):
     org_seleniumhq_selenium_remote_driver()
+  if kwargs.keys():
+    print("The following parameters are unknown: " + str(kwargs.keys()))
+
+
+def should_create_repository(name, args):
+  """Returns whether the name repository should be created.
+
+  This allows creation of a repository to be disabled by either an
+  "omit_" _+ name parameter or by previously defining a rule for the repository.
+
+  The args dict will be mutated to remove "omit_" + name.
+  """
+  key = "omit_" + name
+  if key in args:
+    val = args.pop(key)
+    if val:
+      return False
+  if native.existing_rule(name):
+    return False
+  return True
 
 
 def browser_repositories(firefox=False, chromium=False):
@@ -138,11 +139,23 @@ def cglib_nodep():
       "9ab68b361ffdce66747f63bbe0676391c0a96d6de3e743ac03d7e998ff0a1064",
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
-          "http://maven.ibiblio.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
           "http://repo1.maven.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
+          "http://maven.ibiblio.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
       ],
       licenses=["notice"]  # ASF 2.0
   )
+
+
+def com_github_blang_semver():
+  go_repository(
+      name="com_github_blang_semver",
+      importpath="github.com/blang/semver",
+      sha256="3d9da53f4c2d3169bfa9b25f2f36f301a37556a47259c870881524c643c69c57",
+      strip_prefix="semver-3.5.1",
+      urls=[
+          "https://mirror.bazel.build/github.com/blang/semver/archive/v3.5.1.tar.gz",
+          "https://github.com/blang/semver/archive/v3.5.1.tar.gz",
+      ])
 
 
 def com_github_gorilla_context():
@@ -151,26 +164,33 @@ def com_github_gorilla_context():
       importpath="github.com/gorilla/context",
       sha256="12a849b4e9a08619233d4490a281aa2d34a69f9eaf85c2295f5357927e4d1763",
       strip_prefix="context-1.1",
-      urls=["https://github.com/gorilla/context/archive/v1.1.tar.gz"])
+      urls=[
+          "https://mirror.bazel.build/github.com/gorilla/context/archive/v1.1.tar.gz",
+          "https://github.com/gorilla/context/archive/v1.1.tar.gz",
+      ])
 
 
 def com_github_gorilla_mux():
   go_repository(
       name="com_github_gorilla_mux",
       importpath="github.com/gorilla/mux",
-      sha256="1a1b35782b0e38534b81d90bb86993fe830a7c1c3974a562554399f850ccdfcd",
-      strip_prefix="mux-1.4.0",
-      urls=["https://github.com/gorilla/mux/archive/v1.4.0.tar.gz"])
+      sha256="e639e6935f3327bed70b583e3311eba262266e79f2c50d436bb99ca70700879f",
+      strip_prefix="mux-1.5.0",
+      urls=[
+          "https://mirror.bazel.build/github.com/gorilla/mux/archive/v1.5.0.tar.gz",
+          "https://github.com/gorilla/mux/archive/v1.5.0.tar.gz",
+      ])
 
 
 def com_github_tebeka_selenium():
   go_repository(
       name="com_github_tebeka_selenium",
       importpath="github.com/tebeka/selenium",
-      sha256="345f204a3ece2469dcc82b59860dec095006e179b1c2ba3e9433b14c90dae167",
-      strip_prefix="selenium-8f4861d1f09c100da29ceec85424c3c96df15170",
+      sha256="22db05f2b3e7b1bfe0f84c45333be798627e1b091918a8c65e241b5b1e9df5cc",
+      strip_prefix="selenium-a7e71178aa40d9b298d464b912c4e831b2be4455",
       urls=[
-          "https://github.com/tebeka/selenium/archive/8f4861d1f09c100da29ceec85424c3c96df15170.tar.gz"
+          "https://mirror.bazel.build/github.com/tebeka/selenium/archive/a7e71178aa40d9b298d464b912c4e831b2be4455.tar.gz",
+          "https://github.com/tebeka/selenium/archive/a7e71178aa40d9b298d464b912c4e831b2be4455.tar.gz",
       ])
 
 
@@ -192,11 +212,11 @@ def com_google_code_gson():
   java_import_external(
       name="com_google_code_gson",
       jar_sha256=
-      "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
+      "b7134929f7cc7c04021ec1cc27ef63ab907e410cf0588e397b8851181eb91092",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar",
-          "http://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar",
-          "http://maven.ibiblio.org/maven2/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/code/gson/gson/2.8.2/gson-2.8.2.jar",
+          "http://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.2/gson-2.8.2.jar",
+          "http://maven.ibiblio.org/maven2/com/google/code/gson/gson/2.8.2/gson-2.8.2.jar",
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
       deps=["@com_google_code_findbugs_jsr305"])
@@ -206,10 +226,11 @@ def com_google_errorprone_error_prone_annotations():
   java_import_external(
       name="com_google_errorprone_error_prone_annotations",
       jar_sha256=
-      "cde78ace21e46398299d0d9c6be9f47b7f971c7f045d40c78f95be9a638cbf7e",
+      "98590bc81d8065ec4ea8dc18ea8f482d996d050faa191d4595bafb324414166a",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.0.19/error_prone_annotations-2.0.19.jar",
-          "http://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.0.19/error_prone_annotations-2.0.19.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.1.1/error_prone_annotations-2.1.1.jar",
+          "http://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.1.1/error_prone_annotations-2.1.1.jar",
+          "http://maven.ibiblio.org/maven2/com/google/errorprone/error_prone_annotations/2.1.1/error_prone_annotations-2.1.1.jar",
       ],
       licenses=["notice"]  # Apache 2.0
   )
@@ -219,12 +240,12 @@ def com_google_guava():
   java_import_external(
       name="com_google_guava",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/22.0/guava-22.0.jar",
-          "http://repo1.maven.org/maven2/com/google/guava/guava/22.0/guava-22.0.jar",
-          "http://maven.ibiblio.org/maven2/com/google/guava/guava/22.0/guava-22.0.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/23.2-jre/guava-23.2-jre.jar",
+          "http://repo1.maven.org/maven2/com/google/guava/guava/23.2-jre/guava-23.2-jre.jar",
+          "http://maven.ibiblio.org/maven2/com/google/guava/guava/23.2-jre/guava-23.2-jre.jar",
       ],
       jar_sha256=
-      "1158e94c7de4da480873f0b4ab4a1da14c0d23d4b1902cc94a58a6f0f9ab579e",
+      "5be9a7d05ba0ccd74708bc8018ae412255f85843c0b92302e9b9befa6ed52564",
       licenses=["notice"],  # Apache 2.0
       exports=[
           "@com_google_code_findbugs_jsr305",
@@ -236,10 +257,12 @@ def com_squareup_okhttp3_okhttp():
   java_import_external(
       name="com_squareup_okhttp3_okhttp",
       jar_urls=[
-          "http://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.8.0/okhttp-3.8.0.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.0/okhttp-3.9.0.jar",
+          "http://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.0/okhttp-3.9.0.jar",
+          "http://maven.ibiblio.org/maven2/com/squareup/okhttp3/okhttp/3.9.0/okhttp-3.9.0.jar",
       ],
       jar_sha256=
-      "19e1db51787716ff0046fa19e408fb34ed32a6274baa0c07475bf724b4eb6800",
+      "7265adbd6f028aade307f58569d814835cd02bc9beffb70c25f72c9de50d61c4",
       licenses=["notice"],  # Apache 2.0
       deps=[
           "@com_squareup_okio",
@@ -251,7 +274,9 @@ def com_squareup_okio():
   java_import_external(
       name="com_squareup_okio",
       jar_urls=[
+          "http://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar",
           "http://repo1.maven.org/maven2/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar",
+          "http://maven.ibiblio.org/maven2/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar",
       ],
       jar_sha256=
       "734269c3ebc5090e3b23566db558f421f0b4027277c79ad5d176b8ec168bb850",
@@ -280,8 +305,8 @@ def commons_logging():
       "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
-          "http://maven.ibiblio.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
           "http://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
+          "http://maven.ibiblio.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
       ],
       licenses=["notice"]  # The Apache Software License, Version 2.0
   )
@@ -302,15 +327,32 @@ def junit():
       deps=["@org_hamcrest_core"])
 
 
+def net_bytebuddy():
+  java_import_external(
+      name="net_bytebuddy",
+      jar_sha256=
+      "c7f9861c94b07192ce970820cab9b046dc910e59567855d77c66d4532b9515bf",
+      jar_urls=[
+          "http://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.7.6/byte-buddy-1.7.6.jar",
+          "http://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.7.6/byte-buddy-1.7.6.jar",
+          "http://maven.ibiblio.org/maven2/net/bytebuddy/byte-buddy/1.7.6/byte-buddy-1.7.6.jar",
+      ],
+      # LGPL, version 2.1
+      # http://www.gnu.org/licenses/licenses.html
+      # ASL, version 2
+      # http://www.apache.org/licenses/
+      licenses=["restricted"])
+
+
 def net_java_dev_jna():
   java_import_external(
       name="net_java_dev_jna",
       jar_sha256=
-      "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+      "617a8d75f66a57296255a13654a99f10f72f0964336e352211247ed046da3e94",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar",
-          "http://maven.ibiblio.org/maven2/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar",
-          "http://repo1.maven.org/maven2/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/net/java/dev/jna/jna/4.5.0/jna-4.5.0.jar",
+          "http://maven.ibiblio.org/maven2/net/java/dev/jna/jna/4.5.0/jna-4.5.0.jar",
+          "http://repo1.maven.org/maven2/net/java/dev/jna/jna/4.5.0/jna-4.5.0.jar",
       ],
       # LGPL, version 2.1
       # http://www.gnu.org/licenses/licenses.html
@@ -323,11 +365,11 @@ def net_java_dev_jna_platform():
   java_import_external(
       name="net_java_dev_jna_platform",
       jar_sha256=
-      "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
+      "68ee6431c6c07dda48deaa2627c56beeea0dec5927fe7848983e06f7a6a76a08",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.4.0/jna-platform-4.4.0.jar",
-          "http://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.4.0/jna-platform-4.4.0.jar",
-          "http://maven.ibiblio.org/maven2/net/java/dev/jna/jna-platform/4.4.0/jna-platform-4.4.0.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.5.0/jna-platform-4.5.0.jar",
+          "http://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.5.0/jna-platform-4.5.0.jar",
+          "http://maven.ibiblio.org/maven2/net/java/dev/jna/jna-platform/4.5.0/jna-platform-4.5.0.jar",
       ],
       # LGPL, version 2.1
       # http://www.gnu.org/licenses/licenses.html
@@ -373,11 +415,11 @@ def org_apache_httpcomponents_httpcore():
   java_import_external(
       name="org_apache_httpcomponents_httpcore",
       jar_sha256=
-      "d7f853dee87680b07293d30855b39b9eb56c1297bd16ff1cd6f19ddb8fa745fb",
+      "f5408b3c74b43d87c0c121cab55f350c7b39d62f5f9db018fd261387c087130b",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.6/httpcore-4.4.6.jar",
-          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpcore/4.4.6/httpcore-4.4.6.jar",
-          "http://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.6/httpcore-4.4.6.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.8/httpcore-4.4.8.jar",
+          "http://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.8/httpcore-4.4.8.jar",
+          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpcore/4.4.8/httpcore-4.4.8.jar",
       ],
       licenses=["notice"]  # Apache License, Version 2.0
   )
@@ -390,8 +432,8 @@ def org_apache_httpcomponents_httpmime():
       "b4865b79a3aaeef794220b532bc7b07f793fa4aad90c29e83cab2b835cd8ee06",
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
-          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
           "http://repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
+          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
       ],
       licenses=["notice"],  # Apache License, Version 2.0
       deps=["@org_apache_httpcomponents_httpclient"])
@@ -401,19 +443,19 @@ def org_chromium_chromedriver():
   platform_http_file(
       name="org_chromium_chromedriver",
       amd64_sha256=
-      "bb2cf08f2c213f061d6fbca9658fc44a367c1ba7e40b3ee1e3ae437be0f901c2",
+      "87d0059ab1579ec9c10ef34ab9817feea59e19a96c029d78349a57c36db5bb74",
       amd64_urls=[
-          "http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip"
+          "http://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip"
       ],
       macos_sha256=
-      "6c30bba7693ec2d9af7cd9a54729e10aeae85c0953c816d9c4a40a1a72fd8be0",
+      "064b243c4236380cc705f183e100d7a229815db7b143f6ad3eaae072a48cc827",
       macos_urls=[
-          "http://chromedriver.storage.googleapis.com/2.29/chromedriver_mac64.zip"
+          "http://chromedriver.storage.googleapis.com/2.33/chromedriver_mac64.zip"
       ],
       windows_sha256=
-      "d04084021ddd87400e9eddbee8648c97d429f038f54fe06b279584eee441a4b1",
+      "e76941bf314e0c7967a8f0ccea10c331d69e4c1de0172fec33ed20df8c50e253",
       windows_urls=[
-          "http://chromedriver.storage.googleapis.com/2.29/chromedriver_win32.zip"
+          "http://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip"
       ])
 
 
@@ -422,19 +464,19 @@ def org_chromium_chromium():
   platform_http_file(
       name="org_chromium_chromium",
       amd64_sha256=
-      "c356dbaee39b6a070388e87566c10254def32641df50b21c28aff1b8b11aeb5f",
+      "f585d71becaaa71f971e9c45ca9ef919b5a3fc7e51ab48a8e3f1d3a9ee705f42",
       amd64_urls=[
-          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/454471/chrome-linux.zip"
+          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/488534/chrome-linux.zip"
       ],
       macos_sha256=
-      "740d691b07855e2aace1e524fd67b8732458e52cc8fca0b4c1bddbbb3aa9ee11",
+      "56195feefbe57139073429f2cfae33e010f6a73211ba66ce919c16c2c231b0fe",
       macos_urls=[
-          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/454475/chrome-mac.zip"
+          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/488533/chrome-mac.zip"
       ],
       windows_sha256=
-      "1093602bb16a2a68bdd9b6dba1d3a998b2a6bfbdf3a0afff613c38a960e37d9c",
+      "c0bb7a5ba47112d5f3789d2b0b9d3d2e38a5be592bf3332078fd90179c71dd27",
       windows_urls=[
-          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/454494/chrome-win32.zip"
+          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/488538/chrome-win32.zip"
       ])
 
 
@@ -458,7 +500,9 @@ def org_json():
       jar_sha256=
       "813f37e4820f1854e8a4eb4f80df94bf1b1f2ec6c3b72692f23ab9a556256af6",
       jar_urls=[
+          "http://mirror.bazel.build/repo1.maven.org/maven2/org/json/json/20170516/json-20170516.jar",
           "http://repo1.maven.org/maven2/org/json/json/20170516/json-20170516.jar",
+          "http://maven.ibiblio.org/maven2/org/json/json/20170516/json-20170516.jar",
       ],
       licenses=["notice"]  # MIT-style license
   )
@@ -468,16 +512,16 @@ def org_mozilla_firefox():
   platform_http_file(
       name="org_mozilla_firefox",
       amd64_sha256=
-      "6d338e98b1ac1078738dcdab11d6a0c855e5087fa0d7d99dbffa521d16a45327",
+      "9adf41f9c8ed525906d270c66ed2cfbd9e2154a3aeccaadbb0bdfb6ce3a3ca73",
       amd64_urls=[
-          "https://ftp.mozilla.org/pub/firefox/releases/53.0.3/linux-x86_64/en-US/firefox-53.0.3.tar.bz2",
-          "http://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/53.0.3/linux-x86_64/en-US/firefox-53.0.3.tar.bz2",
+          "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/56.0.1/linux-x86_64/en-US/firefox-56.0.1.tar.bz2",
+          "https://ftp.mozilla.org/pub/firefox/releases/56.0.1/linux-x86_64/en-US/firefox-56.0.1.tar.bz2",
       ],
       macos_sha256=
       "b9e9f383fd12d6deb6b36b3c2844647ce065142e1eb934499559a8a9842d01ad",
       macos_urls=[
-          "https://ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
           "http://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
+          "https://ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
       ])
 
 
@@ -485,10 +529,10 @@ def org_mozilla_geckodriver():
   platform_http_file(
       name="org_mozilla_geckodriver",
       amd64_sha256=
-      "dcadab8586264cf33aae1fff0897520d46e39dad4580c6cae712452fdc59e529",
+      "1c93b9cd82a28e4545829ae4686081ac7c76ba4e1f3faa0afda1fd3e5f6eda79",
       amd64_urls=[
-          "http://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz",
-          "https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz",
+          "http://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.19.0/geckodriver-v0.19.0-linux64.tar.gz",
+          "https://github.com/mozilla/geckodriver/releases/download/v0.19.0/geckodriver-v0.19.0-linux64.tar.gz",
       ],
       macos_sha256=
       "eb5a2971e5eb4a2fe74a3b8089f0f2cc96eed548c28526b8351f0f459c080836",
@@ -502,11 +546,11 @@ def org_seleniumhq_py():
   native.new_http_archive(
       name="org_seleniumhq_py",
       build_file=str(Label("//build_files:org_seleniumhq_py.BUILD")),
-      sha256="2befcd8a18c4a88fe7af1f848277d83aa89682516fb2ac95942cb13ea6eaad02",
-      strip_prefix="selenium-3.4.2",
+      sha256="9563021c5cba084041e13c218eb531d9c6920dcfa0ba1024bb5bf2b6c0df1797",
+      strip_prefix="selenium-3.6.0",
       urls=[
-          "http://mirror.bazel.build/pypi.python.org/packages/47/63/611503113c00cb3ba0ab310567b4f7d7c2a3178e7ebc07f66ae4b997d56a/selenium-3.4.2.tar.gz",
-          "https://pypi.python.org/packages/47/63/611503113c00cb3ba0ab310567b4f7d7c2a3178e7ebc07f66ae4b997d56a/selenium-3.4.2.tar.gz"
+          "http://mirror.bazel.build/pypi.python.org/packages/e1/25/ad1ee3c019e45933c201ae3c8b3c84ab335a64a8172051ace583b7371b35/selenium-3.6.0.tar.gz",
+          "https://pypi.python.org/packages/e1/25/ad1ee3c019e45933c201ae3c8b3c84ab335a64a8172051ace583b7371b35/selenium-3.6.0.tar.gz"
       ])
 
 
@@ -514,11 +558,11 @@ def org_seleniumhq_selenium_api():
   java_import_external(
       name="org_seleniumhq_selenium_api",
       jar_sha256=
-      "a14e8fb856b1840a837dbca8d2dd322cd4a7d8650924aa4dfa19eca06f47401e",
+      "2f59e4ab0b63845eb5be785c18b1837b375b61ea3a6d29e7a97765456623e0ac",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.4.0/selenium-api-3.4.0.jar",
-          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.4.0/selenium-api-3.4.0.jar",
-          "http://maven.ibiblio.org/maven2/org/seleniumhq/selenium/selenium-api/3.4.0/selenium-api-3.4.0.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.6.0/selenium-api-3.6.0.jar",
+          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.6.0/selenium-api-3.6.0.jar",
+          "http://maven.ibiblio.org/maven2/org/seleniumhq/selenium/selenium-api/3.6.0/selenium-api-3.6.0.jar",
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
       testonly_=1)
@@ -528,10 +572,11 @@ def org_seleniumhq_selenium_remote_driver():
   java_import_external(
       name="org_seleniumhq_selenium_remote_driver",
       jar_sha256=
-      "47b88da5cb9c92f832af51db4fdf6b0a6aa70e7a76ed641137c344a8fad5cc03",
+      "71a3ee7d68018b5ecf9ffa80aeead6bc049fbf7286b74e1e0f1e4ecbe759da54",
       jar_urls=[
-          "http://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.4.0/selenium-remote-driver-3.4.0.jar",
-          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.4.0/selenium-remote-driver-3.4.0.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0.jar",
+          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0.jar",
+          "http://maven.ibiblio.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0.jar",
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
       testonly_=1,
@@ -539,6 +584,7 @@ def org_seleniumhq_selenium_remote_driver():
           "@cglib_nodep",
           "@com_google_code_gson",
           "@com_google_guava",
+          "@net_bytebuddy",
           "@net_java_dev_jna_platform",
           "@org_apache_commons_exec",
           "@org_apache_httpcomponents_httpmime",
