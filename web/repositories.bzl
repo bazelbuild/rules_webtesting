@@ -139,8 +139,8 @@ def cglib_nodep():
       "9ab68b361ffdce66747f63bbe0676391c0a96d6de3e743ac03d7e998ff0a1064",
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
-          "http://maven.ibiblio.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
           "http://repo1.maven.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
+          "http://maven.ibiblio.org/maven2/cglib/cglib-nodep/3.2.5/cglib-nodep-3.2.5.jar",
       ],
       licenses=["notice"]  # ASF 2.0
   )
@@ -152,7 +152,10 @@ def com_github_blang_semver():
       importpath="github.com/blang/semver",
       sha256="3d9da53f4c2d3169bfa9b25f2f36f301a37556a47259c870881524c643c69c57",
       strip_prefix="semver-3.5.1",
-      urls=["https://github.com/blang/semver/archive/v3.5.1.tar.gz"])
+      urls=[
+          "https://mirror.bazel.build/github.com/blang/semver/archive/v3.5.1.tar.gz",
+          "https://github.com/blang/semver/archive/v3.5.1.tar.gz",
+      ])
 
 
 def com_github_gorilla_context():
@@ -161,7 +164,10 @@ def com_github_gorilla_context():
       importpath="github.com/gorilla/context",
       sha256="12a849b4e9a08619233d4490a281aa2d34a69f9eaf85c2295f5357927e4d1763",
       strip_prefix="context-1.1",
-      urls=["https://github.com/gorilla/context/archive/v1.1.tar.gz"])
+      urls=[
+          "https://mirror.bazel.build/github.com/gorilla/context/archive/v1.1.tar.gz",
+          "https://github.com/gorilla/context/archive/v1.1.tar.gz",
+      ])
 
 
 def com_github_gorilla_mux():
@@ -170,7 +176,10 @@ def com_github_gorilla_mux():
       importpath="github.com/gorilla/mux",
       sha256="e639e6935f3327bed70b583e3311eba262266e79f2c50d436bb99ca70700879f",
       strip_prefix="mux-1.5.0",
-      urls=["https://github.com/gorilla/mux/archive/v1.5.0.tar.gz"])
+      urls=[
+          "https://mirror.bazel.build/github.com/gorilla/mux/archive/v1.5.0.tar.gz",
+          "https://github.com/gorilla/mux/archive/v1.5.0.tar.gz",
+      ])
 
 
 def com_github_tebeka_selenium():
@@ -180,7 +189,8 @@ def com_github_tebeka_selenium():
       sha256="22db05f2b3e7b1bfe0f84c45333be798627e1b091918a8c65e241b5b1e9df5cc",
       strip_prefix="selenium-a7e71178aa40d9b298d464b912c4e831b2be4455",
       urls=[
-          "https://github.com/tebeka/selenium/archive/a7e71178aa40d9b298d464b912c4e831b2be4455.tar.gz"
+          "https://mirror.bazel.build/github.com/tebeka/selenium/archive/a7e71178aa40d9b298d464b912c4e831b2be4455.tar.gz",
+          "https://github.com/tebeka/selenium/archive/a7e71178aa40d9b298d464b912c4e831b2be4455.tar.gz",
       ])
 
 
@@ -220,6 +230,7 @@ def com_google_errorprone_error_prone_annotations():
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.1.1/error_prone_annotations-2.1.1.jar",
           "http://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.1.1/error_prone_annotations-2.1.1.jar",
+          "http://maven.ibiblio.org/maven2/com/google/errorprone/error_prone_annotations/2.1.1/error_prone_annotations-2.1.1.jar",
       ],
       licenses=["notice"]  # Apache 2.0
   )
@@ -246,7 +257,9 @@ def com_squareup_okhttp3_okhttp():
   java_import_external(
       name="com_squareup_okhttp3_okhttp",
       jar_urls=[
+          "http://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.0/okhttp-3.9.0.jar",
           "http://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.0/okhttp-3.9.0.jar",
+          "http://maven.ibiblio.org/maven2/com/squareup/okhttp3/okhttp/3.9.0/okhttp-3.9.0.jar",
       ],
       jar_sha256=
       "7265adbd6f028aade307f58569d814835cd02bc9beffb70c25f72c9de50d61c4",
@@ -261,7 +274,9 @@ def com_squareup_okio():
   java_import_external(
       name="com_squareup_okio",
       jar_urls=[
+          "http://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar",
           "http://repo1.maven.org/maven2/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar",
+          "http://maven.ibiblio.org/maven2/com/squareup/okio/okio/1.13.0/okio-1.13.0.jar",
       ],
       jar_sha256=
       "734269c3ebc5090e3b23566db558f421f0b4027277c79ad5d176b8ec168bb850",
@@ -290,8 +305,8 @@ def commons_logging():
       "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
-          "http://maven.ibiblio.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
           "http://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
+          "http://maven.ibiblio.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
       ],
       licenses=["notice"]  # The Apache Software License, Version 2.0
   )
@@ -318,7 +333,9 @@ def net_bytebuddy():
       jar_sha256=
       "c7f9861c94b07192ce970820cab9b046dc910e59567855d77c66d4532b9515bf",
       jar_urls=[
-          "http://central.maven.org/maven2/net/bytebuddy/byte-buddy/1.7.6/byte-buddy-1.7.6.jar",
+          "http://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.7.6/byte-buddy-1.7.6.jar",
+          "http://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.7.6/byte-buddy-1.7.6.jar",
+          "http://maven.ibiblio.org/maven2/net/bytebuddy/byte-buddy/1.7.6/byte-buddy-1.7.6.jar",
       ],
       # LGPL, version 2.1
       # http://www.gnu.org/licenses/licenses.html
@@ -401,8 +418,8 @@ def org_apache_httpcomponents_httpcore():
       "f5408b3c74b43d87c0c121cab55f350c7b39d62f5f9db018fd261387c087130b",
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.8/httpcore-4.4.8.jar",
-          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpcore/4.4.8/httpcore-4.4.8.jar",
           "http://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.8/httpcore-4.4.8.jar",
+          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpcore/4.4.8/httpcore-4.4.8.jar",
       ],
       licenses=["notice"]  # Apache License, Version 2.0
   )
@@ -415,8 +432,8 @@ def org_apache_httpcomponents_httpmime():
       "b4865b79a3aaeef794220b532bc7b07f793fa4aad90c29e83cab2b835cd8ee06",
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
-          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
           "http://repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
+          "http://maven.ibiblio.org/maven2/org/apache/httpcomponents/httpmime/4.5.3/httpmime-4.5.3.jar",
       ],
       licenses=["notice"],  # Apache License, Version 2.0
       deps=["@org_apache_httpcomponents_httpclient"])
@@ -483,7 +500,9 @@ def org_json():
       jar_sha256=
       "813f37e4820f1854e8a4eb4f80df94bf1b1f2ec6c3b72692f23ab9a556256af6",
       jar_urls=[
+          "http://mirror.bazel.build/repo1.maven.org/maven2/org/json/json/20170516/json-20170516.jar",
           "http://repo1.maven.org/maven2/org/json/json/20170516/json-20170516.jar",
+          "http://maven.ibiblio.org/maven2/org/json/json/20170516/json-20170516.jar",
       ],
       licenses=["notice"]  # MIT-style license
   )
@@ -495,14 +514,14 @@ def org_mozilla_firefox():
       amd64_sha256=
       "9adf41f9c8ed525906d270c66ed2cfbd9e2154a3aeccaadbb0bdfb6ce3a3ca73",
       amd64_urls=[
+          "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/56.0.1/linux-x86_64/en-US/firefox-56.0.1.tar.bz2",
           "https://ftp.mozilla.org/pub/firefox/releases/56.0.1/linux-x86_64/en-US/firefox-56.0.1.tar.bz2",
-          "http://mirror.bazel.build/https://ftp.mozilla.org/pub/firefox/releases/56.0.1/linux-x86_64/en-US/firefox-56.0.1.tar.bz2",
       ],
       macos_sha256=
       "b9e9f383fd12d6deb6b36b3c2844647ce065142e1eb934499559a8a9842d01ad",
       macos_urls=[
-          "https://ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
           "http://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
+          "https://ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
       ])
 
 
@@ -557,6 +576,7 @@ def org_seleniumhq_selenium_remote_driver():
       jar_urls=[
           "http://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0.jar",
           "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0.jar",
+          "http://maven.ibiblio.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0.jar",
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
       testonly_=1,
