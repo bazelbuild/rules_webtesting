@@ -448,12 +448,12 @@ def org_chromium_chromedriver():
           "http://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip"
       ],
       macos_sha256=
-      "6c30bba7693ec2d9af7cd9a54729e10aeae85c0953c816d9c4a40a1a72fd8be0",
+      "064b243c4236380cc705f183e100d7a229815db7b143f6ad3eaae072a48cc827",
       macos_urls=[
           "http://chromedriver.storage.googleapis.com/2.33/chromedriver_mac64.zip"
       ],
       windows_sha256=
-      "d04084021ddd87400e9eddbee8648c97d429f038f54fe06b279584eee441a4b1",
+      "e76941bf314e0c7967a8f0ccea10c331d69e4c1de0172fec33ed20df8c50e253",
       windows_urls=[
           "http://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip"
       ])
@@ -469,14 +469,14 @@ def org_chromium_chromium():
           "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/488534/chrome-linux.zip"
       ],
       macos_sha256=
-      "740d691b07855e2aace1e524fd67b8732458e52cc8fca0b4c1bddbbb3aa9ee11",
+      "56195feefbe57139073429f2cfae33e010f6a73211ba66ce919c16c2c231b0fe",
       macos_urls=[
           "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/488533/chrome-mac.zip"
       ],
       windows_sha256=
-      "1093602bb16a2a68bdd9b6dba1d3a998b2a6bfbdf3a0afff613c38a960e37d9c",
+      "c0bb7a5ba47112d5f3789d2b0b9d3d2e38a5be592bf3332078fd90179c71dd27",
       windows_urls=[
-          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_64/488538/chrome-win32.zip"
+          "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/488538/chrome-win32.zip"
       ])
 
 
