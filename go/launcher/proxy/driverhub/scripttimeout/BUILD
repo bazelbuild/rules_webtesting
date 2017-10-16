@@ -25,7 +25,10 @@ go_library(
     name = "go_default_library",
     srcs = ["script_timeout.go"],
     visibility = ["//visibility:public"],
-    deps = ["//go/launcher/proxy/driverhub:go_default_library"],
+    deps = [
+        "//go/launcher/proxy/driverhub:go_default_library",
+        "//go/metadata/capabilities:go_default_library",
+    ],
 )
 
 go_web_test_suite(
