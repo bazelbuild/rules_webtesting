@@ -1,7 +1,7 @@
 # Bazel Web Testing Rules
 
 [![Build
-Status](http://ci.bazel.io/buildStatus/icon?job=rules_web)](http://ci.bazel.io/job/rules_web)
+Status](https://ci.bazel.io/buildStatus/icon?job=rules_web)](https://ci.bazel.io/job/rules_web)
 
 Bazel rules and supporting code to allow testing against a browser with
 WebDriver.
