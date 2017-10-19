@@ -186,6 +186,24 @@ func TestExecuteScriptAsync(t *testing.T) {
 	}
 }
 
+func TestCurrentURL(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	u, err := d.CurrentURL(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if u == nil {
+		t.Fatal("got nil, expected a url.URL ")
+	}
+}
+
 func TestScreenshot(t *testing.T) {
 	ctx := context.Background()
 

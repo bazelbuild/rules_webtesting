@@ -85,6 +85,8 @@ type WebDriver interface {
 	SetWindowPosition(ctx context.Context, x, y float64) error
 	// W3C return true iff connected to a W3C compliant remote end.
 	W3C() bool
+	// CurrentURL returns the URL that the current browser window is looking at.
+	CurrentURL(context.Context) (*url.URL, error)
 }
 
 // WebElement provides access to a specific DOM element in a WebDriver session.
@@ -341,6 +343,21 @@ func (d *webDriver) ExecuteScriptAsyncWithTimeout(ctx context.Context, timeout t
 		}()
 	}
 	return d.ExecuteScriptAsync(ctx, script, args, value)
+}
+
+// CurrentURL returns the URL that the current browser window is looking at.
+func (d *webDriver) CurrentURL(ctx context.Context) (*url.URL, error) {
+	var result string
+
+	if err := d.get(ctx, "url", &result); err != nil {
+		return nil, err
+	}
+
+	current, err := url.Parse(result)
+	if err != nil {
+		return current, errors.New(d.Name(), err)
+	}
+	return current, nil
 }
 
 // Screenshot takes a screenshot of the current browser window.
