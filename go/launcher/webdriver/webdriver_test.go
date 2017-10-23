@@ -16,6 +16,7 @@ package webdriver
 
 import (
 	"context"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -201,6 +202,30 @@ func TestCurrentURL(t *testing.T) {
 	}
 	if u == nil {
 		t.Fatal("got nil, expected a url.URL ")
+	}
+}
+
+func TestNavigateTo(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	u, err := url.Parse("https://www.google.com")
+
+	if err := d.NavigateTo(ctx, u); err != nil {
+		t.Fatal(err)
+	}
+
+	cu, err := d.CurrentURL(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(cu.Hostname(), "google.com") {
+		t.Fatalf("got %s, expected to contain google.com", cu)
 	}
 }
 

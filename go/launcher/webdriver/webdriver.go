@@ -87,6 +87,8 @@ type WebDriver interface {
 	W3C() bool
 	// CurrentURL returns the URL that the current browser window is looking at.
 	CurrentURL(context.Context) (*url.URL, error)
+	// NavigateTo navigates the controlled browser to the specified URL.
+	NavigateTo(context.Context, *url.URL) error
 }
 
 // WebElement provides access to a specific DOM element in a WebDriver session.
@@ -358,6 +360,13 @@ func (d *webDriver) CurrentURL(ctx context.Context) (*url.URL, error) {
 		return current, errors.New(d.Name(), err)
 	}
 	return current, nil
+}
+
+// NavigateTo navigates the controlled browser to the specified URL.
+func (d *webDriver) NavigateTo(ctx context.Context, u *url.URL) error {
+	return d.post(ctx, "url", map[string]interface{}{
+		"url": u.String(),
+	}, nil)
 }
 
 // Screenshot takes a screenshot of the current browser window.
