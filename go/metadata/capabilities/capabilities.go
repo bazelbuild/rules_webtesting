@@ -184,18 +184,14 @@ func sliceEquals(e, v []interface{}) bool {
 	return true
 }
 
-// GoogleCap returns the value of a Google capability from the given
-// Spec. Google capabilities are currently only extracted from the OSS specs,
-// but this will eventually change to recognize vendor-prefixed capabilities in
-// the W3C spec as well.
+// GoogleCap returns the value of a Google capability from the given Spec. It
+// searches for the capability in the W3C capabilities first, and then in the
+// OSS capabilities.
 func GoogleCap(caps Spec, name string) interface{} {
 	if v, ok := caps.Always["google:"+name]; ok {
 		return v
 	}
 	if v, ok := caps.OSSCaps["google:"+name]; ok {
-		return v
-	}
-	if v, ok := caps.OSSCaps["google."+name]; ok {
 		return v
 	}
 	return nil
@@ -209,9 +205,6 @@ func HasGoogleCap(caps Spec, name string) bool {
 	if _, ok := caps.OSSCaps["google:"+name]; ok {
 		return true
 	}
-	if _, ok := caps.OSSCaps["google."+name]; ok {
-		return true
-	}
 	return false
 }
 
@@ -219,7 +212,6 @@ func HasGoogleCap(caps Spec, name string) bool {
 func SetGoogleCap(caps Spec, name string, value interface{}) {
 	if caps.OSSCaps != nil {
 		caps.OSSCaps["google:"+name] = value
-		caps.OSSCaps["google."+name] = value
 	}
 	if caps.Always != nil {
 		caps.Always["google:"+name] = value

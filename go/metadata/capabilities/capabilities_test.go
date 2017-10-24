@@ -423,8 +423,8 @@ func TestGoogleCap(t *testing.T) {
 		},
 		{
 			"found only in oss caps",
-			Spec{OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "google:otherCap": "xxx"}},
-			[]kv{{"capName", "vvvvvv"}, {"otherCap", "xxx"}},
+			Spec{OSSCaps: map[string]interface{}{"google:otherCap": "xxx"}},
+			[]kv{{"otherCap", "xxx"}},
 		},
 		{
 			"found only in w3c caps",
@@ -477,7 +477,7 @@ func TestSetGoogleCap(t *testing.T) {
 			},
 			"capName", "vvvvvv",
 			Spec{
-				OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "google:capName": "vvvvvv"},
+				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv"},
 				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
 			},
 		},
@@ -498,7 +498,7 @@ func TestSetGoogleCap(t *testing.T) {
 			},
 			"capName", "vvvvvv",
 			Spec{
-				OSSCaps: map[string]interface{}{"google.capName": "vvvvvv", "google:capName": "vvvvvv"},
+				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv"},
 			},
 		},
 		{
@@ -509,7 +509,7 @@ func TestSetGoogleCap(t *testing.T) {
 			},
 			"capName", "vvvvvv",
 			Spec{
-				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv", "google.capName": "vvvvvv"},
+				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv"},
 				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
 			},
 		},
@@ -521,7 +521,7 @@ func TestSetGoogleCap(t *testing.T) {
 			},
 			"capName", "vvvvvv",
 			Spec{
-				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv", "google.capName": "vvvvvv", "capName": "xyz"},
+				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv", "capName": "xyz"},
 				Always:  map[string]interface{}{"google:capName": "vvvvvv", "capName": "xyz"},
 			},
 		},
