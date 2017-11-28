@@ -68,7 +68,7 @@ func MergeSpecOntoCaps(caps map[string]interface{}, spec Spec) Spec {
 	if spec.OSSCaps != nil {
 		newSpec.OSSCaps = Merge(caps, spec.OSSCaps)
 	}
-	if spec.Always == nil {
+	if spec.Always == nil && spec.First == nil {
 		return newSpec
 	}
 

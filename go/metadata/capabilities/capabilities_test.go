@@ -149,20 +149,39 @@ func TestMergeSpecOntoCaps(t *testing.T) {
 			},
 		},
 		{
+			name: "W3C uses firstMatch without alwaysMatch",
+			caps: map[string]interface{}{"v": 1},
+			spec: Spec{
+				OSSCaps: map[string]interface{}{"type": "oss"},
+				First: []map[string]interface{}{
+					{"one": 1},
+					{"two": 2},
+				},
+			},
+			result: Spec{
+				OSSCaps: map[string]interface{}{"v": 1, "type": "oss"},
+				Always:  map[string]interface{}{"v": 1},
+				First: []map[string]interface{}{
+					{"one": 1},
+					{"two": 2},
+				},
+			},
+		},
+		{
 			name: "no overlaps with firstMatch",
 			caps: map[string]interface{}{"three": 3, "four": 999},
 			spec: Spec{
 				Always: map[string]interface{}{"type": "w3c", "four": 4},
 				First: []map[string]interface{}{
-					map[string]interface{}{"one": 1},
-					map[string]interface{}{"two": 2},
+					{"one": 1},
+					{"two": 2},
 				},
 			},
 			result: Spec{
 				Always: map[string]interface{}{"type": "w3c", "three": 3, "four": 4},
 				First: []map[string]interface{}{
-					map[string]interface{}{"one": 1},
-					map[string]interface{}{"two": 2},
+					{"one": 1},
+					{"two": 2},
 				},
 			},
 		},
@@ -172,17 +191,17 @@ func TestMergeSpecOntoCaps(t *testing.T) {
 			spec: Spec{
 				Always: map[string]interface{}{"type": "w3c"},
 				First: []map[string]interface{}{
-					map[string]interface{}{"one": 1},
-					map[string]interface{}{"two": 2},
-					map[string]interface{}{"three": 3},
+					{"one": 1},
+					{"two": 2},
+					{"three": 3},
 				},
 			},
 			result: Spec{
 				Always: map[string]interface{}{"type": "w3c", "zero": 0},
 				First: []map[string]interface{}{
-					map[string]interface{}{"one": 1},
-					map[string]interface{}{"two": 2, "one": 999},
-					map[string]interface{}{"three": 3, "one": 999},
+					{"one": 1},
+					{"two": 2, "one": 999},
+					{"three": 3, "one": 999},
 				},
 			},
 		},
