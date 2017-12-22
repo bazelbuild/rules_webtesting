@@ -17,7 +17,7 @@
 package(default_testonly = True)
 
 load(":web.bzl", "web_test_config")
-load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_library")
+load("@bazel_skylib//:skylark_library.bzl", "skylark_library")
 
 licenses(["notice"])  # Apache 2.0
 
