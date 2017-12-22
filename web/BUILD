@@ -17,6 +17,7 @@
 package(default_testonly = True)
 
 load(":web.bzl", "web_test_config")
+load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_library")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -30,17 +31,17 @@ web_test_config(
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "repositories",
     srcs = ["repositories.bzl"],
-    data = ["//web/internal:platform_http_file"],
+    deps = ["//web/internal:platform_http_file"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "web",
     srcs = ["web.bzl"],
-    data = [
+    deps = [
         "//web/internal:browser",
         "//web/internal:collections",
         "//web/internal:constants",
@@ -53,23 +54,23 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "go",
     srcs = ["go.bzl"],
-    data = [
+    deps = [
         "//web/internal:wrap_web_test_suite",
         # should depend on go build rules.
     ],
 )
 
-filegroup(
+skylark_library(
     name = "java",
     srcs = ["java.bzl"],
-    data = ["//web/internal:wrap_web_test_suite"],
+    deps = ["//web/internal:wrap_web_test_suite"],
 )
 
-filegroup(
+skylark_library(
     name = "py",
     srcs = ["py.bzl"],
-    data = ["//web/internal:wrap_web_test_suite"],
+    deps = ["//web/internal:wrap_web_test_suite"],
 )

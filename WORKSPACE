@@ -35,6 +35,12 @@ load("//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
 web_test_repositories()
 
+git_repository(
+    name = "io_bazel_skydoc",
+    remote = "https://github.com/bazelbuild/skydoc.git",
+    tag = "0.1.4",
+)
+
 browser_repositories(
     chromium = True,
     firefox = True,

@@ -16,6 +16,8 @@
 #
 package(default_testonly = True)
 
+load("@io_bazel_skydoc//skylark:skylark.bzl", "skylark_library")
+
 licenses(["notice"])  # Apache 2.0
 
 exports_files(
@@ -28,49 +30,49 @@ exports_files(
     visibility = ["//doc:__pkg__"],
 )
 
-filegroup(
+skylark_library(
     name = "browser",
     srcs = ["browser.bzl"],
-    data = [":metadata"],
+    deps = [":metadata"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "collections",
     srcs = ["collections.bzl"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "constants",
     srcs = ["constants.bzl"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "files",
     srcs = ["files.bzl"],
-    data = [":collections"],
+    deps = [":collections"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "metadata",
     srcs = ["metadata.bzl"],
-    data = [":files"],
+    deps = [":files"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "platform_http_file",
     srcs = ["platform_http_file.bzl"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "web_test",
     srcs = ["web_test.bzl"],
-    data = [
+    deps = [
         ":collections",
         ":files",
         ":metadata",
@@ -78,38 +80,38 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "web_test_archive",
     srcs = ["web_test_archive.bzl"],
-    data = [":metadata"],
+    deps = [":metadata"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "web_test_config",
     srcs = ["web_test_config.bzl"],
-    data = [":metadata"],
+    deps = [":metadata"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "web_test_named_executable",
     srcs = ["web_test_named_executable.bzl"],
-    data = [":metadata"],
+    deps = [":metadata"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "web_test_named_file",
     srcs = ["web_test_named_file.bzl"],
-    data = [":metadata"],
+    deps = [":metadata"],
     visibility = ["//visibility:public"],
 )
 
-filegroup(
+skylark_library(
     name = "wrap_web_test_suite",
     srcs = ["wrap_web_test_suite.bzl"],
-    data = [
+    deps = [
         ":constants",
         "//web",
     ],
