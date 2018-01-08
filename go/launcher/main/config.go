@@ -21,6 +21,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environment/sauce"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/drivermu"	
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/googlescreenshot"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/mobileemulation"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/quithandler"
@@ -44,4 +45,7 @@ func init() {
 	driverhub.HandlerProviderFunc(quithandler.ProviderFunc)
 	driverhub.HandlerProviderFunc(scripttimeout.ProviderFunc)
 	driverhub.HandlerProviderFunc(googlescreenshot.ProviderFunc)
+
+	// drivermu should always be last.
+	driverhub.HandlerProviderFunc(drivermu.ProviderFunc)
 }

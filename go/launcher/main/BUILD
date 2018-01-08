@@ -39,6 +39,7 @@ go_library(
         "//go/launcher/errors:go_default_library",
         "//go/launcher/proxy:go_default_library",
         "//go/launcher/proxy/driverhub:go_default_library",
+        "//go/launcher/proxy/driverhub/drivermu:go_default_library",        
         "//go/launcher/proxy/driverhub/googlescreenshot:go_default_library",
         "//go/launcher/proxy/driverhub/mobileemulation:go_default_library",
         "//go/launcher/proxy/driverhub/quithandler:go_default_library",
