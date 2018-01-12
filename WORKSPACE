@@ -17,6 +17,15 @@
 workspace(name = "io_bazel_rules_webtesting")
 
 http_archive(
+    name = "bazel_skylib",
+    sha256 = "ce2145268e54cb2ac552521b7f633e2d79cc7fab8cfbac8d5ac05544940124d0",
+    strip_prefix = "bazel-skylib-34d62c4490826f7642843e0617d7fa614994ef79",
+    urls = [
+        "https://github.com/bazelbuild/bazel-skylib/archive/34d62c4490826f7642843e0617d7fa614994ef79.tar.gz",
+    ],
+)
+
+http_archive(
     name = "io_bazel_rules_go",
     sha256 = "ba6feabc94a5d205013e70792accb6cce989169476668fbaf98ea9b342e13b59",
     urls = [
@@ -34,12 +43,6 @@ go_register_toolchains()
 load("//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
 web_test_repositories()
-
-git_repository(
-    name = "bazel_skylib",
-    remote = "https://github.com/bazelbuild/bazel-skylib.git",
-    tag = "0.2.0",
-)
 
 browser_repositories(
     chromium = True,
