@@ -16,6 +16,7 @@
 load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@io_bazel_rules_go//go:def.bzl", "go_repository")
+load("@bazel_skylib//:lib.bzl", "versions")
 
 
 def web_test_repositories(**kwargs):
@@ -37,7 +38,7 @@ def web_test_repositories(**kwargs):
   Please note that while these dependencies are defined, they are not actually
   downloaded, unless a target is built that depends on them.
   """
-  _check_bazel_version("Web Testing Rules", "0.4.2")
+  versions.check("0.9.0")
   if should_create_repository("cglib_nodep", kwargs):
     cglib_nodep()
   if should_create_repository("com_github_blang_semver", kwargs):
@@ -123,7 +124,7 @@ def browser_repositories(firefox=False, chromium=False):
     firefox: Configure repositories for //browsers:firefox-native.
     chromium: Configure repositories for //browsers:chromium-native.
   """
-  _check_bazel_version("Web Testing Rules", "0.4.2")
+  versions.check("0.9.0")
   if chromium:
     org_chromium_chromedriver()
     org_chromium_chromium()
@@ -590,29 +591,3 @@ def org_seleniumhq_selenium_remote_driver():
           "@org_apache_httpcomponents_httpmime",
           "@org_seleniumhq_selenium_api",
       ])
-
-
-def _check_bazel_version(project, bazel_version):
-  if "bazel_version" not in dir(native):
-    fail("%s requires Bazel >=%s but was <0.2.1" % (project, bazel_version))
-  elif not native.bazel_version:
-    pass  # user probably compiled Bazel from scratch
-  else:
-    current_bazel_version = _parse_bazel_version(native.bazel_version)
-    minimum_bazel_version = _parse_bazel_version(bazel_version)
-    if minimum_bazel_version > current_bazel_version:
-      fail("%s requires Bazel >=%s but was %s" % (project, bazel_version,
-                                                  native.bazel_version))
-
-
-def _parse_bazel_version(bazel_version):
-  # Remove commit from version.
-  version = bazel_version.split(" ", 1)[0]
-  # Split into (release, date) parts and only return the release
-  # as a tuple of integers.
-  parts = version.split("-", 1)
-  # Turn "release" into a tuple of strings
-  version_tuple = ()
-  for number in parts[0].split("."):
-    version_tuple += (str(number),)
-  return version_tuple
