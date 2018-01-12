@@ -135,14 +135,20 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 
 // FromFile reads a Metadata object from a json file.
 func FromFile(filename string, ext Extension) (*Metadata, error) {
-	if ext == nil {
-		ext = &extension{}
-	}
-	metadata := &Metadata{Extension: ext}
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
+
+	return FromBytes(bytes, ext)
+}
+
+// FromBytes reads a Metadata object from a byte array.
+func FromBytes(bytes []byte, ext Extension) (*Metadata, error) {
+	if ext == nil {
+		ext = &extension{}
+	}
+	metadata := &Metadata{Extension: ext}
 
 	if err := json.Unmarshal(bytes, metadata); err != nil {
 		return nil, err
@@ -164,22 +170,26 @@ func FromFile(filename string, ext Extension) (*Metadata, error) {
 
 // ToFile writes m to filename as json.
 func (m *Metadata) ToFile(filename string) error {
-	bytes, err := json.MarshalIndent(m, "", "  ")
+	bytes, err := m.ToBytes()
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(filename, bytes, 0644)
 }
 
+// ToBytes serializes metadata.
+func (m *Metadata) ToBytes() ([]byte, error) {
+	return json.MarshalIndent(m, "", "  ")
+}
+
 // Equals compares two Metadata object and return true iff they are the same.
 func Equals(e, a *Metadata) bool {
 	var extsEqual bool
 	if e.Extension == nil {
-		extsEqual = (a.Extension == nil)
+		extsEqual = (a.Extension == nil) || a.Extension.Equals(e.Extension)
 	} else {
 		extsEqual = e.Extension.Equals(a.Extension)
 	}
-	// TODO(DrMarcII): should consider equality of WebTestFiles.
 	return capabilities.JSONEquals(e.Capabilities, a.Capabilities) &&
 		e.Environment == a.Environment &&
 		e.Label == a.Label &&
@@ -316,7 +326,7 @@ func (e *extension) Normalize() error {
 
 func (e *extension) Equals(other Extension) bool {
 	if other == nil {
-		return false
+		return len(e.value) == 0
 	}
 	o, ok := other.(*extension)
 	if !ok {
