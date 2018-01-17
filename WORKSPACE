@@ -18,10 +18,10 @@ workspace(name = "io_bazel_rules_webtesting")
 
 http_archive(
     name = "bazel_skylib",
-    sha256 = "ce2145268e54cb2ac552521b7f633e2d79cc7fab8cfbac8d5ac05544940124d0",
-    strip_prefix = "bazel-skylib-34d62c4490826f7642843e0617d7fa614994ef79",
+    sha256 = "bbccf674aa441c266df9894182d80de104cabd19be98be002f6d478aaa31574d",
+    strip_prefix = "bazel-skylib-2169ae1c374aab4a09aa90e65efe1a3aad4e279b",
     urls = [
-        "https://github.com/bazelbuild/bazel-skylib/archive/34d62c4490826f7642843e0617d7fa614994ef79.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/archive/2169ae1c374aab4a09aa90e65efe1a3aad4e279b.tar.gz",
     ],
 )
 
