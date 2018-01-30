@@ -19,17 +19,18 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 load("//web/internal:collections.bzl", "maps")
 load("//web/internal:files.bzl", "files")
 load("//web/internal:metadata.bzl", "metadata")
+load("//web/internal:provider.bzl", "WebTestInfo")
 
 
 def _web_test_impl(ctx):
-  if ctx.attr.browser.web_test.disabled:
+  if ctx.attr.browser[WebTestInfo].disabled:
     return _generate_noop_test(
         ctx, """The browser configuration you requested is temporarily disabled.
 
 Disabled browser: %s
 
 Why was this browser disabled?
-%s""" % (ctx.attr.browser.label, ctx.attr.browser.web_test.disabled))
+%s""" % (ctx.attr.browser.label, ctx.attr.browser[WebTestInfo].disabled))
 
   data_labels = [data.label for data in ctx.attr.data]
 
@@ -43,7 +44,7 @@ Why was this browser disabled?
     fail("Browser %s must be in data." % ctx.attr.browser.label, "data")
 
   missing_tags = [
-      tag for tag in ctx.attr.browser.web_test.required_tags
+      tag for tag in ctx.attr.browser[WebTestInfo].required_tags
       if (tag not in ctx.attr.tags) and (tag != "local" or not ctx.attr.local)
   ]
 
@@ -81,7 +82,7 @@ def _generate_noop_test(ctx, reason, status=0):
       },
       executable=True)
 
-  return struct()
+  return []
 
 
 def _generate_default_test(ctx):
@@ -99,12 +100,12 @@ def _generate_default_test(ctx):
       output=ctx.outputs.web_test_metadata,
       inputs=[
           patch,
-          ctx.attr.config.web_test.metadata,
-          ctx.attr.browser.web_test.metadata,
+          ctx.attr.config[WebTestInfo].metadata,
+          ctx.attr.browser[WebTestInfo].metadata,
       ])
 
   env_vars = ""
-  env = maps.clone(ctx.attr.browser.web_test.environment)
+  env = maps.clone(ctx.attr.browser[WebTestInfo].environment)
   env["WEB_TEST_METADATA"] = files.long_path(ctx, ctx.outputs.web_test_metadata)
   for k, v in env.items():
     env_vars += "export %s=%s\n" % (k, v)
@@ -124,18 +125,21 @@ def _generate_default_test(ctx):
       },
       executable=True)
 
-  return struct(runfiles=ctx.runfiles(
-      collect_data=True,
-      collect_default=True,
-      files=[ctx.outputs.web_test_metadata]))
+  return [
+      DefaultInfo(
+          runfiles=ctx.runfiles(
+              collect_data=True,
+              collect_default=True,
+              files=[ctx.outputs.web_test_metadata]))
+  ]
 
 
 web_test = rule(
     attrs={
         "browser":
-            attr.label(mandatory=True, providers=["web_test"]),
+            attr.label(mandatory=True, providers=[WebTestInfo]),
         "config":
-            attr.label(mandatory=True, providers=["web_test"]),
+            attr.label(mandatory=True, providers=[WebTestInfo]),
         "data":
             attr.label_list(allow_files=True, cfg="data"),
         "launcher":
