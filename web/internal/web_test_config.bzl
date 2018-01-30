@@ -20,6 +20,7 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
 load("//web/internal:metadata.bzl", "metadata")
+load("//web/internal:provider.bzl", "WebTestInfo")
 
 
 def _web_test_config_impl(ctx):
@@ -29,7 +30,7 @@ def _web_test_config_impl(ctx):
   if ctx.attr.metadata:
     metadata_files = [ctx.file.metadata]
 
-  metadata_files += [dep.web_test.metadata for dep in ctx.attr.deps]
+  metadata_files += [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
 
   if metadata_files:
     metadata.merge_files(
@@ -40,9 +41,11 @@ def _web_test_config_impl(ctx):
   else:
     metadata.create_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
 
-  return struct(
-      runfiles=ctx.runfiles(collect_data=True, collect_default=True),
-      web_test=struct(metadata=ctx.outputs.web_test_metadata))
+  return [
+      DefaultInfo(
+          runfiles=ctx.runfiles(collect_data=True, collect_default=True)),
+      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
+  ]
 
 
 web_test_config = rule(
@@ -50,7 +53,7 @@ web_test_config = rule(
         "data":
             attr.label_list(allow_files=True, cfg="data"),
         "deps":
-            attr.label_list(providers=["web_test"]),
+            attr.label_list(providers=[WebTestInfo]),
         "merger":
             attr.label(
                 executable=True,

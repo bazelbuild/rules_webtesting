@@ -33,8 +33,11 @@ exports_files(
 skylark_library(
     name = "browser",
     srcs = ["browser.bzl"],
-    deps = [":metadata"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":metadata",
+        ":provider",
+    ],
 )
 
 skylark_library(
@@ -52,15 +55,15 @@ skylark_library(
 skylark_library(
     name = "files",
     srcs = ["files.bzl"],
-    deps = [":collections"],
     visibility = ["//visibility:public"],
+    deps = [":collections"],
 )
 
 skylark_library(
     name = "metadata",
     srcs = ["metadata.bzl"],
-    deps = [":files"],
     visibility = ["//visibility:public"],
+    deps = [":files"],
 )
 
 skylark_library(
@@ -70,50 +73,69 @@ skylark_library(
 )
 
 skylark_library(
+    name = "provider",
+    srcs = ["provider.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+skylark_library(
     name = "web_test",
     srcs = ["web_test.bzl"],
+    visibility = ["//visibility:public"],
     deps = [
         ":collections",
         ":files",
         ":metadata",
+        ":provider",
     ],
-    visibility = ["//visibility:public"],
 )
 
 skylark_library(
     name = "web_test_archive",
     srcs = ["web_test_archive.bzl"],
-    deps = [":metadata"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":metadata",
+        ":provider",
+    ],
 )
 
 skylark_library(
     name = "web_test_config",
     srcs = ["web_test_config.bzl"],
-    deps = [":metadata"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":metadata",
+        ":provider",
+    ],
 )
 
 skylark_library(
     name = "web_test_named_executable",
     srcs = ["web_test_named_executable.bzl"],
-    deps = [":metadata"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":metadata",
+        ":provider",
+    ],
 )
 
 skylark_library(
     name = "web_test_named_file",
     srcs = ["web_test_named_file.bzl"],
-    deps = [":metadata"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":metadata",
+        ":provider",
+    ],
 )
 
 skylark_library(
     name = "wrap_web_test_suite",
     srcs = ["wrap_web_test_suite.bzl"],
+    visibility = ["//visibility:public"],
     deps = [
         ":constants",
         "//web",
     ],
-    visibility = ["//visibility:public"],
 )
