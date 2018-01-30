@@ -17,6 +17,7 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
 load("//web/internal:metadata.bzl", "metadata")
+load("//web/internal:provider.bzl", "WebTestInfo")
 
 
 def _web_test_archive_impl(ctx):
@@ -31,7 +32,8 @@ def _web_test_archive_impl(ctx):
               named_files=ctx.attr.named_files),
       ])
 
-  metadata_files = [patch] + [dep.web_test.metadata for dep in ctx.attr.deps]
+  metadata_files = [patch
+                   ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
 
   metadata.merge_files(
       ctx=ctx,
@@ -39,10 +41,13 @@ def _web_test_archive_impl(ctx):
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files)
 
-  return struct(
-      runfiles=ctx.runfiles(
-          collect_data=True, collect_default=True, files=[ctx.file.archive]),
-      web_test=struct(metadata=ctx.outputs.web_test_metadata))
+  return [
+      DefaultInfo(
+          runfiles=ctx.runfiles(
+              collect_data=True, collect_default=True, files=[ctx.file.archive
+                                                             ])),
+      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
+  ]
 
 
 web_test_archive = rule(
@@ -63,7 +68,7 @@ web_test_archive = rule(
         "data":
             attr.label_list(allow_files=True, cfg="data"),
         "deps":
-            attr.label_list(providers=["web_test"]),
+            attr.label_list(providers=[WebTestInfo]),
         "merger":
             attr.label(
                 executable=True,
@@ -72,7 +77,8 @@ web_test_archive = rule(
         "named_files":
             attr.string_dict(mandatory=True),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},)
+    outputs={"web_test_metadata": "%{name}.gen.json"},
+)
 """Specifies an archive file with named files in it.
 
 The archive will be unzipped only if Web Test Launcher wants one the named

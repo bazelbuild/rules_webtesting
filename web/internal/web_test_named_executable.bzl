@@ -17,6 +17,7 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
 load("//web/internal:metadata.bzl", "metadata")
+load("//web/internal:provider.bzl", "WebTestInfo")
 
 
 def _web_test_named_executable_impl(ctx):
@@ -33,7 +34,8 @@ def _web_test_named_executable_impl(ctx):
           metadata.web_test_files(
               ctx=ctx, named_files={name: ctx.executable.executable}),
       ])
-  metadata_files = [patch] + [dep.web_test.metadata for dep in ctx.attr.deps]
+  metadata_files = [patch
+                   ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
 
   metadata.merge_files(
       ctx=ctx,
@@ -41,9 +43,11 @@ def _web_test_named_executable_impl(ctx):
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files)
 
-  return struct(
-      runfiles=ctx.runfiles(collect_data=True, collect_default=True),
-      web_test=struct(metadata=ctx.outputs.web_test_metadata))
+  return [
+      DefaultInfo(
+          runfiles=ctx.runfiles(collect_data=True, collect_default=True)),
+      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
+  ]
 
 
 web_test_named_executable = rule(
@@ -53,7 +57,7 @@ web_test_named_executable = rule(
         "data":
             attr.label_list(allow_files=True, cfg="data"),
         "deps":
-            attr.label_list(providers=["web_test"]),
+            attr.label_list(providers=[WebTestInfo]),
         "executable":
             attr.label(
                 allow_files=True, executable=True, cfg="target",
@@ -65,7 +69,8 @@ web_test_named_executable = rule(
                 default=Label("//go/metadata/main")),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_web_test_named_executable_impl,)
+    implementation=_web_test_named_executable_impl,
+)
 """Defines a executable that can be located by name.
 
 Args:

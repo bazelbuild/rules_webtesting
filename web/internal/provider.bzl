@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc.
+# Copyright 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,21 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-################################################################################
-#
-package(default_testonly = True)
+"""Definition of WebTestInfo provider."""
 
-licenses(["notice"])  # Apache 2.0
-
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "go_default_library",
-    srcs = ["driver_mu.go"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//go/launcher/proxy/driverhub:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
-    ],
+WebTestInfo = provider(
+    doc="Provider for web_test information",
+    fields=["disabled", "environment", "metadata", "required_tags"],
 )

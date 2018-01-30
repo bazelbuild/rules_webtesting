@@ -12,8 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_PASS_PROPS = ("neverlink", "testonly_", "visibility", "exports",
-               "runtime_deps", "deps",)
+_PASS_PROPS = (
+    "neverlink",
+    "testonly_",
+    "visibility",
+    "exports",
+    "runtime_deps",
+    "deps",
+)
 
 
 def _java_import_external(repository_ctx):

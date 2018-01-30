@@ -34,13 +34,14 @@ web_test_config(
 skylark_library(
     name = "repositories",
     srcs = ["repositories.bzl"],
-    deps = ["//web/internal:platform_http_file"],
     visibility = ["//visibility:public"],
+    deps = ["//web/internal:platform_http_file"],
 )
 
 skylark_library(
     name = "web",
     srcs = ["web.bzl"],
+    visibility = ["//visibility:public"],
     deps = [
         "//web/internal:browser",
         "//web/internal:collections",
@@ -51,7 +52,6 @@ skylark_library(
         "//web/internal:web_test_named_executable",
         "//web/internal:web_test_named_file",
     ],
-    visibility = ["//visibility:public"],
 )
 
 skylark_library(

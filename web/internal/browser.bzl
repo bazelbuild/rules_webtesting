@@ -17,6 +17,7 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
 load("//web/internal:metadata.bzl", "metadata")
+load("//web/internal:provider.bzl", "WebTestInfo")
 
 
 def _browser_impl(ctx):
@@ -26,7 +27,7 @@ def _browser_impl(ctx):
   metadata_files = [
       patch,
       ctx.file.metadata,
-  ] + [dep.web_test.metadata for dep in ctx.attr.deps]
+  ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
 
   metadata.merge_files(
       ctx=ctx,
@@ -34,13 +35,15 @@ def _browser_impl(ctx):
       output=ctx.outputs.web_test_metadata,
       inputs=metadata_files)
 
-  return struct(
-      runfiles=ctx.runfiles(collect_data=True, collect_default=True),
-      web_test=struct(
+  return [
+      DefaultInfo(
+          runfiles=ctx.runfiles(collect_data=True, collect_default=True)),
+      WebTestInfo(
           disabled=ctx.attr.disabled,
           environment=ctx.attr.environment,
           metadata=ctx.outputs.web_test_metadata,
-          required_tags=ctx.attr.required_tags))
+          required_tags=ctx.attr.required_tags),
+  ]
 
 
 browser = rule(
@@ -48,7 +51,7 @@ browser = rule(
         "data":
             attr.label_list(allow_files=True, cfg="data"),
         "deps":
-            attr.label_list(providers=["web_test"]),
+            attr.label_list(providers=[WebTestInfo]),
         "disabled":
             attr.string(),
         "environment":
