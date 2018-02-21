@@ -24,6 +24,10 @@ java_web_test_suite(
     name = "WebTestTest",
     srcs = ["WebTestTest.java"],
     browser_overrides = {
+        "//browsers:chromium-local": {
+            # TODO(DrMarcII): Consider installing required libraries.
+            "tags": ["noci"],
+        },    
         "//browsers:chromium-native": {
             "local": True,
             "tags": ["noci"],

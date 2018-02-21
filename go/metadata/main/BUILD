@@ -41,4 +41,6 @@ sh_test(
         ":main",
         "//testdata",
     ],
+    # TODO(DrMarcII): figure out how to reference binary.
+    tags=["noci"],
 )
