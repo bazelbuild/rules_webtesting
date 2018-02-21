@@ -22,3 +22,10 @@ licenses(["notice"])  # Apache 2.0
 exports_files(["LICENSE"])
 
 go_prefix("github.com/bazelbuild/rules_webtesting")
+
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+gazelle(
+    name = "gazelle",
+    prefix = "github.com/bazelbuild/rules_webtesting",
+)

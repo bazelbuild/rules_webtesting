@@ -38,6 +38,7 @@ java_web_test_suite(
         ]},
     },
     browsers = [
+        "//browsers:chromium-local",
         "//browsers:chromium-native",
         "//browsers:firefox-native",
         "//browsers/sauce:chrome55-win10",

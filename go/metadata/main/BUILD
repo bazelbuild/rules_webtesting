@@ -23,13 +23,14 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["merger.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata/main",
     visibility = ["//visibility:private"],
     deps = ["//go/metadata:go_default_library"],
 )
 
 go_binary(
     name = "main",
-    library = ":go_default_library",
+    embed = [":go_default_library"],
     visibility = ["//visibility:public"],
 )
 

@@ -23,6 +23,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["geckodriver.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/service/geckodriver",
     visibility = ["//visibility:public"],
     deps = [
         "//go/launcher/diagnostics:go_default_library",

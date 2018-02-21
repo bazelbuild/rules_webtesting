@@ -27,6 +27,7 @@ go_library(
         "server.go",
         "service.go",
     ],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/service",
     visibility = ["//visibility:public"],
     deps = [
         "//go/httphelper:go_default_library",

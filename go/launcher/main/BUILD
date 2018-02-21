@@ -26,6 +26,7 @@ go_library(
         "config.go",
         "launcher.go",
     ],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/main",
     visibility = ["//visibility:private"],
     deps = [
         "//go/bazel:go_default_library",
@@ -35,6 +36,7 @@ go_library(
         "//go/launcher/environment/chrome:go_default_library",
         "//go/launcher/environment/external:go_default_library",
         "//go/launcher/environment/firefox:go_default_library",
+        "//go/launcher/environment/local:go_default_library",
         "//go/launcher/environment/sauce:go_default_library",
         "//go/launcher/errors:go_default_library",
         "//go/launcher/proxy:go_default_library",
@@ -51,6 +53,6 @@ go_library(
 
 go_binary(
     name = "main",
-    library = ":go_default_library",
+    embed = [":go_default_library"],
     visibility = ["//visibility:public"],
 )

@@ -23,6 +23,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = ["cropper.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/cropper",
     visibility = ["//visibility:public"],
 )
 
@@ -30,6 +31,6 @@ go_test(
     name = "go_default_test",
     srcs = ["cropper_test.go"],
     data = ["//testdata"],
-    library = ":go_default_library",
+    embed = [":go_default_library"],
     deps = ["//go/bazel:go_default_library"],
 )

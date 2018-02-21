@@ -18,12 +18,13 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("//web:go.bzl", "go_web_test_suite")
 
 go_library(
     name = "go_default_library",
     srcs = ["screenshotter.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/screenshotter",
     visibility = ["//visibility:public"],
     deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )
@@ -46,7 +47,7 @@ go_web_test_suite(
         "//browsers/sauce:chrome55-win10",
     ],
     data = ["//testdata"],
-    library = ":go_default_library",
+    embed = ":go_default_library",
     deps = [
         "//go/bazel:go_default_library",
         "//go/portpicker:go_default_library",

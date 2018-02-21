@@ -23,6 +23,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["chromedriver.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/service/chromedriver",
     visibility = ["//visibility:public"],
     deps = [
         "//go/launcher/diagnostics:go_default_library",
