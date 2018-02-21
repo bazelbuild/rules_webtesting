@@ -26,9 +26,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/wsl/hub"
 )
 
-var (
-	port = flag.Int("port", 4444, "Start WSL on given port")
-)
+var port = flag.Int("port", 4444, "Start WSL on given port")
 
 func main() {
 	flag.Parse()
