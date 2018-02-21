@@ -47,7 +47,7 @@ go_web_test_suite(
         "//browsers/sauce:chrome55-win10",
     ],
     data = ["//testdata"],
-    embed = ":go_default_library",
+    embed = [":go_default_library"],
     deps = [
         "//go/bazel:go_default_library",
         "//go/portpicker:go_default_library",
