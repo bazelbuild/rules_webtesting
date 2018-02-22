@@ -22,18 +22,7 @@ import (
 
 	"github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter"
 )
-
-// Service provides is an interface for an individual service. These are usually
-// composed to create an environment.
-type Service interface {
-	healthreporter.HealthReporter
-	// Start starts the service, returning when the service is healthy or has failed.
-	Start(context.Context) error
-	// Stop shutdowns the service.
-	Stop(context.Context) error
-}
 
 // Base is a base struct for defining a service.
 type Base struct {

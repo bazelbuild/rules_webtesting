@@ -16,10 +16,11 @@
 package httphelper
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -43,25 +44,34 @@ func Forward(ctx context.Context, host, trimPrefix string, w http.ResponseWriter
 		return err
 	}
 
+	buffer := &bytes.Buffer{}
+
+	if r.ContentLength > 0 {
+		buffer.Grow(int(r.ContentLength))
+	}
+
+	length, err := io.Copy(buffer, r.Body)
+	if err != nil {
+		return err
+	}
+
 	// Construct request based on Method, URL Path, and Body from r
-	request, err := http.NewRequest(r.Method, url.String(), r.Body)
+	request, err := http.NewRequest(r.Method, url.String(), buffer)
 	if err != nil {
 		return err
 	}
 	request = request.WithContext(ctx)
+	request.ContentLength = length
 
-	// Copy headers from r to request
-	request.Header = r.Header
+	request.Header["Content-Type"] = r.Header["Content-Type"]
+	request.Header["Accept"] = r.Header["Accept"]
+	request.Header["Accept-Encoding"] = r.Header["Accept-Encoding"]
 
 	resp, err := client.Do(request)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
 
 	// Copy response headers from resp to w
 	for k, vs := range resp.Header {
@@ -73,8 +83,8 @@ func Forward(ctx context.Context, host, trimPrefix string, w http.ResponseWriter
 
 	// Copy status code from resp to w
 	w.WriteHeader(resp.StatusCode)
-	w.Write(body)
-	return nil
+	_, err = io.Copy(w, resp.Body)
+	return err
 }
 
 // Get returns the contents located at url.
@@ -123,7 +133,7 @@ func (s longestToShortest) Less(i, j int) bool {
 	return len(s[i]) > len(s[j])
 }
 
-// FQDN returns the fully-qualified domain name (or localhost if lookup 
+// FQDN returns the fully-qualified domain name (or localhost if lookup
 // according to the hostname fails).
 func FQDN() (string, error) {
 	hostname, err := os.Hostname()

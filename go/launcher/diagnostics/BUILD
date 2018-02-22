@@ -23,6 +23,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["diagnostics.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/diagnostics",
     visibility = ["//visibility:public"],
     deps = ["//go/launcher/errors:go_default_library"],
 )

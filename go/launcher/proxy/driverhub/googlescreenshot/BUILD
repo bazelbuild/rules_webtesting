@@ -23,6 +23,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["google_screenshot.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/googlescreenshot",
     visibility = ["//visibility:public"],
     deps = [
         "//go/cropper:go_default_library",

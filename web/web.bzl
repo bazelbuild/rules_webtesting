@@ -113,9 +113,12 @@ def _apply_browser_overrides(kwargs, overrides):
   return overridden_kwargs
 
 
-def browser(**kwargs):
+def browser(deps=None, data=None, **kwargs):
   """Wrapper around browser to correctly set defaults."""
-  browser_alias(testonly=True, **kwargs)
+  data = lists.clone(data)
+  if deps:
+    lists.ensure_contains_all(data, deps)
+  browser_alias(data=data, deps=deps, testonly=True, **kwargs)
 
 
 def web_test(

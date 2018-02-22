@@ -1,4 +1,6 @@
-# Copyright 2017 Google Inc.
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+# Copyright 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,20 +16,19 @@
 #
 ################################################################################
 #
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
-
 go_library(
     name = "go_default_library",
-    srcs = ["capabilities.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata/capabilities",
+    srcs = ["wsl.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/service/wsl",
     visibility = ["//visibility:public"],
-)
-
-go_test(
-    name = "go_default_test",
-    srcs = ["capabilities_test.go"],
-    embed = [":go_default_library"],
+    deps = [
+        "//go/launcher/diagnostics:go_default_library",
+        "//go/launcher/errors:go_default_library",
+        "//go/launcher/service:go_default_library",
+        "//go/metadata:go_default_library",
+    ],
 )

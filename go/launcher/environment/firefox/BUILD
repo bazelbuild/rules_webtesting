@@ -23,6 +23,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["firefox.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/environment/firefox",
     visibility = ["//visibility:public"],
     deps = [
         "//go/launcher/cmdhelper:go_default_library",
