@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,18 +18,30 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//web:java.bzl", "java_web_test_suite")
 
-go_library(
-    name = "go_default_library",
-    srcs = ["google_screenshot.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/googlescreenshot",
-    visibility = ["//visibility:public"],
+java_web_test_suite(
+    name = "WebTestTest",
+    srcs = ["WebTestTest.java"],
+    browser_overrides = {
+        "//browsers:chromium-local": {
+            "tags": ["noci"],
+        },
+        "//browsers:firefox-local": {
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome-win10": {
+            "tags": ["sauce"],
+        },
+    },
+    browsers = [
+        "//browsers:chromium-local",
+        "//browsers:firefox-local",
+        "//browsers/sauce:chrome-win10",
+    ],
     deps = [
-        "//go/cropper:go_default_library",
-        "//go/launcher/proxy/driverhub:go_default_library",
-        "//go/launcher/proxy/driverhub/mobileemulation:go_default_library",
-        "//go/launcher/webdriver:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
+        "//java/com/google/testing/web",
+        "@junit",
+        "@org_seleniumhq_selenium_api",
     ],
 )

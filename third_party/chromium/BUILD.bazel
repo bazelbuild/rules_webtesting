@@ -45,13 +45,13 @@ web_test_archive(
     archive = "@org_chromium_chromium//file",
     named_files = select({
         ":linux": {
-            "CHROME": "chrome-linux/chrome",
+            "CHROMIUM": "chrome-linux/chrome",
         },
         ":mac": {
-            "CHROME": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
+            "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
         },
         ":windows": {
-            "CHROME": "chrome-win32/chrome.exe",
+            "CHROMIUM": "chrome-win32/chrome.exe",
         },
     }),
 )

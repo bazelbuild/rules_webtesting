@@ -23,33 +23,33 @@ load("//web:go.bzl", "go_web_test_suite")
 
 go_library(
     name = "go_default_library",
-    srcs = ["quit_handler.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/quithandler",
+    srcs = ["screenshotter.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/screenshotter",
     visibility = ["//visibility:public"],
-    deps = [
-        "//go/launcher/proxy/driverhub:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
-    ],
+    deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )
 
 go_web_test_suite(
     name = "go_default_test",
-    srcs = ["quit_handler_test.go"],
+    srcs = ["screenshotter_test.go"],
     browser_overrides = {
-        "//browsers:chromium-native": {
-            "local": True,
+        "//browsers:chromium-local": {
             "tags": ["noci"],
         },
-        "//browsers/sauce:chrome55-win10": {"tags": [
-            "requires-network",
-            "sauce",
-        ]},
+        "//browsers:firefox-local": {
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome-win10": {
+            "tags": ["sauce"],
+        },
     },
     browsers = [
-        "//browsers:chromium-native",
-        "//browsers/sauce:chrome55-win10",
+        "//browsers:chromium-local",
+        "//browsers:firefox-local",
+        "//browsers/sauce:chrome-win10",
     ],
     data = ["//testdata"],
+    embed = [":go_default_library"],
     deps = [
         "//go/bazel:go_default_library",
         "//go/portpicker:go_default_library",

@@ -15,16 +15,13 @@
 package main
 
 import (
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environment/chrome"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environment/external"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/environment/firefox"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environment/local"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/environment/sauce"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/drivermu"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/googlescreenshot"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/mobileemulation"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/quithandler"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/scripttimeout"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/healthz"
@@ -32,9 +29,7 @@ import (
 
 func init() {
 	// Configure Environments.
-	RegisterEnvProviderFunc("chrome", chrome.NewEnv)
 	RegisterEnvProviderFunc("external", external.NewEnv)
-	RegisterEnvProviderFunc("firefox", firefox.NewEnv)
 	RegisterEnvProviderFunc("local", local.NewEnv)
 	RegisterEnvProviderFunc("sauce", sauce.NewEnv)
 
@@ -43,7 +38,6 @@ func init() {
 	proxy.AddHTTPHandlerProvider("/healthz", healthz.HTTPHandlerProvider)
 
 	// Configure WebDriver handlers.
-	driverhub.HandlerProviderFunc(mobileemulation.ProviderFunc)
 	driverhub.HandlerProviderFunc(quithandler.ProviderFunc)
 	driverhub.HandlerProviderFunc(scripttimeout.ProviderFunc)
 	driverhub.HandlerProviderFunc(googlescreenshot.ProviderFunc)

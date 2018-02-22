@@ -41,23 +41,20 @@ go_web_test_suite(
     name = "go_default_test",
     srcs = ["proxy_test.go"],
     browser_overrides = {
-        "//browsers:chromium-native": {
-            "local": True,
+        "//browsers:chromium-local": {
             "tags": ["noci"],
         },
-        "//browsers:firefox-native": {
-            "local": True,
+        "//browsers:firefox-local": {
             "tags": ["noci"],
         },
-        "//browsers/sauce:chrome55-win10": {"tags": [
-            "requires-network",
-            "sauce",
-        ]},
+        "//browsers/sauce:chrome-win10": {
+            "tags": ["sauce"],
+        },
     },
     browsers = [
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-        "//browsers/sauce:chrome55-win10",
+        "//browsers:chromium-local",
+        "//browsers:firefox-local",
+        "//browsers/sauce:chrome-win10",
     ],
     config = "//testdata:https",
     deps = ["//go/httphelper:go_default_library"],

@@ -15,5 +15,8 @@
 
 WebTestInfo = provider(
     doc="Provider for web_test information",
-    fields=["disabled", "environment", "metadata", "required_tags"],
+    fields=[
+        "disabled", "environment", "execution_requirements", "metadata",
+        "required_tags"
+    ],
 )

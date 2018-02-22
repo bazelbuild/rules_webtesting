@@ -20,24 +20,6 @@ licenses(["notice"])  # Apache 2.0
 
 load("//web:web.bzl", "browser")
 
-config_setting(
-    name = "mac",
-    values = {"cpu": "darwin"},
-    visibility = ["//:__subpackages__"],
-)
-
-config_setting(
-    name = "linux",
-    values = {"cpu": "k8"},
-    visibility = ["//:__subpackages__"],
-)
-
-config_setting(
-    name = "windows",
-    values = {"cpu": "x64_windows"},
-    visibility = ["//:__subpackages__"],
-)
-
 browser(
     name = "firefox-external",
     metadata = "firefox-external.json",
@@ -50,42 +32,6 @@ browser(
     metadata = "chrome-external.json",
     required_tags = ["requires-network"],
     visibility = ["//visibility:public"],
-)
-
-browser(
-    name = "firefox-native",
-    environment = select({
-        ":linux": None,
-        ":mac": {"DISABLE_X_DISPLAY": "1"},
-    }),
-    metadata = "firefox-native.json",
-    # if not tagged local, then bazel does not exit cleanly
-    required_tags = [
-        "local",
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//third_party/firefox",
-        "//third_party/geckodriver",
-    ],
-)
-
-browser(
-    name = "chromium-native",
-    environment = select({
-        ":linux": None,
-        ":mac": {"DISABLE_X_DISPLAY": "1"},
-        ":windows": {"DISABLE_X_DISPLAY": "1"},
-    }),
-    metadata = "chromium-native.json",
-    required_tags = [
-        "local",
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//third_party/chromedriver",
-        "//third_party/chromium",
-    ],
 )
 
 browser(
@@ -103,5 +49,16 @@ browser(
         "//go/wsl",
         "//third_party/chromedriver",
         "//third_party/chromium",
+    ],
+)
+
+browser(
+    name = "firefox-local",
+    metadata = "firefox-local.json",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/wsl",
+        "//third_party/firefox",
+        "//third_party/geckodriver",
     ],
 )

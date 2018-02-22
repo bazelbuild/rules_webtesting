@@ -18,29 +18,12 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//web:web.bzl", "browser")
 
-go_library(
-    name = "go_default_library",
-    srcs = ["merger.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata/main",
-    visibility = ["//visibility:private"],
-    deps = ["//go/metadata:go_default_library"],
-)
-
-go_binary(
-    name = "main",
-    embed = [":go_default_library"],
+browser(
+    name = "chrome-win10",
+    execution_requirements = {"requires-network": ""},
+    metadata = "chrome-win10.json",
+    required_tags = ["sauce"],
     visibility = ["//visibility:public"],
-)
-
-sh_test(
-    name = "merger_test",
-    srcs = ["merger_test.sh"],
-    data = [
-        ":main",
-        "//testdata",
-    ],
-    # TODO(DrMarcII): figure out how to reference binary.
-    tags=["noci"],
 )

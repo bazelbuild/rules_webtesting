@@ -24,18 +24,20 @@ java_web_test_suite(
     name = "ScreenshotterTest",
     srcs = ["ScreenshotterTest.java"],
     browser_overrides = {
-        "//browsers:chromium-native": {
-            "local": True,
+        "//browsers:chromium-local": {
             "tags": ["noci"],
         },
-        "//browsers:firefox-native": {
-            "local": True,
+        "//browsers:firefox-local": {
             "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome-win10": {
+            "tags": ["sauce"],
         },
     },
     browsers = [
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
+        "//browsers:chromium-local",
+        "//browsers:firefox-local",
+        "//browsers/sauce:chrome-win10",
     ],
     data = ["//testdata"],
     deps = [

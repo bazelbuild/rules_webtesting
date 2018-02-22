@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,18 +14,14 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
+
+load("@bazel_gazelle//:def.bzl", "gazelle")
 
 licenses(["notice"])  # Apache 2.0
 
-load("//web:web.bzl", "browser")
+exports_files(["LICENSE"])
 
-browser(
-    name = "chrome55-win10",
-    metadata = "chrome55-win10.json",
-    required_tags = [
-        "requires-network",
-        "sauce",
-    ],
-    visibility = ["//visibility:public"],
+gazelle(
+    name = "gazelle",
+    prefix = "github.com/bazelbuild/rules_webtesting",
 )

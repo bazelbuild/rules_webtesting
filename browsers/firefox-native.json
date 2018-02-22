@@ -1,9 +1,0 @@
-{
-    "environment": "firefox",
-    "capabilities": {
-        "browserName": "firefox",
-        "moz:firefoxOptions": {
-            "binary": "%FIREFOX%"
-        }
-    }
-} 

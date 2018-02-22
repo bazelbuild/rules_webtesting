@@ -565,11 +565,6 @@ func TestSetWindowPosition(t *testing.T) {
 	}
 	defer d.Quit(ctx)
 
-	initial, err := d.GetWindowRect(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := d.SetWindowPosition(ctx, tc.x, tc.y)
@@ -591,15 +586,8 @@ func TestSetWindowPosition(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expected := Rectangle{
-				X:      tc.x,
-				Y:      tc.y,
-				Width:  initial.Width,
-				Height: initial.Height,
-			}
-
-			if rect != expected {
-				t.Errorf("got rect == %+v, expected %+v", rect, expected)
+			if rect.X != tc.x || rect.Y != tc.y {
+				t.Errorf("got rect == %+v, expected X: %d, Y: %d", rect, tc.x, tc.y)
 			}
 		})
 	}

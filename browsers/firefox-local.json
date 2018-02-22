@@ -1,0 +1,14 @@
+{
+    "environment": "local",
+    "capabilities": {
+        "browserName": "firefox",
+        "moz:firefoxOptions": {
+            "binary": "%FIREFOX%",
+            "args": ["-headless"]
+        },
+        "google:wslConfig": {
+	    	"binary": "%GECKODRIVER%",
+	    	"args": ["--port", "%WSL:PORT%", "--binary", "%FIREFOX%"]
+	    }
+    }
+} 

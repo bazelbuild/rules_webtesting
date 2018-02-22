@@ -22,13 +22,13 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["chromedriver.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/service/chromedriver",
+    srcs = ["google_screenshot.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/googlescreenshot",
     visibility = ["//visibility:public"],
     deps = [
-        "//go/launcher/diagnostics:go_default_library",
-        "//go/launcher/errors:go_default_library",
-        "//go/launcher/service:go_default_library",
-        "//go/metadata:go_default_library",
+        "//go/cropper:go_default_library",
+        "//go/launcher/proxy/driverhub:go_default_library",
+        "//go/launcher/webdriver:go_default_library",
+        "//go/metadata/capabilities:go_default_library",
     ],
 )

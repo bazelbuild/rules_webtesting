@@ -24,6 +24,7 @@ go_library(
     name = "go_default_library",
     srcs = ["wsl.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wsl/main",
+    visibility = ["//visibility:private"],
     deps = ["//go/wsl/hub:go_default_library"],
 )
 

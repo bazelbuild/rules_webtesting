@@ -23,41 +23,39 @@ load("//web:go.bzl", "go_web_test_suite")
 
 go_library(
     name = "go_default_library",
-    srcs = [
-        "webdriver.go",
-        "webdriver_error.go",
-    ],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/webdriver",
+    srcs = ["script_timeout.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/scripttimeout",
     visibility = ["//visibility:public"],
     deps = [
-        "//go/launcher/errors:go_default_library",
-        "//go/launcher/healthreporter:go_default_library",
+        "//go/launcher/proxy/driverhub:go_default_library",
         "//go/metadata/capabilities:go_default_library",
     ],
 )
 
 go_web_test_suite(
     name = "go_default_test",
-    srcs = ["webdriver_test.go"],
+    srcs = ["script_timeout_test.go"],
     browser_overrides = {
-        "//browsers:chromium-native": {
-            "local": True,
+        "//browsers:chromium-local": {
             "tags": ["noci"],
         },
-        "//browsers:firefox-native": {
-            "local": True,
+        "//browsers:firefox-local": {
             "tags": ["noci"],
         },
-        "//browsers/sauce:chrome55-win10": {"tags": [
-            "requires-network",
-            "sauce",
-        ]},
+        "//browsers/sauce:chrome-win10": {
+            "tags": ["sauce"],
+        },
     },
     browsers = [
-        "//browsers:chromium-native",
-        "//browsers:firefox-native",
-        "//browsers/sauce:chrome55-win10",
+        "//browsers:chromium-local",
+        "//browsers:firefox-local",
+        "//browsers/sauce:chrome-win10",
     ],
-    embed = [":go_default_library"],
-    deps = ["//go/webtest:go_default_library"],
+    data = ["//testdata"],
+    deps = [
+        "//go/bazel:go_default_library",
+        "//go/portpicker:go_default_library",
+        "//go/webtest:go_default_library",
+        "@com_github_tebeka_selenium//:go_default_library",
+    ],
 )
