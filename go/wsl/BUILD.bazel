@@ -1,3 +1,5 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
 # Copyright 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +19,6 @@
 package(default_testonly = True)
 
 load("//web:web.bzl", "web_test_named_executable")
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -39,6 +40,10 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = ["wsl_test.go"],
+    data = ["//testdata"],
     embed = [":go_default_library"],
-    deps = ["//go/portpicker:go_default_library"],
+    deps = [
+        "//go/bazel:go_default_library",
+        "//go/portpicker:go_default_library",
+    ],
 )

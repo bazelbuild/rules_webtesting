@@ -45,8 +45,7 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")[1:]
 
 	if len(path) < 1 || path[0] != "session" {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, `{"error": "unknown command"}`)
+		errorResponse(w, http.StatusNotFound, 9, "unknown command", fmt.Sprintf("%q is not a known command", r.URL.Path))
 		return
 	}
 
@@ -56,15 +55,13 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(path) < 2 {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, `{"error": "unknown command"}`)
+		errorResponse(w, http.StatusMethodNotAllowed, 9, "unknown method", fmt.Sprintf("%s is not a supported method for /session", r.Method))
 		return
 	}
 
 	driver := h.driver(path[1])
 	if driver == nil {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, `{"error": "invalid session id"}`)
+		errorResponse(w, http.StatusNotFound, 6, "invalid session id", fmt.Sprintf("%q is not an active session", path[1]))
 		return
 	}
 
@@ -94,28 +91,26 @@ type w3cCaps struct {
 }
 
 func (h *Hub) newSession(w http.ResponseWriter, r *http.Request) {
-	caps := capabilities{}
+	reqJSON := capabilities{}
 
-	if err := json.NewDecoder(r.Body).Decode(&caps); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"error": "invalid argument", "message": %q}`, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(&reqJSON); err != nil {
+		errorResponse(w, http.StatusBadRequest, 13, "invalid argument", err.Error())
 		return
 	}
 
 	var driver *driver.Driver
 	var session string
 
-	if caps.Capabilities != nil {
-		session, driver = h.newSessionW3CCaps(r.Context(), *caps.Capabilities, w)
+	if reqJSON.Capabilities != nil {
+		session, driver = h.newSessionW3CCaps(r.Context(), *reqJSON.Capabilities, w)
 	}
 
-	if driver == nil && caps.DesiredCapabilities != nil {
-		session, driver = h.newSessionJWPCaps(r.Context(), caps.DesiredCapabilities, caps.RequiredCapabilities, w)
+	if driver == nil && reqJSON.DesiredCapabilities != nil {
+		session, driver = h.newSessionJWPCaps(r.Context(), reqJSON.DesiredCapabilities, reqJSON.RequiredCapabilities, w)
 	}
 
 	if driver == nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, `{"error": "session not created", "value": null}`)
+		errorResponse(w, http.StatusInternalServerError, 33, "session not created", "unable to create session")
 		return
 	}
 
@@ -219,4 +214,18 @@ func (h *Hub) quitSession(session string, driver *driver.Driver, w http.Response
 	driver.Wait()
 
 	delete(h.sessions, session)
+}
+
+func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
+	w.WriteHeader(httpStatus)
+
+	respJSON := map[string]interface{}{
+		"status": status,
+		"value": map[string]interface{}{
+			"error":   err,
+			"message": message,
+		},
+	}
+
+	json.NewEncoder(w).Encode(respJSON)
 }

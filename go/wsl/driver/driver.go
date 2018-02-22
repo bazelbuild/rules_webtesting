@@ -82,13 +82,13 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 
 	for {
 		if response, err := httphelper.Get(deadline, statusURL); err == nil && response.StatusCode == http.StatusOK {
-			responseBody := map[string]interface{}{}
-			if err := json.NewDecoder(response.Body).Decode(&responseBody); err == nil {
-				if status, ok := responseBody["status"].(float64); ok {
+			respJSON := map[string]interface{}{}
+			if err := json.NewDecoder(response.Body).Decode(&respJSON); err == nil {
+				if status, ok := respJSON["status"].(float64); ok {
 					if int(status) == 0 {
 						break
 					}
-				} else if value, ok := responseBody["value"].(map[string]interface{}); ok {
+				} else if value, ok := respJSON["value"].(map[string]interface{}); ok {
 					if ready, _ := value["ready"].(bool); ready {
 						break
 					}
@@ -185,8 +185,7 @@ func (d *Driver) Forward(w http.ResponseWriter, r *http.Request) {
 	defer d.mu.Unlock()
 
 	if err := httphelper.Forward(r.Context(), d.Address, "", w, r); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, `{"error": "unknown error", "message": %q}`, err.Error())
+		errorResponse(w, http.StatusInternalServerError, 13, "unknown error", err.Error())
 	}
 }
 
@@ -208,13 +207,9 @@ func (d *Driver) NewSessionW3C(ctx context.Context, alwaysMatch map[string]inter
 	}
 
 	if wd.W3C() {
-		if err := writeW3CNewSessionResponse(wd, w); err != nil {
-			return "", err
-		}
+		writeW3CNewSessionResponse(wd, w)
 	} else {
-		if err := writeJWPNewSessionResponse(wd, w); err != nil {
-			return "", err
-		}
+		writeJWPNewSessionResponse(wd, w)
 	}
 
 	return wd.SessionID(), nil
@@ -245,19 +240,15 @@ func (d *Driver) NewSessionJWP(ctx context.Context, desired, required map[string
 	}
 
 	if wd.W3C() {
-		if err := writeW3CNewSessionResponse(wd, w); err != nil {
-			return "", err
-		}
+		writeW3CNewSessionResponse(wd, w)
 	} else {
-		if err := writeJWPNewSessionResponse(wd, w); err != nil {
-			return "", err
-		}
+		writeJWPNewSessionResponse(wd, w)
 	}
 
 	return wd.SessionID(), nil
 }
 
-func writeW3CNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) error {
+func writeW3CNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 	respJSON := map[string]interface{}{
 		"value": map[string]interface{}{
 			"capabilities": wd.Capabilities(),
@@ -265,38 +256,36 @@ func writeW3CNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) e
 		},
 	}
 
-	respBody, err := json.Marshal(respJSON)
-	if err != nil {
-		go wd.Quit(context.Background())
-		return err
-	}
-
 	w.WriteHeader(http.StatusOK)
-	w.Write(respBody)
-
-	return nil
+	json.NewEncoder(w).Encode(respJSON)
 }
 
-func writeJWPNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) error {
+func writeJWPNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 	respJSON := map[string]interface{}{
 		"value":     wd.Capabilities(),
 		"sessionId": wd.SessionID(),
 		"status":    0,
 	}
 
-	respBody, err := json.Marshal(respJSON)
-	if err != nil {
-		go wd.Quit(context.Background())
-		return err
-	}
-
 	w.WriteHeader(http.StatusOK)
-	w.Write(respBody)
-
-	return nil
+	json.NewEncoder(w).Encode(respJSON)
 }
 
 // Kill kills a running WebDriver server.
 func (d *Driver) Kill() error {
 	return d.Process.Kill()
+}
+
+func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
+	w.WriteHeader(httpStatus)
+
+	respJSON := map[string]interface{}{
+		"status": status,
+		"value": map[string]interface{}{
+			"error":   err,
+			"message": message,
+		},
+	}
+
+	json.NewEncoder(w).Encode(respJSON)
 }

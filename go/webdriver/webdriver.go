@@ -563,6 +563,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 	}
 
 	respBody := &jsonResp{Value: value}
+
 	if err := json.Unmarshal(bytes, respBody); err != nil || respBody.isError() {
 		if value != nil {
 			// Reparsing to ensure we have a clean value.
