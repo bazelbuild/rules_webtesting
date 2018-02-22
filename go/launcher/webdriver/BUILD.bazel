@@ -58,3 +58,9 @@ go_web_test_suite(
     embed = [":go_default_library"],
     deps = ["//go/webtest:go_default_library"],
 )
+
+# TODO(DrMarcII): Remove when ci.bazel.build no longer directly references.
+alias(
+    name = "go_default_test_chrome55-win10",
+    actual = ":go_default_test_chrome-win10",
+)
