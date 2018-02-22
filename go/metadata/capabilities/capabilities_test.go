@@ -253,16 +253,16 @@ func TestSpecEquals(t *testing.T) {
 				OSSCaps: map[string]interface{}{"v": 1},
 				Always:  map[string]interface{}{"v": 2},
 				First: []map[string]interface{}{
-					map[string]interface{}{"first": 1},
-					map[string]interface{}{"second": 2},
+					{"first": 1},
+					{"second": 2},
 				},
 			},
 			Spec{
 				OSSCaps: map[string]interface{}{"v": 1},
 				Always:  map[string]interface{}{"v": 2},
 				First: []map[string]interface{}{
-					map[string]interface{}{"first": 1},
-					map[string]interface{}{"second": 2},
+					{"first": 1},
+					{"second": 2},
 				},
 			},
 			true,
@@ -282,20 +282,20 @@ func TestSpecEquals(t *testing.T) {
 		{
 			"First order matters",
 			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				map[string]interface{}{"first": 1}, map[string]interface{}{"second": 2},
+				{"first": 1}, {"second": 2},
 			}},
 			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				map[string]interface{}{"second": 2}, map[string]interface{}{"first": 1},
+				{"second": 2}, {"first": 1},
 			}},
 			false,
 		},
 		{
 			"First uneven length",
 			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				map[string]interface{}{"first": 1}, map[string]interface{}{"second": 2},
+				{"first": 1}, {"second": 2},
 			}},
 			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				map[string]interface{}{"first": 1},
+				{"first": 1},
 			}},
 			false,
 		},

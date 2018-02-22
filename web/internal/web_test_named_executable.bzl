@@ -60,8 +60,7 @@ web_test_named_executable = rule(
             attr.label_list(providers=[WebTestInfo]),
         "executable":
             attr.label(
-                allow_files=True, executable=True, cfg="target",
-                mandatory=True),
+                allow_files=True, executable=True, cfg="host", mandatory=True),
         "merger":
             attr.label(
                 executable=True,

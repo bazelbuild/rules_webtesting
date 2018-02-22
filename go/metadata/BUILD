@@ -25,6 +25,7 @@ go_library(
         "metadata.go",
         "web_test_files.go",
     ],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata",
     visibility = ["//visibility:public"],
     deps = [
         "//go/bazel:go_default_library",
@@ -39,6 +40,6 @@ go_test(
         "metadata_test.go",
     ],
     data = ["//testdata"],
-    library = ":go_default_library",
+    embed = [":go_default_library"],
     deps = ["//go/bazel:go_default_library"],
 )

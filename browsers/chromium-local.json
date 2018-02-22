@@ -1,0 +1,14 @@
+{
+  "environment" : "local",
+  "capabilities" : {
+    "browserName" : "chrome",
+    "chromeOptions" : {
+      "args" : ["--headless"],
+      "binary" : "%CHROME%"
+    },
+    "google:wslConfig": {
+    	"binary": "%CHROMEDRIVER%",
+    	"args": ["--port=%WSL:PORT%"]
+    }
+  }
+}

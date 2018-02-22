@@ -27,6 +27,7 @@ go_library(
         "driver_responses.go",
         "driver_session.go",
     ],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub",
     visibility = ["//visibility:public"],
     deps = [
         "//go/httphelper:go_default_library",

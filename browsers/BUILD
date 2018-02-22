@@ -94,3 +94,14 @@ browser(
     metadata = "disabled.json",
     visibility = ["//visibility:public"],
 )
+
+browser(
+    name = "chromium-local",
+    metadata = "chromium-local.json",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/wsl",
+        "//third_party/chromedriver",
+        "//third_party/chromium",
+    ],
+)

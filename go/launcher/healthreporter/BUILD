@@ -23,6 +23,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = ["health_reporter.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/healthreporter",
     visibility = ["//visibility:public"],
     deps = ["//go/launcher/errors:go_default_library"],
 )
@@ -30,6 +31,6 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = ["health_reporter_test.go"],
-    library = ":go_default_library",
+    embed = [":go_default_library"],
     deps = ["//go/launcher/errors:go_default_library"],
 )

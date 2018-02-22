@@ -18,7 +18,7 @@ package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("//web:go.bzl", "go_web_test_suite")
 
 go_library(
@@ -27,6 +27,7 @@ go_library(
         "webdriver.go",
         "webdriver_error.go",
     ],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/webdriver",
     visibility = ["//visibility:public"],
     deps = [
         "//go/launcher/errors:go_default_library",
@@ -57,6 +58,6 @@ go_web_test_suite(
         "//browsers:firefox-native",
         "//browsers/sauce:chrome55-win10",
     ],
-    library = ":go_default_library",
+    embed = [":go_default_library"],
     deps = ["//go/webtest:go_default_library"],
 )

@@ -16,33 +16,33 @@
 package healthz
 
 import (
-  "context"
-  "io"
-  "net/http"
+	"context"
+	"io"
+	"net/http"
 
-  "github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
+	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy"
 )
 
 type healthz struct{}
 
 // HTTPHandlerProvider returns a HTTPHandlerProvider for handling healthz requests.
 func HTTPHandlerProvider(*proxy.Proxy) (proxy.HTTPHandler, error) {
-  return &healthz{}, nil
+	return &healthz{}, nil
 }
 
 func (h *healthz) Shutdown(context.Context) error {
-  return nil
+	return nil
 }
 
 func (h *healthz) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
-  w.Header().Set("Content-Type", "text/plain")
-  io.WriteString(w, "ok")
+	w.Header().Set("Content-Type", "text/plain")
+	io.WriteString(w, "ok")
 }
 
 func (*healthz) Name() string {
-  return "healthz http handler"
+	return "healthz http handler"
 }
 
 func (*healthz) Healthy(context.Context) error {
-  return nil
+	return nil
 }
