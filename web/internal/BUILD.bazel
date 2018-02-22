@@ -25,11 +25,6 @@ exports_files(
     visibility = ["//visibility:public"],
 )
 
-exports_files(
-    glob(["*.bzl"]),
-    visibility = ["//doc:__pkg__"],
-)
-
 skylark_library(
     name = "browser",
     srcs = ["browser.bzl"],

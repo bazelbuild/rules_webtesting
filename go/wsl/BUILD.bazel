@@ -16,9 +16,9 @@
 #
 package(default_testonly = True)
 
-licenses(["notice"])  # Apache 2.0
-
 load("//web:web.bzl", "web_test_named_executable")
+
+licenses(["notice"])  # Apache 2.0
 
 web_test_named_executable(
     name = "wsl",

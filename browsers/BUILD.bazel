@@ -16,21 +16,21 @@
 #
 package(default_testonly = True)
 
-licenses(["notice"])  # Apache 2.0
-
 load("//web:web.bzl", "browser")
+
+licenses(["notice"])  # Apache 2.0
 
 browser(
     name = "firefox-external",
     metadata = "firefox-external.json",
-    required_tags = ["requires-network"],
+    execution_requirements = {"requires-network": ""},
     visibility = ["//visibility:public"],
 )
 
 browser(
     name = "chrome-external",
     metadata = "chrome-external.json",
-    required_tags = ["requires-network"],
+    execution_requirements = {"requires-network": ""},
     visibility = ["//visibility:public"],
 )
 
