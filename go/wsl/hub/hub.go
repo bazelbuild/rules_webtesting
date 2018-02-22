@@ -33,12 +33,15 @@ type Hub struct {
 	// Mutex to protext access to sessions.
 	mu       sync.RWMutex
 	sessions map[string]*driver.Driver
+
+	uploader http.Handler
 }
 
 // New creates a new Hub.
-func New() *Hub {
+func New(uploader http.Handler) *Hub {
 	return &Hub{
 		sessions: map[string]*driver.Driver{},
+		uploader: uploader,
 	}
 }
 
@@ -68,6 +71,11 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodDelete && len(path) == 2 {
 		h.quitSession(path[1], driver, w, r)
+		return
+	}
+
+	if len(path) == 3 && path[2] == "upload" {
+		h.uploader.ServeHTTP(w, r)
 		return
 	}
 

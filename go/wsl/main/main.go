@@ -24,10 +24,11 @@ import (
 var (
 	port         = flag.Int("port", 4444, "Port to start WSL on.")
 	downloadRoot = flag.String("download_root", "", "Directory served at /google/staticfile/.")
+	uploadRoot   = flag.String("upload_root", "", "Directory to which files sent to /session/<id>/upload will be uploaded.")
 )
 
 func main() {
 	flag.Parse()
 
-	wsl.Run(*port, *downloadRoot)
+	wsl.Run(*port, *downloadRoot, *uploadRoot)
 }
