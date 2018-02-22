@@ -1,7 +1,7 @@
 {
   "environment" : "local",
   "capabilities" : {
-    "browserName" : "chrome",
+    "browserName" : "chromium",
     "chromeOptions" : {
       "args" : ["--headless"],
       "binary" : "%CHROMIUM%"
