@@ -21,7 +21,10 @@ printenv
 
 error=0
 
-$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out.json \
+# TODO(DrMarcII): Figure out how to not hard code this path.
+merger=$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/linux_amd64_stripped/main
+
+$merger --output $TEST_TMPDIR/out.json \
     $TEST_SRCDIR/$TEST_WORKSPACE/testdata/chrome-linux.json \
     $TEST_SRCDIR/$TEST_WORKSPACE/testdata/android-browser-gingerbread-nexus-s.json
 
@@ -32,7 +35,7 @@ if [[ $? != 0 ]]; then
   error=1
 fi
 
-$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out2.json \
+$merger --output $TEST_TMPDIR/out2.json \
     $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
     $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json
 if [[ $? != 0 ]]; then
@@ -40,7 +43,7 @@ if [[ $? != 0 ]]; then
   error=1
 fi
 
-$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out2.json \
+$merger --output $TEST_TMPDIR/out2.json \
     $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
     $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files2.json
 if [[ $? == 0 ]]; then
@@ -48,7 +51,7 @@ if [[ $? == 0 ]]; then
   error=1
 fi
 
-$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/main --output $TEST_TMPDIR/out2.json \
+$merger --output $TEST_TMPDIR/out2.json \
     $TEST_SRCDIR/$TEST_WORKSPACE/testdata/bad-named-files.json
 if [[ $? == 0 ]]; then
   echo "Expected load of bad-named-files.json to fail."

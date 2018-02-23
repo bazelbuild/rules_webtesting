@@ -130,7 +130,9 @@ def _generate_default_test(ctx):
           runfiles=ctx.runfiles(
               collect_data=True,
               collect_default=True,
-              files=[ctx.outputs.web_test_metadata]))
+              files=[ctx.outputs.web_test_metadata])),
+      testing.ExecutionInfo(env),
+      testing.TestEnvironment(ctx.attr.browser[WebTestInfo].environment),
   ]
 
 

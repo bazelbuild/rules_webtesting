@@ -1,10 +1,10 @@
 {
   "environment" : "local",
   "capabilities" : {
-    "browserName" : "chrome",
+    "browserName" : "chromium",
     "chromeOptions" : {
       "args" : ["--headless"],
-      "binary" : "%CHROME%"
+      "binary" : "%CHROMIUM%"
     },
     "google:wslConfig": {
     	"binary": "%CHROMEDRIVER%",

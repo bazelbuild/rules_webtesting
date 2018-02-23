@@ -16,15 +16,18 @@
 package googlescreenshot
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"image"
+	"image/png"
 	"log"
 	"net/http"
 
 	"github.com/bazelbuild/rules_webtesting/go/cropper"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/proxy/driverhub/mobileemulation"
 	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
@@ -36,8 +39,6 @@ type request struct {
 
 // ProviderFunc provides a handler for an advanced screenshot endpoint at POST google/screenshot.
 func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
-	useMobile := mobileemulation.Enabled(caps)
-
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 		if rq.Method != http.MethodPost || len(rq.Path) != 2 || rq.Path[0] != "google" || rq.Path[1] != "screenshot" {
 			return base(ctx, rq)
@@ -50,17 +51,17 @@ func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, b
 			return driverhub.ResponseFromError(err)
 		}
 
-		img, err := captureScreenshot(ctx, session.WebDriver, r, useMobile)
+		img, err := captureScreenshot(ctx, session.WebDriver, r)
 		if err != nil {
 			// TODO(DrMarcII): better error message?
 			return driverhub.ResponseFromError(err)
 		}
 
-		return mobileemulation.CreateResponse(img)
+		return createResponse(img)
 	}, true
 }
 
-func captureScreenshot(ctx context.Context, driver webdriver.WebDriver, r request, useMobile bool) (image.Image, error) {
+func captureScreenshot(ctx context.Context, driver webdriver.WebDriver, r request) (image.Image, error) {
 	el, _ := driver.ElementFromMap(r.Element)
 
 	if el != nil {
@@ -70,19 +71,9 @@ func captureScreenshot(ctx context.Context, driver webdriver.WebDriver, r reques
 	}
 
 	// TODO(DrMarcII): stabilization to ensure that we have finished scrolling?
-	var img image.Image
-	if useMobile {
-		i, err := mobileemulation.GetMobileScreenshot(ctx, driver)
-		if err != nil {
-			return nil, err
-		}
-		img = i
-	} else {
-		i, err := driver.Screenshot(ctx)
-		if err != nil {
-			return nil, err
-		}
-		img = i
+	img, err := driver.Screenshot(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	for _, e := range r.Exclude {
@@ -114,4 +105,19 @@ func captureScreenshot(ctx context.Context, driver webdriver.WebDriver, r reques
 		return cropper.Crop(img, bounds)
 	}
 	return img, nil
+}
+
+func createResponse(img image.Image) (driverhub.Response, error) {
+	buffer := &bytes.Buffer{}
+	b64 := base64.NewEncoder(base64.StdEncoding, buffer)
+	defer b64.Close()
+
+	if err := png.Encode(b64, img); err != nil {
+		return driverhub.ResponseFromError(err)
+	}
+
+	return driverhub.Response{
+		Status: http.StatusOK,
+		Body:   []byte(fmt.Sprintf(`{"status": 0, "value": %q}`, buffer.String())),
+	}, nil
 }

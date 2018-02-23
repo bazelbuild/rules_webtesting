@@ -1,4 +1,4 @@
-# Copyright 2018 Google Inc.
+# Copyright 2017 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,12 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Definition of WebTestInfo provider."""
+#
+################################################################################
+#
 
-WebTestInfo = provider(
-    doc="Provider for web_test information",
-    fields=[
-        "disabled", "environment", "execution_requirements", "metadata",
-        "required_tags"
-    ],
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+licenses(["notice"])  # Apache 2.0
+
+go_library(
+    name = "go_default_library",
+    srcs = ["capabilities.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata/capabilities",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["capabilities_test.go"],
+    embed = [":go_default_library"],
 )

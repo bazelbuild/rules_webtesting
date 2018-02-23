@@ -41,6 +41,7 @@ def _browser_impl(ctx):
       WebTestInfo(
           disabled=ctx.attr.disabled,
           environment=ctx.attr.environment,
+          execution_requirements=ctx.attr.execution_requirements,
           metadata=ctx.outputs.web_test_metadata,
           required_tags=ctx.attr.required_tags),
   ]
@@ -55,6 +56,8 @@ browser = rule(
         "disabled":
             attr.string(),
         "environment":
+            attr.string_dict(),
+        "execution_requirements":
             attr.string_dict(),
         "merger":
             attr.label(

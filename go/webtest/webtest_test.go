@@ -82,13 +82,13 @@ func TestGetInfo(t *testing.T) {
 		if i.Environment != "sauce" {
 			t.Errorf(`got Environment = %q, expected "sauce"`, i.Environment)
 		}
-	case strings.Contains(i.BrowserLabel, "chrome"):
-		if i.Environment != "chrome" {
-			t.Errorf(`got Environment = %q, expected "chrome"`, i.Environment)
+	case strings.Contains(i.BrowserLabel, "chromium"):
+		if i.Environment != "local" {
+			t.Errorf(`got Environment = %q, expected "local"`, i.Environment)
 		}
 	case strings.Contains(i.BrowserLabel, "firefox"):
-		if i.Environment != "firefox" {
-			t.Errorf(`got Environment = %q, expected "firefox"`, i.Environment)
+		if i.Environment != "local" {
+			t.Errorf(`got Environment = %q, expected "local"`, i.Environment)
 		}
 	}
 }
