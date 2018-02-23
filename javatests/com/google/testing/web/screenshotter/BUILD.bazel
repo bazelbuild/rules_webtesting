@@ -30,14 +30,10 @@ java_web_test_suite(
         "//browsers:firefox-local": {
             "tags": ["noci"],
         },
-        "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
-        },
     },
     browsers = [
         "//browsers:chromium-local",
         "//browsers:firefox-local",
-        "//browsers/sauce:chrome-win10",
     ],
     data = ["//testdata"],
     deps = [
