@@ -1,0 +1,61 @@
+# Copyright 2016 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+################################################################################
+#
+package(default_testonly = True)
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//web:go.bzl", "go_web_test_suite")
+
+licenses(["notice"])  # Apache 2.0
+
+go_library(
+    name = "go_default_library",
+    srcs = ["proxy.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/launcher/proxy",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/httphelper:go_default_library",
+        "//go/launcher/diagnostics:go_default_library",
+        "//go/launcher/environment:go_default_library",
+        "//go/launcher/errors:go_default_library",
+        "//go/launcher/healthreporter:go_default_library",
+        "//go/metadata:go_default_library",
+        "//go/portpicker:go_default_library",
+    ],
+)
+
+go_web_test_suite(
+    name = "go_default_test",
+    srcs = ["proxy_test.go"],
+    browser_overrides = {
+        "//browsers:chromium-local": {
+            "tags": ["noci"],
+        },
+        "//browsers:firefox-local": {
+            "tags": ["noci"],
+        },
+        "//browsers/sauce:chrome-win10": {
+            "tags": ["sauce"],
+        },
+    },
+    browsers = [
+        "//browsers:chromium-local",
+        "//browsers:firefox-local",
+        "//browsers/sauce:chrome-win10",
+    ],
+    config = "//testdata:https",
+    deps = ["//go/httphelper:go_default_library"],
+)

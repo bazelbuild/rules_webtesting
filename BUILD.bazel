@@ -1,4 +1,4 @@
-# Copyright 2018 Google Inc.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,12 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Definition of WebTestInfo provider."""
+#
+################################################################################
+#
 
-WebTestInfo = provider(
-    doc="Provider for web_test information",
-    fields=[
-        "disabled", "environment", "execution_requirements", "metadata",
-        "required_tags"
-    ],
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+licenses(["notice"])  # Apache 2.0
+
+exports_files(["LICENSE"])
+
+gazelle(
+    name = "gazelle",
+    prefix = "github.com/bazelbuild/rules_webtesting",
 )
