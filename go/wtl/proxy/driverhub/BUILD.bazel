@@ -1,4 +1,4 @@
-# Copyright 2018 Google Inc.
+# Copyright 2017 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,7 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = True,
-    default_visibility = ["//go/wsl:__subpackages__"],
-)
+package(default_testonly = True)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
@@ -25,13 +22,24 @@ licenses(["notice"])  # Apache 2.0
 
 go_library(
     name = "go_default_library",
-    srcs = ["driver.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/wsl/driver",
+    srcs = [
+        "driver_hub.go",
+        "driver_responses.go",
+        "driver_session.go",
+    ],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub",
+    visibility = ["//visibility:public"],
     deps = [
-        "//go/cmdhelper:go_default_library",
         "//go/httphelper:go_default_library",
+        "//go/metadata:go_default_library",
         "//go/metadata/capabilities:go_default_library",
-        "//go/portpicker:go_default_library",
         "//go/webdriver:go_default_library",
+        "//go/wtl/diagnostics:go_default_library",
+        "//go/wtl/environment:go_default_library",
+        "//go/wtl/errors:go_default_library",
+        "//go/wtl/healthreporter:go_default_library",
+        "//go/wtl/proxy:go_default_library",
+        "//go/wtl/proxy/driverhub/debugger:go_default_library",
+        "@com_github_gorilla_mux//:go_default_library",
     ],
 )

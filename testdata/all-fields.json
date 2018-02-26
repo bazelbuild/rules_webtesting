@@ -2,6 +2,6 @@
   "capabilities": {},
   "environment": "chromeos",
   "browserLabel": "//browsers:figaro",
-  "testLabel": "//go/launcher:tests",
+  "testLabel": "//go/wtl:tests",
   "namedExecutables": {}
 }
