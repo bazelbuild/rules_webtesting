@@ -43,7 +43,7 @@ func TestFromFile(t *testing.T) {
 			Capabilities: map[string]interface{}{},
 			Environment:  "chromeos",
 			BrowserLabel: "//browsers:figaro",
-			TestLabel:    "//go/launcher:tests",
+			TestLabel:    "//go/wtl:tests",
 			Extension:    &extension{},
 		}
 

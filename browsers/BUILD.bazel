@@ -22,15 +22,15 @@ licenses(["notice"])  # Apache 2.0
 
 browser(
     name = "firefox-external",
-    metadata = "firefox-external.json",
     execution_requirements = {"requires-network": ""},
+    metadata = "firefox-external.json",
     visibility = ["//visibility:public"],
 )
 
 browser(
     name = "chrome-external",
-    metadata = "chrome-external.json",
     execution_requirements = {"requires-network": ""},
+    metadata = "chrome-external.json",
     visibility = ["//visibility:public"],
 )
 

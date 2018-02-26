@@ -131,7 +131,7 @@ def web_test(
     **kwargs):
   """Wrapper around web_test to correctly set defaults."""
   config = config or str(Label("//web:default_config"))
-  launcher = launcher or str(Label("//go/launcher/main"))
+  launcher = launcher or str(Label("//go/wtl/main"))
   data = lists.clone(data)
   lists.ensure_contains_all(data, [browser, config, launcher, test])
   size = size or "large"

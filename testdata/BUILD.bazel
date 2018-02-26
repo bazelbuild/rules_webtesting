@@ -38,7 +38,7 @@ web_test_files(
 
 web_test_config(
     name = "https",
-    visibility = ["//go/launcher/proxy:__subpackages__"],
+    visibility = ["//go/wtl/proxy:__subpackages__"],
     deps = [
         ":keys",
         "//web:default_config",

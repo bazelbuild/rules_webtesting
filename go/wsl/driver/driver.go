@@ -19,6 +19,7 @@ package driver
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -28,12 +29,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/cmdhelper"
 	"github.com/bazelbuild/rules_webtesting/go/httphelper"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/cmdhelper"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/errors"
-	"github.com/bazelbuild/rules_webtesting/go/launcher/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/portpicker"
+	"github.com/bazelbuild/rules_webtesting/go/webdriver"
 )
 
 const compName = "WSL Driver"
@@ -121,7 +121,7 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 	binary, ok := caps["binary"].(string)
 
 	if !ok {
-		return nil, errors.New(compName, "binary not set or wrong type")
+		return nil, errors.New("binary not set or wrong type")
 	}
 
 	portNum, _ := caps["port"].(float64)
@@ -138,7 +138,7 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 	argsInterface, ok := caps["args"].([]interface{})
 
 	if !ok {
-		return nil, errors.New(compName, "args not set or wrong type")
+		return nil, errors.New("args not set or wrong type")
 	}
 
 	var args []string
@@ -147,7 +147,7 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 	for _, argInterface := range argsInterface {
 		arg, ok := argInterface.(string)
 		if !ok {
-			return nil, errors.New(compName, "arg had wrong type")
+			return nil, errors.New("arg had wrong type")
 		}
 
 		arg = strings.Replace(arg, "%WSL:PORT%", portStr, -1)

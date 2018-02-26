@@ -3,7 +3,7 @@
   "capabilities" : {
     "browserName" : "chromium",
     "chromeOptions" : {
-      "args" : ["--headless"],
+      "args" : ["headless", "use-gl=swiftshader-webgl"],
       "binary" : "%CHROMIUM%"
     },
     "google:wslConfig": {
