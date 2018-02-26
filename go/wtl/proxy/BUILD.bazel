@@ -41,14 +41,8 @@ go_web_test_suite(
     name = "go_default_test",
     srcs = ["proxy_test.go"],
     browser_overrides = {
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
         "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
+            "tags": ["exclusive", "sauce"],
         },
     },
     browsers = [

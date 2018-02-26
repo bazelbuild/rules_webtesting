@@ -24,14 +24,8 @@ java_web_test_suite(
     name = "WebTestTest",
     srcs = ["WebTestTest.java"],
     browser_overrides = {
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
         "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
+            "tags": ["exclusive", "sauce"],
         },
     },
     browsers = [

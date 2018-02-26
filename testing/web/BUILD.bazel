@@ -35,14 +35,8 @@ py_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.py"],
     browser_overrides = {
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
         "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
+            "tags": ["exclusive", "sauce"],
         },
     },
     browsers = [
