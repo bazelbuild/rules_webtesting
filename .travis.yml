@@ -41,11 +41,10 @@ before_install:
 
     BAZEL_INSTALLER="bazel-${V}-without-jdk-installer-${OS}-x86_64.sh"
 
-    rm -rf "${HOME}/.cache/installers"
     URL="https://github.com/bazelbuild/bazel/releases/download/${V}/${BAZEL_INSTALLER}"
-    wget -O "${BAZEL_INSTALLER}" "${URL}"
-    chmod +x "${BAZEL_INSTALLER}"
-    "${BAZEL_INSTALLER}" --user
+    wget "${URL}"
+    chmod +x "./${BAZEL_INSTALLER}"
+    "./${BAZEL_INSTALLER}" --user
 
     bazel --output_base=$HOME/.cache/bazel fetch //...
 
