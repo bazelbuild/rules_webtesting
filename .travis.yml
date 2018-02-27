@@ -1,30 +1,22 @@
 language: java
 
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-      sudo: false
-      addons:
-        apt:
-          packages:
-            - wget
-            - pkg-config
-            - zip
-            - g++
-            - zlib1g-dev
-            - unzip
-            - python
-        sauce_connect:
-          username: "bazel_rules_webtesting"
-          access_key: "c5bed09c-a8a6-44c8-af02-a545905f957f"
-      jdk: openjdk8
-    - os: osx
-      osx_image: xcode9.2
-      addons:
-        sauce_connect:
-          username: "bazel_rules_webtesting"
-          access_key: "c5bed09c-a8a6-44c8-af02-a545905f957f"
+os: linux
+dist: trusty
+sudo: false
+addons:
+  apt:
+    packages:
+      - wget
+      - pkg-config
+      - zip
+      - g++
+      - zlib1g-dev
+      - unzip
+      - python
+  sauce_connect:
+    username: "bazel_rules_webtesting"
+    access_key: "c5bed09c-a8a6-44c8-af02-a545905f957f"
+jdk: openjdk8
 
 env:
   - V=0.11.0
@@ -44,7 +36,7 @@ before_install:
     chmod +x "./${BAZEL_INSTALLER}"
     "./${BAZEL_INSTALLER}" --user
 
-    bazel fetch //...
+    bazel fetch --config=ci //...
 
 script:
   - bazel test --config=ci //...
