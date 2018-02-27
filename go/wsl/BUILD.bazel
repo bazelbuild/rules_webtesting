@@ -17,7 +17,7 @@
 package(default_testonly = True)
 
 load("//web:web.bzl", "web_test_named_executable")
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -34,4 +34,11 @@ go_library(
     importpath = "github.com/bazelbuild/rules_webtesting/go/wsl",
     visibility = ["//go/wsl:__subpackages__"],
     deps = ["//go/wsl/hub:go_default_library"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["wsl_test.go"],
+    embed = [":go_default_library"],
+    deps = ["//go/portpicker:go_default_library"],
 )
