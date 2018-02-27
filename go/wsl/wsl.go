@@ -26,38 +26,55 @@ import (
 )
 
 func Run(port int) {
-	shutdown := make(chan interface{})
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	mux := http.NewServeMux()
+	handler := createHandler(hub.New(), cancel)
 
-	mux.HandleFunc("/quitquitquit", func(w http.ResponseWriter, _ *http.Request) {
+	if err := startServer(ctx, port, handler); err != nil {
+		log.Print(err)
+	}
+}
+
+func startServer(ctx context.Context, port int, handler http.Handler) error {
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: handler,
+	}
+
+	errChan := make(chan error)
+
+	go func() {
+		log.Printf("Listening on %s", server.Addr)
+		errChan <- server.ListenAndServe()
+		close(errChan)
+	}()
+
+	select {
+	case <- ctx.Done():
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		return server.Shutdown(shutdownCtx)
+	case err := <- errChan:
+		return err
+	}
+}
+
+
+func createHandler(hub http.Handler, shutdown func()) http.Handler {
+	handler := http.NewServeMux()
+
+	handler.HandleFunc("/quitquitquit", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("shutting down"))
-		close(shutdown)
+		shutdown()
 	})
 
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
+	handler.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("ok"))
 	})
 
-	mux.Handle("/", hub.New())
+	handler.Handle("/session", hub)
+	handler.Handle("/session/", hub)
 
-	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
-	}
-
-	go func() {
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-	}()
-
-	<-shutdown
-
-	// Wait up to five seconds for server to shutdown.
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := server.Shutdown(ctx); err != nil {
-		log.Fatal(err)
-	}
+	return handler
 }
