@@ -1,12 +1,9 @@
-os:
-  - linux
-  - osx
-
 matrix:
   include:
     - os: linux
       dist: trusty
       sudo: false
+      language: java
       addons:
         apt:
           packages:
@@ -19,6 +16,7 @@ matrix:
             - python
       jdk: openjdk8
     - os: osx
+      language: java    
       osx_image: xcode9.2
 
 env:
