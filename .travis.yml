@@ -8,11 +8,7 @@ addons:
 jdk: openjdk8
 
 env:
-    global:
-      - SAUCE_USERNAME=bazel_rules_webtesting 
-      - SAUCE_ACCESS_KEY=c5bed09c-a8a6-44c8-af02-a545905f957f
-    matrix:
-      - V=0.11.0
+  - V=0.11.0
 
 before_install:
   - |
