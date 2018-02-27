@@ -7,6 +7,6 @@
         "name": "%LABEL%",
         "build": "${BUILD_TAG}",
         "tags": ["%ENVIRONMENT%", "%TEST_LABEL%", "%BROWSER_LABEL%", "%CONFIG_LABEL%"],
-        "tunnel-identifier": "${TUNNEL_IDENTIFIER}"
+        "tunnel-identifier": "${TRAVIS_JOB_NUMBER}"
     }
 }
