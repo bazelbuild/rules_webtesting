@@ -4,13 +4,13 @@ os: linux
 dist: trusty
 sudo: false
 addons:
-  sauce_connect:
-    username: "bazel_rules_webtesting"
-    access_key: "c5bed09c-a8a6-44c8-af02-a545905f957f"
+  sauce_connect: true
 jdk: openjdk8
 
 env:
   - V=0.11.0
+  - SAUCE_USERNAME=bazel_rules_webtesting
+  - SAUCE_ACCESS_KEY=c5bed09c-a8a6-44c8-af02-a545905f957f
 
 before_install:
   - |
