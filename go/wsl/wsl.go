@@ -17,9 +17,11 @@ package wsl
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/wsl/hub"
@@ -65,16 +67,49 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 	handler := http.NewServeMux()
 
 	handler.HandleFunc("/quitquitquit", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.WriteHeader(http.StatusOK)
+
 		w.Write([]byte("shutting down"))
 		shutdown()
 	})
 
 	handler.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.WriteHeader(http.StatusOK)		
 		w.Write([]byte("ok"))
 	})
 
 	handler.Handle("/session", hub)
 	handler.Handle("/session/", hub)
+
+	handler.HandleFunc("/status", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.WriteHeader(http.StatusOK)
+
+		respJSON := map[string]interface{}{
+			"status": 0,
+			"value": map[string]interface{}{
+				"build": map[string]interface{}{
+					"version": "unknown",
+					"revision": "unknown",
+					"time": "unknown",
+				},
+				"os": map[string]interface{}{
+					"arch": runtime.GOARCH,
+					"name": runtime.GOOS,
+					"version": "unknown",
+				},
+				"ready": true,
+				"message": "ready to create new sessions",
+			},
+		}
+
+		json.NewEncoder(w).Encode(respJSON)
+	})
 
 	handler.Handle("/google/staticfile/", http.StripPrefix("/google/staticfile/", http.FileServer(http.Dir(downloadRoot))))
 

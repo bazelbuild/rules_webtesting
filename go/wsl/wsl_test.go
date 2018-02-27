@@ -3,6 +3,7 @@ package wsl
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -125,6 +126,61 @@ func TestHandleGoogleStaticFile(t *testing.T) {
 			t.Errorf(`Got status %d, want %d`, w.status, http.StatusNotFound)
 		}
 	})
+}
+
+func TestHandleStatus(t *testing.T) {
+	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), "", func() {})
+
+	r, err := http.NewRequest(http.MethodGet, "http://localhost/status", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	frw := newFakeResponseWriter()
+
+	handler.ServeHTTP(frw, r)
+
+	if frw.status != http.StatusOK {
+		t.Errorf("Got status %d, want %d", frw.status, http.StatusOK)
+	}
+
+	value := struct{
+		Status *int
+		Value *struct {
+			Build map[string]string
+			OS map[string]string
+			Ready *bool
+			Message *string
+		}
+	}{}
+
+	if err := json.NewDecoder(frw).Decode(&value); err != nil {
+		t.Fatal(err)
+	}
+
+	if value.Status == nil || *value.Status != 0{
+		t.Errorf("Got status %v, want 0", value.Status)
+	} 
+
+	if value.Value == nil {
+		t.Fatal("Got nil value, want non-nil")
+	}
+
+	if value.Value.Ready == nil || !*value.Value.Ready {
+		t.Errorf("Got %v Value.Ready, want true", value.Value.Ready)
+	}
+
+	if value.Value.Message == nil  {
+		t.Error("Got nil Value.Message, want non-nil")
+	}
+
+	if value.Value.Build == nil  {
+		t.Error("Got nil Value.Build, want non-nil")
+	}
+
+	if value.Value.OS == nil  {
+		t.Error("Got nil Value.OS, want non-nil")
+	}
 }
 
 func TestHandleRoot(t *testing.T) {

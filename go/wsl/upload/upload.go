@@ -75,7 +75,9 @@ func (u *Uploader) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		files = append(files, f)
 	}
 
-	respJSON := map[string]interface{}{}
+	respJSON := map[string]interface{}{
+		"status": 0,
+	}
 
 	if len(files) == 1 {
 		respJSON["value"] = files[0]
@@ -83,9 +85,10 @@ func (u *Uploader) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		respJSON["value"] = files
 	}
 
-	if err := json.NewEncoder(w).Encode(respJSON); err != nil {
-		errorResponse(w, http.StatusInternalServerError, 13, "unknown error", err.Error())
-	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(respJSON)
 }
 
 func unzipFiles(dir string, contents []byte) ([]string, error) {
@@ -143,6 +146,8 @@ func uploadFile(dir string, contents []byte) (string, error) {
 }
 
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
 	w.WriteHeader(httpStatus)
 
 	respJSON := map[string]interface{}{
