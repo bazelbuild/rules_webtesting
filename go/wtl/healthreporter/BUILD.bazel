@@ -30,6 +30,7 @@ go_library(
 
 go_test(
     name = "go_default_test",
+    size = "small",
     srcs = ["health_reporter_test.go"],
     embed = [":go_default_library"],
     deps = ["//go/wtl/errors:go_default_library"],

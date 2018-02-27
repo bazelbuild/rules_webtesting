@@ -35,13 +35,17 @@ go_library(
 
 go_web_test_suite(
     name = "go_default_test",
+    timeout = "short",
     srcs = [
         "browserinfo_test.go",
         "webtest_test.go",
     ],
     browser_overrides = {
         "//browsers/sauce:chrome-win10": {
-            "tags": ["exclusive", "sauce"],
+            "tags": [
+                "exclusive",
+                "sauce",
+            ],
         },
     },
     browsers = [

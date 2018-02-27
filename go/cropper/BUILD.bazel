@@ -29,6 +29,7 @@ go_library(
 
 go_test(
     name = "go_default_test",
+    timeout = "short",
     srcs = ["cropper_test.go"],
     data = ["//testdata"],
     embed = [":go_default_library"],

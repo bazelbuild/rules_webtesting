@@ -22,10 +22,14 @@ licenses(["notice"])  # Apache 2.0
 
 java_web_test_suite(
     name = "WebTestTest",
+    timeout = "short",
     srcs = ["WebTestTest.java"],
     browser_overrides = {
         "//browsers/sauce:chrome-win10": {
-            "tags": ["exclusive", "sauce"],
+            "tags": [
+                "exclusive",
+                "sauce",
+            ],
         },
     },
     browsers = [

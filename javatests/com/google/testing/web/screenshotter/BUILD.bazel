@@ -22,6 +22,7 @@ licenses(["notice"])  # Apache 2.0
 
 java_web_test_suite(
     name = "ScreenshotterTest",
+    timeout = "short",
     srcs = ["ScreenshotterTest.java"],
     browsers = [
         "//browsers:chromium-local",
