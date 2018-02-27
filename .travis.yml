@@ -1,9 +1,10 @@
+language: java
+
 matrix:
   include:
     - os: linux
       dist: trusty
       sudo: false
-      language: java
       addons:
         apt:
           packages:
@@ -16,7 +17,6 @@ matrix:
             - python
       jdk: openjdk8
     - os: osx
-      language: java    
       osx_image: xcode9.2
 
 env:
@@ -47,6 +47,8 @@ before_install:
       chmod +x "${BAZEL_INSTALLER_PATH}"
       "${BAZEL_INSTALLER_PATH}" --user
     fi
+
+    bazel --output_base=$HOME/.cache/bazel fetch //...
 
 script:
   - bazel --output_base=$HOME/.cache/bazel test --config=ci //...
