@@ -1,8 +1,10 @@
-# Use the current display by default if it exists.
-test --test_env=DISPLAY
-
-# For running sauce-based configs.
-test --test_env=SAUCE_USERNAME
-test --test_env=SAUCE_ACCESS_KEY
-test --test_env=TUNNEL_IDENTIFIER
-test --test_env=BUILD_TAG
+common:ci --color=no
+common:ci --noshow_progress
+common:ci --keep_going
+build:ci --verbose_failures
+test:ci --test_output=errors
+test:ci --test_env=SAUCE_USERNAME
+test:ci --test_env=SAUCE_ACCESS_KEY
+test:ci --test_env=TUNNEL_IDENTIFIER
+test:ci --test_env=BUILD_TAG
+test:ci --test_tag_filters=-noci
