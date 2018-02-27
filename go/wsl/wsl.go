@@ -17,9 +17,11 @@ package wsl
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/wsl/hub"
@@ -75,6 +77,30 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 
 	handler.Handle("/session", hub)
 	handler.Handle("/session/", hub)
+
+	handler.HandleFunc("/status", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+
+		respJSON := map[string]interface{}{
+			"status": 0,
+			"value": map[string]interface{}{
+				"build": map[string]interface{}{
+					"version": "unknown",
+					"revision": "unknown",
+					"time": "unknown",
+				},
+				"os": map[string]interface{}{
+					"arch": runtime.GOARCH,
+					"name": runtime.GOOS,
+					"version": "unknown",
+				},
+				"ready": true,
+				"message": "ready to create new sessions",
+			},
+		}
+
+		json.NewEncoder(w).Encode(respJSON)
+	})
 
 	handler.Handle("/google/staticfile/", http.StripPrefix("/google/staticfile/", http.FileServer(http.Dir(downloadRoot))))
 
