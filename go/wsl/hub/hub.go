@@ -30,6 +30,7 @@ import (
 
 // A Hub is an HTTP handler that manages incoming WebDriver requests.
 type Hub struct {
+	// Mutex to protext access to sessions.
 	mu       sync.RWMutex
 	sessions map[string]*driver.Driver
 }

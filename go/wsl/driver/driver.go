@@ -43,6 +43,7 @@ type Driver struct {
 	*exec.Cmd
 	Address string
 
+	// Mutex to prevent overlapping commands to remote end.
 	mu sync.Mutex
 }
 
