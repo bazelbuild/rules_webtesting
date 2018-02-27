@@ -25,11 +25,11 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/wsl/hub"
 )
 
-func Run(port int) {
+func Run(port int, downloadRoot string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	handler := createHandler(hub.New(), cancel)
+	handler := createHandler(hub.New(), downloadRoot, cancel)
 
 	if err := startServer(ctx, port, handler); err != nil {
 		log.Print(err)
@@ -51,17 +51,16 @@ func startServer(ctx context.Context, port int, handler http.Handler) error {
 	}()
 
 	select {
-	case <- ctx.Done():
+	case <-ctx.Done():
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		return server.Shutdown(shutdownCtx)
-	case err := <- errChan:
+	case err := <-errChan:
 		return err
 	}
 }
 
-
-func createHandler(hub http.Handler, shutdown func()) http.Handler {
+func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.Handler {
 	handler := http.NewServeMux()
 
 	handler.HandleFunc("/quitquitquit", func(w http.ResponseWriter, _ *http.Request) {
@@ -75,6 +74,8 @@ func createHandler(hub http.Handler, shutdown func()) http.Handler {
 
 	handler.Handle("/session", hub)
 	handler.Handle("/session/", hub)
+
+	handler.Handle("/google/staticfile/", http.StripPrefix("/google/staticfile/", http.FileServer(http.Dir(downloadRoot))))
 
 	return handler
 }

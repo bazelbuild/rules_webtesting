@@ -21,10 +21,13 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/wsl"
 )
 
-var port = flag.Int("port", 4444, "Start WSL on given port")
+var (
+	port         = flag.Int("port", 4444, "Port to start WSL on.")
+	downloadRoot = flag.String("download_root", "", "Directory served at /google/staticfile/.")
+)
 
 func main() {
 	flag.Parse()
 
-	wsl.Run(*port)
+	wsl.Run(*port, *downloadRoot)
 }

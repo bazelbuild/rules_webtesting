@@ -39,6 +39,10 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = ["wsl_test.go"],
+    data = ["//testdata"],
     embed = [":go_default_library"],
-    deps = ["//go/portpicker:go_default_library"],
+    deps = [
+        "//go/bazel:go_default_library",
+        "//go/portpicker:go_default_library",
+    ],
 )

@@ -10,11 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bazelbuild/rules_webtesting/go/portpicker"	
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 )
 
 func TestHandleHealthz(t *testing.T) {
-	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), func() {})
+	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), "", func() {})
 
 	w := NewFakeResponseWriter()
 	r, err := http.NewRequest(http.MethodGet, "http://localhost/healthz", nil)
@@ -40,7 +41,7 @@ func TestHandleQuitQuitQuit(t *testing.T) {
 		cancelCalled = cancelCalled + 1
 	}
 
-	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), cancel)
+	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), "", cancel)
 
 	w := NewFakeResponseWriter()
 	r, err := http.NewRequest(http.MethodGet, "http://localhost/quitquitquit", nil)
@@ -70,7 +71,7 @@ func TestHandleSession(t *testing.T) {
 		hubCalled = hubCalled + 1
 	})
 
-	handler := createHandler(hub, func() {})
+	handler := createHandler(hub, "", func() {})
 
 	r, err := http.NewRequest(http.MethodGet, "http://localhost/session", nil)
 	if err != nil {
@@ -84,10 +85,6 @@ func TestHandleSession(t *testing.T) {
 	}
 
 	r, err = http.NewRequest(http.MethodGet, "http://localhost/session/id", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	handler.ServeHTTP(NewFakeResponseWriter(), r)
 
 	if hubCalled != 2 {
@@ -95,8 +92,43 @@ func TestHandleSession(t *testing.T) {
 	}
 }
 
+func TestHandleGoogleStaticFile(t *testing.T) {
+	testData, err := bazel.Runfile("testdata")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), testData, func() {})
+
+	t.Run("exists", func(t *testing.T) {
+		w := NewFakeResponseWriter()
+		r, _ := http.NewRequest(http.MethodGet, "http://localhost/google/staticfile/testpage.html", nil)
+
+		handler.ServeHTTP(w, r)
+
+		if w.status != http.StatusOK {
+			t.Errorf(`Got status %d, want %d`, w.status, http.StatusOK)
+		}
+
+		if !strings.Contains(string(w.Bytes()), "Test Page") {
+			t.Errorf(`Got %q, want to contain "Test Page"`, string(w.Bytes()))
+		}
+	})
+
+	t.Run("does not exist", func(t *testing.T) {
+		w := NewFakeResponseWriter()
+		r, _ := http.NewRequest(http.MethodGet, "http://localhost/google/staticfile/does-not-exist.txt", nil)
+
+		handler.ServeHTTP(w, r)
+
+		if w.status != http.StatusNotFound {
+			t.Errorf(`Got status %d, want %d`, w.status, http.StatusNotFound)
+		}
+	})
+}
+
 func TestHandleRoot(t *testing.T) {
-	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), func() {})
+	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), "", func() {})
 
 	w := NewFakeResponseWriter()
 	r, err := http.NewRequest(http.MethodGet, "http://localhost/", nil)
@@ -125,12 +157,12 @@ func TestStartAndShutdownServer(t *testing.T) {
 
 	errChan := make(chan error)
 
-	go func () {
+	go func() {
 		errChan <- startServer(ctx, port, handler)
 	}()
 
 	// Give server plenty of time to get started
-	time.Sleep(100*time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 
 	addr := fmt.Sprintf("http://localhost:%d", port)
 
