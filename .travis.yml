@@ -4,15 +4,6 @@ os: linux
 dist: trusty
 sudo: false
 addons:
-  apt:
-    packages:
-      - wget
-      - pkg-config
-      - zip
-      - g++
-      - zlib1g-dev
-      - unzip
-      - python
   sauce_connect:
     username: "bazel_rules_webtesting"
     access_key: "c5bed09c-a8a6-44c8-af02-a545905f957f"

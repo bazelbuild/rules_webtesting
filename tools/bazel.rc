@@ -1,6 +1,5 @@
 common:ci --color=no
 common:ci --keep_going
-common:ci --progress_report_interval=3600
 build:ci --verbose_failures
 test:ci --test_output=errors
 test:ci --test_env=SAUCE_USERNAME
@@ -9,3 +8,4 @@ test:ci --test_env=TUNNEL_IDENTIFIER
 test:ci --test_env=BUILD_TAG
 test:ci --test_env=TRAVIS_JOB_NUMBER
 test:ci --test_tag_filters=-noci,sauce
+test:ci --progress_report_interval=3600
