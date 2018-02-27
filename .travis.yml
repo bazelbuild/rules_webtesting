@@ -30,7 +30,6 @@ env:
 cache:
   directories:
   - $HOME/.cache
-  - $HOME/bin
 
 before_install:
   - |
@@ -41,17 +40,12 @@ before_install:
     fi
 
     BAZEL_INSTALLER="bazel-${V}-without-jdk-installer-${OS}-x86_64.sh"
-    BAZEL_INSTALLER_PATH="${HOME}/.cache/installers/${BAZEL_INSTALLER}"
 
-    if [[ ! -f "${BAZEL_INSTALLER_PATH}" ]]; then
-      rm -rf "${HOME}/.cache/installers"
-      rm -rf "${HOME}/bin/*"
-      mkdir -p "${HOME}/.cache/installers"
-      URL="https://github.com/bazelbuild/bazel/releases/download/${V}/${BAZEL_INSTALLER}"
-      wget -O "${BAZEL_INSTALLER_PATH}" "${URL}"
-      chmod +x "${BAZEL_INSTALLER_PATH}"
-      "${BAZEL_INSTALLER_PATH}" --user
-    fi
+    rm -rf "${HOME}/.cache/installers"
+    URL="https://github.com/bazelbuild/bazel/releases/download/${V}/${BAZEL_INSTALLER}"
+    wget -O "${BAZEL_INSTALLER}" "${URL}"
+    chmod +x "${BAZEL_INSTALLER}"
+    "${BAZEL_INSTALLER}" --user
 
     bazel --output_base=$HOME/.cache/bazel fetch //...
 
