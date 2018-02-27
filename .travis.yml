@@ -27,8 +27,6 @@ before_install:
     chmod +x "./${BAZEL_INSTALLER}"
     "./${BAZEL_INSTALLER}" --user
 
-    bazel fetch --config=ci //...
-
 script:
   - bazel test --config=ci //...
 

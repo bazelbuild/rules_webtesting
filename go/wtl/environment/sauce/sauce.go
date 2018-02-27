@@ -39,6 +39,8 @@ type sauce struct {
 func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error) {
 	address := os.ExpandEnv("http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@ondemand.saucelabs.com/wd/hub/")
 
+	log.Infof("Connecting to: %s", address)
+
 	base, err := environment.NewBase(name, m, d)
 	if err != nil {
 		return nil, err
