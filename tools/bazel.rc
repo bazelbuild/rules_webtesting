@@ -7,4 +7,4 @@ test:ci --test_env=SAUCE_USERNAME
 test:ci --test_env=SAUCE_ACCESS_KEY
 test:ci --test_env=TUNNEL_IDENTIFIER
 test:ci --test_env=BUILD_TAG
-test:ci --test_tag_filters=-noci
+test:ci --test_tag_filters=-noci,sauce
