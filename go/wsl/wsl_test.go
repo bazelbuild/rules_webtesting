@@ -17,7 +17,7 @@ import (
 func TestHandleHealthz(t *testing.T) {
 	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), "", func() {})
 
-	w := NewFakeResponseWriter()
+	w := newFakeResponseWriter()
 	r, err := http.NewRequest(http.MethodGet, "http://localhost/healthz", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -43,7 +43,7 @@ func TestHandleQuitQuitQuit(t *testing.T) {
 
 	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), "", cancel)
 
-	w := NewFakeResponseWriter()
+	w := newFakeResponseWriter()
 	r, err := http.NewRequest(http.MethodGet, "http://localhost/quitquitquit", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -78,14 +78,14 @@ func TestHandleSession(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	handler.ServeHTTP(NewFakeResponseWriter(), r)
+	handler.ServeHTTP(newFakeResponseWriter(), r)
 
 	if hubCalled != 1 {
 		t.Errorf("Hub was called %d times, want 1 time", hubCalled)
 	}
 
 	r, err = http.NewRequest(http.MethodGet, "http://localhost/session/id", nil)
-	handler.ServeHTTP(NewFakeResponseWriter(), r)
+	handler.ServeHTTP(newFakeResponseWriter(), r)
 
 	if hubCalled != 2 {
 		t.Errorf("Hub was called %d times, want 2 time", hubCalled)
@@ -101,7 +101,7 @@ func TestHandleGoogleStaticFile(t *testing.T) {
 	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), testData, func() {})
 
 	t.Run("exists", func(t *testing.T) {
-		w := NewFakeResponseWriter()
+		w := newFakeResponseWriter()
 		r, _ := http.NewRequest(http.MethodGet, "http://localhost/google/staticfile/testpage.html", nil)
 
 		handler.ServeHTTP(w, r)
@@ -116,7 +116,7 @@ func TestHandleGoogleStaticFile(t *testing.T) {
 	})
 
 	t.Run("does not exist", func(t *testing.T) {
-		w := NewFakeResponseWriter()
+		w := newFakeResponseWriter()
 		r, _ := http.NewRequest(http.MethodGet, "http://localhost/google/staticfile/does-not-exist.txt", nil)
 
 		handler.ServeHTTP(w, r)
@@ -130,7 +130,7 @@ func TestHandleGoogleStaticFile(t *testing.T) {
 func TestHandleRoot(t *testing.T) {
 	handler := createHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}), "", func() {})
 
-	w := NewFakeResponseWriter()
+	w := newFakeResponseWriter()
 	r, err := http.NewRequest(http.MethodGet, "http://localhost/", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -195,7 +195,7 @@ func TestStartAndShutdownServer(t *testing.T) {
 	}
 }
 
-func NewFakeResponseWriter() *fakeResponseWriter {
+func newFakeResponseWriter() *fakeResponseWriter {
 	return &fakeResponseWriter{
 		Buffer: &bytes.Buffer{},
 		status: http.StatusOK,
