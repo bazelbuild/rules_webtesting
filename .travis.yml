@@ -19,6 +19,11 @@ matrix:
     - os: osx
       osx_image: xcode9.2
 
+addons:
+  sauce_connect:
+    username: "bazel_rules_webtesting"
+    access_key: "c5bed09c-a8a6-44c8-af02-a545905f957f"
+
 env:
   - V=0.11.0
 
