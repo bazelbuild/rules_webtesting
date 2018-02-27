@@ -295,8 +295,10 @@ func createBaseHandler(driver webdriver.WebDriver) HandlerFunc {
 			return Response{}, err
 		}
 		req = req.WithContext(ctx)
-		if rq.Header != nil {
-			req.Header = rq.Header
+		for k, v := range rq.Header {
+			if !strings.HasPrefix(k, "x-google-") {
+				req.Header[k] = v
+			}
 		}
 
 		resp, err := client.Do(req)
