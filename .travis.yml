@@ -1,0 +1,32 @@
+language: java
+
+os: linux
+dist: trusty
+sudo: false
+addons:
+  sauce_connect: true
+jdk: openjdk8
+
+env:
+  - V=0.11.0
+
+before_install:
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      OS=darwin
+    else
+      OS=linux
+    fi
+
+    BAZEL_INSTALLER="bazel-${V}-without-jdk-installer-${OS}-x86_64.sh"
+
+    URL="https://github.com/bazelbuild/bazel/releases/download/${V}/${BAZEL_INSTALLER}"
+    wget "${URL}"
+    chmod +x "./${BAZEL_INSTALLER}"
+    "./${BAZEL_INSTALLER}" --user
+
+script:
+  - bazel test --config=ci //...
+
+notifications:
+  email: false

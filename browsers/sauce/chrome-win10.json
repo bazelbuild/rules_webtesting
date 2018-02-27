@@ -5,8 +5,8 @@
         "platform": "Windows 10",
         "version": "64.0",
         "name": "%LABEL%",
-        "build": "${BUILD_TAG}",
+        "build": "${TRAVIS_JOB_NUMBER}",
         "tags": ["%ENVIRONMENT%", "%TEST_LABEL%", "%BROWSER_LABEL%", "%CONFIG_LABEL%"],
-        "tunnel-identifier": "${TUNNEL_IDENTIFIER}"
+        "tunnel-identifier": "${TRAVIS_JOB_NUMBER}"
     }
 }

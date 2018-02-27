@@ -22,16 +22,14 @@ licenses(["notice"])  # Apache 2.0
 
 java_web_test_suite(
     name = "WebTestTest",
+    timeout = "short",
     srcs = ["WebTestTest.java"],
     browser_overrides = {
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
         "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
+            "tags": [
+                "exclusive",
+                "sauce",
+            ],
         },
     },
     browsers = [

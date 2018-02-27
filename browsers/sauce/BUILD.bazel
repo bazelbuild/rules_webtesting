@@ -24,6 +24,9 @@ browser(
     name = "chrome-win10",
     execution_requirements = {"requires-network": ""},
     metadata = "chrome-win10.json",
-    required_tags = ["sauce"],
+    required_tags = [
+        "exclusive",
+        "sauce",
+    ],
     visibility = ["//visibility:public"],
 )

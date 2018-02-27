@@ -19,6 +19,7 @@ package sauce
 
 import (
 	"context"
+	"log"
 	"os"
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
@@ -38,6 +39,8 @@ type sauce struct {
 // NewEnv creates a new environment that uses an externally started Selenium Server.
 func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, error) {
 	address := os.ExpandEnv("http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@ondemand.saucelabs.com/wd/hub/")
+
+	log.Printf("Connecting to: %s", address)
 
 	base, err := environment.NewBase(name, m, d)
 	if err != nil {

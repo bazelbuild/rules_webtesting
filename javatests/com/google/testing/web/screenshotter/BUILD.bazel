@@ -22,15 +22,8 @@ licenses(["notice"])  # Apache 2.0
 
 java_web_test_suite(
     name = "ScreenshotterTest",
+    timeout = "short",
     srcs = ["ScreenshotterTest.java"],
-    browser_overrides = {
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
-    },
     browsers = [
         "//browsers:chromium-local",
         "//browsers:firefox-local",
