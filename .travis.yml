@@ -29,10 +29,6 @@ matrix:
 env:
   - V=0.11.0
 
-cache:
-  directories:
-  - $HOME/.cache
-
 before_install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
@@ -48,10 +44,10 @@ before_install:
     chmod +x "./${BAZEL_INSTALLER}"
     "./${BAZEL_INSTALLER}" --user
 
-    bazel --output_base=$HOME/.cache/bazel fetch //...
+    bazel fetch //...
 
 script:
-  - bazel --output_base=$HOME/.cache/bazel test --config=ci //...
+  - bazel test --config=ci //...
 
 notifications:
   email: false
