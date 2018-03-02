@@ -94,7 +94,7 @@ func TestHandleSession(t *testing.T) {
 }
 
 func TestHandleGoogleStaticFile(t *testing.T) {
-	testData, err := bazel.Runfile("testdata")
+	testData, err := bazel.Runfile("testdata/")
 	if err != nil {
 		t.Fatal(err)
 	}
