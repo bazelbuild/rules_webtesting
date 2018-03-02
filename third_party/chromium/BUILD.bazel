@@ -14,44 +14,27 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = 1,
-    default_visibility = ["//browsers:__subpackages__"],
-)
-
 load("//web:web.bzl", "web_test_archive")
+
+package(default_testonly = 1)
 
 licenses(["by_exception_only"])
 
 exports_files(["LICENSE"])
 
-config_setting(
-    name = "mac",
-    values = {"cpu": "darwin"},
-)
-
-config_setting(
-    name = "linux",
-    values = {"cpu": "k8"},
-)
-
-config_setting(
-    name = "windows",
-    values = {"cpu": "x64_windows"},
-)
-
 web_test_archive(
     name = "chromium",
     archive = "@org_chromium_chromium//file",
     named_files = select({
-        ":linux": {
+        "//common/conditions:linux": {
             "CHROMIUM": "chrome-linux/chrome",
         },
-        ":mac": {
+        "//common/conditions:mac": {
             "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
         },
-        ":windows": {
+        "//common/conditions:windows": {
             "CHROMIUM": "chrome-win32/chrome.exe",
         },
     }),
+    visibility = ["//browsers:__subpackages__"],
 )

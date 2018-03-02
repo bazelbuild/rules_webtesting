@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 )
 
 func TestWaitForHealthyTimeout(t *testing.T) {

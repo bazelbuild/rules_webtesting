@@ -29,7 +29,7 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 )
 
 type breakpoint struct {

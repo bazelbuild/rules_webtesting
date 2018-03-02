@@ -14,12 +14,9 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = 1,
-    default_visibility = ["//browsers:__subpackages__"],
-)
-
 load("//web:web.bzl", "web_test_archive")
+
+package(default_testonly = 1)
 
 licenses(["reciprocal"])  # MPL 2.0
 
@@ -31,4 +28,5 @@ web_test_archive(
     named_files = {
         "GECKODRIVER": "geckodriver",
     },
+    visibility = ["//browsers:__subpackages__"],
 )

@@ -25,13 +25,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/errors"
+	"github.com/bazelbuild/rules_webtesting/go/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/environment"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/healthreporter"
 )
 
 const (

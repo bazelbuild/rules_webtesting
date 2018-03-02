@@ -14,9 +14,9 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -24,7 +24,7 @@ go_library(
     name = "go_default_library",
     srcs = ["google_screenshot.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub/googlescreenshot",
-    visibility = ["//visibility:public"],
+    visibility = ["//go/wtl:__subpackages__"],
     deps = [
         "//go/cropper:go_default_library",
         "//go/metadata/capabilities:go_default_library",

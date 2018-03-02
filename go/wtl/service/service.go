@@ -20,8 +20,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/diagnostics"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
 )
 
 // Base is a base struct for defining a service.
