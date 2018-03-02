@@ -483,11 +483,6 @@ func TestSetWindowSize(t *testing.T) {
 	}
 	defer d.Quit(ctx)
 
-	initial, err := d.GetWindowRect(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := d.SetWindowSize(ctx, tc.width, tc.height)
@@ -508,15 +503,8 @@ func TestSetWindowSize(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expected := Rectangle{
-				X:      initial.X,
-				Y:      initial.Y,
-				Width:  tc.width,
-				Height: tc.height,
-			}
-
-			if rect != expected {
-				t.Errorf("got rect == %+v, expected %+v", rect, expected)
+			if tc.width != rect.Width || tc.height != rect.Height {
+				t.Errorf("got (w, h) == (%d, %d), expected (%d, %d)", rect.Width, rect.Height, tc.width, tc.height)
 			}
 		})
 	}
