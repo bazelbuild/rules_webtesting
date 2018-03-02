@@ -63,6 +63,7 @@ web_test_archive = rule(
                     ".tgz",
                     ".tar.Z",
                     ".zip",
+                    ".deb",
                 ],
                 mandatory=True),
         "data":
