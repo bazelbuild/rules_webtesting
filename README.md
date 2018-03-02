@@ -20,10 +20,16 @@ http_archive(
         "https://github.com/bazelbuild/rules_go/archive/master.tar.gz",
     ],
 )
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+go_rules_dependencies()
+go_register_toolchains()
 
-load("@io_bazel_rules_go//go:def.bzl", "go_repositories")
-
-go_repositories()
+# Load rules_webtesting at master for example purposes only. You should specify
+# a specific version in your project.
+http_archive(
+    name = "bazel_skylib",
+    url = "https://github.com/bazelbuild/bazel-skylib/archive/master.tar.gz",
+)
 
 # Load rules_webtesting at master for example purposes only. You should specify
 # a specific version in your project.

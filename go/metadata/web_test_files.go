@@ -187,6 +187,8 @@ func (w *WebTestFiles) extract() error {
 		c = exec.Command("tar", "xZf", filename, "-C", extractPath)
 	case strings.HasSuffix(filename, ".zip"):
 		c = exec.Command("unzip", filename, "-d", extractPath)
+	case strings.HasSuffix(filename, ".deb"):
+		c = exec.Command("dpkg", "-x", filename, extractPath)
 	default:
 		return fmt.Errorf("unknown archive type: %s", filename)
 	}
