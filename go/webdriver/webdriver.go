@@ -32,9 +32,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/errors"
+	"github.com/bazelbuild/rules_webtesting/go/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/healthreporter"
 )
 
 const (

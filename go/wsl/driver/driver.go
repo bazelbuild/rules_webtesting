@@ -285,7 +285,7 @@ func (d *Driver) Kill() error {
 
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-cache")	
+	w.Header().Set("Cache-Control", "no-cache")
 	w.WriteHeader(httpStatus)
 
 	respJSON := map[string]interface{}{

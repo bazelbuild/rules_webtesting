@@ -14,23 +14,21 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
 go_library(
     name = "go_default_library",
-    srcs = ["health_reporter.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/healthreporter",
-    visibility = ["//visibility:public"],
-    deps = ["//go/wtl/errors:go_default_library"],
+    srcs = ["errors.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/errors",
+    visibility = ["//go:__subpackages__"],
 )
 
 go_test(
     name = "go_default_test",
-    srcs = ["health_reporter_test.go"],
+    srcs = ["errors_test.go"],
     embed = [":go_default_library"],
-    deps = ["//go/wtl/errors:go_default_library"],
 )

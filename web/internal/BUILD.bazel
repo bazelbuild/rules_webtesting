@@ -14,9 +14,12 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("@bazel_skylib//:skylark_library.bzl", "skylark_library")
+
+package(
+    default_testonly = True,
+    default_visibility = ["//web:__pkg__"],
+)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -28,7 +31,6 @@ exports_files(
 skylark_library(
     name = "browser",
     srcs = ["browser.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":metadata",
         ":provider",
@@ -38,45 +40,38 @@ skylark_library(
 skylark_library(
     name = "collections",
     srcs = ["collections.bzl"],
-    visibility = ["//visibility:public"],
 )
 
 skylark_library(
     name = "constants",
     srcs = ["constants.bzl"],
-    visibility = ["//visibility:public"],
 )
 
 skylark_library(
     name = "files",
     srcs = ["files.bzl"],
-    visibility = ["//visibility:public"],
     deps = [":collections"],
 )
 
 skylark_library(
     name = "metadata",
     srcs = ["metadata.bzl"],
-    visibility = ["//visibility:public"],
     deps = [":files"],
 )
 
 skylark_library(
     name = "platform_http_file",
     srcs = ["platform_http_file.bzl"],
-    visibility = ["//visibility:public"],
 )
 
 skylark_library(
     name = "provider",
     srcs = ["provider.bzl"],
-    visibility = ["//visibility:public"],
 )
 
 skylark_library(
     name = "web_test",
     srcs = ["web_test.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":collections",
         ":files",
@@ -88,7 +83,6 @@ skylark_library(
 skylark_library(
     name = "web_test_archive",
     srcs = ["web_test_archive.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":metadata",
         ":provider",
@@ -98,7 +92,6 @@ skylark_library(
 skylark_library(
     name = "web_test_config",
     srcs = ["web_test_config.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":metadata",
         ":provider",
@@ -108,7 +101,6 @@ skylark_library(
 skylark_library(
     name = "web_test_named_executable",
     srcs = ["web_test_named_executable.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":metadata",
         ":provider",
@@ -118,7 +110,6 @@ skylark_library(
 skylark_library(
     name = "web_test_named_file",
     srcs = ["web_test_named_file.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":metadata",
         ":provider",
@@ -128,7 +119,6 @@ skylark_library(
 skylark_library(
     name = "wrap_web_test_suite",
     srcs = ["wrap_web_test_suite.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":constants",
         "//web",

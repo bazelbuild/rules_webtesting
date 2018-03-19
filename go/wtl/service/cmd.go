@@ -24,8 +24,8 @@ import (
 	"syscall"
 
 	"github.com/bazelbuild/rules_webtesting/go/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/diagnostics"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
 )
 
 // Cmd is a service that starts an external executable.

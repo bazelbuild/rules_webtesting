@@ -144,12 +144,12 @@ func TestHandleStatus(t *testing.T) {
 		t.Errorf("Got status %d, want %d", frw.status, http.StatusOK)
 	}
 
-	value := struct{
+	value := struct {
 		Status *int
-		Value *struct {
-			Build map[string]string
-			OS map[string]string
-			Ready *bool
+		Value  *struct {
+			Build   map[string]string
+			OS      map[string]string
+			Ready   *bool
 			Message *string
 		}
 	}{}
@@ -158,9 +158,9 @@ func TestHandleStatus(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if value.Status == nil || *value.Status != 0{
+	if value.Status == nil || *value.Status != 0 {
 		t.Errorf("Got status %v, want 0", value.Status)
-	} 
+	}
 
 	if value.Value == nil {
 		t.Fatal("Got nil value, want non-nil")
@@ -170,15 +170,15 @@ func TestHandleStatus(t *testing.T) {
 		t.Errorf("Got %v Value.Ready, want true", value.Value.Ready)
 	}
 
-	if value.Value.Message == nil  {
+	if value.Value.Message == nil {
 		t.Error("Got nil Value.Message, want non-nil")
 	}
 
-	if value.Value.Build == nil  {
+	if value.Value.Build == nil {
 		t.Error("Got nil Value.Build, want non-nil")
 	}
 
-	if value.Value.OS == nil  {
+	if value.Value.OS == nil {
 		t.Error("Got nil Value.OS, want non-nil")
 	}
 }

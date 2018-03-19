@@ -21,7 +21,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 )
 
 const (

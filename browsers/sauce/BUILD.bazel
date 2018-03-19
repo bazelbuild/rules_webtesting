@@ -14,9 +14,12 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("//web:web.bzl", "browser")
+
+package(
+    default_testonly = True,
+    default_visibility = ["//visibility:public"],
+)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -25,5 +28,4 @@ browser(
     execution_requirements = {"requires-network": ""},
     metadata = "chrome-win10.json",
     required_tags = ["sauce"],
-    visibility = ["//visibility:public"],
 )

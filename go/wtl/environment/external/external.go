@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/environment"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
 )
 
 const (

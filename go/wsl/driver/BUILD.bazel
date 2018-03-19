@@ -14,12 +14,9 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = True,
-    default_visibility = ["//go/wsl:__subpackages__"],
-)
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -27,6 +24,7 @@ go_library(
     name = "go_default_library",
     srcs = ["driver.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wsl/driver",
+    visibility = ["//go/wsl:__subpackages__"],
     deps = [
         "//go/cmdhelper:go_default_library",
         "//go/httphelper:go_default_library",
