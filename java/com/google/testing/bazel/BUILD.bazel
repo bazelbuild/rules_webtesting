@@ -14,15 +14,13 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = True,
-    default_visibility = ["//visibility:public"],
-)
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
 java_library(
     name = "bazel",
     srcs = glob(["*.java"]),
+    visibility = ["//visibility:public"],
     deps = ["@com_google_guava"],
 )

@@ -14,36 +14,24 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = 1,
-    default_visibility = ["//browsers:__subpackages__"],
-)
-
 load("//web:web.bzl", "web_test_archive")
+
+package(default_testonly = 1)
 
 licenses(["reciprocal"])  # MPL 2.0
 
 exports_files(["LICENSE"])
 
-config_setting(
-    name = "mac",
-    values = {"cpu": "darwin"},
-)
-
-config_setting(
-    name = "linux",
-    values = {"cpu": "k8"},
-)
-
 web_test_archive(
     name = "firefox",
     archive = "@org_mozilla_firefox//file",
     named_files = select({
-        ":linux": {
+        "//common/conditions:linux": {
             "FIREFOX": "firefox/firefox",
         },
-        ":mac": {
+        "//common/conditions:mac": {
             "FIREFOX": "firefox-sdk/bin/Firefox.app/Contents/MacOS/firefox",
         },
     }),
+    visibility = ["//browsers:__subpackages__"],
 )

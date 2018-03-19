@@ -14,8 +14,9 @@
 #
 ################################################################################
 #
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -23,7 +24,7 @@ go_library(
     name = "go_default_library",
     srcs = ["capabilities.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/metadata/capabilities",
-    visibility = ["//visibility:public"],
+    visibility = ["//go:__subpackages__"],
 )
 
 go_test(

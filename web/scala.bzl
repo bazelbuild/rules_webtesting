@@ -22,11 +22,9 @@ def scala_web_test_suite(name, scala_test_tags=None, **kwargs):
 
   Args:
     name: The base name of the test.
-    scala_test_tags: A list of test tag strings to use for the scala_test target.
+    scala_test_tags: A list of test tag strings to use for the scala_test
+      target.
     **kwargs: Arguments for wrapped_web_test_suite
   """
   wrap_web_test_suite(
-      name=name,
-      rule=scala_test,
-      wrapped_test_tags=scala_test_tags,
-      **kwargs)
+      name=name, rule=scala_test, wrapped_test_tags=scala_test_tags, **kwargs)

@@ -14,9 +14,12 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("//web:web.bzl", "browser")
+
+package(
+    default_testonly = True,
+    default_visibility = ["//visibility:public"],
+)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -24,27 +27,23 @@ browser(
     name = "firefox-external",
     execution_requirements = {"requires-network": ""},
     metadata = "firefox-external.json",
-    visibility = ["//visibility:public"],
 )
 
 browser(
     name = "chrome-external",
     execution_requirements = {"requires-network": ""},
     metadata = "chrome-external.json",
-    visibility = ["//visibility:public"],
 )
 
 browser(
     name = "disabled",
     disabled = "disabled pseudo-browser",
     metadata = "disabled.json",
-    visibility = ["//visibility:public"],
 )
 
 browser(
     name = "chromium-local",
     metadata = "chromium-local.json",
-    visibility = ["//visibility:public"],
     deps = [
         "//go/wsl",
         "//third_party/chromedriver",
@@ -55,7 +54,6 @@ browser(
 browser(
     name = "firefox-local",
     metadata = "firefox-local.json",
-    visibility = ["//visibility:public"],
     deps = [
         "//go/wsl",
         "//third_party/firefox",

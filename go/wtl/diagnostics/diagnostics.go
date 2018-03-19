@@ -20,7 +20,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 )
 
 // Diagnostics manages and outputs a test diagnostics.

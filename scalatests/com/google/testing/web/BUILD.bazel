@@ -14,11 +14,11 @@
 #
 ################################################################################
 #
+load("//web:scala.bzl", "scala_web_test_suite")
+
 package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
-
-load("//web:scala.bzl", "scala_web_test_suite")
 
 scala_web_test_suite(
     name = "WebTestTest",

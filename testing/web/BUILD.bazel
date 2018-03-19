@@ -14,9 +14,9 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("//web:py.bzl", "py_web_test_suite")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 

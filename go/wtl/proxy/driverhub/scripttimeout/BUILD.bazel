@@ -14,10 +14,10 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("//web:go.bzl", "go_web_test_suite")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -25,7 +25,7 @@ go_library(
     name = "go_default_library",
     srcs = ["script_timeout.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub/scripttimeout",
-    visibility = ["//visibility:public"],
+    visibility = ["//go/wtl:__subpackages__"],
     deps = [
         "//go/metadata/capabilities:go_default_library",
         "//go/wtl/proxy/driverhub:go_default_library",

@@ -26,11 +26,11 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/errors"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/webdriver"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/diagnostics"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/errors"
 	"github.com/gorilla/mux"
 )
 

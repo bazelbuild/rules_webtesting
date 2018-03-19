@@ -14,10 +14,10 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load(":web.bzl", "web_test_config")
 load("@bazel_skylib//:skylark_library.bzl", "skylark_library")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -29,14 +29,13 @@ web_test_config(
 skylark_library(
     name = "repositories",
     srcs = ["repositories.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//web/internal:platform_http_file"],
 )
 
 skylark_library(
     name = "web",
     srcs = ["web.bzl"],
-    visibility = ["//visibility:public"],
+    visibility = ["//web/internal:__pkg__"],
     deps = [
         "//web/internal:browser",
         "//web/internal:collections",
@@ -68,4 +67,13 @@ skylark_library(
     name = "py",
     srcs = ["py.bzl"],
     deps = ["//web/internal:wrap_web_test_suite"],
+)
+
+skylark_library(
+    name = "scala",
+    srcs = ["scala.bzl"],
+    deps = [
+        "//web/internal:wrap_web_test_suite",
+        # should depend on Scala build rules.
+    ],
 )

@@ -14,10 +14,10 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("//web:go.bzl", "go_web_test_suite")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -25,15 +25,15 @@ go_library(
     name = "go_default_library",
     srcs = ["proxy.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/proxy",
-    visibility = ["//visibility:public"],
+    visibility = ["//go/wtl:__subpackages__"],
     deps = [
+        "//go/errors:go_default_library",
+        "//go/healthreporter:go_default_library",
         "//go/httphelper:go_default_library",
         "//go/metadata:go_default_library",
         "//go/portpicker:go_default_library",
         "//go/wtl/diagnostics:go_default_library",
         "//go/wtl/environment:go_default_library",
-        "//go/wtl/errors:go_default_library",
-        "//go/wtl/healthreporter:go_default_library",
     ],
 )
 

@@ -14,9 +14,9 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -24,6 +24,6 @@ go_library(
     name = "go_default_library",
     srcs = ["healthz.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/proxy/healthz",
-    visibility = ["//visibility:public"],
+    visibility = ["//go/wtl:__subpackages__"],
     deps = ["//go/wtl/proxy:go_default_library"],
 )

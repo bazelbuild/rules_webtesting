@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2017 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "web_test_archive")
+package(
+    default_testonly = True,
+    default_visibility = ["//third_party:__subpackages__"],
+)
 
-package(default_testonly = 1)
+config_setting(
+    name = "mac",
+    values = {"cpu": "darwin"},
+)
 
-licenses([
-    "notice",
-    "reciprocal",
-])
+config_setting(
+    name = "linux",
+    values = {"cpu": "k8"},
+)
 
-exports_files(["LICENSE"])
-
-web_test_archive(
-    name = "chromedriver",
-    archive = "@org_chromium_chromedriver//file",
-    named_files = {
-        "CHROMEDRIVER": "chromedriver",
-    },
-    visibility = ["//browsers:__subpackages__"],
+config_setting(
+    name = "windows",
+    values = {"cpu": "x64_windows"},
 )
