@@ -15,6 +15,8 @@
 // Package capabilities performs operations on maps representing WebDriver capabilities.
 package capabilities
 
+import "strings"
+
 // Spec is a specification of capabilities, such as that included in the New
 // Session request. Specs may include slightly different capabilities for
 // different WebDriver protocol dialects.
@@ -55,7 +57,7 @@ func Merge(m1, m2 map[string]interface{}) map[string]interface{} {
 		nm[k] = v
 	}
 	for k, v2 := range m2 {
-		nm[k] = mergeValues(nm[k], v2)
+		nm[k] = mergeValues(nm[k], v2, k)
 	}
 	return nm
 }
@@ -97,7 +99,7 @@ func MergeSpecOntoCaps(caps map[string]interface{}, spec Spec) Spec {
 	return newSpec
 }
 
-func mergeValues(j1, j2 interface{}) interface{} {
+func mergeValues(j1, j2 interface{}, name string) interface{} {
 	switch t1 := j1.(type) {
 	case map[string]interface{}:
 		if t2, ok := j2.(map[string]interface{}); ok {
@@ -105,6 +107,9 @@ func mergeValues(j1, j2 interface{}) interface{} {
 		}
 	case []interface{}:
 		if t2, ok := j2.([]interface{}); ok {
+			if name == "args" {
+				return mergeArgs(t1, t2)
+			}
 			return mergeLists(t1, t2)
 		}
 	}
@@ -120,6 +125,44 @@ func mergeLists(m1, m2 []interface{}) []interface{} {
 	}
 	nl := make([]interface{}, 0, len(m1)+len(m2))
 	nl = append(nl, m1...)
+	nl = append(nl, m2...)
+	return nl
+}
+
+func mergeArgs(m1, m2 []interface{}) []interface{} {
+	if len(m1) == 0 {
+		return m2
+	}
+	if len(m2) == 0 {
+		return m1
+	}
+
+	m2Opts := map[string]bool{}
+
+	for _, a := range m2 {
+		if arg, ok := a.(string); ok {
+			if strings.HasPrefix(arg, "--") {
+				tokens := strings.Split(arg, "=")
+				m2Opts[tokens[0]] = true
+			}
+		}
+	}
+
+	nl := make([]interface{}, 0, len(m1)+len(m2))
+
+	for _, a := range m1 {
+		if arg, ok := a.(string); ok {
+			if strings.HasPrefix(arg, "--") {
+				tokens := strings.Split(arg, "=")
+				// Skip options from m1 that are redefined in m2
+				if m2Opts[tokens[0]] {
+					continue
+				}
+			}
+		}
+		nl = append(nl, a)
+	}
+
 	nl = append(nl, m2...)
 	return nl
 }
