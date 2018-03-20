@@ -94,6 +94,90 @@ func TestMerge(t *testing.T) {
 				"3": 3,
 			},
 		},
+		{
+			name: "args -- no redefines",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"--anOption",
+					"--anOption=true",
+					"-anotherOption",
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"anOption",
+					"-anOption=true",
+					"-anotherOption",
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"--anOption",
+					"--anOption=true",
+					"-anotherOption",
+					map[string]interface{}{
+						"some": "map",
+					},
+					"an option",
+					"anOption",
+					"-anOption=true",
+					"-anotherOption",
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+		},
+		{
+			name: "args -- redefines",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"--anOption",
+					"--anOption=true",
+					"--optionToLeave=this",
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"--anOption=false",
+					"--anotherOption",
+					"-optionToLeave=that",		
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"--optionToLeave=this",
+					map[string]interface{}{
+						"some": "map",
+					},
+					"an option",
+					"--anOption=false",
+					"--anotherOption",
+					"-optionToLeave=that",	
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
