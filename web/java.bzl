@@ -26,8 +26,8 @@ def java_web_test_suite(name, java_test_tags=None, test_class=None, **kwargs):
     **kwargs: Arguments for wrapped_web_test_suite
   """
   if test_class == None:
-    test_package = native.package_name().replace("javatests/", "").replace(
-        "/", ".")
+    test_package = native.package_name().replace("javatests/", "")
+    test_package = test_package.replace("/", ".")
     test_class = test_package + "." + name
 
   wrap_web_test_suite(
