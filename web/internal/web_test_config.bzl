@@ -49,27 +49,26 @@ def _web_test_config_impl(ctx):
 
 
 web_test_config = rule(
+    doc="A configuration that can be used across multiple web_tests.",
     attrs={
         "data":
-            attr.label_list(allow_files=True, cfg="data"),
+            attr.label_list(
+                doc="Runtime dependencies for this configuration.",
+                allow_files=True,
+                cfg="data"),
         "deps":
-            attr.label_list(providers=[WebTestInfo]),
+            attr.label_list(
+                doc="Other web_test-related rules that this rule depends on.",
+                providers=[WebTestInfo]),
         "merger":
             attr.label(
+                doc="Metadata merger executable.",
                 executable=True,
                 cfg="host",
                 default=Label("//go/metadata/main")),
         "metadata":
-            attr.label(allow_single_file=[".json"]),
+            attr.label(
+                doc="A web_test metadata file.", allow_single_file=[".json"]),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_web_test_config_impl)
-"""A browser-independent configuration that can be used across multiple web_tests.
-
-Args:
-  data: Runtime dependencies for this configuration.
-  deps: Other web_test-related rules that this rule depends on.
-  merger: Metadata merger executable.
-  metadata: A web_test metadata file with configuration that will override
-    all other configuration.
-"""

@@ -40,9 +40,8 @@ load("//web/internal:web_test_files.bzl", web_test_files_alias="web_test_files")
 
 def web_test_suite(name,
                    browsers,
-                   test,
                    browser_overrides=None,
-                   test_suite_tags=DEFAULT_TEST_SUITE_TAGS,
+                   test_suite_tags=None,
                    visibility=None,
                    **kwargs):
   """Defines a test_suite of web_test targets to be run.
@@ -50,8 +49,6 @@ def web_test_suite(name,
   Args:
     name: Name; required. A unique name for this rule.
     browsers: List of labels; required. The browsers with which to run the test.
-    test: Label; required. A single *_test or *_binary target. The test that
-      web_test should run with the specified browser.
     browser_overrides: Dictionary; optional; default is an empty dictionary. A
       dictionary mapping from browser names to browser-specific web_test
       attributes, such as shard_count, flakiness, timeout, etc. For example:
@@ -67,6 +64,7 @@ def web_test_suite(name,
   if not browsers:
     fail("expected non-empty value for attribute 'browsers'")
 
+  # Check explicitly for None so that users can set this to the empty list.
   if test_suite_tags == None:
     test_suite_tags = DEFAULT_TEST_SUITE_TAGS
 
@@ -86,7 +84,6 @@ def web_test_suite(name,
     web_test(
         name=test_name,
         browser=browser,
-        test=test,
         visibility=visibility,
         **overridden_kwargs)
     tests += [test_name]
@@ -113,61 +110,39 @@ def _apply_browser_overrides(kwargs, overrides):
   return overridden_kwargs
 
 
-def browser(deps=None, data=None, **kwargs):
+def browser(testonly=True, **kwargs):
   """Wrapper around browser to correctly set defaults."""
-  data = lists.clone(data)
-  if deps:
-    lists.ensure_contains_all(data, deps)
-  browser_alias(data=data, deps=deps, testonly=True, **kwargs)
+  browser_alias(testonly=testonly, **kwargs)
 
 
-def web_test(
-    browser,  # pylint: disable=redefined-outer-name
-    test,
-    config=None,
-    data=None,
-    launcher=None,
-    size=None,
-    **kwargs):
+def web_test(config=None, launcher=None, size=None, **kwargs):
   """Wrapper around web_test to correctly set defaults."""
   config = config or str(Label("//web:default_config"))
   launcher = launcher or str(Label("//go/wtl/main"))
-  data = lists.clone(data)
-  lists.ensure_contains_all(data, [browser, config, launcher, test])
   size = size or "large"
-  web_test_alias(
-      browser=browser,
-      config=config,
-      launcher=launcher,
-      test=test,
-      data=data,
-      size=size,
-      **kwargs)
+  web_test_alias(config=config, launcher=launcher, size=size, **kwargs)
 
 
-def web_test_config(**kwargs):
+def web_test_config(testonly=True, **kwargs):
   """Wrapper around web_test_config to correctly set defaults."""
-  web_test_config_alias(testonly=True, **kwargs)
+  web_test_config_alias(testonly=testonly, **kwargs)
 
 
-def web_test_named_executable(executable, data=None, **kwargs):
+def web_test_named_executable(testonly=True, **kwargs):
   """Wrapper around web_test_named_executable to correctly set defaults."""
-  data = lists.clone(data)
-  lists.ensure_contains(data, executable)
-  web_test_named_executable_alias(
-      data=data, executable=executable, testonly=True, **kwargs)
+  web_test_named_executable_alias(testonly=testonly, **kwargs)
 
 
-def web_test_named_file(**kwargs):
+def web_test_named_file(testonly=True, **kwargs):
   """Wrapper around web_test_named_file to correctly set defaults."""
-  web_test_named_file_alias(testonly=True, **kwargs)
+  web_test_named_file_alias(testonly=testonly, **kwargs)
 
 
-def web_test_archive(**kwargs):
+def web_test_archive(testonly=True, **kwargs):
   """Wrapper around web_test_archive to correctly set defaults."""
-  web_test_archive_alias(testonly=True, **kwargs)
+  web_test_archive_alias(testonly=testonly, **kwargs)
 
 
-def web_test_files(**kwargs):
+def web_test_files(testonly=True, **kwargs):
   """Wrapper around web_test_files to correctly set defaults."""
-  web_test_files_alias(testonly=True, **kwargs)
+  web_test_files_alias(testonly=testonly, **kwargs)

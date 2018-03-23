@@ -18,13 +18,13 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 
 load("//web/internal:metadata.bzl", "metadata")
 load("//web/internal:provider.bzl", "WebTestInfo")
+load("//web/internal:runfiles.bzl", "runfiles")
 
 
 def _web_test_archive_impl(ctx):
-  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   metadata.create_file(
       ctx=ctx,
-      output=patch,
+      output=ctx.outputs.web_test_metadata,
       web_test_files=[
           metadata.web_test_files(
               ctx=ctx,
@@ -32,30 +32,24 @@ def _web_test_archive_impl(ctx):
               named_files=ctx.attr.named_files),
       ])
 
-  metadata_files = [patch
-                   ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
-
-  metadata.merge_files(
-      ctx=ctx,
-      merger=ctx.executable.merger,
-      output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
-
   return [
-      DefaultInfo(
-          runfiles=ctx.runfiles(
-              collect_data=True, collect_default=True, files=[ctx.file.archive
-                                                             ])),
+      DefaultInfo(runfiles=ctx.runfiles(files=[ctx.file.archive])),
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
 
 web_test_archive = rule(
+    doc="""Specifies an archive file with named files in it.
+
+The archive will be unzipped only if Web Test Launcher wants one the named
+files in the archive.""",
     implementation=_web_test_archive_impl,
     attrs={
         "archive":
             attr.label(
+                doc="Archive file that contains named files.",
                 allow_single_file=[
+                    ".deb",
                     ".tar",
                     ".tar.bz2",
                     ".tbz2",
@@ -63,32 +57,11 @@ web_test_archive = rule(
                     ".tgz",
                     ".tar.Z",
                     ".zip",
-                    ".deb",
                 ],
                 mandatory=True),
-        "data":
-            attr.label_list(allow_files=True, cfg="data"),
-        "deps":
-            attr.label_list(providers=[WebTestInfo]),
-        "merger":
-            attr.label(
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata/main")),
         "named_files":
-            attr.string_dict(mandatory=True),
+            attr.string_dict(
+                doc="A map of names to paths in the archive.", mandatory=True),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
 )
-"""Specifies an archive file with named files in it.
-
-The archive will be unzipped only if Web Test Launcher wants one the named
-files in the archive.
-
-Args:
-  archive: Archive file that contains named files.
-  data: Runtime dependencies for this rule.
-  deps: Other web_test-related rules that this rule depends on.
-  merger: Metadata merger executable.
-  named_files: A map of names to paths in the archive.
-"""
