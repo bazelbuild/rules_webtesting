@@ -26,13 +26,13 @@ def wrap_web_test_suite(name,
                         flaky=None,
                         local=None,
                         shard_count=None,
-                        size="large",
+                        size=None,
                         tags=None,
                         test_suite_tags=None,
                         timeout=None,
                         visibility=None,
                         web_test_data=None,
-                        wrapped_test_tags=DEFAULT_WRAPPED_TEST_TAGS,
+                        wrapped_test_tags=None,
                         **remaining_keyword_args):
   """Defines a test_suite of web_test targets that wrap a given rule.
 
@@ -61,8 +61,11 @@ def wrap_web_test_suite(name,
     **remaining_keyword_args: Arguments for the wrapped test target.
   """
 
+  # Check explicitly for None so that users can set this to the empty list
   if wrapped_test_tags == None:
     wrapped_test_tags = DEFAULT_WRAPPED_TEST_TAGS
+
+  size = size or "large"
 
   wrapped_test_name = name + "_wrapped_test"
 

@@ -155,7 +155,7 @@ func TestMerge(t *testing.T) {
 					"an option",
 					"--anOption=false",
 					"--anotherOption",
-					"-optionToLeave=that",		
+					"-optionToLeave=that",
 					map[string]interface{}{
 						"some": "map",
 					},
@@ -171,7 +171,7 @@ func TestMerge(t *testing.T) {
 					"an option",
 					"--anOption=false",
 					"--anotherOption",
-					"-optionToLeave=that",	
+					"-optionToLeave=that",
 					map[string]interface{}{
 						"some": "map",
 					},

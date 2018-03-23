@@ -18,51 +18,42 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 
 load("//web/internal:metadata.bzl", "metadata")
 load("//web/internal:provider.bzl", "WebTestInfo")
+load("//web/internal:runfiles.bzl", "runfiles")
 
 
 def _web_test_named_executable_impl(ctx):
-  if ctx.attr.executable.label not in [data.label for data in ctx.attr.data]:
-    fail("Executable %s must be in data." % ctx.attr.executable.label, "data")
-
   name = ctx.attr.alt_name or ctx.label.name
 
-  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   metadata.create_file(
       ctx=ctx,
-      output=patch,
+      output=ctx.outputs.web_test_metadata,
       web_test_files=[
           metadata.web_test_files(
               ctx=ctx, named_files={name: ctx.executable.executable}),
       ])
-  metadata_files = [patch
-                   ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
-
-  metadata.merge_files(
-      ctx=ctx,
-      merger=ctx.executable.merger,
-      output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
 
   return [
       DefaultInfo(
-          runfiles=ctx.runfiles(collect_data=True, collect_default=True)),
+          runfiles=runfiles.collect(ctx=ctx, targets=[ctx.attr.executable])),
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
 
 web_test_named_executable = rule(
+    doc="Defines a executable that can be located by name.",
     attrs={
         "alt_name":
-            attr.string(),
-        "data":
-            attr.label_list(allow_files=True, cfg="data"),
-        "deps":
-            attr.label_list(providers=[WebTestInfo]),
+            attr.string(doc="If supplied, is used instead of name."),
         "executable":
             attr.label(
-                allow_files=True, executable=True, cfg="host", mandatory=True),
+                doc="The executable that will be returned for name.",
+                allow_files=True,
+                executable=True,
+                cfg="target",
+                mandatory=True),
         "merger":
             attr.label(
+                doc="Metadata merger executable.",
                 executable=True,
                 cfg="host",
                 default=Label("//go/metadata/main")),
@@ -70,12 +61,3 @@ web_test_named_executable = rule(
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_web_test_named_executable_impl,
 )
-"""Defines a executable that can be located by name.
-
-Args:
-  alt_name: If supplied, is used instead of name to lookup the executable.
-  data: Runtime dependencies for the executable.
-  deps: Other web_test-related rules that this rule depends on.
-  executable: The executable that will be returned for name or alt_name.
-  merger: Metadata merger executable.
-"""

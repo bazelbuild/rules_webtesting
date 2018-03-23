@@ -18,6 +18,7 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 
 load("//web/internal:metadata.bzl", "metadata")
 load("//web/internal:provider.bzl", "WebTestInfo")
+load("//web/internal:runfiles.bzl", "runfiles")
 
 
 def _browser_impl(ctx):
@@ -36,8 +37,7 @@ def _browser_impl(ctx):
       inputs=metadata_files)
 
   return [
-      DefaultInfo(
-          runfiles=ctx.runfiles(collect_data=True, collect_default=True)),
+      DefaultInfo(runfiles=runfiles.collect(ctx)),
       WebTestInfo(
           disabled=ctx.attr.disabled,
           environment=ctx.attr.environment,
@@ -48,40 +48,44 @@ def _browser_impl(ctx):
 
 
 browser = rule(
+    doc="Defines a browser configuration for use with web_test.",
     attrs={
         "data":
-            attr.label_list(allow_files=True, cfg="data"),
+            attr.label_list(
+                doc="Runtime dependencies for this configuration.",
+                allow_files=True,
+                cfg="data"),
         "deps":
-            attr.label_list(providers=[WebTestInfo]),
+            attr.label_list(
+                doc="Other web_test-related rules that this rule depends on.",
+                providers=[WebTestInfo]),
         "disabled":
-            attr.string(),
+            attr.string(
+                doc=
+                "If set then a no-op test will be run when using this browser."
+            ),
         "environment":
-            attr.string_dict(),
+            attr.string_dict(doc="Map of environment variables-values to set."),
         "execution_requirements":
-            attr.string_dict(),
+            attr.string_dict(
+                doc="Map of execution requirements for this browser."),
         "merger":
             attr.label(
+                doc="Metadata merger executable.",
+                default=Label("//go/metadata/main"),
                 executable=True,
-                cfg="host",
-                default=Label("//go/metadata/main")),
+                cfg="host"),
         "metadata":
-            attr.label(mandatory=True, allow_single_file=[".json"]),
+            attr.label(
+                doc="The web_test metadata file that defines how this browser is "
+                + "launched and default capabilities for this browser.",
+                mandatory=True,
+                allow_single_file=[".json"]),
         "required_tags":
-            attr.string_list(),
+            attr.string_list(
+                doc=
+                "A list of tags that  web_tests using this browser should have."
+            ),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_browser_impl)
-"""Defines a browser configuration for use with web_test.
-
-Args:
-  data: Runtime dependencies for this configuration.
-  deps: Other web_test-related rules that this rule depends on.
-  disabled: If set, then a no-op test will be run for all tests using
-    this browser.
-  environment: Map of environment variables-values to set for this browser.
-  merger: Metadata merger executable.
-  metadata: The web_test metadata file that defines how this browser
-    is launched and default capabilities for this browser.
-  required_tags: A list of tags that all web_tests using this browser
-    should have. Examples include "requires-network", "local", etc.
-"""

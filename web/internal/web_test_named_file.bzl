@@ -23,53 +23,31 @@ load("//web/internal:provider.bzl", "WebTestInfo")
 def _web_test_named_file_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
-  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   metadata.create_file(
       ctx=ctx,
-      output=patch,
+      output=ctx.outputs.web_test_metadata,
       web_test_files=[
           metadata.web_test_files(ctx=ctx, named_files={name: ctx.file.file}),
       ])
-  metadata_files = [patch
-                   ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
-  metadata.merge_files(
-      ctx=ctx,
-      merger=ctx.executable.merger,
-      output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
 
   return [
       DefaultInfo(
           runfiles=ctx.runfiles(
-              collect_data=True, collect_default=True, files=ctx.files.file)),
+              collect_data=True, collect_default=True, files=[ctx.file.file])),
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
 
 web_test_named_file = rule(
+    doc="Defines a file that can be located by name.",
     attrs={
         "alt_name":
-            attr.string(),
-        "data":
-            attr.label_list(allow_files=True, cfg="data"),
-        "deps":
-            attr.label_list(providers=[WebTestInfo]),
+            attr.string(doc="If supplied, is used instead of name."),
         "file":
-            attr.label(allow_single_file=True, mandatory=True),
-        "merger":
             attr.label(
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata/main")),
+                doc="The file that will be returned for name.",
+                allow_single_file=True,
+                mandatory=True),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
     implementation=_web_test_named_file_impl)
-"""Defines a file that can be located by name.
-
-Args:
-  alt_name: If supplied, is used instead of name to lookup the file.
-  data: Runtime dependencies for the file.
-  deps: Other web_test-related rules that this rule depends on.
-  file: The file that will be returned for name or alt_name.
-  merger: Metadata merger executable.
-"""

@@ -22,7 +22,7 @@ load("//web/internal:provider.bzl", "WebTestInfo")
 
 def _web_test_files_impl(ctx):
   named_files = {}
-  files = depset()
+  runfiles = depset()
 
   for target, name in ctx.attr.files.items():
     if name in named_files:
@@ -30,56 +30,40 @@ def _web_test_files_impl(ctx):
     if len(target.files) != 1:
       fail("%s refers to multiple files." % target.label, "files")
     named_files[name] = target.files.to_list()[0]
-    files = files + target.files
+    runfiles = depset(transitive=[target.files, runfiles])
 
-  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
   metadata.create_file(
       ctx=ctx,
-      output=patch,
+      output=ctx.outputs.web_test_metadata,
       web_test_files=[
           metadata.web_test_files(ctx=ctx, named_files=named_files),
       ])
 
-  metadata_files = [patch
-                   ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
-
-  metadata.merge_files(
-      ctx=ctx,
-      merger=ctx.executable.merger,
-      output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
-
   return [
       DefaultInfo(
           runfiles=ctx.runfiles(
-              collect_data=True, collect_default=True, files=files.to_list())),
+              collect_data=True, collect_default=True,
+              files=runfiles.to_list())),
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
 
 web_test_files = rule(
+    doc="Specifies a set of named files.",
     implementation=_web_test_files_impl,
     attrs={
-        "data":
-            attr.label_list(allow_files=True, cfg="data"),
-        "deps":
-            attr.label_list(providers=[WebTestInfo]),
         "merger":
             attr.label(
+                doc="Metadata merger executable.",
                 executable=True,
                 cfg="host",
                 default=Label("//go/metadata/main")),
         "files":
             attr.label_keyed_string_dict(
-                mandatory=True, allow_files=True, allow_empty=False),
+                doc="A map of files to names.",
+                mandatory=True,
+                allow_files=True,
+                allow_empty=False),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
 )
-"""Specifies a set of named files.
-
-Args:
-  data: Runtime dependencies for this rule.
-  deps: Other web_test-related rules that this rule depends on.
-  merger: Metadata merger executable.
-  files: A map of files to names.
-"""
