@@ -17,8 +17,10 @@
 package com.google.testing.web;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import javax.annotation.Nullable;
+import java.util.Optional;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.Augmenter;
@@ -47,16 +49,27 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public class WebTest {
 
-  @Nullable private final URL url;
+  private final URL wd;
+  private final URI http;
+  private final Optional<URI> https;
 
   public WebTest() {
-    this(System.getenv("WEB_TEST_WEBDRIVER_SERVER"));
+    this(
+        System.getenv("WEB_TEST_WEBDRIVER_SERVER"),
+        System.getenv("WEB_TEST_HTTP_SERVER"),
+        System.getenv("WEB_TEST_HTTPS_SERVER"));
   }
 
-  private WebTest(String address) {
+  private WebTest(String wd, String http, String https) {
     try {
-      this.url = new URL(address);
-    } catch (MalformedURLException e) {
+      this.wd = new URL(wd);
+      this.http = new URI(http);
+      if (https != null && !https.isEmpty()) {
+        this.https = Optional.of(new URI(https));
+      } else {
+        this.https = Optional.empty();
+      }
+    } catch (MalformedURLException | URISyntaxException e) {
       throw new RuntimeException(e);
     }
   }
@@ -72,8 +85,18 @@ public class WebTest {
    * @param capabilities Configuration of the browser.
    */
   public WebDriver newWebDriverSession(Capabilities capabilities) {
-    WebDriver driver = new Augmenter().augment(new RemoteWebDriver(url, capabilities));
+    WebDriver driver = new Augmenter().augment(new RemoteWebDriver(wd, capabilities));
 
     return driver;
+  }
+
+  /** Returns the HTTP address of WTL. */
+  public URI HTTPAddress() {
+    return http;
+  }
+
+  /** Returns the HTTPS address of WTL. */
+  public Optional<URI> HTTPSAddress() {
+    return https;
   }
 }

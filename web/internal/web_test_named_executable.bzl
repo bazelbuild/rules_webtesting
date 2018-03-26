@@ -40,7 +40,7 @@ def _web_test_named_executable_impl(ctx):
 
 
 web_test_named_executable = rule(
-    doc="Defines a executable that can be located by name.",
+    doc="Defines an executable that can be located by name.",
     attrs={
         "alt_name":
             attr.string(doc="If supplied, is used instead of name."),

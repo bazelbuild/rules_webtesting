@@ -46,3 +46,13 @@ def new_webdriver_session(capabilities={}):
   remote_connection.RemoteConnection.set_timeout(450)
 
   return webdriver.WebDriver(address, desired_capabilities=capabilities)
+
+
+def http_address():
+  """Return the HTTP address of WTL."""
+  return os.environ['WEB_TEST_HTTP_SERVER']
+
+
+def https_address():
+  """Return the HTTPS address of WTL."""
+  return os.environ['WEB_TEST_HTTPS_SERVER']

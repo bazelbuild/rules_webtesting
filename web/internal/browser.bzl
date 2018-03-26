@@ -84,7 +84,7 @@ browser = rule(
         "required_tags":
             attr.string_list(
                 doc=
-                "A list of tags that  web_tests using this browser should have."
+                "A list of tags that web_tests using this browser should have."
             ),
     },
     outputs={"web_test_metadata": "%{name}.gen.json"},
