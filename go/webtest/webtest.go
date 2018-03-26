@@ -31,6 +31,7 @@ package webtest
 
 import (
 	"errors"
+	"net/url"
 	"os"
 	"strings"
 
@@ -84,4 +85,26 @@ func NewWebDriverSession(capabilities selenium.Capabilities) (selenium.WebDriver
 	}
 
 	return selenium.NewRemote(capabilities, strings.TrimSuffix(address, "/"))
+}
+
+// HTTPAddress returns the HTTP address of WTL.
+func HTTPAddress() (*url.URL, error) {
+	address := os.Getenv("WEB_TEST_HTTP_SERVER")
+
+	if address == "" {
+		return nil, errors.New(`environment variable "WEB_TEST_HTTP_SERVER" not set`)
+	}
+
+	return url.Parse(address)
+}
+
+// HTTPSAddress returns the HTTPS address of WTL.
+func HTTPSAddress() (*url.URL, error) {
+	address := os.Getenv("WEB_TEST_HTTPS_SERVER")
+
+	if address == "" {
+		return nil, errors.New(`environment variable "WEB_TEST_HTTPS_SERVER" not set`)
+	}
+
+	return url.Parse(address)
 }

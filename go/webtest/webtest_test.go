@@ -15,6 +15,7 @@
 package webtest
 
 import (
+	"net/url"
 	"strings"
 	"testing"
 
@@ -27,7 +28,14 @@ func TestProvisionBrowser_NoCaps(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := wd.Get("about:"); err != nil {
+	address, err := HTTPAddress()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	address = address.ResolveReference(&url.URL{Path: "/healthz"})
+
+	if err := wd.Get(address.String()); err != nil {
 		t.Error(err)
 	}
 
@@ -53,7 +61,14 @@ func TestProvisionBrowser_WithCaps(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := wd.Get("about:"); err != nil {
+	address, err := HTTPAddress()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	address = address.ResolveReference(&url.URL{Path: "/healthz"})
+
+	if err := wd.Get(address.String()); err != nil {
 		t.Error(err)
 	}
 
@@ -94,6 +109,13 @@ func TestGetInfo(t *testing.T) {
 }
 
 func TestReusableBrowser(t *testing.T) {
+	address, err := HTTPAddress()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	address = address.ResolveReference(&url.URL{Path: "/healthz"})
+
 	wd1, err := NewWebDriverSession(selenium.Capabilities{
 		"google:canReuseSession": true,
 	})
@@ -117,7 +139,7 @@ func TestReusableBrowser(t *testing.T) {
 		t.Errorf("got different ids %q, %q, expected them to be the same.", id1, wd2.SessionID())
 	}
 
-	if err := wd2.Get("about:"); err != nil {
+	if err := wd2.Get(address.String()); err != nil {
 		t.Error(err)
 	}
 

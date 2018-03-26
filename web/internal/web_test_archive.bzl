@@ -18,7 +18,6 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 
 load("//web/internal:metadata.bzl", "metadata")
 load("//web/internal:provider.bzl", "WebTestInfo")
-load("//web/internal:runfiles.bzl", "runfiles")
 
 
 def _web_test_archive_impl(ctx):
@@ -41,7 +40,7 @@ def _web_test_archive_impl(ctx):
 web_test_archive = rule(
     doc="""Specifies an archive file with named files in it.
 
-The archive will be unzipped only if Web Test Launcher wants one the named
+The archive will be unzipped only if Web Test Launcher wants one of the named
 files in the archive.""",
     implementation=_web_test_archive_impl,
     attrs={
