@@ -24,7 +24,7 @@ class BrowserTest(unittest.TestCase):
     driver = webtest.new_webdriver_session()
 
     try:
-      driver.get("about:")
+      driver.get(webtest.http_address() + "/healthz")
       self.assertTrue(driver.current_url)
     finally:
       driver.quit()
@@ -37,7 +37,7 @@ class BrowserTest(unittest.TestCase):
     driver = webtest.new_webdriver_session(capabilities)
 
     try:
-      driver.get("about:")
+      driver.get(webtest.http_address() + "/healthz")
       self.assertTrue(driver.current_url)
     finally:
       driver.quit()

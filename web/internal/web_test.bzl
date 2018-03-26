@@ -174,7 +174,7 @@ web_test = rule(
                 mandatory=True),
         "web_test_template":
             attr.label(
-                doc="Shell template used to launch test when browser.",
+                doc="Shell template used to launch test.",
                 default=Label("//web/internal:web_test.sh.template"),
                 allow_single_file=True)
     },

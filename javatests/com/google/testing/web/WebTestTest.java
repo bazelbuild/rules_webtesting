@@ -26,7 +26,9 @@ public class WebTestTest {
 
   @Test
   public void newWebDriverSession() {
-    WebDriver driver = new WebTest().newWebDriverSession();
+    WebTest wt = new WebTest();
+    WebDriver driver = wt.newWebDriverSession();
+    driver.get(wt.HTTPAddress().resolve("/healthz").toString());
     driver.quit();
   }
 }
