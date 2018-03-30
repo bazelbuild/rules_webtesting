@@ -28,7 +28,7 @@ from selenium.webdriver.remote import remote_connection
 from selenium.webdriver.remote import webdriver
 
 
-def new_webdriver_session(capabilities={}):
+def new_webdriver_session(capabilities=None):
   """Provisions a new WebDriver session.
 
   Args:
@@ -39,6 +39,7 @@ def new_webdriver_session(capabilities={}):
     A new WebDriver connected to a browser defined by the web test
     environment.
   """
+  capabilities = capabilities or {}
   address = os.environ['WEB_TEST_WEBDRIVER_SERVER'].rstrip('/')
 
   # Set the timeout for WebDriver http requests so that the socket default
