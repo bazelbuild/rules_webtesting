@@ -42,6 +42,7 @@ fi
 
 if [[ ! -z "${STRIP_PREFIX}" ]]; then
   pushd "${OUT_DIR}"
+  # Intentionally not quoted so that globbing in STRIP_PREFIX works.
   mv ${STRIP_PREFIX}/* .
   popd
 fi

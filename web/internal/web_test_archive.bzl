@@ -123,8 +123,8 @@ web_test_archive = rule(
         "extract_exe_host":
             attr.label(
                 doc="""Executable to extract files if extract = build.
-              Should accept three positional parameters: 
-                archive out_dir strip_prefix""",
+                    Should accept three positional parameters: 
+                      archive out_dir strip_prefix""",
                 allow_files=True,
                 cfg="host",
                 default=Label("//web/internal:extract.sh"),
@@ -132,8 +132,8 @@ web_test_archive = rule(
         "extract_exe_target":
             attr.label(
                 doc="""Executable to extract files if extract = run.
-              Should accept three positional parameters: 
-                  archive out_dir strip_prefix""",
+                    Should accept three positional parameters: 
+                      archive out_dir strip_prefix""",
                 allow_files=True,
                 cfg="target",
                 default=Label("//web/internal:extract.sh"),

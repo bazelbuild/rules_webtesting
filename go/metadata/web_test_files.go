@@ -182,8 +182,6 @@ func (w *WebTestFiles) extract(m *Metadata) error {
 	}
 
 	c := exec.Command(extractor, filename, extractPath, w.StripPrefix)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
 
 	if err := c.Run(); err != nil {
 		return err
