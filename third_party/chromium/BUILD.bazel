@@ -25,16 +25,18 @@ exports_files(["LICENSE"])
 web_test_archive(
     name = "chromium",
     archive = "@org_chromium_chromium//file",
+    extract = "build",
     named_files = select({
         "//common/conditions:linux": {
-            "CHROMIUM": "chrome-linux/chrome",
+            "CHROMIUM": "chrome",
         },
         "//common/conditions:mac": {
-            "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
+            "CHROMIUM": "Chromium.app/Contents/MacOS/chromium",
         },
         "//common/conditions:windows": {
-            "CHROMIUM": "chrome-win32/chrome.exe",
+            "CHROMIUM": "chrome.exe",
         },
     }),
+    strip_prefix = "chrome-*",
     visibility = ["//browsers:__subpackages__"],
 )
