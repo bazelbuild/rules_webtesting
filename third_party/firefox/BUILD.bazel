@@ -25,6 +25,7 @@ exports_files(["LICENSE"])
 web_test_archive(
     name = "firefox",
     archive = "@org_mozilla_firefox//file",
+    extract = "build",
     named_files = select({
         "//common/conditions:linux": {
             "FIREFOX": "firefox/firefox",

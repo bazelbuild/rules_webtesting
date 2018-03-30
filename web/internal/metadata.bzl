@@ -87,7 +87,7 @@ def _create_file(ctx,
       output=output, content=struct(**fields).to_json(), executable=False)
 
 
-def _web_test_files(ctx, archive_file=None, named_files=None):
+def _web_test_files(ctx, archive_file=None, named_files=None, strip_prefix=""):
   """Build a web_test_files struct.
 
   Args:
@@ -108,7 +108,10 @@ def _web_test_files(ctx, archive_file=None, named_files=None):
       named_files[k] = files.long_path(ctx, v)
   if archive_file:
     archive_file = files.long_path(ctx, archive_file)
-  return struct(archiveFile=archive_file, namedFiles=struct(**named_files))
+  return struct(
+      archiveFile=archive_file,
+      namedFiles=struct(**named_files),
+      stripPrefix=strip_prefix)
 
 
 metadata = struct(
