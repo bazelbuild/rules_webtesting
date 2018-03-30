@@ -27,15 +27,16 @@ def _impl(repository_ctx):
   basename = urls[0][urls[0].rindex("/") + 1:]
   repository_ctx.download(urls, basename, sha256)
   repository_ctx.symlink(basename, "file/" + basename)
-  repository_ctx.file("file/BUILD", "\n".join([
-      ("# DO NOT EDIT: automatically generated BUILD file for " +
-       "platform_http_file rule " + repository_ctx.name),
-      "filegroup(",
-      "    name = 'file',",
-      "    srcs = ['%s']," % basename,
-      "    visibility = ['//visibility:public'],",
-      ")",
-  ]))
+  repository_ctx.file(
+      "file/BUILD", "\n".join([
+          ("# DO NOT EDIT: automatically generated BUILD file for " +
+           "platform_http_file rule " + repository_ctx.name),
+          "filegroup(",
+          "    name = 'file',",
+          "    srcs = ['%s']," % basename,
+          "    visibility = ['//visibility:public'],",
+          ")",
+      ]))
 
 
 platform_http_file = repository_rule(

@@ -217,7 +217,7 @@ func mapEquals(e, a map[string]string) bool {
 // web_test_named_executable, or web_test_named_file.
 func (m *Metadata) GetFilePath(name string) (string, error) {
 	for _, a := range m.WebTestFiles {
-		filename, err := a.getFilePath(name)
+		filename, err := a.getFilePath(name, m)
 		if err != nil {
 			return "", err
 		}

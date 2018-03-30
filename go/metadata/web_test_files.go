@@ -19,7 +19,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"sync"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
@@ -34,6 +33,8 @@ type WebTestFiles struct {
 	// at least once with a name defined in NamedFiles. If so, the entire archive will be extracted
 	// into subdirectory located test tmpdir.
 	ArchiveFile string `json:"archiveFile,omitempty"`
+	// StripPrefix is an optional prefix that will be stripped when an archive is extracted.
+	StripPrefix string `json:"stripPrefix,omitempty"`
 	// NamedFiles is a map of names to file paths. These file paths are relative to the runfiles
 	// root if ArchiveFile is absent, otherwise they are paths inside the archive referred to by
 	// ArchiveFile. The names are used by other parts of Web Test Launcher to refer to needed
@@ -137,7 +138,7 @@ func mergeNamedFiles(n1, n2 map[string]string) (map[string]string, error) {
 	return result, nil
 }
 
-func (w *WebTestFiles) getFilePath(name string) (string, error) {
+func (w *WebTestFiles) getFilePath(name string, m *Metadata) (string, error) {
 	filename, ok := w.NamedFiles[name]
 	if !ok {
 		return "", nil
@@ -147,7 +148,7 @@ func (w *WebTestFiles) getFilePath(name string) (string, error) {
 		return bazel.Runfile(filename)
 	}
 
-	if err := w.extract(); err != nil {
+	if err := w.extract(m); err != nil {
 		return "", err
 	}
 
@@ -158,11 +159,16 @@ func (w *WebTestFiles) getFilePath(name string) (string, error) {
 	return path, nil
 }
 
-func (w *WebTestFiles) extract() error {
+func (w *WebTestFiles) extract(m *Metadata) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.extractedPath != "" {
 		return nil
+	}
+
+	extractor, err := m.GetFilePath("EXTRACT_EXE")
+	if err != nil {
+		return err
 	}
 
 	filename, err := bazel.Runfile(w.ArchiveFile)
@@ -175,23 +181,9 @@ func (w *WebTestFiles) extract() error {
 		return err
 	}
 
-	var c *exec.Cmd
-	switch {
-	case strings.HasSuffix(filename, ".tar"):
-		c = exec.Command("tar", "xf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".tar.gz") || strings.HasSuffix(filename, ".tgz"):
-		c = exec.Command("tar", "xzf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".tar.bz2") || strings.HasSuffix(filename, ".tbz2"):
-		c = exec.Command("tar", "xjf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".tar.Z"):
-		c = exec.Command("tar", "xZf", filename, "-C", extractPath)
-	case strings.HasSuffix(filename, ".zip"):
-		c = exec.Command("unzip", filename, "-d", extractPath)
-	case strings.HasSuffix(filename, ".deb"):
-		c = exec.Command("dpkg", "-x", filename, extractPath)
-	default:
-		return fmt.Errorf("unknown archive type: %s", filename)
-	}
+	c := exec.Command(extractor, filename, extractPath, w.StripPrefix)
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
 
 	if err := c.Run(); err != nil {
 		return err
