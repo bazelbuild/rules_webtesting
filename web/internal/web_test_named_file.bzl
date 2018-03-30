@@ -16,8 +16,8 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//web/internal:metadata.bzl", "metadata")
-load("//web/internal:provider.bzl", "WebTestInfo")
+load(":metadata.bzl", "metadata")
+load(":provider.bzl", "WebTestInfo")
 
 
 def _web_test_named_file_impl(ctx):

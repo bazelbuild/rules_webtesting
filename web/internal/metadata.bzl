@@ -13,7 +13,7 @@
 # limitations under the License.
 """A library of functions for working with web_test metadata files."""
 
-load("//web/internal:files.bzl", "files")
+load(":files.bzl", "files")
 
 
 def _merge_files(ctx, merger, output, inputs):
