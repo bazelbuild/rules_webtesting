@@ -17,7 +17,10 @@
 load(":web.bzl", "web_test_config")
 load("@bazel_skylib//:skylark_library.bzl", "skylark_library")
 
-package(default_testonly = True)
+package(
+    default_testonly = True,
+    default_visibility = ["//visibility:public"],
+)
 
 licenses(["notice"])  # Apache 2.0
 
@@ -27,33 +30,11 @@ web_test_config(
 )
 
 skylark_library(
-    name = "repositories",
-    srcs = ["repositories.bzl"],
-    deps = ["//web/internal:platform_http_file"],
-)
-
-skylark_library(
-    name = "web",
-    srcs = ["web.bzl"],
-    visibility = ["//web/internal:__pkg__"],
-    deps = [
-        "//web/internal:browser",
-        "//web/internal:collections",
-        "//web/internal:constants",
-        "//web/internal:web_test",
-        "//web/internal:web_test_archive",
-        "//web/internal:web_test_config",
-        "//web/internal:web_test_named_executable",
-        "//web/internal:web_test_named_file",
-    ],
-)
-
-skylark_library(
     name = "go",
     srcs = ["go.bzl"],
     deps = [
         "//web/internal:wrap_web_test_suite",
-        # should depend on go build rules.
+        # should depend on Go build rules.
     ],
 )
 
@@ -70,10 +51,37 @@ skylark_library(
 )
 
 skylark_library(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    deps = [
+        "//web/internal:java_import_external",
+        "//web/internal:platform_http_file",
+        "@bazel_skylib//:lib",
+        # should depend on Go build rules.
+    ],
+)
+
+skylark_library(
     name = "scala",
     srcs = ["scala.bzl"],
     deps = [
         "//web/internal:wrap_web_test_suite",
         # should depend on Scala build rules.
+    ],
+)
+
+skylark_library(
+    name = "web",
+    srcs = ["web.bzl"],
+    deps = [
+        "//web/internal:browser",
+        "//web/internal:collections",
+        "//web/internal:constants",
+        "//web/internal:web_test",
+        "//web/internal:web_test_archive",
+        "//web/internal:web_test_config",
+        "//web/internal:web_test_files",
+        "//web/internal:web_test_named_executable",
+        "//web/internal:web_test_named_file",
     ],
 )

@@ -37,6 +37,7 @@ skylark_library(
     deps = [
         ":metadata",
         ":provider",
+        ":runfiles",
     ],
 )
 
@@ -53,7 +54,11 @@ skylark_library(
 skylark_library(
     name = "files",
     srcs = ["files.bzl"],
-    deps = [":collections"],
+)
+
+skylark_library(
+    name = "java_import_external",
+    srcs = ["java_import_external.bzl"],
 )
 
 skylark_library(
@@ -73,6 +78,11 @@ skylark_library(
 )
 
 skylark_library(
+    name = "runfiles",
+    srcs = ["runfiles.bzl"],
+)
+
+skylark_library(
     name = "web_test",
     srcs = ["web_test.bzl"],
     deps = [
@@ -80,6 +90,7 @@ skylark_library(
         ":files",
         ":metadata",
         ":provider",
+        ":runfiles",
     ],
 )
 
@@ -87,7 +98,7 @@ skylark_library(
     name = "web_test_archive",
     srcs = ["web_test_archive.bzl"],
     deps = [
-        ":files" +
+        ":files",
         ":metadata",
         ":provider",
         ":runfiles",
@@ -104,11 +115,21 @@ skylark_library(
 )
 
 skylark_library(
+    name = "web_test_files",
+    srcs = ["web_test_files.bzl"],
+    deps = [
+        ":metadata",
+        ":provider",
+    ],
+)
+
+skylark_library(
     name = "web_test_named_executable",
     srcs = ["web_test_named_executable.bzl"],
     deps = [
         ":metadata",
         ":provider",
+        ":runfiles",
     ],
 )
 

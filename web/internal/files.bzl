@@ -13,8 +13,6 @@
 # limitations under the License.
 """A library of functions for working with runfiles."""
 
-load("//web/internal:collections.bzl", "lists")
-
 
 def _long_path(ctx, file):
   """Constructs a path relative to TEST_SRCDIR for accessing the file.

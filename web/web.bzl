@@ -13,29 +13,23 @@
 # limitations under the License.
 """Public definitions for web_test related build rules."""
 
+load("//web/internal:browser.bzl", browser_alias="browser")
 load("//web/internal:collections.bzl", "lists", "maps")
-load(
-    "//web/internal:browser.bzl",
-    browser_alias="browser",
-)
 load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS")
+load("//web/internal:web_test.bzl", web_test_alias="web_test")
 load(
-    "//web/internal:web_test.bzl",
-    web_test_alias="web_test",
-)
+    "//web/internal:web_test_archive.bzl",
+    web_test_archive_alias="web_test_archive")
 load(
     "//web/internal:web_test_config.bzl",
     web_test_config_alias="web_test_config")
+load("//web/internal:web_test_files.bzl", web_test_files_alias="web_test_files")
 load(
     "//web/internal:web_test_named_executable.bzl",
     web_test_named_executable_alias="web_test_named_executable")
 load(
     "//web/internal:web_test_named_file.bzl",
     web_test_named_file_alias="web_test_named_file")
-load(
-    "//web/internal:web_test_archive.bzl",
-    web_test_archive_alias="web_test_archive")
-load("//web/internal:web_test_files.bzl", web_test_files_alias="web_test_files")
 
 
 def web_test_suite(name,

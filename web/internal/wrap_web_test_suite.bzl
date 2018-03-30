@@ -14,7 +14,7 @@
 """Definition of wrap_web_test_suite."""
 
 load("//web:web.bzl", "web_test_suite")
-load("//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
+load(":constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
 
 
 def wrap_web_test_suite(name,
