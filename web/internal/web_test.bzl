@@ -16,11 +16,11 @@
 DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 """
 
-load("//web/internal:collections.bzl", "maps")
-load("//web/internal:files.bzl", "files")
-load("//web/internal:metadata.bzl", "metadata")
-load("//web/internal:provider.bzl", "WebTestInfo")
-load("//web/internal:runfiles.bzl", "runfiles")
+load(":collections.bzl", "maps")
+load(":files.bzl", "files")
+load(":metadata.bzl", "metadata")
+load(":provider.bzl", "WebTestInfo")
+load(":runfiles.bzl", "runfiles")
 
 
 def _web_test_impl(ctx):
