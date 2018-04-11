@@ -16,7 +16,6 @@
 load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@io_bazel_rules_go//go:def.bzl", "go_repository")
-load("@bazel_skylib//:lib.bzl", "versions")
 
 
 def web_test_repositories(**kwargs):
@@ -38,9 +37,8 @@ def web_test_repositories(**kwargs):
   Please note that while these dependencies are defined, they are not actually
   downloaded, unless a target is built that depends on them.
   """
-  versions.check("0.9.0")
-  if should_create_repository("cglib_nodep", kwargs):
-    cglib_nodep()
+  if should_create_repository("bazel_skylib", kwargs):
+    bazel_skylib()
   if should_create_repository("com_github_blang_semver", kwargs):
     com_github_blang_semver()
   if should_create_repository("com_github_gorilla_context", kwargs):
@@ -70,18 +68,12 @@ def web_test_repositories(**kwargs):
     junit()
   if should_create_repository("net_bytebuddy", kwargs):
     net_bytebuddy()
-  if should_create_repository("net_java_dev_jna", kwargs):
-    net_java_dev_jna()
-  if should_create_repository("net_java_dev_jna_platform", kwargs):
-    net_java_dev_jna_platform()
   if should_create_repository("org_apache_commons_exec", kwargs):
     org_apache_commons_exec()
   if should_create_repository("org_apache_httpcomponents_httpclient", kwargs):
     org_apache_httpcomponents_httpclient()
   if should_create_repository("org_apache_httpcomponents_httpcore", kwargs):
     org_apache_httpcomponents_httpcore()
-  if should_create_repository("org_apache_httpcomponents_httpmime", kwargs):
-    org_apache_httpcomponents_httpmime()
   if should_create_repository("org_hamcrest_core", kwargs):
     org_hamcrest_core()
   if should_create_repository("org_json", kwargs):
@@ -124,7 +116,6 @@ def browser_repositories(firefox=False, chromium=False):
     firefox: Configure repositories for //browsers:firefox-native.
     chromium: Configure repositories for //browsers:chromium-native.
   """
-  versions.check("0.9.0")
   if chromium:
     org_chromium_chromedriver()
     org_chromium_chromium()
@@ -133,15 +124,14 @@ def browser_repositories(firefox=False, chromium=False):
     org_mozilla_geckodriver()
 
 
-def cglib_nodep():
-  java_import_external(
-      name="cglib_nodep",
-      jar_sha256=
-      "80a0cc14c7c495682b43d4b082ad80a5848ada19fc3700f72d8ec042923633d3",
-      jar_urls=[
-          "http://repo1.maven.org/maven2/cglib/cglib-nodep/3.2.6/cglib-nodep-3.2.6.jar",
+def bazel_skylib():
+  native.http_archive(
+      name="bazel_skylib",
+      sha256="ce27a2007deda8a1de65df9de3d4cd93a5360ead43c5ff3017ae6b3a2abe485e",
+      strip_prefix="bazel-skylib-0.3.1",
+      urls=[
+          "https://github.com/bazelbuild/bazel-skylib/archive/0.3.1.tar.gz",
       ],
-      licenses=["notice"]  # ASF 2.0
   )
 
 
@@ -210,7 +200,7 @@ def com_google_code_gson():
           "http://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.2/gson-2.8.2.jar",
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
-      deps=["@com_google_code_findbugs_jsr305"])
+  )
 
 
 def com_google_errorprone_error_prone_annotations():
@@ -228,11 +218,11 @@ def com_google_errorprone_error_prone_annotations():
 def com_google_guava():
   java_import_external(
       name="com_google_guava",
-      jar_urls=[
-          "http://repo1.maven.org/maven2/com/google/guava/guava/24.0-jre/guava-24.0-jre.jar",
-      ],
       jar_sha256=
-      "e0274470b16ba1154e926b5f54ef8ae159197fbc356406bda9b261ba67e3e599",
+      "31bfe27bdf9cba00cb4f3691136d3bc7847dfc87bfe772ca7a9eb68ff31d79f5",
+      jar_urls=[
+          "http://repo1.maven.org/maven2/com/google/guava/guava/24.1-jre/guava-24.1-jre.jar",
+      ],
       licenses=["notice"],  # Apache 2.0
       exports=[
           "@com_google_code_findbugs_jsr305",
@@ -308,46 +298,15 @@ def net_bytebuddy():
   java_import_external(
       name="net_bytebuddy",
       jar_sha256=
-      "2ea2ada12b790d16ac7f6e6c065cb55cbcdb6ba519355f5958851159cad3b16a",
+      "1c7c222d5c317481538117e54029c289c5a1605a3cdcadf4e7f7cc1fe7469277",
       jar_urls=[
-          "http://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.7.9/byte-buddy-1.7.9.jar",
+          "http://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.3/byte-buddy-1.8.3.jar",
       ],
       # LGPL, version 2.1
       # http://www.gnu.org/licenses/licenses.html
       # ASL, version 2
       # http://www.apache.org/licenses/
       licenses=["restricted"])
-
-
-def net_java_dev_jna():
-  java_import_external(
-      name="net_java_dev_jna",
-      jar_sha256=
-      "fbc9de96a0cc193a125b4008dbc348e9ed54e5e13fc67b8ed40e645d303cc51b",
-      jar_urls=[
-          "http://repo1.maven.org/maven2/net/java/dev/jna/jna/4.5.1/jna-4.5.1.jar",
-      ],
-      # LGPL, version 2.1
-      # http://www.gnu.org/licenses/licenses.html
-      # ASL, version 2
-      # http://www.apache.org/licenses/
-      licenses=["restricted"])
-
-
-def net_java_dev_jna_platform():
-  java_import_external(
-      name="net_java_dev_jna_platform",
-      jar_sha256=
-      "84c8667555ee8dd91fef44b451419f6f16f71f727d5fc475a10c2663eba83abb",
-      jar_urls=[
-          "http://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.5.1/jna-platform-4.5.1.jar",
-      ],
-      # LGPL, version 2.1
-      # http://www.gnu.org/licenses/licenses.html
-      # ASL, version 2
-      # http://www.apache.org/licenses/
-      licenses=["restricted"],
-      deps=["@net_java_dev_jna"])
 
 
 def org_apache_commons_exec():
@@ -388,18 +347,6 @@ def org_apache_httpcomponents_httpcore():
       ],
       licenses=["notice"]  # Apache License, Version 2.0
   )
-
-
-def org_apache_httpcomponents_httpmime():
-  java_import_external(
-      name="org_apache_httpcomponents_httpmime",
-      jar_sha256=
-      "e46206931b7426102e658f086f74ee582761264a8f9977fba02c1e200c51a9c5",
-      jar_urls=[
-          "http://repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.5.5/httpmime-4.5.5.jar",
-      ],
-      licenses=["notice"],  # Apache License, Version 2.0
-      deps=["@org_apache_httpcomponents_httpclient"])
 
 
 def org_chromium_chromedriver():
@@ -501,10 +448,10 @@ def org_seleniumhq_py():
   native.new_http_archive(
       name="org_seleniumhq_py",
       build_file=str(Label("//build_files:org_seleniumhq_py.BUILD")),
-      sha256="a34a833d89bcfb463bfba5e5515a9276bb94221787b409f0ad28d2f91903e31d",
-      strip_prefix="selenium-3.9.0",
+      sha256="5841fb30c3965866220c34d16de8e3d091e2833fcac385160a63db0c3522a297",
+      strip_prefix="selenium-3.11.0",
       urls=[
-          "https://pypi.python.org/packages/b4/54/ba7059b254a72fc30f1d8b838eb951003ee6e5ba716bb9b0ce0e4c58e308/selenium-3.9.0.tar.gz"
+          "https://pypi.python.org/packages/d4/28/8124d32415bd3d67fabea52480395427576b582771283e89ce10a56d9e5b/selenium-3.11.0.tar.gz"
       ])
 
 
@@ -512,9 +459,9 @@ def org_seleniumhq_selenium_api():
   java_import_external(
       name="org_seleniumhq_selenium_api",
       jar_sha256=
-      "040871bcfeb0ac522b2c2a1507ab0046c10fead3c22468fef78d2a815b55ad00",
+      "3e81810f61a1930d4ca868475cefdbe10b7260e352d09c4bfeda5e9ede5dd538",
       jar_urls=[
-          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.9.1/selenium-api-3.9.1.jar",
+          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.11.0/selenium-api-3.11.0.jar",
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
       testonly_=1)
@@ -524,19 +471,22 @@ def org_seleniumhq_selenium_remote_driver():
   java_import_external(
       name="org_seleniumhq_selenium_remote_driver",
       jar_sha256=
-      "1bf029a5c0f034072f11655662710ed72ffa577166daa94de82c1c6073515b11",
+      "7a9c23a6a304bdcaec5a642f6641e07f798adc2f213cce456e4a829ad4454deb",
       jar_urls=[
-          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.8.1/selenium-remote-driver-3.8.1.jar",
+          "http://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.11.0/selenium-remote-driver-3.11.0.jar",
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
       testonly_=1,
       deps=[
-          "@cglib_nodep",
           "@com_google_code_gson",
           "@com_google_guava",
           "@net_bytebuddy",
-          "@net_java_dev_jna_platform",
+          "@com_squareup_okhttp3_okhttp",
+          "@com_squareup_okio",
+          "@commons_codec",
+          "@commons_logging",
           "@org_apache_commons_exec",
-          "@org_apache_httpcomponents_httpmime",
+          "@org_apache_httpcomponents_httpclient",
+          "@org_apache_httpcomponents_httpcore",
           "@org_seleniumhq_selenium_api",
       ])

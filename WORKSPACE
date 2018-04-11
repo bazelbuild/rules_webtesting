@@ -16,33 +16,22 @@
 #
 workspace(name = "io_bazel_rules_webtesting")
 
-skylib_version = "f9b0ff1dd3d119d19b9cacbbc425a9e61759f1f5"
-
-http_archive(
-    name = "bazel_skylib",
-    sha256 = "ce27a2007deda8a1de65df9de3d4cd93a5360ead43c5ff3017ae6b3a2abe485e",
-    strip_prefix = "bazel-skylib-{v}".format(v = skylib_version),
-    urls = [
-        "https://github.com/bazelbuild/bazel-skylib/archive/{v}.tar.gz".format(v = skylib_version),
-    ],
-)
-
-rules_go_version = "0.10.0"
+rules_go_version = "0.10.3"
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "53c8222c6eab05dd49c40184c361493705d4234e60c42c4cd13ab4898da4c6be",
+    sha256 = "feba3278c13cde8d67e341a837f69a029f698d7a27ddbb2a202be7a10b22142a",
     urls = [
         "http://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/{v}/rules_go-{v}.tar.gz".format(v = rules_go_version),
         "https://github.com/bazelbuild/rules_go/releases/download/{v}/rules_go-{v}.tar.gz".format(v = rules_go_version),
     ],
 )
 
-gazelle_version = "0.10.0"
+gazelle_version = "0.10.1"
 
 http_archive(
     name = "bazel_gazelle",
-    sha256 = "6228d9618ab9536892aa69082c063207c91e777e51bd3c5544c9c060cafe1bd8",
+    sha256 = "d03625db67e9fb0905bbd206fa97e32ae9da894fe234a493e7517fd25faec914",
     url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/{v}/bazel-gazelle-{v}.tar.gz".format(v = gazelle_version),
 )
 
