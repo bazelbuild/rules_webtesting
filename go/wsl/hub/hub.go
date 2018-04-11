@@ -19,6 +19,7 @@ package hub
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -109,17 +110,24 @@ func (h *Hub) newSession(w http.ResponseWriter, r *http.Request) {
 
 	var driver *driver.Driver
 	var session string
+	var err error
 
 	if reqJSON.Capabilities != nil {
-		session, driver = h.newSessionW3CCaps(r.Context(), *reqJSON.Capabilities, w)
+		session, driver, err = h.newSessionW3CCaps(r.Context(), *reqJSON.Capabilities, w)
+		if err != nil {
+			log.Printf("Error creating W3C session: %v", err)
+		}
 	}
 
 	if driver == nil && reqJSON.DesiredCapabilities != nil {
-		session, driver = h.newSessionJWPCaps(r.Context(), reqJSON.DesiredCapabilities, reqJSON.RequiredCapabilities, w)
+		session, driver, err = h.newSessionJWPCaps(r.Context(), reqJSON.DesiredCapabilities, reqJSON.RequiredCapabilities, w)
+		if err != nil {
+			log.Printf("Error creating JWP session: %v", err)
+		}
 	}
 
 	if driver == nil {
-		errorResponse(w, http.StatusInternalServerError, 33, "session not created", "unable to create session")
+		errorResponse(w, http.StatusInternalServerError, 33, "session not created", fmt.Sprintf("unable to create session: %v", err))
 		return
 	}
 
@@ -128,22 +136,22 @@ func (h *Hub) newSession(w http.ResponseWriter, r *http.Request) {
 	h.sessions[session] = driver
 }
 
-func (h *Hub) newSessionW3CCaps(ctx context.Context, caps w3cCaps, w http.ResponseWriter) (string, *driver.Driver) {
+func (h *Hub) newSessionW3CCaps(ctx context.Context, caps w3cCaps, w http.ResponseWriter) (string, *driver.Driver, error) {
 	if caps.AlwaysMatch != nil {
 		wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{})
 		if ok {
 			d, err := driver.New(ctx, wslConfig)
 			if err != nil {
-				return "", nil
+				return "", nil, err
 			}
 
 			s, err := d.NewSessionW3C(ctx, caps.AlwaysMatch, caps.FirstMatch, w)
 			if err != nil {
 				d.Kill()
-				return "", nil
+				return "", nil, err
 			}
 
-			return s, d
+			return s, d, nil
 		}
 	}
 
@@ -162,29 +170,29 @@ func (h *Hub) newSessionW3CCaps(ctx context.Context, caps w3cCaps, w http.Respon
 				continue
 			}
 
-			return s, d
+			return s, d, nil
 		}
 	}
 
-	return "", nil
+	return "", nil, errors.New("No first match caps worked")
 }
 
-func (h *Hub) newSessionJWPCaps(ctx context.Context, desired, required map[string]interface{}, w http.ResponseWriter) (string, *driver.Driver) {
+func (h *Hub) newSessionJWPCaps(ctx context.Context, desired, required map[string]interface{}, w http.ResponseWriter) (string, *driver.Driver, error) {
 	if required != nil {
 		wslConfig, ok := required["google:wslConfig"].(map[string]interface{})
 		if ok {
 			d, err := driver.New(ctx, wslConfig)
 			if err != nil {
-				return "", nil
+				return "", nil, err
 			}
 
 			s, err := d.NewSessionJWP(ctx, desired, required, w)
 			if err != nil {
 				d.Kill()
-				return "", nil
+				return "", nil, err
 			}
 
-			return s, d
+			return s, d, nil
 		}
 	}
 
@@ -194,20 +202,20 @@ func (h *Hub) newSessionJWPCaps(ctx context.Context, desired, required map[strin
 		if ok {
 			d, err := driver.New(ctx, wslConfig)
 			if err != nil {
-				return "", nil
+				return "", nil, err
 			}
 
 			s, err := d.NewSessionJWP(ctx, desired, required, w)
 			if err != nil {
 				d.Kill()
-				return "", nil
+				return "", nil, err
 			}
 
-			return s, d
+			return s, d, nil
 		}
 	}
 
-	return "", nil
+	return "", nil, errors.New("neither desired or required included wsl:config")
 }
 
 func (h *Hub) quitSession(session string, driver *driver.Driver, w http.ResponseWriter, r *http.Request) {
