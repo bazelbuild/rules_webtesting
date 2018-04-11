@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -81,23 +82,45 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 
 	statusURL := fmt.Sprintf("http://localhost:%d/status", wslCaps.port)
 
+	errChan := make(chan error)
+
+	go func() {
+		err := cmd.Wait()
+		log.Printf("cmd has exited: %v", err)
+		errChan <- err
+	}()
+
 	for {
-		if response, err := httphelper.Get(deadline, statusURL); err == nil && response.StatusCode == http.StatusOK {
-			respJSON := map[string]interface{}{}
-			if err := json.NewDecoder(response.Body).Decode(&respJSON); err == nil {
-				if status, ok := respJSON["status"].(float64); ok {
-					if int(status) == 0 {
-						break
-					}
-				} else if value, ok := respJSON["value"].(map[string]interface{}); ok {
-					if ready, _ := value["ready"].(bool); ready {
-						break
+		select {
+		case err := <-errChan:
+			return nil, err
+		default:
+		}
+
+		if response, err := httphelper.Get(deadline, statusURL); err == nil {
+			if wslCaps.statusBroken {
+				// just wait for successful connection because status endpoint doesn't work.
+				break
+			}
+			if response.StatusCode == http.StatusOK {
+				respJSON := map[string]interface{}{}
+				if err := json.NewDecoder(response.Body).Decode(&respJSON); err == nil {
+					log.Printf("Response: %+v", respJSON)
+					if status, ok := respJSON["status"].(float64); ok {
+						if int(status) == 0 {
+							break
+						}
+					} else if value, ok := respJSON["value"].(map[string]interface{}); ok {
+						if ready, _ := value["ready"].(bool); ready {
+							break
+						}
 					}
 				}
 			}
 		}
 
 		if deadline.Err() != nil {
+			go cmd.Process.Kill()
 			return nil, deadline.Err()
 		}
 
@@ -111,11 +134,12 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 }
 
 type wslCaps struct {
-	binary  string
-	args    []string
-	port    int
-	timeout time.Duration
-	env     map[string]string
+	binary       string
+	args         []string
+	port         int
+	timeout      time.Duration
+	env          map[string]string
+	statusBroken bool
 }
 
 func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
@@ -163,7 +187,7 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 
 	env := map[string]string{}
 
-	if e, ok := caps["timeout"].(map[string]interface{}); ok {
+	if e, ok := caps["env"].(map[string]interface{}); ok {
 		for k, v := range e {
 			if vs, ok := v.(string); ok {
 				env[k] = strings.Replace(vs, "%WSL:PORT%", portStr, -1)
@@ -171,12 +195,18 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 		}
 	}
 
+	statusBroken := false
+	if s, ok := caps["statusBroken"].(bool); ok {
+		statusBroken = s
+	}
+
 	return &wslCaps{
-		binary:  binary,
-		args:    args,
-		port:    port,
-		timeout: timeout,
-		env:     env,
+		binary:       binary,
+		args:         args,
+		port:         port,
+		timeout:      timeout,
+		env:          env,
+		statusBroken: statusBroken,
 	}, nil
 }
 

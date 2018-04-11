@@ -27,13 +27,6 @@ go_register_toolchains()
 # Load rules_webtesting at master for example purposes only. You should specify
 # a specific version in your project.
 http_archive(
-    name = "bazel_skylib",
-    url = "https://github.com/bazelbuild/bazel-skylib/archive/master.tar.gz",
-)
-
-# Load rules_webtesting at master for example purposes only. You should specify
-# a specific version in your project.
-http_archive(
     name = "io_bazel_rules_webtesting",
     strip_prefix = "rules_webtesting-master",
     urls = [
