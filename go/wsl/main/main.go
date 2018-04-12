@@ -17,6 +17,8 @@ package main
 
 import (
 	"flag"
+	"log"
+	"os"
 
 	"github.com/bazelbuild/rules_webtesting/go/wsl"
 )
@@ -25,10 +27,20 @@ var (
 	port         = flag.Int("port", 4444, "Port to start WSL on.")
 	downloadRoot = flag.String("download_root", "", "Directory served at /google/staticfile/.")
 	uploadRoot   = flag.String("upload_root", "", "Directory to which files sent to /session/<id>/upload will be uploaded.")
+	logFile      = flag.String("log_file", "", "File for WSL logs.")
 )
 
 func main() {
 	flag.Parse()
+
+	if *logFile != "" {
+		out, err := os.Create(*logFile)
+		if err != nil {
+			log.Fatalf("unable to open log file: %v", err)
+		}
+		defer out.Close()
+		log.SetOutput(out)
+	}
 
 	wsl.Run(*port, *downloadRoot, *uploadRoot)
 }
