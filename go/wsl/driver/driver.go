@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -60,18 +59,31 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 
 	cmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), wslCaps.env)
 
-	// TODO(DrMarcII): figure out how to deal with log files.
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, err
-	}
-	go io.Copy(os.Stdout, stdout)
+	stdout := os.Stdout
 
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, err
+	if wslCaps.stdout != "" {
+		s, err := os.Create(wslCaps.stdout)
+		if err != nil {
+			return nil, err
+		}
+		stdout = s
 	}
-	go io.Copy(os.Stderr, stderr)
+	cmd.Stdout = stdout
+
+	stderr := os.Stderr
+
+	if wslCaps.stderr != "" {
+		if wslCaps.stderr == wslCaps.stdout {
+			stderr = stdout
+		} else {
+			s, err := os.Create(wslCaps.stderr)
+			if err != nil {
+				return nil, err
+			}
+			stderr = s
+		}
+	}
+	cmd.Stderr = stderr
 
 	if err := cmd.Start(); err != nil {
 		return nil, err
@@ -86,8 +98,14 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 
 	go func() {
 		err := cmd.Wait()
-		log.Printf("cmd has exited: %v", err)
+		log.Printf("%s has exited: %v", wslCaps.binary, err)
 		errChan <- err
+		if stdout != os.Stdout {
+			stdout.Close()
+		}
+		if stderr != os.Stderr {
+			stdout.Close()
+		}
 	}()
 
 	for {
@@ -140,6 +158,8 @@ type wslCaps struct {
 	timeout      time.Duration
 	env          map[string]string
 	statusBroken bool
+	stdout       string
+	stderr       string
 }
 
 func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
@@ -200,6 +220,16 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 		statusBroken = s
 	}
 
+	stdout := ""
+	if s, ok := caps["stdout"].(string); ok {
+		stdout = s
+	}
+
+	stderr := ""
+	if s, ok := caps["stderr"].(string); ok {
+		stderr = s
+	}
+
 	return &wslCaps{
 		binary:       binary,
 		args:         args,
@@ -207,6 +237,8 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 		timeout:      timeout,
 		env:          env,
 		statusBroken: statusBroken,
+		stdout:       stdout,
+		stderr:       stderr,
 	}, nil
 }
 
