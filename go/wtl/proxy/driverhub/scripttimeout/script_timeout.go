@@ -27,7 +27,7 @@ import (
 )
 
 // ProviderFunc provides a handler for set script timeout commands.
-func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+func ProviderFunc(session *driverhub.WebDriverSession, _ *capabilities.Capabilities, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 
 		if rq.Method == http.MethodPost && len(rq.Path) == 1 && rq.Path[0] == "timeouts" {

@@ -15,31 +15,197 @@
 // Package capabilities performs operations on maps representing WebDriver capabilities.
 package capabilities
 
-import "strings"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+	"strings"
+)
 
-// Spec is a specification of capabilities, such as that included in the New
-// Session request. Specs may include slightly different capabilities for
-// different WebDriver protocol dialects.
-//
-// A Spec contains an optional set of OSS capabilities, and a list of zero or
-// more sets of W3C capabilities. The W3C capabilities are expressed in two
-// parts: the "always match" object that contains key-value pairs shared by
-// every set of capabilites, and a list of "first match" objects that contain
-// just the keys that differ.
-//
-// Any field may be nil if the request does not contain any capabilities for
-// a dialect, i.e., the requestor does not support that dialect.
-type Spec struct {
-	OSSCaps map[string]interface{}
-	// W3C spec capabilities
-	Always map[string]interface{}
-	First  []map[string]interface{}
+// Capabilities is a W3C WebDriver capabilities object.
+type Capabilities struct {
+	AlwaysMatch map[string]interface{}
+	FirstMatch  []map[string]interface{}
+}
+
+// FromNewSessionArgs creates a Capabilities object from the arguments to new session.
+// AlwaysMatch will be the result of merging alwaysMatch, requiredCapabilities, and desiredCapabilities.
+// Unlike Metadata capabilities merging and MergeOver, this is a shallow merge.
+func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
+	always := map[string]interface{}{}
+	var first []map[string]interface{}
+
+	w3c, _ := args["capabilities"].(map[string]interface{})
+
+	if w3c != nil {
+		if am, ok := w3c["alwaysMatch"].(map[string]interface{}); ok {
+			for k, v := range am {
+				always[k] = v
+			}
+		}
+	}
+
+	if required, ok := args["requiredCapabilities"].(map[string]interface{}); ok {
+		for k, v := range required {
+			if a, ok := always[k]; ok {
+				if !reflect.DeepEqual(a, v) {
+					return nil, fmt.Errorf("alwaysMatch[%q] == %+v, required[%q] == %+v, they must be equal", k, a, k, v)
+				}
+				continue
+			}
+			always[k] = v			
+
+		}
+	}
+
+	if desired, ok := args["desiredCapabilities"].(map[string]interface{}); ok {
+		for k, v := range desired {
+			if a, ok := always[k]; ok {
+				if !reflect.DeepEqual(a, v) {
+					return nil, fmt.Errorf("alwaysMatch|required[%q] == %+v, desired[%q] == %+v, they must be equal", k, a, k, v)
+				}
+				continue
+			}
+			always[k] = v
+		}
+	}
+
+	if w3c != nil {
+		fm, _ := w3c["firstMatch"].([]map[string]interface{})
+
+		for _, fme := range fm {
+			newFM := map[string]interface{}{}
+			for k, v := range fme {
+				if a, ok := always[k]; ok {
+					if !reflect.DeepEqual(a, v) {
+						return nil, fmt.Errorf("alwaysMatch|required[%q] == %+v, desired[%q] == %+v, they must be equal", k, a, k, v)
+					}
+					continue
+				}
+				newFM[k] = v
+			}
+			first = append(first, newFM)
+		}
+	}
+
+	return &Capabilities{
+		AlwaysMatch: always,
+		FirstMatch:  first,
+	}, nil
+}
+
+// MergeOver creates a new Capabilities with AlwaysMatch == (c.AlwaysMatch deeply merged over other) and
+// FirstMatch == c.FirstMatch.
+func (c *Capabilities) MergeOver(other map[string]interface{}) *Capabilities {
+	if c == nil {
+		return &Capabilities{
+			AlwaysMatch: other,
+		}
+	}
+
+	if len(other) == 0 {
+		return c
+	}
+	always := map[string]interface{}{}
+	first := map[string]interface{}{}
+
+	for k, v := range other {
+		if anyContains(c.FirstMatch, k) {
+			first[k] = v
+		} else {
+			always[k] = v
+		}
+	}
+
+	firstMatch := c.FirstMatch
+	if len(first) != 0 {
+		firstMatch = nil
+		for _, fm := range c.FirstMatch {
+			firstMatch = append(firstMatch, Merge(first, fm))
+		}
+	}
+
+	alwaysMatch := Merge(always, c.AlwaysMatch)
+
+	return &Capabilities{
+		AlwaysMatch: alwaysMatch,
+		FirstMatch:  firstMatch,
+	}
+}
+
+func anyContains(maps []map[string]interface{}, key string) bool {
+	for _, m := range maps {
+		_, ok := m[key]
+		if ok {
+			return true
+		}
+	}
+
+	return false
+}
+
+// ToJWP creates a map suitable for use as arguments to a New Session request for JSON Wire Protocol remote ends.
+// Since JWP does not support an equivalent to FirstMatch, if FirstMatch contains more than 1 entry
+// then this returns an error (if it contains exactly 1 entry, it will be merged over AlwaysMatch).
+func (c *Capabilities) ToJWP() (map[string]interface{}, error) {
+	if c == nil {
+		return map[string]interface{}{}, nil
+	}
+
+	if len(c.FirstMatch) > 1 {
+		return nil, errors.New("can not convert Capabilities with multiple FirstMatch entries to JWP")
+	}
+
+	desired := c.AlwaysMatch
+	if len(c.FirstMatch) == 1 {
+		desired = Merge(desired, c.FirstMatch[0])
+	}
+
+	return map[string]interface{}{
+		"desiredCapabilities": desired,
+	}, nil
+}
+
+// ToW3C creates a map suitable for use as arguments to a New Session request for W3C remote ends.
+func (c *Capabilities) ToW3C() map[string]interface{} {
+	if c == nil {
+		return map[string]interface{}{}
+	}
+
+	return map[string]interface{}{
+		"capabilities": map[string]interface{}{
+			"alwaysMatch": c.AlwaysMatch,
+			"firstMatch":  c.FirstMatch,
+		},
+	}
+}
+
+// ToMixedMode creates a map suitable for use as arguments to a New Session request for arbitrary remote ends.
+// Since JWP does not support an equivalent to FirstMatch, if FirstMatch contains more than 1 entry
+// then this returns an error (if it contains exactly 1 entry, it will be merged over AlwaysMatch).
+func (c *Capabilities) ToMixedMode() (map[string]interface{}, error) {
+	if c == nil {
+		return map[string]interface{}{}, nil
+	}
+
+	caps, err := c.ToJWP()
+
+	if err != nil {
+		return nil, err
+	}
+
+	caps["capabilities"] = map[string]interface{}{
+		"alwaysMatch": c.AlwaysMatch,
+		"firstMatch":  c.FirstMatch,
+	}
+
+	return caps, nil
 }
 
 // Merge takes two JSON objects, and merges them.
 //
 // The resulting object will have all of the keys in the two input objects.
-// For each key that is in both obejcts:
+// For each key that is in both objects:
 //   - if both objects have objects for values, then the result object will have
 //     a value resulting from recursively calling Merge.
 //   - if both objects have lists for values, then the result object will have
@@ -60,43 +226,6 @@ func Merge(m1, m2 map[string]interface{}) map[string]interface{} {
 		nm[k] = mergeValues(nm[k], v2, k)
 	}
 	return nm
-}
-
-// MergeSpecOntoCaps merges a set of capabilities and a capabilities spec. For
-// each capabilities set C in spec, C is merged on top of caps. That is,
-// capability values in the spec take precedence.
-func MergeSpecOntoCaps(caps map[string]interface{}, spec Spec) Spec {
-	newSpec := Spec{}
-	if spec.OSSCaps != nil {
-		newSpec.OSSCaps = Merge(caps, spec.OSSCaps)
-	}
-	if spec.Always == nil && spec.First == nil {
-		return newSpec
-	}
-
-	// No key is allowed to appear in both alwaysMatch and firstMatch. Any key in
-	// caps that is present in ANY of the firstMatch maps must be merged into each
-	// firstMatch map, rather than into the alwaysMatch map.
-	firstMatchKeys := map[string]bool{}
-	for _, f := range spec.First {
-		for fk := range f {
-			firstMatchKeys[fk] = true
-		}
-	}
-	alwaysMerge := map[string]interface{}{}
-	firstMerge := map[string]interface{}{}
-	for k, v := range caps {
-		if firstMatchKeys[k] {
-			firstMerge[k] = v
-		} else {
-			alwaysMerge[k] = v
-		}
-	}
-	newSpec.Always = Merge(alwaysMerge, spec.Always)
-	for _, f := range spec.First {
-		newSpec.First = append(newSpec.First, Merge(firstMerge, f))
-	}
-	return newSpec
 }
 
 func mergeValues(j1, j2 interface{}, name string) interface{} {
@@ -167,104 +296,7 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 	return nl
 }
 
-// SpecEquals compares two Specs, and returns true iff all the component JSON
-// objects are the same.
-func SpecEquals(e, v Spec) bool {
-	return JSONEquals(e.OSSCaps, v.OSSCaps) && JSONEquals(e.Always, v.Always) && firstsEqual(e.First, v.First)
-}
-
-func firstsEqual(e, v []map[string]interface{}) bool {
-	if len(e) != len(v) {
-		return false
-	}
-	for i, em := range e {
-		vm := v[i]
-		if !JSONEquals(em, vm) {
-			return false
-		}
-	}
-	return true
-}
-
-// JSONEquals compares two JSON objects, and returns true iff they are the same.
-func JSONEquals(e, v map[string]interface{}) bool {
-	if e == nil || v == nil {
-		return e == nil && v == nil
-	}
-	if len(e) != len(v) {
-		return false
-	}
-	for ek, ev := range e {
-		if vv, ok := v[ek]; !ok || !valueEquals(ev, vv) {
-			return false
-		}
-	}
-	return true
-}
-
-func valueEquals(e, v interface{}) bool {
-	switch te := e.(type) {
-	case []interface{}:
-		tv, ok := v.([]interface{})
-		return ok && sliceEquals(te, tv)
-	case map[string]interface{}:
-		tv, ok := v.(map[string]interface{})
-		return ok && JSONEquals(te, tv)
-	default:
-		return e == v
-	}
-}
-
-func sliceEquals(e, v []interface{}) bool {
-	if len(e) != len(v) {
-		return false
-	}
-	for i := 0; i < len(e); i++ {
-		if !valueEquals(e[i], v[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-// GoogleCap returns the value of a Google capability from the given Spec. It
-// searches for the capability in the W3C capabilities first, and then in the
-// OSS capabilities.
-func GoogleCap(caps Spec, name string) interface{} {
-	if v, ok := caps.Always["google:"+name]; ok {
-		return v
-	}
-	if v, ok := caps.OSSCaps["google:"+name]; ok {
-		return v
-	}
-	return nil
-}
-
-// HasGoogleCap returns whether the named Google capability is present.
-func HasGoogleCap(caps Spec, name string) bool {
-	if _, ok := caps.Always["google:"+name]; ok {
-		return true
-	}
-	if _, ok := caps.OSSCaps["google:"+name]; ok {
-		return true
-	}
-	return false
-}
-
-// SetGoogleCap mutates the given Spec by setting a Google capability.
-func SetGoogleCap(caps Spec, name string, value interface{}) {
-	if caps.OSSCaps != nil {
-		caps.OSSCaps["google:"+name] = value
-	}
-	if caps.Always != nil {
-		caps.Always["google:"+name] = value
-	}
-}
-
-// CanReuseSession returns whether the Google capability "canReuseSession" is
-// set.
-func CanReuseSession(caps Spec) bool {
-	// default value is false
-	v, _ := GoogleCap(caps, "canReuseSession").(bool)
-	return v
+func CanReuseSession(caps *Capabilities) bool {
+	reuse, _ := caps.AlwaysMatch["google:canReuseSession"].(bool)
+	return reuse
 }

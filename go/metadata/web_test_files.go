@@ -19,6 +19,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"sync"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
@@ -72,7 +73,7 @@ func webTestFilesSliceEquals(a, b []*WebTestFiles) bool {
 }
 
 func webTestFilesEquals(a, b *WebTestFiles) bool {
-	return a.ArchiveFile == b.ArchiveFile && mapEquals(a.NamedFiles, b.NamedFiles)
+	return a.ArchiveFile == b.ArchiveFile && reflect.DeepEqual(a.NamedFiles, b.NamedFiles)
 }
 
 func normalizeWebTestFiles(in []*WebTestFiles) ([]*WebTestFiles, error) {

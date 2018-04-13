@@ -43,7 +43,7 @@ type WebDriverSession struct {
 	ID            int
 	handler       HandlerFunc
 	sessionPath   string
-	RequestedCaps capabilities.Spec
+	RequestedCaps *capabilities.Capabilities
 	Metadata      *metadata.Metadata
 
 	mu      sync.RWMutex
@@ -52,7 +52,7 @@ type WebDriverSession struct {
 
 // A handlerProvider wraps another HandlerFunc to create a new HandlerFunc.
 // If the second return value is false, then the provider did not construct a new HandlerFunc.
-type handlerProvider func(session *WebDriverSession, caps capabilities.Spec, base HandlerFunc) (HandlerFunc, bool)
+type handlerProvider func(session *WebDriverSession, caps *capabilities.Capabilities, base HandlerFunc) (HandlerFunc, bool)
 
 // HandlerFunc is a func for handling a request to a WebDriver session.
 type HandlerFunc func(context.Context, Request) (Response, error)
@@ -96,7 +96,7 @@ func HandlerProviderFunc(provider handlerProvider) {
 	providers = append(providers, provider)
 }
 
-func createHandler(session *WebDriverSession, caps capabilities.Spec) HandlerFunc {
+func createHandler(session *WebDriverSession, caps *capabilities.Capabilities) HandlerFunc {
 	handler := createBaseHandler(session.WebDriver)
 
 	for _, provider := range providers {
@@ -108,7 +108,7 @@ func createHandler(session *WebDriverSession, caps capabilities.Spec) HandlerFun
 }
 
 // CreateSession creates a WebDriverSession object.
-func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, caps capabilities.Spec) (*WebDriverSession, error) {
+func CreateSession(id int, hub *WebDriverHub, driver webdriver.WebDriver, caps *capabilities.Capabilities) (*WebDriverSession, error) {
 	sessionPath := fmt.Sprintf("/wd/hub/session/%s", driver.SessionID())
 	session := &WebDriverSession{
 		ID:            id,
