@@ -193,10 +193,10 @@ func TestMerge(t *testing.T) {
 }
 
 func TestFromNewSessionArgs(t *testing.T) {
-	testCases := []struct{
-		name string
-		args map[string]interface{}
-		want *Capabilities
+	testCases := []struct {
+		name    string
+		args    map[string]interface{}
+		want    *Capabilities
 		wantErr bool
 	}{
 		{
@@ -258,19 +258,19 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value1",
 					},
-				},				
+				},
 				"desiredCapabilities": map[string]interface{}{
 					"key2": "value2",
 				},
 				"requiredCapabilities": map[string]interface{}{
 					"key3": "value3",
-				},				
+				},
 			},
 			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 					"key2": "value2",
-					"key3": "value3",					
+					"key3": "value3",
 				},
 			},
 			wantErr: false,
@@ -282,17 +282,17 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value1",
 					},
-				},				
+				},
 				"desiredCapabilities": map[string]interface{}{
 					"key1": "value1",
 				},
 				"requiredCapabilities": map[string]interface{}{
 					"key1": "value1",
-				},				
+				},
 			},
 			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
-					"key1": "value1",					
+					"key1": "value1",
 				},
 			},
 			wantErr: false,
@@ -304,15 +304,15 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value1",
 					},
-				},				
+				},
 				"desiredCapabilities": map[string]interface{}{
 					"key1": "value12",
 				},
 				"requiredCapabilities": map[string]interface{}{
 					"key1": "value1",
-				},				
+				},
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 		{
@@ -322,15 +322,15 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value1",
 					},
-				},				
+				},
 				"desiredCapabilities": map[string]interface{}{
 					"key1": "value1",
 				},
 				"requiredCapabilities": map[string]interface{}{
 					"key1": "value12",
-				},				
+				},
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 		{
@@ -340,15 +340,15 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value12",
 					},
-				},				
+				},
 				"desiredCapabilities": map[string]interface{}{
 					"key1": "value1",
 				},
 				"requiredCapabilities": map[string]interface{}{
 					"key1": "value1",
-				},				
+				},
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 		{
@@ -364,13 +364,13 @@ func TestFromNewSessionArgs(t *testing.T) {
 						},
 						{
 							"key2": "value3",
-						},					
+						},
 					},
-				},						
+				},
 			},
 			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
-					"key1": "value1",					
+					"key1": "value1",
 				},
 				FirstMatch: []map[string]interface{}{
 					{
@@ -378,7 +378,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 					},
 					{
 						"key2": "value3",
-					},					
+					},
 				},
 			},
 			wantErr: false,
@@ -392,18 +392,18 @@ func TestFromNewSessionArgs(t *testing.T) {
 					},
 					"firstMatch": []map[string]interface{}{
 						{
-							"key1": "value1",							
+							"key1": "value1",
 							"key2": "value2",
 						},
 						{
 							"key2": "value3",
-						},					
+						},
 					},
-				},						
+				},
 			},
 			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
-					"key1": "value1",					
+					"key1": "value1",
 				},
 				FirstMatch: []map[string]interface{}{
 					{
@@ -411,7 +411,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 					},
 					{
 						"key2": "value3",
-					},					
+					},
 				},
 			},
 			wantErr: false,
@@ -425,22 +425,22 @@ func TestFromNewSessionArgs(t *testing.T) {
 					},
 					"firstMatch": []map[string]interface{}{
 						{
-							"key1": "value12",							
+							"key1": "value12",
 							"key2": "value2",
 						},
 						{
 							"key2": "value3",
-						},					
+						},
 					},
-				},						
+				},
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
-		},	
+		},
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T){
+		t.Run(tc.name, func(t *testing.T) {
 			got, err := FromNewSessionArgs(tc.args)
 
 			if err != nil || tc.wantErr {
@@ -458,25 +458,25 @@ func TestFromNewSessionArgs(t *testing.T) {
 }
 
 func TestMergeOver(t *testing.T) {
-	testCases := []struct{
-		name string
-		this *Capabilities
+	testCases := []struct {
+		name  string
+		this  *Capabilities
 		other map[string]interface{}
-		want *Capabilities
+		want  *Capabilities
 	}{
 		{
 			name: "empty",
-			this:  &Capabilities{
+			this: &Capabilities{
 				AlwaysMatch: map[string]interface{}{},
 			},
 			other: map[string]interface{}{},
-			want:  &Capabilities{
+			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{},
 			},
 		},
 		{
 			name: "no overlap",
-			this:  &Capabilities{
+			this: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
@@ -486,13 +486,13 @@ func TestMergeOver(t *testing.T) {
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 			other: map[string]interface{}{
 				"key4": "value4",
 			},
-			want:  &Capabilities{
+			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 					"key4": "value4",
@@ -503,13 +503,13 @@ func TestMergeOver(t *testing.T) {
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 		},
 		{
 			name: "overlaps always",
-			this:  &Capabilities{
+			this: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
@@ -519,13 +519,13 @@ func TestMergeOver(t *testing.T) {
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 			other: map[string]interface{}{
 				"key1": "value4",
 			},
-			want:  &Capabilities{
+			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
@@ -535,13 +535,13 @@ func TestMergeOver(t *testing.T) {
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 		},
 		{
 			name: "overlaps first[0]",
-			this:  &Capabilities{
+			this: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
@@ -551,13 +551,13 @@ func TestMergeOver(t *testing.T) {
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 			other: map[string]interface{}{
 				"key2": "value4",
 			},
-			want:  &Capabilities{
+			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
@@ -566,15 +566,15 @@ func TestMergeOver(t *testing.T) {
 						"key2": "value2",
 					},
 					{
-						"key2": "value4",						
+						"key2": "value4",
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 		},
 		{
 			name: "overlaps first[1]",
-			this:  &Capabilities{
+			this: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
@@ -584,30 +584,30 @@ func TestMergeOver(t *testing.T) {
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 			other: map[string]interface{}{
 				"key3": "value4",
 			},
-			want:  &Capabilities{
+			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
 				FirstMatch: []map[string]interface{}{
 					{
 						"key2": "value2",
-						"key3": "value4",						
+						"key3": "value4",
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 		},
 		{
 			name: "overlap and non-overlap",
-			this:  &Capabilities{
+			this: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
@@ -617,7 +617,7 @@ func TestMergeOver(t *testing.T) {
 					},
 					{
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 			other: map[string]interface{}{
@@ -626,20 +626,20 @@ func TestMergeOver(t *testing.T) {
 				"key3": "value33",
 				"key4": "value4",
 			},
-			want:  &Capabilities{
+			want: &Capabilities{
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
-					"key4": "value4",					
+					"key4": "value4",
 				},
 				FirstMatch: []map[string]interface{}{
 					{
 						"key2": "value2",
-						"key3": "value33",						
+						"key3": "value33",
 					},
 					{
-						"key2": "value22",						
+						"key2": "value22",
 						"key3": "value3",
-					},					
+					},
 				},
 			},
 		},

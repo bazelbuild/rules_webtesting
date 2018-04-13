@@ -191,14 +191,14 @@ func Equals(e, a *Metadata) bool {
 	} else {
 		extsEqual = e.Extension.Equals(a.Extension)
 	}
-	return extsEqual && 
+	return extsEqual &&
 		e.Environment == a.Environment &&
 		e.Label == a.Label &&
 		e.BrowserLabel == a.BrowserLabel &&
 		e.TestLabel == a.TestLabel &&
 		e.ConfigLabel == a.ConfigLabel &&
 		e.DebuggerPort == a.DebuggerPort &&
-		reflect.DeepEqual(e.Capabilities, a.Capabilities) &&		
+		reflect.DeepEqual(e.Capabilities, a.Capabilities) &&
 		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles)
 }
 

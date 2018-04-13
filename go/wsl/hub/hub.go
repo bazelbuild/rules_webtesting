@@ -26,6 +26,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/wsl/driver"
 )
 
@@ -90,16 +91,20 @@ func (h *Hub) driver(session string) *driver.Driver {
 }
 
 func (h *Hub) newSession(w http.ResponseWriter, r *http.Request) {
-	reqJSON := map[string]interface{}
+	reqJSON := map[string]interface{}{}
 
-	if err := json.NewDecoder(r.Body).Decode(reqJSON); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&reqJSON); err != nil {
 		errorResponse(w, http.StatusBadRequest, 13, "invalid argument", err.Error())
 		return
 	}
 
-	caps := capabilities.FromNewSessionArgs(reqJSON)
+	caps, err := capabilities.FromNewSessionArgs(reqJSON)
+	if err != nil {
+		errorResponse(w, http.StatusBadRequest, 13, "invalid argument", err.Error())
+		return
+	}
 
-	driver, session, err := h.newSessionFromCaps(r.Context(), caps, w)
+	session, driver, err := h.newSessionFromCaps(r.Context(), caps, w)
 	if err != nil {
 		errorResponse(w, http.StatusInternalServerError, 33, "session not created", fmt.Sprintf("unable to create session: %v", err))
 		log.Printf("Error creating webdriver session: %v", err)
@@ -120,7 +125,7 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 				return "", nil, err
 			}
 
-			s, err := d.NewSessionW3C(ctx, caps, w)
+			s, err := d.NewSession(ctx, caps, w)
 			if err != nil {
 				d.Kill()
 				return "", nil, err
@@ -139,10 +144,10 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 				continue
 			}
 
-			s, err := d.NewSessionW3C(ctx, &capabilities.Capabilities{
+			s, err := d.NewSession(ctx, &capabilities.Capabilities{
 				AlwaysMatch: caps.AlwaysMatch,
-				FirstMatch: []map[string]interface{}{fm},
-				}, w)
+				FirstMatch:  []map[string]interface{}{fm},
+			}, w)
 			if err != nil {
 				d.Kill()
 				continue

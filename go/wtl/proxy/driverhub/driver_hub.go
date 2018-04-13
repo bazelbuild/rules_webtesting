@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 	"sync"
 	"time"
 
@@ -174,7 +175,7 @@ func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps *capabilitie
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	for i, session := range h.reusableSessions {
-		if reflect.DeepEquals(caps, sessions.RequestedCaps) {
+		if reflect.DeepEqual(caps, session.RequestedCaps) {
 			h.reusableSessions = append(h.reusableSessions[:i], h.reusableSessions[i+1:]...)
 			if err := session.WebDriver.Healthy(ctx); err == nil {
 				return session, true
@@ -222,12 +223,16 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 
 	j := map[string]interface{}{}
 
-	if err := json.Unmarshal(body, j); err != nil {
+	if err := json.Unmarshal(body, &j); err != nil {
 		sessionNotCreated(w, err)
 		return
 	}
 
-	requestedCaps := capabilities.FromNewSessionArgs(j)
+	requestedCaps, err := capabilities.FromNewSessionArgs(j)
+	if err != nil {
+		sessionNotCreated(w, err)
+		return
+	}
 
 	id := h.NextID()
 

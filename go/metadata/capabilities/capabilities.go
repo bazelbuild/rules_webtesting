@@ -53,7 +53,7 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 				}
 				continue
 			}
-			always[k] = v			
+			always[k] = v
 
 		}
 	}
@@ -149,7 +149,9 @@ func anyContains(maps []map[string]interface{}, key string) bool {
 // then this returns an error (if it contains exactly 1 entry, it will be merged over AlwaysMatch).
 func (c *Capabilities) ToJWP() (map[string]interface{}, error) {
 	if c == nil {
-		return map[string]interface{}{}, nil
+		return map[string]interface{}{
+			"desiredCapabilities": map[string]interface{}{},
+		}, nil
 	}
 
 	if len(c.FirstMatch) > 1 {
@@ -168,15 +170,20 @@ func (c *Capabilities) ToJWP() (map[string]interface{}, error) {
 
 // ToW3C creates a map suitable for use as arguments to a New Session request for W3C remote ends.
 func (c *Capabilities) ToW3C() map[string]interface{} {
-	if c == nil {
-		return map[string]interface{}{}
+	caps := map[string]interface{}{}
+
+	if c != nil {
+		if len(c.AlwaysMatch) != 0 {
+			caps["alwaysMatch"] = c.AlwaysMatch
+		}
+
+		if len(c.FirstMatch) != 0 {
+			caps["firstMatch"] = c.FirstMatch
+		}
 	}
 
 	return map[string]interface{}{
-		"capabilities": map[string]interface{}{
-			"alwaysMatch": c.AlwaysMatch,
-			"firstMatch":  c.FirstMatch,
-		},
+		"capabilities": caps,
 	}
 }
 
@@ -184,22 +191,17 @@ func (c *Capabilities) ToW3C() map[string]interface{} {
 // Since JWP does not support an equivalent to FirstMatch, if FirstMatch contains more than 1 entry
 // then this returns an error (if it contains exactly 1 entry, it will be merged over AlwaysMatch).
 func (c *Capabilities) ToMixedMode() (map[string]interface{}, error) {
-	if c == nil {
-		return map[string]interface{}{}, nil
-	}
-
-	caps, err := c.ToJWP()
-
+	jwp, err := c.ToJWP()
 	if err != nil {
 		return nil, err
 	}
 
-	caps["capabilities"] = map[string]interface{}{
-		"alwaysMatch": c.AlwaysMatch,
-		"firstMatch":  c.FirstMatch,
-	}
+	w3c := c.ToW3C()
 
-	return caps, nil
+	return map[string]interface{}{
+		"capabilities":        w3c["capabilities"],
+		"desiredCapabilities": jwp["desiredCapabilities"],
+	}, nil
 }
 
 // Merge takes two JSON objects, and merges them.

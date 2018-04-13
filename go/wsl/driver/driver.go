@@ -267,7 +267,7 @@ func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities
 
 	var first []map[string]interface{}
 
-	for fm := range caps.FirstMatch {
+	for _, fm := range caps.FirstMatch {
 		newFM := map[string]interface{}{}
 		for k, v := range fm {
 			if k != "google:wslConfig" {
