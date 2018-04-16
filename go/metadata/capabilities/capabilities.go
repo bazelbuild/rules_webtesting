@@ -30,7 +30,10 @@ type Capabilities struct {
 
 // FromNewSessionArgs creates a Capabilities object from the arguments to new session.
 // AlwaysMatch will be the result of merging alwaysMatch, requiredCapabilities, and desiredCapabilities.
-// Unlike Metadata capabilities merging and MergeOver, this is a shallow merge.
+// Unlike Metadata capabilities merging and MergeOver, this is a shallow merge, and any conflicts will
+// result in an error.
+// Additionally if any capability in firstMatch conflicts with a capability in alwaysMatch, requiredCapabilities,
+// or desiredCapabilities, an error will be returned.
 func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 	always := map[string]interface{}{}
 	var first []map[string]interface{}
@@ -78,7 +81,7 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 			for k, v := range fme {
 				if a, ok := always[k]; ok {
 					if !reflect.DeepEqual(a, v) {
-						return nil, fmt.Errorf("alwaysMatch|required[%q] == %+v, desired[%q] == %+v, they must be equal", k, a, k, v)
+						return nil, fmt.Errorf("alwaysMatch|required|desired[%q] == %+v, firstMatch[%q] == %+v, they must be equal", k, a, k, v)
 					}
 					continue
 				}
