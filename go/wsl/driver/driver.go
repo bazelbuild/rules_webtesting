@@ -40,8 +40,10 @@ const compName = "WSL Driver"
 
 // Driver is wrapper around a running WebDriver endpoint binary.
 type Driver struct {
-	*exec.Cmd
 	Address string
+
+	cmd      *exec.Cmd
+	waitChan chan error
 
 	// Mutex to prevent overlapping commands to remote end.
 	mu sync.Mutex
@@ -94,12 +96,13 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 
 	statusURL := fmt.Sprintf("http://localhost:%d/status", wslCaps.port)
 
-	errChan := make(chan error)
-
+	errChan := make(chan error, 1)
+	driverChan := make(chan error, 1)
 	go func() {
 		err := cmd.Wait()
 		log.Printf("%s has exited: %v", wslCaps.binary, err)
 		errChan <- err
+		driverChan <- err
 		if stdout != os.Stdout {
 			stdout.Close()
 		}
@@ -146,8 +149,9 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 	}
 
 	return &Driver{
-		Cmd:     cmd,
-		Address: fmt.Sprintf("http://localhost:%d", wslCaps.port),
+		Address:  fmt.Sprintf("http://localhost:%d", wslCaps.port),
+		cmd:      cmd,
+		waitChan: driverChan,
 	}, nil
 }
 
@@ -340,9 +344,13 @@ func writeJWPNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(respJSON)
 }
 
+func (d *Driver) Wait() error {
+	return <-d.waitChan
+}
+
 // Kill kills a running WebDriver server.
 func (d *Driver) Kill() error {
-	return d.Process.Kill()
+	return d.cmd.Process.Kill()
 }
 
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
