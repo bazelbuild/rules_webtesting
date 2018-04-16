@@ -14,7 +14,10 @@
 
 package capabilities
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestMerge(t *testing.T) {
 	testCases := []struct {
@@ -182,459 +185,471 @@ func TestMerge(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if result := Merge(tc.input1, tc.input2); !JSONEquals(tc.result, result) {
+			if result := Merge(tc.input1, tc.input2); !reflect.DeepEqual(tc.result, result) {
 				t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, result, tc.result)
 			}
 		})
 	}
 }
 
-func TestMergeSpecOntoCaps(t *testing.T) {
+func TestFromNewSessionArgs(t *testing.T) {
 	testCases := []struct {
-		name   string
-		caps   map[string]interface{}
-		spec   Spec
-		result Spec
+		name    string
+		args    map[string]interface{}
+		want    *Capabilities
+		wantErr bool
 	}{
 		{
-			name:   "all nil",
-			caps:   map[string]interface{}{"v": 1},
-			spec:   Spec{},
-			result: Spec{},
-		},
-		{
-			name:   "empty, not nil",
-			caps:   map[string]interface{}{"v": 1},
-			spec:   Spec{OSSCaps: map[string]interface{}{}, Always: map[string]interface{}{}},
-			result: Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 1}},
-		},
-		{
-			name:   "nil OSS",
-			caps:   map[string]interface{}{"v": 1},
-			spec:   Spec{Always: map[string]interface{}{"x": 2}},
-			result: Spec{Always: map[string]interface{}{"v": 1, "x": 2}},
-		},
-		{
-			name:   "nil W3C",
-			caps:   map[string]interface{}{"v": 1},
-			spec:   Spec{OSSCaps: map[string]interface{}{"x": 2}},
-			result: Spec{OSSCaps: map[string]interface{}{"v": 1, "x": 2}},
-		},
-		{
-			name: "both present",
-			caps: map[string]interface{}{"v": 1},
-			spec: Spec{
-				OSSCaps: map[string]interface{}{"type": "oss"},
-				Always:  map[string]interface{}{"type": "w3c"},
+			name: "empty args",
+			args: map[string]interface{}{},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
 			},
-			result: Spec{
-				OSSCaps: map[string]interface{}{"v": 1, "type": "oss"},
-				Always:  map[string]interface{}{"v": 1, "type": "w3c"},
-			},
+			wantErr: false,
 		},
 		{
-			name: "W3C uses firstMatch without alwaysMatch",
-			caps: map[string]interface{}{"v": 1},
-			spec: Spec{
-				OSSCaps: map[string]interface{}{"type": "oss"},
-				First: []map[string]interface{}{
-					{"one": 1},
-					{"two": 2},
+			name: "alwaysMatch",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
 				},
 			},
-			result: Spec{
-				OSSCaps: map[string]interface{}{"v": 1, "type": "oss"},
-				Always:  map[string]interface{}{"v": 1},
-				First: []map[string]interface{}{
-					{"one": 1},
-					{"two": 2},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
 				},
 			},
+			wantErr: false,
 		},
 		{
-			name: "no overlaps with firstMatch",
-			caps: map[string]interface{}{"three": 3, "four": 999},
-			spec: Spec{
-				Always: map[string]interface{}{"type": "w3c", "four": 4},
-				First: []map[string]interface{}{
-					{"one": 1},
-					{"two": 2},
+			name: "requiredCapabilities",
+			args: map[string]interface{}{
+				"requiredCapabilities": map[string]interface{}{
+					"key1": "value1",
 				},
 			},
-			result: Spec{
-				Always: map[string]interface{}{"type": "w3c", "three": 3, "four": 4},
-				First: []map[string]interface{}{
-					{"one": 1},
-					{"two": 2},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
 				},
 			},
+			wantErr: false,
 		},
 		{
-			name: "firstMatch key collision",
-			caps: map[string]interface{}{"zero": 0, "one": 999},
-			spec: Spec{
-				Always: map[string]interface{}{"type": "w3c"},
-				First: []map[string]interface{}{
-					{"one": 1},
-					{"two": 2},
-					{"three": 3},
+			name: "desiredCapabilities",
+			args: map[string]interface{}{
+				"desiredCapabilities": map[string]interface{}{
+					"key1": "value1",
 				},
 			},
-			result: Spec{
-				Always: map[string]interface{}{"type": "w3c", "zero": 0},
-				First: []map[string]interface{}{
-					{"one": 1},
-					{"two": 2, "one": 999},
-					{"three": 3, "one": 999},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
 				},
 			},
+			wantErr: false,
+		},
+		{
+			name: "all three",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
+				},
+				"desiredCapabilities": map[string]interface{}{
+					"key2": "value2",
+				},
+				"requiredCapabilities": map[string]interface{}{
+					"key3": "value3",
+				},
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+					"key2": "value2",
+					"key3": "value3",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "all three, same value ok",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
+				},
+				"desiredCapabilities": map[string]interface{}{
+					"key1": "value1",
+				},
+				"requiredCapabilities": map[string]interface{}{
+					"key1": "value1",
+				},
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "always, required != desired",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
+				},
+				"desiredCapabilities": map[string]interface{}{
+					"key1": "value12",
+				},
+				"requiredCapabilities": map[string]interface{}{
+					"key1": "value1",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "always, desired != required",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
+				},
+				"desiredCapabilities": map[string]interface{}{
+					"key1": "value1",
+				},
+				"requiredCapabilities": map[string]interface{}{
+					"key1": "value12",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "always != desired. required",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value12",
+					},
+				},
+				"desiredCapabilities": map[string]interface{}{
+					"key1": "value1",
+				},
+				"requiredCapabilities": map[string]interface{}{
+					"key1": "value1",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "firstMatch, no conflicts",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
+					"firstMatch": []map[string]interface{}{
+						{
+							"key2": "value2",
+						},
+						{
+							"key2": "value3",
+						},
+					},
+				},
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key2": "value3",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "firstMatch, same value as alwaysMatch",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
+					"firstMatch": []map[string]interface{}{
+						{
+							"key1": "value1",
+							"key2": "value2",
+						},
+						{
+							"key2": "value3",
+						},
+					},
+				},
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key2": "value3",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "firstMatch, different value than alwaysMatch",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"key1": "value1",
+					},
+					"firstMatch": []map[string]interface{}{
+						{
+							"key1": "value12",
+							"key2": "value2",
+						},
+						{
+							"key2": "value3",
+						},
+					},
+				},
+			},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if result := MergeSpecOntoCaps(tc.caps, tc.spec); !SpecEquals(tc.result, result) {
-				t.Errorf("Got MergeSpecOntoCaps(%+v, %+v) == %+v, expected %+v", tc.caps, tc.spec, result, tc.result)
+			got, err := FromNewSessionArgs(tc.args)
+
+			if err != nil || tc.wantErr {
+				if (err != nil) != tc.wantErr {
+					t.Fatalf("got err %v, wantErr==%t", err, tc.wantErr)
+				}
+				return
+			}
+
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Fatalf("got %#v, want %#v", got, tc.want)
 			}
 		})
 	}
 }
 
-func TestSpecEquals(t *testing.T) {
-	testCases := []struct {
-		name   string
-		input1 Spec
-		input2 Spec
-		result bool
-	}{
-		{
-			"all nil",
-			Spec{},
-			Spec{},
-			true,
-		},
-		{
-			"nil is not the same as empty",
-			Spec{},
-			Spec{Always: map[string]interface{}{}},
-			false,
-		},
-		{
-			"nil vs non-empty",
-			Spec{},
-			Spec{Always: map[string]interface{}{"v": 1}},
-			false,
-		},
-		{
-			"equal with First absent",
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
-			true,
-		},
-		{
-			"equal, all fields present",
-			Spec{
-				OSSCaps: map[string]interface{}{"v": 1},
-				Always:  map[string]interface{}{"v": 2},
-				First: []map[string]interface{}{
-					{"first": 1},
-					{"second": 2},
-				},
-			},
-			Spec{
-				OSSCaps: map[string]interface{}{"v": 1},
-				Always:  map[string]interface{}{"v": 2},
-				First: []map[string]interface{}{
-					{"first": 1},
-					{"second": 2},
-				},
-			},
-			true,
-		},
-		{
-			"one dialect unequal",
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 999}},
-			false,
-		},
-		{
-			"dialects swapped",
-			Spec{OSSCaps: map[string]interface{}{"v": 1}, Always: map[string]interface{}{"v": 2}},
-			Spec{OSSCaps: map[string]interface{}{"v": 2}, Always: map[string]interface{}{"v": 1}},
-			false,
-		},
-		{
-			"First order matters",
-			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				{"first": 1}, {"second": 2},
-			}},
-			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				{"second": 2}, {"first": 1},
-			}},
-			false,
-		},
-		{
-			"First uneven length",
-			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				{"first": 1}, {"second": 2},
-			}},
-			Spec{Always: map[string]interface{}{"v": 1}, First: []map[string]interface{}{
-				{"first": 1},
-			}},
-			false,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if result := SpecEquals(tc.input1, tc.input2); result != tc.result {
-				t.Errorf("Got SpecEquals(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
-			}
-		})
-	}
-}
-
-func TestJSONEquals(t *testing.T) {
-	testCases := []struct {
-		name   string
-		input1 map[string]interface{}
-		input2 map[string]interface{}
-		result bool
-	}{
-		{
-			"empty",
-			map[string]interface{}{},
-			map[string]interface{}{},
-			true,
-		},
-		{
-			"nil map,nil map",
-			nil,
-			nil,
-			true,
-		},
-		{
-			"nil map,empty map",
-			nil,
-			map[string]interface{}{},
-			false,
-		},
-		{
-			"nil map,non-empty",
-			nil,
-			map[string]interface{}{"v": nil},
-			false,
-		},
-		{
-			"int,nil",
-			map[string]interface{}{"v": 1},
-			map[string]interface{}{"v": nil},
-			false,
-		},
-		{
-			"string,nil",
-			map[string]interface{}{"v": "hello"},
-			map[string]interface{}{"v": nil},
-			false,
-		},
-		{
-			"bool,nil",
-			map[string]interface{}{"v": true},
-			map[string]interface{}{"v": nil},
-			false,
-		},
-		{
-			"slice,nil",
-			map[string]interface{}{"v": []interface{}{}},
-			map[string]interface{}{"v": nil},
-			false,
-		},
-		{
-			"map,nil",
-			map[string]interface{}{"v": map[string]interface{}{}},
-			map[string]interface{}{"v": nil},
-			false,
-		},
-		{
-			"map,map equals",
-			map[string]interface{}{"v": map[string]interface{}{"a": 1}},
-			map[string]interface{}{"v": map[string]interface{}{"a": 1}},
-			true,
-		},
-		{
-			"map,map different values",
-			map[string]interface{}{"v": map[string]interface{}{"a": 1}},
-			map[string]interface{}{"v": map[string]interface{}{"a": "hello"}},
-			false,
-		},
-		{
-			"map,map different keys",
-			map[string]interface{}{"v": map[string]interface{}{"a": 1}},
-			map[string]interface{}{"v": map[string]interface{}{"b": 1}},
-			false,
-		},
-		{
-			"map,map different lengths",
-			map[string]interface{}{"v": map[string]interface{}{"a": 1}},
-			map[string]interface{}{"v": map[string]interface{}{"a": 1, "b": 1}},
-			false,
-		},
-		{
-			"slice,slice equals",
-			map[string]interface{}{"v": []interface{}{1}},
-			map[string]interface{}{"v": []interface{}{1}},
-			true,
-		},
-		{
-			"slice,slice different values",
-			map[string]interface{}{"v": []interface{}{1}},
-			map[string]interface{}{"v": []interface{}{"hello"}},
-			false,
-		},
-		{
-			"slice,slice different lengths",
-			map[string]interface{}{"v": []interface{}{1}},
-			map[string]interface{}{"v": []interface{}{1, 1}},
-			false,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if result := JSONEquals(tc.input1, tc.input2); result != tc.result {
-				t.Errorf("Got JSONEquals(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
-			}
-		})
-	}
-}
-
-type kv struct {
-	k string
-	v interface{}
-}
-
-func TestGoogleCap(t *testing.T) {
+func TestMergeOver(t *testing.T) {
 	testCases := []struct {
 		name  string
-		caps  Spec
-		wants []kv
+		this  *Capabilities
+		other map[string]interface{}
+		want  *Capabilities
 	}{
 		{
-			"not found",
-			Spec{},
-			[]kv{{"capName", nil}, {"otherCapName", nil}},
-		},
-		{
-			"found only in oss caps",
-			Spec{OSSCaps: map[string]interface{}{"google:otherCap": "xxx"}},
-			[]kv{{"otherCap", "xxx"}},
-		},
-		{
-			"found only in w3c caps",
-			Spec{Always: map[string]interface{}{"google:capName": "vvvvvv"}},
-			[]kv{{"capName", "vvvvvv"}},
-		},
-		{
-			"w3c caps value takes precedence",
-			Spec{
-				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
-				OSSCaps: map[string]interface{}{"google:capName": "xxx"},
+			name: "empty",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
 			},
-			[]kv{{"capName", "vvvvvv"}},
+			other: map[string]interface{}{},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
 		},
 		{
-			"requires google prefix",
-			Spec{OSSCaps: map[string]interface{}{"capName": "vvvvvv"}},
-			[]kv{{"capName", nil}},
+			name: "no overlap",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key4": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+					"key4": "value4",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+		},
+		{
+			name: "overlaps always",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key1": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+		},
+		{
+			name: "overlaps first[0]",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key2": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key2": "value4",
+						"key3": "value3",
+					},
+				},
+			},
+		},
+		{
+			name: "overlaps first[1]",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key3": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+						"key3": "value4",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+		},
+		{
+			name: "overlap and non-overlap",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key1": "value11",
+				"key2": "value22",
+				"key3": "value33",
+				"key4": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+					"key4": "value4",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+						"key3": "value33",
+					},
+					{
+						"key2": "value22",
+						"key3": "value3",
+					},
+				},
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			for _, want := range tc.wants {
-				if got := GoogleCap(tc.caps, want.k); got != want.v {
-					t.Errorf("GoogleCap(%v, %q) is %v, want %v", tc.caps, want.k, got, want.v)
-				}
-				has := want.v != nil
-				if got := HasGoogleCap(tc.caps, want.k); got != has {
-					t.Errorf("HasGoogleCap(%v, %q) is %v, want %v", tc.caps, want.k, got, has)
-				}
-			}
-		})
-	}
-}
-
-func TestSetGoogleCap(t *testing.T) {
-	testCases := []struct {
-		name string
-		caps Spec
-		k    string
-		v    interface{}
-		want Spec
-	}{
-		{
-			"set cap",
-			Spec{
-				OSSCaps: map[string]interface{}{},
-				Always:  map[string]interface{}{},
-			},
-			"capName", "vvvvvv",
-			Spec{
-				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv"},
-				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
-			},
-		},
-		{
-			"nil OSS caps are ignored",
-			Spec{
-				Always: map[string]interface{}{},
-			},
-			"capName", "vvvvvv",
-			Spec{
-				Always: map[string]interface{}{"google:capName": "vvvvvv"},
-			},
-		},
-		{
-			"nil W3C caps are ignored",
-			Spec{
-				OSSCaps: map[string]interface{}{},
-			},
-			"capName", "vvvvvv",
-			Spec{
-				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv"},
-			},
-		},
-		{
-			"overwrite cap",
-			Spec{
-				OSSCaps: map[string]interface{}{"google:capName": "xyz"},
-				Always:  map[string]interface{}{"google:capName": "xyz"},
-			},
-			"capName", "vvvvvv",
-			Spec{
-				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv"},
-				Always:  map[string]interface{}{"google:capName": "vvvvvv"},
-			},
-		},
-		{
-			"overwrite google-prefixed cap only",
-			Spec{
-				OSSCaps: map[string]interface{}{"capName": "xyz"},
-				Always:  map[string]interface{}{"capName": "xyz"},
-			},
-			"capName", "vvvvvv",
-			Spec{
-				OSSCaps: map[string]interface{}{"google:capName": "vvvvvv", "capName": "xyz"},
-				Always:  map[string]interface{}{"google:capName": "vvvvvv", "capName": "xyz"},
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			SetGoogleCap(tc.caps, tc.k, tc.v)
-			if !SpecEquals(tc.caps, tc.want) {
-				t.Errorf("got %v, want %v", tc.caps, tc.want)
+			got := tc.this.MergeOver(tc.other)
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Fatalf("got %#v, want %#v", got, tc.want)
 			}
 		})
 	}

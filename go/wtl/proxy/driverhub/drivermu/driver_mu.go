@@ -10,7 +10,7 @@ import (
 )
 
 // ProviderFunc provides a handler that temporally serializes all commands to a session.
-func ProviderFunc(_ *driverhub.WebDriverSession, _ capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+func ProviderFunc(_ *driverhub.WebDriverSession, _ *capabilities.Capabilities, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
 	var mu sync.Mutex
 
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {

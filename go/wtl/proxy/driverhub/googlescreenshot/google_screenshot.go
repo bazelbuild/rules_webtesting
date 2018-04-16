@@ -38,7 +38,7 @@ type request struct {
 }
 
 // ProviderFunc provides a handler for an advanced screenshot endpoint at POST google/screenshot.
-func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+func ProviderFunc(session *driverhub.WebDriverSession, _ *capabilities.Capabilities, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 		if rq.Method != http.MethodPost || len(rq.Path) != 2 || rq.Path[0] != "google" || rq.Path[1] != "screenshot" {
 			return base(ctx, rq)

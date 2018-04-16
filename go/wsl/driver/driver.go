@@ -257,49 +257,29 @@ func (d *Driver) Forward(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewSessionW3C creates a new session using the W3C protocol.
-func (d *Driver) NewSessionW3C(ctx context.Context, alwaysMatch map[string]interface{}, firstMatch []map[string]interface{}, w http.ResponseWriter) (string, error) {
-	delete(alwaysMatch, "google:wslConfig")
-
-	for _, fm := range firstMatch {
-		delete(fm, "google:wslConfig")
-	}
-
-	wd, err := webdriver.CreateSession(ctx, d.Address, 1, capabilities.Spec{
-		Always: alwaysMatch,
-		First:  firstMatch,
-	})
-
-	if err != nil {
-		return "", err
-	}
-
-	if wd.W3C() {
-		writeW3CNewSessionResponse(wd, w)
-	} else {
-		writeJWPNewSessionResponse(wd, w)
-	}
-
-	return wd.SessionID(), nil
-}
-
-// NewSessionJWP creates a new session using the Selenium JSON wire protocol.
-func (d *Driver) NewSessionJWP(ctx context.Context, desired, required map[string]interface{}, w http.ResponseWriter) (string, error) {
-	caps := map[string]interface{}{}
-
-	for k, v := range desired {
+func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities, w http.ResponseWriter) (string, error) {
+	always := map[string]interface{}{}
+	for k, v := range caps.AlwaysMatch {
 		if k != "google:wslConfig" {
-			caps[k] = v
+			always[k] = v
 		}
 	}
 
-	for k, v := range required {
-		if k != "google:wslConfig" {
-			caps[k] = v
+	var first []map[string]interface{}
+
+	for _, fm := range caps.FirstMatch {
+		newFM := map[string]interface{}{}
+		for k, v := range fm {
+			if k != "google:wslConfig" {
+				newFM[k] = v
+			}
 		}
+		first = append(first, newFM)
 	}
 
-	wd, err := webdriver.CreateSession(ctx, d.Address, 1, capabilities.Spec{
-		OSSCaps: caps,
+	wd, err := webdriver.CreateSession(ctx, d.Address, 1, &capabilities.Capabilities{
+		AlwaysMatch: always,
+		FirstMatch:  first,
 	})
 
 	if err != nil {

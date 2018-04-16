@@ -26,6 +26,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/wsl/driver"
 )
 
@@ -89,45 +90,24 @@ func (h *Hub) driver(session string) *driver.Driver {
 	return h.sessions[session]
 }
 
-type capabilities struct {
-	DesiredCapabilities  map[string]interface{} `json:"desiredCapabilities,omitempty"`
-	RequiredCapabilities map[string]interface{} `json:"requiredCapabilities,omitempty"`
-	Capabilities         *w3cCaps               `json:"capabilities,omitempty"`
-}
-
-type w3cCaps struct {
-	AlwaysMatch map[string]interface{}   `json:"alwaysMatch,omitempty"`
-	FirstMatch  []map[string]interface{} `json:"firstMatch,omitempty"`
-}
-
 func (h *Hub) newSession(w http.ResponseWriter, r *http.Request) {
-	reqJSON := capabilities{}
+	reqJSON := map[string]interface{}{}
 
 	if err := json.NewDecoder(r.Body).Decode(&reqJSON); err != nil {
 		errorResponse(w, http.StatusBadRequest, 13, "invalid argument", err.Error())
 		return
 	}
 
-	var driver *driver.Driver
-	var session string
-	var err error
-
-	if reqJSON.Capabilities != nil {
-		session, driver, err = h.newSessionW3CCaps(r.Context(), *reqJSON.Capabilities, w)
-		if err != nil {
-			log.Printf("Error creating W3C session: %v", err)
-		}
+	caps, err := capabilities.FromNewSessionArgs(reqJSON)
+	if err != nil {
+		errorResponse(w, http.StatusBadRequest, 13, "invalid argument", err.Error())
+		return
 	}
 
-	if driver == nil && reqJSON.DesiredCapabilities != nil {
-		session, driver, err = h.newSessionJWPCaps(r.Context(), reqJSON.DesiredCapabilities, reqJSON.RequiredCapabilities, w)
-		if err != nil {
-			log.Printf("Error creating JWP session: %v", err)
-		}
-	}
-
-	if driver == nil {
+	session, driver, err := h.newSessionFromCaps(r.Context(), caps, w)
+	if err != nil {
 		errorResponse(w, http.StatusInternalServerError, 33, "session not created", fmt.Sprintf("unable to create session: %v", err))
+		log.Printf("Error creating webdriver session: %v", err)
 		return
 	}
 
@@ -136,7 +116,7 @@ func (h *Hub) newSession(w http.ResponseWriter, r *http.Request) {
 	h.sessions[session] = driver
 }
 
-func (h *Hub) newSessionW3CCaps(ctx context.Context, caps w3cCaps, w http.ResponseWriter) (string, *driver.Driver, error) {
+func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabilities, w http.ResponseWriter) (string, *driver.Driver, error) {
 	if caps.AlwaysMatch != nil {
 		wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{})
 		if ok {
@@ -145,7 +125,7 @@ func (h *Hub) newSessionW3CCaps(ctx context.Context, caps w3cCaps, w http.Respon
 				return "", nil, err
 			}
 
-			s, err := d.NewSessionW3C(ctx, caps.AlwaysMatch, caps.FirstMatch, w)
+			s, err := d.NewSession(ctx, caps, w)
 			if err != nil {
 				d.Kill()
 				return "", nil, err
@@ -164,7 +144,10 @@ func (h *Hub) newSessionW3CCaps(ctx context.Context, caps w3cCaps, w http.Respon
 				continue
 			}
 
-			s, err := d.NewSessionW3C(ctx, caps.AlwaysMatch, []map[string]interface{}{fm}, w)
+			s, err := d.NewSession(ctx, &capabilities.Capabilities{
+				AlwaysMatch: caps.AlwaysMatch,
+				FirstMatch:  []map[string]interface{}{fm},
+			}, w)
 			if err != nil {
 				d.Kill()
 				continue
@@ -175,47 +158,6 @@ func (h *Hub) newSessionW3CCaps(ctx context.Context, caps w3cCaps, w http.Respon
 	}
 
 	return "", nil, errors.New("No first match caps worked")
-}
-
-func (h *Hub) newSessionJWPCaps(ctx context.Context, desired, required map[string]interface{}, w http.ResponseWriter) (string, *driver.Driver, error) {
-	if required != nil {
-		wslConfig, ok := required["google:wslConfig"].(map[string]interface{})
-		if ok {
-			d, err := driver.New(ctx, wslConfig)
-			if err != nil {
-				return "", nil, err
-			}
-
-			s, err := d.NewSessionJWP(ctx, desired, required, w)
-			if err != nil {
-				d.Kill()
-				return "", nil, err
-			}
-
-			return s, d, nil
-		}
-	}
-
-	if desired != nil {
-		wslConfig, ok := desired["google:wslConfig"].(map[string]interface{})
-
-		if ok {
-			d, err := driver.New(ctx, wslConfig)
-			if err != nil {
-				return "", nil, err
-			}
-
-			s, err := d.NewSessionJWP(ctx, desired, required, w)
-			if err != nil {
-				d.Kill()
-				return "", nil, err
-			}
-
-			return s, d, nil
-		}
-	}
-
-	return "", nil, errors.New("neither desired or required included wsl:config")
 }
 
 func (h *Hub) quitSession(session string, driver *driver.Driver, w http.ResponseWriter, r *http.Request) {

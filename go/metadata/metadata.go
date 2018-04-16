@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"regexp"
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
@@ -190,27 +191,15 @@ func Equals(e, a *Metadata) bool {
 	} else {
 		extsEqual = e.Extension.Equals(a.Extension)
 	}
-	return capabilities.JSONEquals(e.Capabilities, a.Capabilities) &&
+	return extsEqual &&
 		e.Environment == a.Environment &&
 		e.Label == a.Label &&
 		e.BrowserLabel == a.BrowserLabel &&
 		e.TestLabel == a.TestLabel &&
 		e.ConfigLabel == a.ConfigLabel &&
 		e.DebuggerPort == a.DebuggerPort &&
-		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles) &&
-		extsEqual
-}
-
-func mapEquals(e, a map[string]string) bool {
-	if len(e) != len(a) {
-		return false
-	}
-	for k, ev := range e {
-		if av, ok := a[k]; !ok || ev != av {
-			return false
-		}
-	}
-	return true
+		reflect.DeepEqual(e.Capabilities, a.Capabilities) &&
+		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles)
 }
 
 // GetFilePath returns the path to a file specified by web_test_archive,
@@ -325,14 +314,7 @@ func (e *extension) Normalize() error {
 }
 
 func (e *extension) Equals(other Extension) bool {
-	if other == nil {
-		return len(e.value) == 0
-	}
-	o, ok := other.(*extension)
-	if !ok {
-		return false
-	}
-	return capabilities.JSONEquals(e.value, o.value)
+	return reflect.DeepEqual(e, other)
 }
 
 func (e *extension) UnmarshalJSON(b []byte) error {

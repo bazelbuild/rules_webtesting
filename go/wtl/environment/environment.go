@@ -39,7 +39,7 @@ type Env interface {
 	// session command is sent to the WebDriver server. caps is the capabilities
 	// sent to the proxy from the client, and the return value is the capabilities
 	// that should be actually sent to the WebDriver server new session command.
-	StartSession(ctx context.Context, id int, caps capabilities.Spec) (capabilities.Spec, error)
+	StartSession(ctx context.Context, id int, caps *capabilities.Capabilities) (*capabilities.Capabilities, error)
 	// StopSession is called for each new WebDriver session, before the delete
 	// session command is sent to the WebDriver server.
 	StopSession(ctx context.Context, id int) error
@@ -84,16 +84,15 @@ func (b *Base) SetUp(ctx context.Context) error {
 // StartSession merges the passed in caps with b.Metadata.caps and returns the merged
 // capabilities that should be used when calling new session on the WebDriver
 // server.
-func (b *Base) StartSession(ctx context.Context, id int, caps capabilities.Spec) (capabilities.Spec, error) {
+func (b *Base) StartSession(ctx context.Context, id int, caps *capabilities.Capabilities) (*capabilities.Capabilities, error) {
 	if err := b.Healthy(ctx); err != nil {
-		return capabilities.Spec{}, err
+		return nil, err
 	}
 	resolved, err := b.Metadata.ResolvedCapabilities()
 	if err != nil {
-		return capabilities.Spec{}, err
+		return nil, err
 	}
-	updated := capabilities.MergeSpecOntoCaps(resolved, caps)
-	return updated, nil
+	return caps.MergeOver(resolved), nil
 }
 
 // StopSession is a no-op implementation of Env.StopSession.

@@ -165,25 +165,11 @@ func (j *jsonResp) isError() bool {
 
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
 // and ensures that the browser connection is working. It retries up to attempts - 1 times.
-func CreateSession(ctx context.Context, addr string, attempts int, spec capabilities.Spec) (WebDriver, error) {
-	reqBody := map[string]interface{}{}
-	if spec.OSSCaps != nil {
-		reqBody["desiredCapabilities"] = spec.OSSCaps
-	}
-	if spec.Always != nil {
-		w3cMap := map[string]interface{}{"alwaysMatch": spec.Always}
-		if spec.First != nil {
-			w3cMap["firstMatch"] = spec.First
-		}
-		reqBody["capabilities"] = w3cMap
-	}
-	if len(reqBody) == 0 {
-		reqBody = map[string]interface{}{
-			"desiredCapabilities": map[string]interface{}{},
-			"capabilities": map[string]interface{}{
-				"alwaysMatch": map[string]interface{}{},
-			},
-		}
+func CreateSession(ctx context.Context, addr string, attempts int, requestedCaps *capabilities.Capabilities) (WebDriver, error) {
+	reqBody, err := requestedCaps.ToMixedMode()
+	if err != nil {
+		log.Print("Creating session with W3C-only capabilities")
+		reqBody = requestedCaps.ToW3C()
 	}
 
 	urlPrefix, err := url.Parse(addr)
@@ -255,7 +241,7 @@ func CreateSession(ctx context.Context, addr string, attempts int, spec capabili
 				sessionID:     session,
 				capabilities:  caps,
 				client:        client,
-				scriptTimeout: scriptTimeout(spec),
+				scriptTimeout: scriptTimeout(requestedCaps),
 				w3c:           respBody.Status == nil,
 			}
 
@@ -690,8 +676,11 @@ return {"X0": Math.round(left), "Y0": Math.round(top), "X1": Math.round(left + r
 	return image.Rect(bounds.X0, bounds.Y0, bounds.X1, bounds.Y1), err
 }
 
-func scriptTimeout(caps capabilities.Spec) time.Duration {
-	timeouts, ok := caps.OSSCaps["timeouts"].(map[string]interface{})
+func scriptTimeout(caps *capabilities.Capabilities) time.Duration {
+	if caps == nil {
+		return 0
+	}
+	timeouts, ok := caps.AlwaysMatch["timeouts"].(map[string]interface{})
 	if !ok {
 		return 0
 	}
