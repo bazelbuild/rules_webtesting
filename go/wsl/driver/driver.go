@@ -324,7 +324,7 @@ func writeJWPNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(respJSON)
 }
 
-// Waits for the driver binary to exit, and returns an error if the binary exited with an error.
+// Wait waits for the driver binary to exit, and returns an error if the binary exited with an error.
 func (d *Driver) Wait() error {
 	return <-d.waitChan
 }
