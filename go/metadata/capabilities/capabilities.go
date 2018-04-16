@@ -56,49 +56,56 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 	if w3c != nil {
 		if am, ok := w3c["alwaysMatch"].(map[string]interface{}); ok {
 			for k, v := range am {
-				always[k] = v
+				always[k] = normalize(k, v)
 			}
 		}
 	}
 
 	if required, ok := args["requiredCapabilities"].(map[string]interface{}); ok {
 		for k, v := range required {
+			nv := normalize(k, v)
 			if a, ok := always[k]; ok {
-				if !reflect.DeepEqual(a, v) {
+				if !reflect.DeepEqual(a, nv) {
 					return nil, fmt.Errorf("alwaysMatch[%q] == %+v, required[%q] == %+v, they must be equal", k, a, k, v)
 				}
 				continue
 			}
-			always[k] = v
+			always[k] = nv
 
 		}
 	}
 
 	if desired, ok := args["desiredCapabilities"].(map[string]interface{}); ok {
 		for k, v := range desired {
+			nv := normalize(k, v)
 			if a, ok := always[k]; ok {
-				if !reflect.DeepEqual(a, v) {
+				if !reflect.DeepEqual(a, nv) {
 					return nil, fmt.Errorf("alwaysMatch|required[%q] == %+v, desired[%q] == %+v, they must be equal", k, a, k, v)
 				}
 				continue
 			}
-			always[k] = v
+			always[k] = nv
 		}
 	}
 
 	if w3c != nil {
-		fm, _ := w3c["firstMatch"].([]map[string]interface{})
+		fm, _ := w3c["firstMatch"].([]interface{})
 
-		for _, fme := range fm {
+		for _, e := range fm {
+			fme, ok := e.(map[string]interface{})
+			if !ok {
+				return nil, fmt.Errorf("firstMatch entries must be JSON Objects, found %#v", e)
+			}
 			newFM := map[string]interface{}{}
 			for k, v := range fme {
+				nv := normalize(k, v)
 				if a, ok := always[k]; ok {
-					if !reflect.DeepEqual(a, v) {
+					if !reflect.DeepEqual(a, nv) {
 						return nil, fmt.Errorf("alwaysMatch|required|desired[%q] == %+v, firstMatch[%q] == %+v, they must be equal", k, a, k, v)
 					}
 					continue
 				}
-				newFM[k] = v
+				newFM[k] = nv
 			}
 			first = append(first, newFM)
 		}
@@ -108,6 +115,33 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 		AlwaysMatch: always,
 		FirstMatch:  first,
 	}, nil
+}
+
+func normalize(key string, value interface{}) interface{} {
+	if key != "proxy" {
+		return value
+	}
+
+	proxy, ok := value.(map[string]interface{})
+	if !ok {
+		return value
+	}
+
+	// If the value if a proxy config, normalize by removing nulls and ensuring proxyType is lower case.
+	out := map[string]interface{}{}
+
+	for k, v := range proxy {
+		if v == nil {
+			continue
+		}
+		if k == "proxyType" {
+			out[k] = strings.ToLower(v.(string))
+			continue
+		}
+		out[k] = v
+	}
+
+	return out
 }
 
 // MergeOver creates a new Capabilities with AlwaysMatch == (c.AlwaysMatch deeply merged over other) and
@@ -346,6 +380,7 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 	return nl
 }
 
+// CanReuseSession returns true if the "google:canReuseSession" is set.
 func CanReuseSession(caps *Capabilities) bool {
 	reuse, _ := caps.AlwaysMatch["google:canReuseSession"].(bool)
 	return reuse

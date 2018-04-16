@@ -358,11 +358,11 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value1",
 					},
-					"firstMatch": []map[string]interface{}{
-						{
+					"firstMatch": []interface{}{
+						map[string]interface{}{
 							"key2": "value2",
 						},
-						{
+						map[string]interface{}{
 							"key2": "value3",
 						},
 					},
@@ -390,12 +390,12 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value1",
 					},
-					"firstMatch": []map[string]interface{}{
-						{
+					"firstMatch": []interface{}{
+						map[string]interface{}{
 							"key1": "value1",
 							"key2": "value2",
 						},
-						{
+						map[string]interface{}{
 							"key2": "value3",
 						},
 					},
@@ -423,12 +423,12 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"alwaysMatch": map[string]interface{}{
 						"key1": "value1",
 					},
-					"firstMatch": []map[string]interface{}{
-						{
+					"firstMatch": []interface{}{
+						map[string]interface{}{
 							"key1": "value12",
 							"key2": "value2",
 						},
-						{
+						map[string]interface{}{
 							"key2": "value3",
 						},
 					},
