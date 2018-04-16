@@ -22,6 +22,19 @@ import (
 	"strings"
 )
 
+// See https://w3c.github.io/webdriver/webdriver-spec.html#capabilities
+var w3cSupportedCapabilities = []string{
+	"acceptInsecureCerts",
+	"browserName",
+	"browserVersion",
+	"pageLoadStrategy",
+	"platformName",
+	"proxy",
+	"setWindowRect",
+	"timeouts",
+	"unhandledPromptBehavior",
+}
+
 // Capabilities is a W3C WebDriver capabilities object.
 type Capabilities struct {
 	AlwaysMatch map[string]interface{}
@@ -173,21 +186,53 @@ func (c *Capabilities) ToJWP() (map[string]interface{}, error) {
 
 // ToW3C creates a map suitable for use as arguments to a New Session request for W3C remote ends.
 func (c *Capabilities) ToW3C() map[string]interface{} {
+	if c == nil {
+		return map[string]interface{}{
+			"capabilities": map[string]interface{}{},
+		}
+	}
+
 	caps := map[string]interface{}{}
 
-	if c != nil {
-		if len(c.AlwaysMatch) != 0 {
-			caps["alwaysMatch"] = c.AlwaysMatch
-		}
+	alwaysMatch := w3cCapabilities(c.AlwaysMatch)
+	var firstMatch []map[string]interface{}
 
-		if len(c.FirstMatch) != 0 {
-			caps["firstMatch"] = c.FirstMatch
-		}
+	for _, fm := range c.FirstMatch {
+		firstMatch = append(firstMatch, w3cCapabilities(fm))
+	}
+
+	if len(alwaysMatch) != 0 {
+		caps["alwaysMatch"] = alwaysMatch
+	}
+
+	if len(firstMatch) != 0 {
+		caps["firstMatch"] = firstMatch
 	}
 
 	return map[string]interface{}{
 		"capabilities": caps,
 	}
+}
+
+// w3cCapabilities remove non-W3C capabilities.
+func w3cCapabilities(in map[string]interface{}) map[string]interface{} {
+	out := map[string]interface{}{}
+
+	for k, v := range in {
+		// extension capabilities
+		if strings.Contains(k, ":") {
+			out[k] = v
+			continue
+		}
+		for _, a := range w3cSupportedCapabilities {
+			if k == a {
+				out[k] = v
+				break
+			}
+		}
+	}
+
+	return out
 }
 
 // ToMixedMode creates a map suitable for use as arguments to a New Session request for arbitrary remote ends.
