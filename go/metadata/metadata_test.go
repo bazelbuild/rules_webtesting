@@ -15,6 +15,7 @@
 package metadata
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
@@ -299,7 +300,7 @@ func TestMergeNamedFiles(t *testing.T) {
 				t.Errorf("Got mergeNamedFiles(%+v, %+v) == %+v, expected error", tc.input1, tc.input2, result)
 				return
 			}
-			if !mapEquals(result, tc.result) {
+			if !reflect.DeepEqual(result, tc.result) {
 				t.Errorf("Got mergeNamedFiles(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
 			}
 		})

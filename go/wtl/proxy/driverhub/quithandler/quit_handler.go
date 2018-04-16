@@ -25,7 +25,7 @@ import (
 )
 
 // ProviderFunc provides a handler for quit and close commands that end the session within the environment when the browser exits.
-func ProviderFunc(session *driverhub.WebDriverSession, caps capabilities.Spec, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
+func ProviderFunc(session *driverhub.WebDriverSession, _ *capabilities.Capabilities, base driverhub.HandlerFunc) (driverhub.HandlerFunc, bool) {
 	return func(ctx context.Context, rq driverhub.Request) (driverhub.Response, error) {
 		// If quit command, then quit.
 		if rq.Method == http.MethodDelete && len(rq.Path) == 0 {

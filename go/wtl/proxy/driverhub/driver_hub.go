@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 	"sync"
 	"time"
 
@@ -166,7 +167,7 @@ func (h *WebDriverHub) Shutdown(ctx context.Context) error {
 }
 
 // GetReusableSession grabs a reusable session if one is available that matches caps.
-func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps capabilities.Spec) (*WebDriverSession, bool) {
+func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps *capabilities.Capabilities) (*WebDriverSession, bool) {
 	if !capabilities.CanReuseSession(caps) {
 		return nil, false
 	}
@@ -174,7 +175,7 @@ func (h *WebDriverHub) GetReusableSession(ctx context.Context, caps capabilities
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	for i, session := range h.reusableSessions {
-		if capabilities.SpecEquals(caps, session.RequestedCaps) {
+		if reflect.DeepEqual(caps, session.RequestedCaps) {
 			h.reusableSessions = append(h.reusableSessions[:i], h.reusableSessions[i+1:]...)
 			if err := session.WebDriver.Healthy(ctx); err == nil {
 				return session, true
@@ -220,30 +221,17 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	j := struct {
-		// OSS capabilities
-		Desired map[string]interface{} `json:"desiredCapabilities"`
-		// W3C capabilities
-		Capabilities struct {
-			Always map[string]interface{}   `json:"alwaysMatch"`
-			First  []map[string]interface{} `json:"firstMatch"`
-		} `json:"capabilities"`
-	}{}
+	j := map[string]interface{}{}
 
 	if err := json.Unmarshal(body, &j); err != nil {
 		sessionNotCreated(w, err)
 		return
 	}
 
-	if j.Desired == nil && j.Capabilities.Always == nil {
-		sessionNotCreated(w, errors.New(h.Name(), "new session request body missing capabilities"))
+	requestedCaps, err := capabilities.FromNewSessionArgs(j)
+	if err != nil {
+		sessionNotCreated(w, err)
 		return
-	}
-
-	requestedCaps := capabilities.Spec{
-		OSSCaps: j.Desired,
-		Always:  j.Capabilities.Always,
-		First:   j.Capabilities.First,
 	}
 
 	id := h.NextID()

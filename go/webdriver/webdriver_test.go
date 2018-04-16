@@ -29,7 +29,7 @@ import (
 func TestCreateSessionAndQuit(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func TestCreateSessionAndQuit(t *testing.T) {
 func TestHealthy(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,7 +98,7 @@ func TestExecuteScript(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func TestExecuteScriptAsync(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 1, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -190,7 +190,7 @@ func TestExecuteScriptAsync(t *testing.T) {
 func TestCurrentURL(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -208,7 +208,7 @@ func TestCurrentURL(t *testing.T) {
 func TestNavigateTo(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -232,7 +232,7 @@ func TestNavigateTo(t *testing.T) {
 func TestScreenshot(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -250,7 +250,7 @@ func TestScreenshot(t *testing.T) {
 func TestWindowHandles(t *testing.T) {
 	ctx := context.Background()
 
-	driver, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -266,7 +266,7 @@ func TestWindowHandles(t *testing.T) {
 func TestQuit(t *testing.T) {
 	ctx := context.Background()
 
-	driver, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -280,7 +280,7 @@ func TestQuit(t *testing.T) {
 func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -310,8 +310,8 @@ func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
 func TestExecuteScriptAsyncWithTimeoutWithCaps(t *testing.T) {
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{
-		OSSCaps: map[string]interface{}{
+	d, err := CreateSession(ctx, wdAddress(), 3, &capabilities.Capabilities{
+		AlwaysMatch: map[string]interface{}{
 			"timeouts": map[string]interface{}{
 				"script": 5000,
 			},
@@ -346,7 +346,7 @@ func TestGetWindowRect(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -413,7 +413,7 @@ func TestSetWindowRect(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -477,7 +477,7 @@ func TestSetWindowSize(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -547,7 +547,7 @@ func TestSetWindowPosition(t *testing.T) {
 
 	ctx := context.Background()
 
-	d, err := CreateSession(ctx, wdAddress(), 3, capabilities.Spec{})
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
