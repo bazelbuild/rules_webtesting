@@ -314,6 +314,14 @@ func (e *extension) Normalize() error {
 }
 
 func (e *extension) Equals(other Extension) bool {
+	if e == nil && other != nil {
+		return other.Equals(e)
+	}
+
+	if other == nil && (e == nil || len(e.value) == 0) {
+		return true
+	}
+
 	return reflect.DeepEqual(e, other)
 }
 
