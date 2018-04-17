@@ -35,10 +35,12 @@ var w3cSupportedCapabilities = []string{
 	"unhandledPromptBehavior",
 }
 
-// Capabilities is a W3C WebDriver capabilities object.
+// Capabilities is a WebDriver capabilities object. It is modeled after W3C capabilities, but supports
+// use as W3C, JWP, or mixed-mode.
 type Capabilities struct {
-	AlwaysMatch map[string]interface{}
-	FirstMatch  []map[string]interface{}
+	AlwaysMatch  map[string]interface{}
+	FirstMatch   []map[string]interface{}
+	W3CSupported bool
 }
 
 // FromNewSessionArgs creates a Capabilities object from the arguments to new session.
@@ -106,14 +108,16 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 					continue
 				}
 				newFM[k] = nv
+
 			}
 			first = append(first, newFM)
 		}
 	}
 
 	return &Capabilities{
-		AlwaysMatch: always,
-		FirstMatch:  first,
+		AlwaysMatch:  always,
+		FirstMatch:   first,
+		W3CSupported: w3c != nil,
 	}, nil
 }
 
@@ -144,8 +148,8 @@ func normalize(key string, value interface{}) interface{} {
 	return out
 }
 
-// MergeOver creates a new Capabilities with AlwaysMatch == (c.AlwaysMatch deeply merged over other) and
-// FirstMatch == c.FirstMatch.
+// MergeOver creates a new Capabilities with AlwaysMatch == (c.AlwaysMatch deeply merged over other),
+// FirstMatch == c.FirstMatch, and W3Supported == c.W3CSupported.
 func (c *Capabilities) MergeOver(other map[string]interface{}) *Capabilities {
 	if c == nil {
 		return &Capabilities{
@@ -178,8 +182,9 @@ func (c *Capabilities) MergeOver(other map[string]interface{}) *Capabilities {
 	alwaysMatch := Merge(always, c.AlwaysMatch)
 
 	return &Capabilities{
-		AlwaysMatch: alwaysMatch,
-		FirstMatch:  firstMatch,
+		AlwaysMatch:  alwaysMatch,
+		FirstMatch:   firstMatch,
+		W3CSupported: c.W3CSupported,
 	}
 }
 
@@ -272,10 +277,18 @@ func w3cCapabilities(in map[string]interface{}) map[string]interface{} {
 // ToMixedMode creates a map suitable for use as arguments to a New Session request for arbitrary remote ends.
 // Since JWP does not support an equivalent to FirstMatch, if FirstMatch contains more than 1 entry
 // then this returns an error (if it contains exactly 1 entry, it will be merged over AlwaysMatch).
+// If W3CSupported is false, this will return JWP capabilities instead of mixed-mode.
 func (c *Capabilities) ToMixedMode() (map[string]interface{}, error) {
+	if c == nil {
+		return map[string]interface{}{
+			"capabilities":        map[string]interface{}{},
+			"desiredCapabilities": map[string]interface{}{},
+		}, nil
+	}
+
 	jwp, err := c.ToJWP()
-	if err != nil {
-		return nil, err
+	if err != nil || c.W3CSupported {
+		return jwp, err
 	}
 
 	w3c := c.ToW3C()

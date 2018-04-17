@@ -278,8 +278,9 @@ func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities
 	}
 
 	wd, err := webdriver.CreateSession(ctx, d.Address, 1, &capabilities.Capabilities{
-		AlwaysMatch: always,
-		FirstMatch:  first,
+		AlwaysMatch:  always,
+		FirstMatch:   first,
+		W3CSupported: caps.W3CSupported,
 	})
 
 	if err != nil {
