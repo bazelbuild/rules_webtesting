@@ -275,20 +275,22 @@ func w3cCapabilities(in map[string]interface{}) map[string]interface{} {
 }
 
 // ToMixedMode creates a map suitable for use as arguments to a New Session request for arbitrary remote ends.
-// Since JWP does not support an equivalent to FirstMatch, if FirstMatch contains more than 1 entry
-// then this returns an error (if it contains exactly 1 entry, it will be merged over AlwaysMatch).
-// If W3CSupported is false, this will return JWP capabilities instead of mixed-mode.
-func (c *Capabilities) ToMixedMode() (map[string]interface{}, error) {
+// If FirstMatch contains more than 1 entry then this returns W3C-only capabilities.
+// If W3CSupported is false then this will return JWP-only capabilities.
+func (c *Capabilities) ToMixedMode() map[string]interface{} {
 	if c == nil {
 		return map[string]interface{}{
 			"capabilities":        map[string]interface{}{},
 			"desiredCapabilities": map[string]interface{}{},
-		}, nil
+		}
 	}
 
 	jwp, err := c.ToJWP()
-	if err != nil || c.W3CSupported {
-		return jwp, err
+	if err != nil {
+		return c.ToW3C()
+	}
+	if !c.W3CSupported {
+		return jwp
 	}
 
 	w3c := c.ToW3C()
@@ -296,7 +298,7 @@ func (c *Capabilities) ToMixedMode() (map[string]interface{}, error) {
 	return map[string]interface{}{
 		"capabilities":        w3c["capabilities"],
 		"desiredCapabilities": jwp["desiredCapabilities"],
-	}, nil
+	}
 }
 
 // Merge takes two JSON objects, and merges them.

@@ -166,11 +166,7 @@ func (j *jsonResp) isError() bool {
 // CreateSession creates a new WebDriver session with desired capabilities from server at addr
 // and ensures that the browser connection is working. It retries up to attempts - 1 times.
 func CreateSession(ctx context.Context, addr string, attempts int, requestedCaps *capabilities.Capabilities) (WebDriver, error) {
-	reqBody, err := requestedCaps.ToMixedMode()
-	if err != nil {
-		log.Print("Creating session with W3C-only capabilities")
-		reqBody = requestedCaps.ToW3C()
-	}
+	reqBody := requestedCaps.ToMixedMode()
 
 	urlPrefix, err := url.Parse(addr)
 	if err != nil {
