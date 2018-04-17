@@ -203,7 +203,8 @@ func TestFromNewSessionArgs(t *testing.T) {
 			name: "empty args",
 			args: map[string]interface{}{},
 			want: &Capabilities{
-				AlwaysMatch: map[string]interface{}{},
+				AlwaysMatch:  map[string]interface{}{},
+				W3CSupported: false,
 			},
 			wantErr: false,
 		},
@@ -220,6 +221,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
+				W3CSupported: true,
 			},
 			wantErr: false,
 		},
@@ -234,6 +236,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
+				W3CSupported: false,
 			},
 			wantErr: false,
 		},
@@ -248,6 +251,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
+				W3CSupported: false,
 			},
 			wantErr: false,
 		},
@@ -272,6 +276,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"key2": "value2",
 					"key3": "value3",
 				},
+				W3CSupported: true,
 			},
 			wantErr: false,
 		},
@@ -294,6 +299,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
+				W3CSupported: true,
 			},
 			wantErr: false,
 		},
@@ -380,6 +386,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 						"key2": "value3",
 					},
 				},
+				W3CSupported: true,
 			},
 			wantErr: false,
 		},
@@ -413,6 +420,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 						"key2": "value3",
 					},
 				},
+				W3CSupported: true,
 			},
 			wantErr: false,
 		},
