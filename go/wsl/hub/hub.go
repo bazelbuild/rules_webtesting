@@ -76,7 +76,7 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(path) == 3 && path[2] == "upload" {
+	if len(path) == 3 && path[2] == "file" {
 		h.uploader.ServeHTTP(w, r)
 		return
 	}
