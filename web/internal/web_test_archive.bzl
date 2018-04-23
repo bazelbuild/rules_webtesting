@@ -21,7 +21,6 @@ load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
 
-
 def _web_test_archive_impl(ctx):
   if ctx.attr.extract == "run":
     return _web_test_archive_run_impl(ctx)
@@ -29,7 +28,6 @@ def _web_test_archive_impl(ctx):
     return _web_test_archive_build_impl(ctx)
 
   fail("unknown value %s" % ctx.attr.extract, attr="extract")
-
 
 def _web_test_archive_run_impl(ctx):
   metadata.create_file(
@@ -56,7 +54,6 @@ def _web_test_archive_run_impl(ctx):
               targets=[ctx.attr.extract_exe_target])),
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
-
 
 def _web_test_archive_build_impl(ctx):
   out_dir = ctx.actions.declare_directory(ctx.label.name + ".out")
@@ -87,57 +84,59 @@ def _web_test_archive_build_impl(ctx):
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
-
 web_test_archive = rule(
-    doc="""Specifies an archive file with named files in it.
+    attrs = {
+        "archive": attr.label(
+            doc = "Archive file that contains named files.",
+            allow_single_file = [
+                ".deb",
+                ".tar",
+                ".tar.bz2",
+                ".tbz2",
+                ".tar.gz",
+                ".tgz",
+                ".tar.Z",
+                ".zip",
+            ],
+            mandatory = True,
+        ),
+        "named_files": attr.string_dict(
+            doc = "A map of names to paths in the archive.",
+            mandatory = True,
+        ),
+        "extract": attr.string(
+            doc = "When the archive shoud be extracted.",
+            default = "run",
+            values = [
+                "build",
+                "run",
+            ],
+        ),
+        "strip_prefix": attr.string(doc = """Prefix to strip when archive is extracted.
+                BASH-style globbing is allowed."""),
+        "extract_exe_host": attr.label(
+            doc = """Executable to extract files if extract = build.
+                    Should accept three positional parameters:
+                      archive out_dir strip_prefix""",
+            allow_files = True,
+            cfg = "host",
+            default = Label("//web/internal:extract.sh"),
+            executable = True,
+        ),
+        "extract_exe_target": attr.label(
+            doc = """Executable to extract files if extract = run.
+                    Should accept three positional parameters:
+                      archive out_dir strip_prefix""",
+            allow_files = True,
+            cfg = "target",
+            default = Label("//web/internal:extract.sh"),
+            executable = True,
+        ),
+    },
+    doc = """Specifies an archive file with named files in it.
 
         If extract=="run", then the archive will only be extracted if WTL wants one
         of the named files in it.""",
-    implementation=_web_test_archive_impl,
-    attrs={
-        "archive":
-            attr.label(
-                doc="Archive file that contains named files.",
-                allow_single_file=[
-                    ".deb",
-                    ".tar",
-                    ".tar.bz2",
-                    ".tbz2",
-                    ".tar.gz",
-                    ".tgz",
-                    ".tar.Z",
-                    ".zip",
-                ],
-                mandatory=True),
-        "named_files":
-            attr.string_dict(
-                doc="A map of names to paths in the archive.", mandatory=True),
-        "extract":
-            attr.string(
-                doc="When the archive shoud be extracted.",
-                default="run",
-                values=["build", "run"]),
-        "strip_prefix":
-            attr.string(doc="""Prefix to strip when archive is extracted.
-                BASH-style globbing is allowed."""),
-        "extract_exe_host":
-            attr.label(
-                doc="""Executable to extract files if extract = build.
-                    Should accept three positional parameters:
-                      archive out_dir strip_prefix""",
-                allow_files=True,
-                cfg="host",
-                default=Label("//web/internal:extract.sh"),
-                executable=True),
-        "extract_exe_target":
-            attr.label(
-                doc="""Executable to extract files if extract = run.
-                    Should accept three positional parameters:
-                      archive out_dir strip_prefix""",
-                allow_files=True,
-                cfg="target",
-                default=Label("//web/internal:extract.sh"),
-                executable=True),
-    },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
+    outputs = {"web_test_metadata": "%{name}.gen.json"},
+    implementation = _web_test_archive_impl,
 )

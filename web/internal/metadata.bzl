@@ -15,7 +15,6 @@
 
 load(":files.bzl", "files")
 
-
 def _merge_files(ctx, merger, output, inputs):
   """Produces a merged web test metadata file.
 
@@ -38,7 +37,6 @@ def _merge_files(ctx, merger, output, inputs):
       arguments=args,
       mnemonic="METADATAMERGER",
       progress_message="merging %s" % (", ".join(short_paths)))
-
 
 def _create_file(ctx,
                  output,
@@ -86,7 +84,6 @@ def _create_file(ctx,
   ctx.file_action(
       output=output, content=struct(**fields).to_json(), executable=False)
 
-
 def _web_test_files(ctx, archive_file=None, named_files=None, strip_prefix=""):
   """Build a web_test_files struct.
 
@@ -113,8 +110,8 @@ def _web_test_files(ctx, archive_file=None, named_files=None, strip_prefix=""):
       namedFiles=struct(**named_files),
       stripPrefix=strip_prefix)
 
-
 metadata = struct(
-    create_file=_create_file,
-    merge_files=_merge_files,
-    web_test_files=_web_test_files)
+    create_file = _create_file,
+    merge_files = _merge_files,
+    web_test_files = _web_test_files,
+)

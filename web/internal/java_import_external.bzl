@@ -21,7 +21,6 @@ _PASS_PROPS = (
     "deps",
 )
 
-
 def _java_import_external(repository_ctx):
   """Downloads jar and creates a java_import rule."""
   if (repository_ctx.attr.generated_linkable_rule_name and
@@ -67,7 +66,6 @@ def _java_import_external(repository_ctx):
     repository_ctx.download(srcurls, srcpath, srcsha)
   repository_ctx.file("BUILD", "\n".join(lines))
 
-
 def _make_java_import(name, path, srcpath, attrs, props):
   lines = [
       "java_import(",
@@ -86,36 +84,28 @@ def _make_java_import(name, path, srcpath, attrs, props):
   lines.append("")
   return lines
 
-
 java_import_external = repository_rule(
-    implementation=_java_import_external,
-    attrs={
-        "licenses":
-            attr.string_list(mandatory=True, allow_empty=False),
-        "jar_urls":
-            attr.string_list(mandatory=True, allow_empty=False),
-        "jar_sha256":
-            attr.string(mandatory=True),
-        "srcjar_urls":
-            attr.string_list(),
-        "srcjar_sha256":
-            attr.string(),
-        "deps":
-            attr.string_list(),
-        "runtime_deps":
-            attr.string_list(),
-        "testonly_":
-            attr.bool(),
-        "exports":
-            attr.string_list(),
-        "neverlink":
-            attr.bool(),
-        "generated_rule_name":
-            attr.string(),
-        "generated_linkable_rule_name":
-            attr.string(),
-        "default_visibility":
-            attr.string_list(default=["//visibility:public"]),
-        "extra_build_file_content":
-            attr.string(),
-    })
+    attrs = {
+        "licenses": attr.string_list(
+            mandatory = True,
+            allow_empty = False,
+        ),
+        "jar_urls": attr.string_list(
+            mandatory = True,
+            allow_empty = False,
+        ),
+        "jar_sha256": attr.string(mandatory = True),
+        "srcjar_urls": attr.string_list(),
+        "srcjar_sha256": attr.string(),
+        "deps": attr.string_list(),
+        "runtime_deps": attr.string_list(),
+        "testonly_": attr.bool(),
+        "exports": attr.string_list(),
+        "neverlink": attr.bool(),
+        "generated_rule_name": attr.string(),
+        "generated_linkable_rule_name": attr.string(),
+        "default_visibility": attr.string_list(default = ["//visibility:public"]),
+        "extra_build_file_content": attr.string(),
+    },
+    implementation = _java_import_external,
+)

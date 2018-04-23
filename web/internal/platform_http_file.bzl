@@ -13,7 +13,6 @@
 # limitations under the License.
 """Downloads files based on local platform."""
 
-
 def _impl(repository_ctx):
   if repository_ctx.os.name.lower().startswith("mac os"):
     urls = repository_ctx.attr.macos_urls
@@ -38,14 +37,14 @@ def _impl(repository_ctx):
           ")",
       ]))
 
-
 platform_http_file = repository_rule(
-    implementation=_impl,
-    attrs={
+    attrs = {
         "amd64_urls": attr.string_list(),
         "amd64_sha256": attr.string(),
         "macos_urls": attr.string_list(),
         "macos_sha256": attr.string(),
         "windows_urls": attr.string_list(),
         "windows_sha256": attr.string(),
-    })
+    },
+    implementation = _impl,
+)

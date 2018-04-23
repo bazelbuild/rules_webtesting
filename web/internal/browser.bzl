@@ -20,7 +20,6 @@ load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
 
-
 def _browser_impl(ctx):
   """Implementation of the browser rule."""
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
@@ -46,46 +45,43 @@ def _browser_impl(ctx):
           required_tags=ctx.attr.required_tags),
   ]
 
-
 browser = rule(
-    doc="Defines a browser configuration for use with web_test.",
-    attrs={
-        "data":
-            attr.label_list(
-                doc="Runtime dependencies for this configuration.",
-                allow_files=True,
-                cfg="data"),
-        "deps":
-            attr.label_list(
-                doc="Other web_test-related rules that this rule depends on.",
-                providers=[WebTestInfo]),
-        "disabled":
-            attr.string(
-                doc=
-                "If set then a no-op test will be run when using this browser."
-            ),
-        "environment":
-            attr.string_dict(doc="Map of environment variables-values to set."),
-        "execution_requirements":
-            attr.string_dict(
-                doc="Map of execution requirements for this browser."),
-        "merger":
-            attr.label(
-                doc="Metadata merger executable.",
-                default=Label("//go/metadata/main"),
-                executable=True,
-                cfg="host"),
-        "metadata":
-            attr.label(
-                doc="The web_test metadata file that defines how this browser is "
-                + "launched and default capabilities for this browser.",
-                mandatory=True,
-                allow_single_file=[".json"]),
-        "required_tags":
-            attr.string_list(
-                doc=
-                "A list of tags that web_tests using this browser should have."
-            ),
+    attrs = {
+        "data": attr.label_list(
+            doc = "Runtime dependencies for this configuration.",
+            allow_files = True,
+            cfg = "data",
+        ),
+        "deps": attr.label_list(
+            doc = "Other web_test-related rules that this rule depends on.",
+            providers = [WebTestInfo],
+        ),
+        "disabled": attr.string(
+            doc =
+                "If set then a no-op test will be run when using this browser.",
+        ),
+        "environment": attr.string_dict(doc = "Map of environment variables-values to set."),
+        "execution_requirements": attr.string_dict(
+            doc = "Map of execution requirements for this browser.",
+        ),
+        "merger": attr.label(
+            doc = "Metadata merger executable.",
+            default = Label("//go/metadata/main"),
+            executable = True,
+            cfg = "host",
+        ),
+        "metadata": attr.label(
+            doc = "The web_test metadata file that defines how this browser is " +
+                  "launched and default capabilities for this browser.",
+            mandatory = True,
+            allow_single_file = [".json"],
+        ),
+        "required_tags": attr.string_list(
+            doc =
+                "A list of tags that web_tests using this browser should have.",
+        ),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_browser_impl)
+    doc = "Defines a browser configuration for use with web_test.",
+    outputs = {"web_test_metadata": "%{name}.gen.json"},
+    implementation = _browser_impl,
+)

@@ -19,7 +19,6 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 
-
 def _web_test_named_file_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
@@ -37,17 +36,16 @@ def _web_test_named_file_impl(ctx):
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
-
 web_test_named_file = rule(
-    doc="Defines a file that can be located by name.",
-    attrs={
-        "alt_name":
-            attr.string(doc="If supplied, is used instead of name."),
-        "file":
-            attr.label(
-                doc="The file that will be returned for name.",
-                allow_single_file=True,
-                mandatory=True),
+    attrs = {
+        "alt_name": attr.string(doc = "If supplied, is used instead of name."),
+        "file": attr.label(
+            doc = "The file that will be returned for name.",
+            allow_single_file = True,
+            mandatory = True,
+        ),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_web_test_named_file_impl)
+    doc = "Defines a file that can be located by name.",
+    outputs = {"web_test_metadata": "%{name}.gen.json"},
+    implementation = _web_test_named_file_impl,
+)
