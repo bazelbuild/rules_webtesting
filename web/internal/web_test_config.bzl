@@ -22,7 +22,6 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 
-
 def _web_test_config_impl(ctx):
   """Implementation of the web_test_config rule."""
   metadata_files = []
@@ -47,28 +46,29 @@ def _web_test_config_impl(ctx):
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
-
 web_test_config = rule(
-    doc="A configuration that can be used across multiple web_tests.",
-    attrs={
-        "data":
-            attr.label_list(
-                doc="Runtime dependencies for this configuration.",
-                allow_files=True,
-                cfg="data"),
-        "deps":
-            attr.label_list(
-                doc="Other web_test-related rules that this rule depends on.",
-                providers=[WebTestInfo]),
-        "merger":
-            attr.label(
-                doc="Metadata merger executable.",
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata/main")),
-        "metadata":
-            attr.label(
-                doc="A web_test metadata file.", allow_single_file=[".json"]),
+    attrs = {
+        "data": attr.label_list(
+            doc = "Runtime dependencies for this configuration.",
+            allow_files = True,
+            cfg = "data",
+        ),
+        "deps": attr.label_list(
+            doc = "Other web_test-related rules that this rule depends on.",
+            providers = [WebTestInfo],
+        ),
+        "merger": attr.label(
+            doc = "Metadata merger executable.",
+            executable = True,
+            cfg = "host",
+            default = Label("//go/metadata/main"),
+        ),
+        "metadata": attr.label(
+            doc = "A web_test metadata file.",
+            allow_single_file = [".json"],
+        ),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_web_test_config_impl)
+    doc = "A configuration that can be used across multiple web_tests.",
+    outputs = {"web_test_metadata": "%{name}.gen.json"},
+    implementation = _web_test_config_impl,
+)

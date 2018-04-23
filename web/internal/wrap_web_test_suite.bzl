@@ -16,7 +16,6 @@
 load("//web:web.bzl", "web_test_suite")
 load(":constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
 
-
 def wrap_web_test_suite(name,
                         browsers,
                         rule,

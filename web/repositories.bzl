@@ -17,7 +17,6 @@ load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@io_bazel_rules_go//go:def.bzl", "go_repository")
 
-
 def web_test_repositories(**kwargs):
   """Defines external repositories required by Webtesting Rules.
 
@@ -87,7 +86,6 @@ def web_test_repositories(**kwargs):
   if kwargs.keys():
     print("The following parameters are unknown: " + str(kwargs.keys()))
 
-
 def should_create_repository(name, args):
   """Returns whether the name repository should be created.
 
@@ -104,7 +102,6 @@ def should_create_repository(name, args):
   if native.existing_rule(name):
     return False
   return True
-
 
 def browser_repositories(firefox=False, chromium=False):
   """Sets up repositories for browsers defined in //browsers/....
@@ -123,7 +120,6 @@ def browser_repositories(firefox=False, chromium=False):
     org_mozilla_firefox()
     org_mozilla_geckodriver()
 
-
 def bazel_skylib():
   native.http_archive(
       name="bazel_skylib",
@@ -133,7 +129,6 @@ def bazel_skylib():
           "https://github.com/bazelbuild/bazel-skylib/archive/0.3.1.tar.gz",
       ],
   )
-
 
 def com_github_blang_semver():
   go_repository(
@@ -145,7 +140,6 @@ def com_github_blang_semver():
           "https://github.com/blang/semver/archive/v3.5.1.tar.gz",
       ])
 
-
 def com_github_gorilla_context():
   go_repository(
       name="com_github_gorilla_context",
@@ -155,7 +149,6 @@ def com_github_gorilla_context():
       urls=[
           "https://github.com/gorilla/context/archive/v1.1.tar.gz",
       ])
-
 
 def com_github_gorilla_mux():
   go_repository(
@@ -167,7 +160,6 @@ def com_github_gorilla_mux():
           "https://github.com/gorilla/mux/archive/v1.6.1.tar.gz",
       ])
 
-
 def com_github_tebeka_selenium():
   go_repository(
       name="com_github_tebeka_selenium",
@@ -177,7 +169,6 @@ def com_github_tebeka_selenium():
       urls=[
           "https://github.com/tebeka/selenium/archive/a789e65b0e7f126888873e84f528c1c8537dff3e.tar.gz",
       ])
-
 
 def com_google_code_findbugs_jsr305():
   java_import_external(
@@ -190,7 +181,6 @@ def com_google_code_findbugs_jsr305():
       licenses=["notice"]  # BSD 3-clause
   )
 
-
 def com_google_code_gson():
   java_import_external(
       name="com_google_code_gson",
@@ -202,7 +192,6 @@ def com_google_code_gson():
       licenses=["notice"],  # The Apache Software License, Version 2.0
   )
 
-
 def com_google_errorprone_error_prone_annotations():
   java_import_external(
       name="com_google_errorprone_error_prone_annotations",
@@ -213,7 +202,6 @@ def com_google_errorprone_error_prone_annotations():
       ],
       licenses=["notice"]  # Apache 2.0
   )
-
 
 def com_google_guava():
   java_import_external(
@@ -229,7 +217,6 @@ def com_google_guava():
           "@com_google_errorprone_error_prone_annotations",
       ])
 
-
 def com_squareup_okhttp3_okhttp():
   java_import_external(
       name="com_squareup_okhttp3_okhttp",
@@ -244,7 +231,6 @@ def com_squareup_okhttp3_okhttp():
           "@com_google_code_findbugs_jsr305",
       ])
 
-
 def com_squareup_okio():
   java_import_external(
       name="com_squareup_okio",
@@ -255,7 +241,6 @@ def com_squareup_okio():
       "4633c331f50642ebe795dc089d6a5928aff43071c9d17e7840a009eea2fe95a3",
       licenses=["notice"],  # Apache 2.0
       deps=["@com_google_code_findbugs_jsr305"])
-
 
 def commons_codec():
   java_import_external(
@@ -268,7 +253,6 @@ def commons_codec():
       licenses=["notice"]  # Apache License, Version 2.0
   )
 
-
 def commons_logging():
   java_import_external(
       name="commons_logging",
@@ -279,7 +263,6 @@ def commons_logging():
       ],
       licenses=["notice"]  # The Apache Software License, Version 2.0
   )
-
 
 def junit():
   java_import_external(
@@ -292,7 +275,6 @@ def junit():
       licenses=["reciprocal"],  # Eclipse Public License 1.0
       testonly_=1,
       deps=["@org_hamcrest_core"])
-
 
 def net_bytebuddy():
   java_import_external(
@@ -308,7 +290,6 @@ def net_bytebuddy():
       # http://www.apache.org/licenses/
       licenses=["restricted"])
 
-
 def org_apache_commons_exec():
   java_import_external(
       name="org_apache_commons_exec",
@@ -319,7 +300,6 @@ def org_apache_commons_exec():
       ],
       licenses=["notice"]  # Apache License, Version 2.0
   )
-
 
 def org_apache_httpcomponents_httpclient():
   java_import_external(
@@ -336,7 +316,6 @@ def org_apache_httpcomponents_httpclient():
           "@commons_codec",
       ])
 
-
 def org_apache_httpcomponents_httpcore():
   java_import_external(
       name="org_apache_httpcomponents_httpcore",
@@ -347,7 +326,6 @@ def org_apache_httpcomponents_httpcore():
       ],
       licenses=["notice"]  # Apache License, Version 2.0
   )
-
 
 def org_chromium_chromedriver():
   platform_http_file(
@@ -368,7 +346,6 @@ def org_chromium_chromedriver():
           "http://chromedriver.storage.googleapis.com/2.35/chromedriver_win32.zip"
       ])
 
-
 def org_chromium_chromium():
   platform_http_file(
       name="org_chromium_chromium",
@@ -388,7 +365,6 @@ def org_chromium_chromium():
           "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/539249/chrome-win32.zip"
       ])
 
-
 def org_hamcrest_core():
   java_import_external(
       name="org_hamcrest_core",
@@ -400,7 +376,6 @@ def org_hamcrest_core():
       licenses=["notice"],  # New BSD License
       testonly_=1)
 
-
 def org_json():
   java_import_external(
       name="org_json",
@@ -411,7 +386,6 @@ def org_json():
       ],
       licenses=["notice"]  # MIT-style license
   )
-
 
 def org_mozilla_firefox():
   platform_http_file(
@@ -426,7 +400,6 @@ def org_mozilla_firefox():
       macos_urls=[
           "https://ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
       ])
-
 
 def org_mozilla_geckodriver():
   platform_http_file(
@@ -443,7 +416,6 @@ def org_mozilla_geckodriver():
           "https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-macos.tar.gz",
       ])
 
-
 def org_seleniumhq_py():
   native.new_http_archive(
       name="org_seleniumhq_py",
@@ -453,7 +425,6 @@ def org_seleniumhq_py():
       urls=[
           "https://pypi.python.org/packages/d4/28/8124d32415bd3d67fabea52480395427576b582771283e89ce10a56d9e5b/selenium-3.11.0.tar.gz"
       ])
-
 
 def org_seleniumhq_selenium_api():
   java_import_external(
@@ -465,7 +436,6 @@ def org_seleniumhq_selenium_api():
       ],
       licenses=["notice"],  # The Apache Software License, Version 2.0
       testonly_=1)
-
 
 def org_seleniumhq_selenium_remote_driver():
   java_import_external(

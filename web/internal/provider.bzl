@@ -14,9 +14,12 @@
 """Definition of WebTestInfo provider."""
 
 WebTestInfo = provider(
-    doc="Provider for web_test information",
-    fields=[
-        "disabled", "environment", "execution_requirements", "metadata",
-        "required_tags"
+    doc = "Provider for web_test information",
+    fields = [
+        "disabled",
+        "environment",
+        "execution_requirements",
+        "metadata",
+        "required_tags",
     ],
 )

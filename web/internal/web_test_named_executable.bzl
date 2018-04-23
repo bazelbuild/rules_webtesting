@@ -20,7 +20,6 @@ load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
 
-
 def _web_test_named_executable_impl(ctx):
   name = ctx.attr.alt_name or ctx.label.name
 
@@ -38,26 +37,24 @@ def _web_test_named_executable_impl(ctx):
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
-
 web_test_named_executable = rule(
-    doc="Defines an executable that can be located by name.",
-    attrs={
-        "alt_name":
-            attr.string(doc="If supplied, is used instead of name."),
-        "executable":
-            attr.label(
-                doc="The executable that will be returned for name.",
-                allow_files=True,
-                executable=True,
-                cfg="target",
-                mandatory=True),
-        "merger":
-            attr.label(
-                doc="Metadata merger executable.",
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata/main")),
+    attrs = {
+        "alt_name": attr.string(doc = "If supplied, is used instead of name."),
+        "executable": attr.label(
+            doc = "The executable that will be returned for name.",
+            allow_files = True,
+            executable = True,
+            cfg = "target",
+            mandatory = True,
+        ),
+        "merger": attr.label(
+            doc = "Metadata merger executable.",
+            executable = True,
+            cfg = "host",
+            default = Label("//go/metadata/main"),
+        ),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
-    implementation=_web_test_named_executable_impl,
+    doc = "Defines an executable that can be located by name.",
+    outputs = {"web_test_metadata": "%{name}.gen.json"},
+    implementation = _web_test_named_executable_impl,
 )

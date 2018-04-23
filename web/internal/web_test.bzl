@@ -22,7 +22,6 @@ load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
 
-
 def _web_test_impl(ctx):
   if ctx.attr.browser[WebTestInfo].disabled:
     return _generate_noop_test(
@@ -43,7 +42,6 @@ Why was this browser disabled?
         browser=ctx.attr.browser.label, tags=missing_tags))
 
   return _generate_default_test(ctx)
-
 
 def _generate_noop_test(ctx, reason, status=0):
   """Generates a no-op test.
@@ -73,7 +71,6 @@ def _generate_noop_test(ctx, reason, status=0):
       executable=True)
 
   return []
-
 
 def _generate_default_test(ctx):
   patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
@@ -130,56 +127,56 @@ def _generate_default_test(ctx):
       testing.TestEnvironment(ctx.attr.browser[WebTestInfo].environment),
   ]
 
-
 web_test = rule(
-    doc="Runs a provided test against a provided browser configuration.",
-    attrs={
-        "browser":
-            attr.label(
-                doc="The browser configuration to use for this test.",
-                mandatory=True,
-                providers=[WebTestInfo]),
-        "config":
-            attr.label(
-                doc="Additional configuration for this test.",
-                mandatory=True,
-                providers=[WebTestInfo]),
-        "data":
-            attr.label_list(
-                doc="Additional runtime dependencies for the test.",
-                allow_files=True,
-                cfg="data"),
-        "launcher":
-            attr.label(
-                doc="The web test launcher binary.",
-                cfg="target",
-                executable=True),
-        "merger":
-            attr.label(
-                doc="The metadata merger binary.",
-                default=Label("//go/metadata/main"),
-                cfg="host",
-                executable=True),
-        "noop_web_test_template":
-            attr.label(
-                doc=
+    attrs = {
+        "browser": attr.label(
+            doc = "The browser configuration to use for this test.",
+            mandatory = True,
+            providers = [WebTestInfo],
+        ),
+        "config": attr.label(
+            doc = "Additional configuration for this test.",
+            mandatory = True,
+            providers = [WebTestInfo],
+        ),
+        "data": attr.label_list(
+            doc = "Additional runtime dependencies for the test.",
+            allow_files = True,
+            cfg = "data",
+        ),
+        "launcher": attr.label(
+            doc = "The web test launcher binary.",
+            cfg = "target",
+            executable = True,
+        ),
+        "merger": attr.label(
+            doc = "The metadata merger binary.",
+            default = Label("//go/metadata/main"),
+            cfg = "host",
+            executable = True,
+        ),
+        "noop_web_test_template": attr.label(
+            doc =
                 "Shell template used to launch test when browser is disabled.",
-                default=Label("//web/internal:noop_web_test.sh.template"),
-                allow_single_file=True),
-        "test":
-            attr.label(
-                doc="The test that will be run against the provided browser.",
-                cfg="target",
-                executable=True,
-                mandatory=True),
-        "web_test_template":
-            attr.label(
-                doc="Shell template used to launch test.",
-                default=Label("//web/internal:web_test.sh.template"),
-                allow_single_file=True)
+            default = Label("//web/internal:noop_web_test.sh.template"),
+            allow_single_file = True,
+        ),
+        "test": attr.label(
+            doc = "The test that will be run against the provided browser.",
+            cfg = "target",
+            executable = True,
+            mandatory = True,
+        ),
+        "web_test_template": attr.label(
+            doc = "Shell template used to launch test.",
+            default = Label("//web/internal:web_test.sh.template"),
+            allow_single_file = True,
+        ),
     },
-    outputs={
+    doc = "Runs a provided test against a provided browser configuration.",
+    outputs = {
         "web_test_metadata": "%{name}.gen.json",
     },
-    test=True,
-    implementation=_web_test_impl)
+    test = True,
+    implementation = _web_test_impl,
+)
