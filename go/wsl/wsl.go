@@ -28,11 +28,11 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/wsl/upload"
 )
 
-func Run(port int, downloadRoot, uploadRoot string) {
+func Run(localHostname string, port int, downloadRoot, uploadRoot string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	handler := createHandler(hub.New(&upload.Uploader{Root: uploadRoot}), downloadRoot, cancel)
+	handler := createHandler(hub.New(localHostname, &upload.Uploader{Root: uploadRoot}), downloadRoot, cancel)
 
 	if err := startServer(ctx, port, handler); err != nil {
 		log.Print(err)

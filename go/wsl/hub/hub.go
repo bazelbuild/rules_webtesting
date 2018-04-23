@@ -36,14 +36,16 @@ type Hub struct {
 	mu       sync.RWMutex
 	sessions map[string]*driver.Driver
 
-	uploader http.Handler
+	localHostname string
+	uploader      http.Handler
 }
 
 // New creates a new Hub.
-func New(uploader http.Handler) *Hub {
+func New(localHostname string, uploader http.Handler) *Hub {
 	return &Hub{
-		sessions: map[string]*driver.Driver{},
-		uploader: uploader,
+		sessions:      map[string]*driver.Driver{},
+		localHostname: localHostname,
+		uploader:      uploader,
 	}
 }
 
@@ -120,7 +122,7 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 	if caps.AlwaysMatch != nil {
 		wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{})
 		if ok {
-			d, err := driver.New(ctx, wslConfig)
+			d, err := driver.New(ctx, h.localHostname, wslConfig)
 			if err != nil {
 				return "", nil, err
 			}
@@ -139,7 +141,7 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 		wslConfig, ok := fm["google:wslConfig"].(map[string]interface{})
 
 		if ok {
-			d, err := driver.New(ctx, wslConfig)
+			d, err := driver.New(ctx, h.localHostname, wslConfig)
 			if err != nil {
 				continue
 			}
