@@ -19,7 +19,6 @@ DO NOT load this file. Use "@io_bazel_rules_web//web:web.bzl".
 load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 
-
 def _web_test_files_impl(ctx):
   named_files = {}
   runfiles = depset()
@@ -47,23 +46,22 @@ def _web_test_files_impl(ctx):
       WebTestInfo(metadata=ctx.outputs.web_test_metadata),
   ]
 
-
 web_test_files = rule(
-    doc="Specifies a set of named files.",
-    implementation=_web_test_files_impl,
-    attrs={
-        "merger":
-            attr.label(
-                doc="Metadata merger executable.",
-                executable=True,
-                cfg="host",
-                default=Label("//go/metadata/main")),
-        "files":
-            attr.label_keyed_string_dict(
-                doc="A map of files to names.",
-                mandatory=True,
-                allow_files=True,
-                allow_empty=False),
+    attrs = {
+        "merger": attr.label(
+            doc = "Metadata merger executable.",
+            executable = True,
+            cfg = "host",
+            default = Label("//go/metadata/main"),
+        ),
+        "files": attr.label_keyed_string_dict(
+            doc = "A map of files to names.",
+            mandatory = True,
+            allow_files = True,
+            allow_empty = False,
+        ),
     },
-    outputs={"web_test_metadata": "%{name}.gen.json"},
+    doc = "Specifies a set of named files.",
+    outputs = {"web_test_metadata": "%{name}.gen.json"},
+    implementation = _web_test_files_impl,
 )

@@ -13,24 +13,36 @@
 # limitations under the License.
 """Public definitions for web_test related build rules."""
 
-load("//web/internal:browser.bzl", browser_alias="browser")
+load(
+    "//web/internal:browser.bzl",
+    browser_alias = "browser",
+)
 load("//web/internal:collections.bzl", "lists", "maps")
 load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS")
-load("//web/internal:web_test.bzl", web_test_alias="web_test")
+load(
+    "//web/internal:web_test.bzl",
+    web_test_alias = "web_test",
+)
 load(
     "//web/internal:web_test_archive.bzl",
-    web_test_archive_alias="web_test_archive")
+    web_test_archive_alias = "web_test_archive",
+)
 load(
     "//web/internal:web_test_config.bzl",
-    web_test_config_alias="web_test_config")
-load("//web/internal:web_test_files.bzl", web_test_files_alias="web_test_files")
+    web_test_config_alias = "web_test_config",
+)
+load(
+    "//web/internal:web_test_files.bzl",
+    web_test_files_alias = "web_test_files",
+)
 load(
     "//web/internal:web_test_named_executable.bzl",
-    web_test_named_executable_alias="web_test_named_executable")
+    web_test_named_executable_alias = "web_test_named_executable",
+)
 load(
     "//web/internal:web_test_named_file.bzl",
-    web_test_named_file_alias="web_test_named_file")
-
+    web_test_named_file_alias = "web_test_named_file",
+)
 
 def web_test_suite(name,
                    browsers,
@@ -85,7 +97,6 @@ def web_test_suite(name,
   native.test_suite(
       name=name, tests=tests, tags=test_suite_tags, visibility=visibility)
 
-
 def _apply_browser_overrides(kwargs, overrides):
   """Handles browser-specific options that override the top-level definitions.
 
@@ -103,11 +114,9 @@ def _apply_browser_overrides(kwargs, overrides):
 
   return overridden_kwargs
 
-
 def browser(testonly=True, **kwargs):
   """Wrapper around browser to correctly set defaults."""
   browser_alias(testonly=testonly, **kwargs)
-
 
 def web_test(config=None, launcher=None, size=None, **kwargs):
   """Wrapper around web_test to correctly set defaults."""
@@ -116,26 +125,21 @@ def web_test(config=None, launcher=None, size=None, **kwargs):
   size = size or "large"
   web_test_alias(config=config, launcher=launcher, size=size, **kwargs)
 
-
 def web_test_config(testonly=True, **kwargs):
   """Wrapper around web_test_config to correctly set defaults."""
   web_test_config_alias(testonly=testonly, **kwargs)
-
 
 def web_test_named_executable(testonly=True, **kwargs):
   """Wrapper around web_test_named_executable to correctly set defaults."""
   web_test_named_executable_alias(testonly=testonly, **kwargs)
 
-
 def web_test_named_file(testonly=True, **kwargs):
   """Wrapper around web_test_named_file to correctly set defaults."""
   web_test_named_file_alias(testonly=testonly, **kwargs)
 
-
 def web_test_archive(testonly=True, **kwargs):
   """Wrapper around web_test_archive to correctly set defaults."""
   web_test_archive_alias(testonly=testonly, **kwargs)
-
 
 def web_test_files(testonly=True, **kwargs):
   """Wrapper around web_test_files to correctly set defaults."""

@@ -13,7 +13,6 @@
 # limitations under the License.
 """A library of functions for working with runfiles."""
 
-
 def _long_path(ctx, file):
   """Constructs a path relative to TEST_SRCDIR for accessing the file.
 
@@ -36,5 +35,4 @@ def _long_path(ctx, file):
   # otherwise assume the file is in the same workspace as the current rule.
   return ctx.workspace_name + "/" + file.short_path
 
-
-files = struct(long_path=_long_path)
+files = struct(long_path = _long_path)

@@ -13,7 +13,6 @@
 # limitations under the License.
 """Runfiles modules contains utility functions for working with runfiles."""
 
-
 def _collect(ctx, files=[], targets=[]):
   """Builds a runfiles object with transitive files from all targets.
 
@@ -56,5 +55,4 @@ def _collect(ctx, files=[], targets=[]):
 
   return result
 
-
-runfiles = struct(collect=_collect,)
+runfiles = struct(collect = _collect)

@@ -16,7 +16,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_test")
 load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 
-
 def go_web_test_suite(name, go_test_tags=None, glaze_kind=None, **kwargs):
   """Defines a test_suite of web_test targets that wrap a go_test target.
 
