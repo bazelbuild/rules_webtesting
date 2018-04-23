@@ -28,7 +28,7 @@ var (
 	downloadRoot  = flag.String("download_root", "", "Directory served at /google/staticfile/.")
 	uploadRoot    = flag.String("upload_root", "", "Directory to which files sent to /session/<id>/upload will be uploaded.")
 	logFile       = flag.String("log_file", "", "File for WSL logs.")
-	localHostname = flag.String("local_hostname", "localhost", "Name to use for localhost.")
+	localHost = flag.String("local_host", "localhost", "Name to use for localhost.")
 )
 
 func main() {
@@ -44,5 +44,5 @@ func main() {
 	}
 
 	log.SetFlags(log.Flags() | log.Lmicroseconds)
-	wsl.Run(*localHostname, *port, *downloadRoot, *uploadRoot)
+	wsl.Run(*localHost, *port, *downloadRoot, *uploadRoot)
 }

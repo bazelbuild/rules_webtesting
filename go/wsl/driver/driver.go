@@ -53,7 +53,7 @@ type Driver struct {
 
 // New creates starts a WebDriver endpoint binary based on caps. Argument caps should just be
 // the google:wslConfig capability extracted from the capabilities passed into a new session request.
-func New(ctx context.Context, localHostname string, caps map[string]interface{}) (*Driver, error) {
+func New(ctx context.Context, localHost string, caps map[string]interface{}) (*Driver, error) {
 	wslCaps, err := extractWSLCaps(caps)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func New(ctx context.Context, localHostname string, caps map[string]interface{})
 	deadline, cancel := context.WithTimeout(ctx, wslCaps.timeout)
 	defer cancel()
 
-	hostPort := net.JoinHostPort(localHostname, strconv.Itoa(wslCaps.port))
+	hostPort := net.JoinHostPort(localHost, strconv.Itoa(wslCaps.port))
 
 	statusURL := fmt.Sprintf("http://%s/status", hostPort)
 
