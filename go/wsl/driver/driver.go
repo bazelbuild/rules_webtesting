@@ -22,9 +22,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -51,7 +53,7 @@ type Driver struct {
 
 // New creates starts a WebDriver endpoint binary based on caps. Argument caps should just be
 // the google:wslConfig capability extracted from the capabilities passed into a new session request.
-func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
+func New(ctx context.Context, localHost string, caps map[string]interface{}) (*Driver, error) {
 	wslCaps, err := extractWSLCaps(caps)
 	if err != nil {
 		return nil, err
@@ -94,7 +96,9 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 	deadline, cancel := context.WithTimeout(ctx, wslCaps.timeout)
 	defer cancel()
 
-	statusURL := fmt.Sprintf("http://localhost:%d/status", wslCaps.port)
+	hostPort := net.JoinHostPort(localHost, strconv.Itoa(wslCaps.port))
+
+	statusURL := fmt.Sprintf("http://%s/status", hostPort)
 
 	errChan := make(chan error, 1)
 	driverChan := make(chan error, 1)
@@ -149,7 +153,7 @@ func New(ctx context.Context, caps map[string]interface{}) (*Driver, error) {
 	}
 
 	return &Driver{
-		Address:  fmt.Sprintf("http://localhost:%d", wslCaps.port),
+		Address:  fmt.Sprintf("http://%s", hostPort),
 		cmd:      cmd,
 		waitChan: driverChan,
 	}, nil
