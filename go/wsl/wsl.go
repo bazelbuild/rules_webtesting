@@ -66,14 +66,18 @@ func startServer(ctx context.Context, port int, handler http.Handler) error {
 func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.Handler {
 	handler := http.NewServeMux()
 
-	handler.HandleFunc("/quitquitquit", func(w http.ResponseWriter, _ *http.Request) {
+	shutdownFunc := func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.WriteHeader(http.StatusOK)
 
 		w.Write([]byte("shutting down"))
 		shutdown()
-	})
+	}
+
+	handler.HandleFunc("/quitquitquit", shutdownFunc)
+
+	handler.HandleFunc("/shutdown", shutdownFunc)	
 
 	handler.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
