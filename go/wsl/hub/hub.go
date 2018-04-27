@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/wsl/driver"
@@ -129,7 +130,9 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 
 			s, err := d.NewSession(ctx, caps, w)
 			if err != nil {
-				d.Kill()
+				ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+				defer cancel()
+				d.Shutdown(ctx)
 				return "", nil, err
 			}
 
@@ -151,7 +154,9 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 				FirstMatch:  []map[string]interface{}{fm},
 			}, w)
 			if err != nil {
-				d.Kill()
+				ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+				defer cancel()
+				d.Shutdown(ctx)
 				continue
 			}
 
@@ -168,11 +173,11 @@ func (h *Hub) quitSession(session string, driver *driver.Driver, w http.Response
 
 	driver.Forward(w, r)
 
-	if err := driver.Kill(); err != nil {
-		log.Printf("Error killing driver: %v", err)
+	ctx, cancel := context.WithTimeout(r.Context(), 1*time.Second)
+	defer cancel()
+	if err := driver.Shutdown(ctx); err != nil {
+		log.Printf("Error shutting down driver: %v", err)
 	}
-
-	driver.Wait()
 
 	delete(h.sessions, session)
 }
