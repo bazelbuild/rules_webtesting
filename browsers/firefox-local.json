@@ -4,11 +4,12 @@
         "browserName": "firefox",
         "moz:firefoxOptions": {
             "binary": "%FIREFOX%",
-            "args": ["-headless"]
+            "args": ["--headless"]
         },
         "google:wslConfig": {
 	    	"binary": "%GECKODRIVER%",
-	    	"args": ["--port", "%WSL:PORT%", "--binary", "%FIREFOX%"]
+	    	"args": ["--port", "%WSL:PORT%", "--binary", "%FIREFOX%"],
+            "shutdownEndpoint": false
 	    }
     }
 } 

@@ -3,12 +3,13 @@
   "capabilities" : {
     "browserName" : "chromium",
     "chromeOptions" : {
-      "args" : ["headless", "use-gl=swiftshader-webgl"],
+      "args" : ["--headless", "--use-gl=swiftshader-webgl"],
       "binary" : "%CHROMIUM%"
     },
     "google:wslConfig": {
     	"binary": "%CHROMEDRIVER%",
-    	"args": ["--port=%WSL:PORT%"]
+    	"args": ["--port=%WSL:PORT%"],
+      "shutdownEndpoint": true
     }
   }
 }

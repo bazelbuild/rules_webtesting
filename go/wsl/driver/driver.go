@@ -47,6 +47,8 @@ type Driver struct {
 	cmd      *exec.Cmd
 	waitChan chan error
 
+	shutdownEndpoint bool
+
 	// Mutex to prevent overlapping commands to remote end.
 	mu sync.Mutex
 }
@@ -155,6 +157,7 @@ func New(ctx context.Context, localHost string, caps map[string]interface{}) (*D
 	return &Driver{
 		Address:  fmt.Sprintf("http://%s", hostPort),
 		cmd:      cmd,
+		shutdownEndpoint: wslCaps.shutdownEndpoint,
 		waitChan: driverChan,
 	}, nil
 }
@@ -165,6 +168,7 @@ type wslCaps struct {
 	port         int
 	timeout      time.Duration
 	env          map[string]string
+	shutdownEndpoint	bool	
 	statusBroken bool
 	stdout       string
 	stderr       string
@@ -223,6 +227,11 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 		}
 	}
 
+	shutdownEndpoint := false
+	if s, ok := caps["shutdownEndpoint"].(bool); ok {
+		shutdownEndpoint = s
+	}
+
 	statusBroken := false
 	if s, ok := caps["statusBroken"].(bool); ok {
 		statusBroken = s
@@ -244,9 +253,11 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 		port:         port,
 		timeout:      timeout,
 		env:          env,
+		shutdownEndpoint: shutdownEndpoint,
 		statusBroken: statusBroken,
 		stdout:       stdout,
 		stderr:       stderr,
+
 	}, nil
 }
 
@@ -330,13 +341,27 @@ func writeJWPNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 }
 
 // Wait waits for the driver binary to exit, and returns an error if the binary exited with an error.
-func (d *Driver) Wait() error {
-	return <-d.waitChan
+func (d *Driver) Wait(ctx context.Context) error {
+	select {
+	case err := <-d.waitChan:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 // Kill kills a running WebDriver server.
-func (d *Driver) Kill() error {
-	return d.cmd.Process.Kill()
+func (d *Driver) Shutdown(ctx context.Context) error {
+	if !d.shutdownEndpoint {
+		return d.cmd.Process.Kill()
+	}
+
+	httphelper.Get(ctx, d.Address + "/shutdown")
+
+	if err := d.Wait(ctx); err != nil {
+		return d.cmd.Process.Kill()
+	}
+	return nil
 }
 
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
