@@ -130,7 +130,7 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 
 			s, err := d.NewSession(ctx, caps, w)
 			if err != nil {
-				ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 				defer cancel()
 				d.Shutdown(ctx)
 				return "", nil, err
@@ -154,7 +154,7 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 				FirstMatch:  []map[string]interface{}{fm},
 			}, w)
 			if err != nil {
-				ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 				defer cancel()
 				d.Shutdown(ctx)
 				continue
