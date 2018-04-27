@@ -173,7 +173,7 @@ func (h *Hub) quitSession(session string, driver *driver.Driver, w http.Response
 
 	driver.Forward(w, r)
 
-	ctx, cancel := context.WithTimeout(r.Context(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
 	defer cancel()
 	if err := driver.Shutdown(ctx); err != nil {
 		log.Printf("Error shutting down driver: %v", err)
