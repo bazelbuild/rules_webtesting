@@ -1,4 +1,4 @@
 {
-    "environment": "external",
-    "capabilities": {"browserName": "chrome"}
+  "environment": "external",
+  "capabilities": {"browserName": "chrome"}
 }
