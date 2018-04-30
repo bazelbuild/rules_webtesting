@@ -65,8 +65,8 @@ type wslCaps struct {
 
 // New creates starts a WebDriver endpoint binary based on caps. Argument caps should just be
 // the google:wslConfig capability extracted from the capabilities passed into a new session request.
-func New(ctx context.Context, localHost string, caps map[string]interface{}) (*Driver, error) {
-	wslCaps, err := extractWSLCaps(caps)
+func New(ctx context.Context, localHost, sessionID string, caps map[string]interface{}) (*Driver, error) {
+	wslCaps, err := extractWSLCaps(sessionID, caps)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func New(ctx context.Context, localHost string, caps map[string]interface{}) (*D
 	return d, nil
 }
 
-func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
+func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, error) {
 	binary := ""
 	if b, ok := caps["binary"]; ok {
 		bs, ok := b.(string)
@@ -190,6 +190,7 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 			}
 
 			arg = strings.Replace(arg, "%WSL:PORT%", portStr, -1)
+			arg = strings.Replace(arg, "%WSL:SESSION_ID%", sessionID, -1)
 			args = append(args, arg)
 		}
 	}
@@ -229,7 +230,9 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 			if !ok {
 				return nil, fmt.Errorf("value %#v for key %q in env is not a string", v, k)
 			}
-			env[k] = strings.Replace(vs, "%WSL:PORT%", portStr, -1)
+			vs = strings.Replace(vs, "%WSL:PORT%", portStr, -1)
+			vs = strings.Replace(vs, "%WSL:SESSION_ID%", sessionID, -1)
+			env[k] = vs
 		}
 	}
 
@@ -358,30 +361,7 @@ func (d *Driver) Forward(w http.ResponseWriter, r *http.Request) {
 
 // NewSessionW3C creates a new session using the W3C protocol.
 func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities, w http.ResponseWriter) (string, error) {
-	always := map[string]interface{}{}
-	for k, v := range caps.AlwaysMatch {
-		if k != "google:wslConfig" {
-			always[k] = v
-		}
-	}
-
-	var first []map[string]interface{}
-
-	for _, fm := range caps.FirstMatch {
-		newFM := map[string]interface{}{}
-		for k, v := range fm {
-			if k != "google:wslConfig" {
-				newFM[k] = v
-			}
-		}
-		first = append(first, newFM)
-	}
-
-	wd, err := webdriver.CreateSession(ctx, d.Address, 1, &capabilities.Capabilities{
-		AlwaysMatch:  always,
-		FirstMatch:   first,
-		W3CSupported: caps.W3CSupported,
-	})
+	wd, err := webdriver.CreateSession(ctx, d.Address, 1, caps.Strip("google:wslConfig", "google:sessionID"))
 
 	if err != nil {
 		return "", err
