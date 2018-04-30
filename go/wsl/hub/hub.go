@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -123,7 +124,19 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 	if caps.AlwaysMatch != nil {
 		wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{})
 		if ok {
-			d, err := driver.New(ctx, h.localHost, wslConfig)
+			sessionID := "last"
+			if i, ok := caps.AlwaysMatch["google:sessionId"]; ok {
+				switch ii := i.(type) {
+					case string:
+						sessionID = ii
+					case float64:
+						sessionID = strconv.Itoa(int(ii))
+					default:
+						return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
+				}
+			}
+
+			d, err := driver.New(ctx, h.localHost, sessionID, wslConfig)
 			if err != nil {
 				return "", nil, err
 			}
@@ -144,7 +157,19 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 		wslConfig, ok := fm["google:wslConfig"].(map[string]interface{})
 
 		if ok {
-			d, err := driver.New(ctx, h.localHost, wslConfig)
+			sessionID := "last"
+			if i, ok := caps.AlwaysMatch["google:sessionId"]; ok {
+				switch ii := i.(type) {
+					case string:
+						sessionID = ii
+					case float64:
+						sessionID = strconv.Itoa(int(ii))
+					default:
+						return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
+				}
+			}
+
+			d, err := driver.New(ctx, h.localHost, sessionID, wslConfig)
 			if err != nil {
 				continue
 			}
