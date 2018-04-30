@@ -38,15 +38,15 @@ type Hub struct {
 	sessions map[string]*driver.Driver
 
 	localHost string
-	uploader      http.Handler
+	uploader  http.Handler
 }
 
 // New creates a new Hub.
 func New(localHost string, uploader http.Handler) *Hub {
 	return &Hub{
-		sessions:      map[string]*driver.Driver{},
+		sessions:  map[string]*driver.Driver{},
 		localHost: localHost,
-		uploader:      uploader,
+		uploader:  uploader,
 	}
 }
 

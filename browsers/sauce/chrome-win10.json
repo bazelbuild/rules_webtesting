@@ -1,12 +1,12 @@
 {
-    "environment": "sauce",
-    "capabilities": {
-        "browserName": "chrome",
-        "platform": "Windows 10",
-        "version": "64.0",
-        "name": "%LABEL%",
-        "build": "${BUILD_TAG}",
-        "tags": ["%ENVIRONMENT%", "%TEST_LABEL%", "%BROWSER_LABEL%", "%CONFIG_LABEL%"],
-        "tunnel-identifier": "${TUNNEL_IDENTIFIER}"
-    }
+  "environment": "sauce",
+  "capabilities": {
+    "browserName": "chrome",
+    "platform": "Windows 10",
+    "version": "64.0",
+    "name": "%LABEL%",
+    "build": "${BUILD_TAG}",
+    "tags": ["%ENVIRONMENT%", "%TEST_LABEL%", "%BROWSER_LABEL%", "%CONFIG_LABEL%"],
+    "tunnel-identifier": "${TUNNEL_IDENTIFIER}"
+  }
 }

@@ -43,14 +43,24 @@ const compName = "WSL Driver"
 // Driver is wrapper around a running WebDriver endpoint binary.
 type Driver struct {
 	Address string
-
-	cmd      *exec.Cmd
-	waitChan chan error
-
-	shutdownEndpoint bool
+	caps    *wslCaps
+	stopped chan error
+	cmd     *exec.Cmd
 
 	// Mutex to prevent overlapping commands to remote end.
 	mu sync.Mutex
+}
+
+type wslCaps struct {
+	binary   string
+	args     []string
+	port     int
+	timeout  time.Duration
+	env      map[string]string
+	shutdown bool
+	status   bool
+	stdout   string
+	stderr   string
 }
 
 // New creates starts a WebDriver endpoint binary based on caps. Argument caps should just be
@@ -60,62 +70,23 @@ func New(ctx context.Context, localHost string, caps map[string]interface{}) (*D
 	if err != nil {
 		return nil, err
 	}
+	hostPort := net.JoinHostPort(localHost, strconv.Itoa(wslCaps.port))
 
-	cmd := exec.CommandContext(context.Background(), wslCaps.binary, wslCaps.args...)
-
-	cmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), wslCaps.env)
-
-	stdout := os.Stdout
-
-	if wslCaps.stdout != "" {
-		s, err := os.Create(wslCaps.stdout)
-		if err != nil {
-			return nil, err
-		}
-		stdout = s
+	d := &Driver{
+		Address: fmt.Sprintf("http://%s", hostPort),
+		caps:    wslCaps,
+		stopped: make(chan error),
 	}
-	cmd.Stdout = stdout
 
-	stderr := os.Stderr
-
-	if wslCaps.stderr != "" {
-		if wslCaps.stderr == wslCaps.stdout {
-			stderr = stdout
-		} else {
-			s, err := os.Create(wslCaps.stderr)
-			if err != nil {
-				return nil, err
-			}
-			stderr = s
-		}
-	}
-	cmd.Stderr = stderr
-
-	if err := cmd.Start(); err != nil {
+	errChan, err := d.startDriver()
+	if err != nil {
 		return nil, err
 	}
 
-	deadline, cancel := context.WithTimeout(ctx, wslCaps.timeout)
+	deadline, cancel := context.WithTimeout(ctx, d.caps.timeout)
 	defer cancel()
 
-	hostPort := net.JoinHostPort(localHost, strconv.Itoa(wslCaps.port))
-
 	statusURL := fmt.Sprintf("http://%s/status", hostPort)
-
-	errChan := make(chan error, 1)
-	driverChan := make(chan error, 1)
-	go func() {
-		err := cmd.Wait()
-		log.Printf("%s has exited: %v", wslCaps.binary, err)
-		errChan <- err
-		driverChan <- err
-		if stdout != os.Stdout {
-			stdout.Close()
-		}
-		if stderr != os.Stderr {
-			stdout.Close()
-		}
-	}()
 
 	for {
 		select {
@@ -125,7 +96,7 @@ func New(ctx context.Context, localHost string, caps map[string]interface{}) (*D
 		}
 
 		if response, err := httphelper.Get(deadline, statusURL); err == nil {
-			if wslCaps.statusBroken {
+			if !d.caps.status {
 				// just wait for successful connection because status endpoint doesn't work.
 				break
 			}
@@ -147,118 +118,232 @@ func New(ctx context.Context, localHost string, caps map[string]interface{}) (*D
 		}
 
 		if deadline.Err() != nil {
-			go cmd.Process.Kill()
+			if d.cmd != nil {
+				go d.cmd.Process.Kill()
+			}
 			return nil, deadline.Err()
 		}
 
 		time.Sleep(10 * time.Millisecond)
 	}
 
-	return &Driver{
-		Address:  fmt.Sprintf("http://%s", hostPort),
-		cmd:      cmd,
-		shutdownEndpoint: wslCaps.shutdownEndpoint,
-		waitChan: driverChan,
-	}, nil
-}
-
-type wslCaps struct {
-	binary       string
-	args         []string
-	port         int
-	timeout      time.Duration
-	env          map[string]string
-	shutdownEndpoint	bool	
-	statusBroken bool
-	stdout       string
-	stderr       string
+	return d, nil
 }
 
 func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
-	binary, ok := caps["binary"].(string)
-
-	if !ok {
-		return nil, errors.New("binary not set or wrong type")
+	binary := ""
+	if b, ok := caps["binary"]; ok {
+		bs, ok := b.(string)
+		if !ok {
+			return nil, fmt.Errorf("binary %#v is not a string", b)
+		}
+		binary = bs
 	}
 
-	portNum, _ := caps["port"].(float64)
-	port := int(portNum)
+	port := 0
+	if p, ok := caps["port"]; ok {
+		switch pt := p.(type) {
+		case float64:
+			port = int(pt)
+		case string:
+			pi, err := strconv.Atoi(pt)
+			if err != nil {
+				return nil, err
+			}
+			port = pi
+		default:
+			return nil, fmt.Errorf("port %#v is not a number or string", p)
+		}
+	}
+
+	if port == 0 && binary == "" {
+		return nil, errors.New("neither binary nor port is set")
+	}
 
 	if port == 0 {
+		if binary == "" {
+			return nil, errors.New("at least one of binary or port must set")
+		}
 		p, err := portpicker.PickUnusedPort()
 		if err != nil {
 			return nil, err
 		}
 		port = p
 	}
-
-	argsInterface, ok := caps["args"].([]interface{})
-
-	if !ok {
-		return nil, errors.New("args not set or wrong type")
-	}
+	portStr := strconv.Itoa(port)
 
 	var args []string
-
-	portStr := fmt.Sprintf("%d", port)
-	for _, argInterface := range argsInterface {
-		arg, ok := argInterface.(string)
-		if !ok {
-			return nil, errors.New("arg had wrong type")
+	if a, ok := caps["args"]; ok {
+		if binary == "" {
+			return nil, fmt.Errorf("args set to %#v when binary is not set", a)
 		}
 
-		arg = strings.Replace(arg, "%WSL:PORT%", portStr, -1)
-		args = append(args, arg)
+		argsInterface, ok := a.([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("args %#v is not a list", a)
+		}
+
+		for _, argInterface := range argsInterface {
+			arg, ok := argInterface.(string)
+			if !ok {
+				return nil, fmt.Errorf("element %#v in args is not a string", argInterface)
+			}
+
+			arg = strings.Replace(arg, "%WSL:PORT%", portStr, -1)
+			args = append(args, arg)
+		}
 	}
 
 	timeout := 1 * time.Second
-
-	if t, ok := caps["timeout"].(float64); ok {
-		timeout = time.Duration(t*1000) * time.Millisecond
-	}
-
-	env := map[string]string{}
-
-	if e, ok := caps["env"].(map[string]interface{}); ok {
-		for k, v := range e {
-			if vs, ok := v.(string); ok {
-				env[k] = strings.Replace(vs, "%WSL:PORT%", portStr, -1)
+	if t, ok := caps["timeout"]; ok {
+		switch tt := t.(type) {
+		case float64:
+			// Incoming value is in seconds.
+			to, err := time.ParseDuration(fmt.Sprintf("%fs", tt))
+			if err != nil {
+				return nil, err
 			}
+			timeout = to
+		case string:
+			to, err := time.ParseDuration(tt)
+			if err != nil {
+				return nil, err
+			}
+			timeout = to
+		default:
+			return nil, fmt.Errorf("timeout %#v is not a number or string", t)
 		}
 	}
 
-	shutdownEndpoint := false
-	if s, ok := caps["shutdownEndpoint"].(bool); ok {
-		shutdownEndpoint = s
+	env := map[string]string{}
+	if e, ok := caps["env"]; ok {
+		if binary == "" {
+			return nil, fmt.Errorf("env set to %#v when binary is not set", e)
+		}
+		em, ok := e.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("env %#v is not a map", e)
+		}
+		for k, v := range em {
+			vs, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("value %#v for key %q in env is not a string", v, k)
+			}
+			env[k] = strings.Replace(vs, "%WSL:PORT%", portStr, -1)
+		}
 	}
 
-	statusBroken := false
-	if s, ok := caps["statusBroken"].(bool); ok {
-		statusBroken = s
+	shutdown := true
+	if s, ok := caps["shutdown"]; ok {
+		sb, ok := s.(bool)
+		if !ok {
+			return nil, fmt.Errorf("shutdown %#v is not a boolean ")
+		}
+		shutdown = sb
+	}
+
+	status := true
+	if s, ok := caps["status"]; ok {
+		sb, ok := s.(bool)
+		if !ok {
+			return nil, fmt.Errorf("status %#v is not a boolean ")
+		}
+		status = sb
 	}
 
 	stdout := ""
-	if s, ok := caps["stdout"].(string); ok {
-		stdout = s
+	if s, ok := caps["stdout"]; ok {
+		if binary == "" {
+			return nil, fmt.Errorf("stdout set to %#v when binary is not set", s)
+		}
+		sb, ok := s.(string)
+		if !ok {
+			return nil, fmt.Errorf("stdout %#v is not a boolean ")
+		}
+		stdout = sb
 	}
 
 	stderr := ""
-	if s, ok := caps["stderr"].(string); ok {
-		stderr = s
+	if s, ok := caps["stderr"]; ok {
+		if binary == "" {
+			return nil, fmt.Errorf("stderr set to %#v when binary is not set", s)
+		}
+		sb, ok := s.(string)
+		if !ok {
+			return nil, fmt.Errorf("stderr %#v is not a boolean ")
+		}
+		stderr = sb
 	}
 
 	return &wslCaps{
-		binary:       binary,
-		args:         args,
-		port:         port,
-		timeout:      timeout,
-		env:          env,
-		shutdownEndpoint: shutdownEndpoint,
-		statusBroken: statusBroken,
-		stdout:       stdout,
-		stderr:       stderr,
-
+		binary:   binary,
+		args:     args,
+		port:     port,
+		timeout:  timeout,
+		env:      env,
+		shutdown: shutdown,
+		status:   status,
+		stdout:   stdout,
+		stderr:   stderr,
 	}, nil
+}
+
+func (d *Driver) startDriver() (chan error, error) {
+	errChan := make(chan error)
+	if d.caps.binary == "" {
+		return errChan, nil
+	}
+
+	cmd := exec.CommandContext(context.Background(), d.caps.binary, d.caps.args...)
+
+	cmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), d.caps.env)
+
+	stdout := os.Stdout
+
+	if d.caps.stdout != "" {
+		s, err := os.Create(d.caps.stdout)
+		if err != nil {
+			return nil, err
+		}
+		stdout = s
+	}
+	cmd.Stdout = stdout
+
+	stderr := os.Stderr
+
+	if d.caps.stderr != "" {
+		if d.caps.stderr == d.caps.stdout {
+			stderr = stdout
+		} else {
+			s, err := os.Create(d.caps.stderr)
+			if err != nil {
+				return nil, err
+			}
+			stderr = s
+		}
+	}
+	cmd.Stderr = stderr
+
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	go func() {
+		err := cmd.Wait()
+		log.Printf("%s has exited: %v", d.caps.binary, err)
+		errChan <- err
+		d.stopped <- err
+		if stdout != os.Stdout {
+			stdout.Close()
+		}
+		if stderr != os.Stderr {
+			stdout.Close()
+		}
+	}()
+
+	d.cmd = cmd
+
+	return errChan, nil
 }
 
 // Forward forwards a request to the WebDriver endpoint managed by this server.
@@ -343,7 +428,7 @@ func writeJWPNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 // Wait waits for the driver binary to exit, and returns an error if the binary exited with an error.
 func (d *Driver) Wait(ctx context.Context) error {
 	select {
-	case err := <-d.waitChan:
+	case err := <-d.stopped:
 		return err
 	case <-ctx.Done():
 		return ctx.Err()
@@ -352,11 +437,15 @@ func (d *Driver) Wait(ctx context.Context) error {
 
 // Kill kills a running WebDriver server.
 func (d *Driver) Shutdown(ctx context.Context) error {
-	if !d.shutdownEndpoint {
+	if d.cmd == nil {
+		close(d.stopped)
+		return nil
+	}
+	if !d.caps.shutdown {
 		return d.cmd.Process.Kill()
 	}
 
-	httphelper.Get(ctx, d.Address + "/shutdown")
+	httphelper.Get(ctx, d.Address+"/shutdown")
 
 	if err := d.Wait(ctx); err != nil {
 		return d.cmd.Process.Kill()
