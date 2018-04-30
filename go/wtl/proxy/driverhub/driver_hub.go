@@ -251,7 +251,7 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		session = reusable
 	} else {
 		// TODO(DrMarcII) parameterize attempts based on browser metadata
-		driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, caps)
+		driver, err := webdriver.CreateSession(ctx, h.Env.WDAddress(ctx), 3, caps.Strip("google:canReuseSession"))
 		if err != nil {
 			if err2 := h.Env.StopSession(ctx, id); err2 != nil {
 				log.Printf("error stopping session after failing to launch webdriver: %v", err2)
