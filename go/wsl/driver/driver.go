@@ -276,7 +276,6 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 	}
 
 	return &wslCaps{
-<<<<<<< HEAD
 		binary:   binary,
 		args:     args,
 		port:     port,
@@ -286,17 +285,6 @@ func extractWSLCaps(caps map[string]interface{}) (*wslCaps, error) {
 		status:   status,
 		stdout:   stdout,
 		stderr:   stderr,
-=======
-		binary:           binary,
-		args:             args,
-		port:             port,
-		timeout:          timeout,
-		env:              env,
-		shutdownEndpoint: shutdownEndpoint,
-		statusBroken:     statusBroken,
-		stdout:           stdout,
-		stderr:           stderr,
->>>>>>> Add support for stripping consumed capabilities.
 	}, nil
 }
 
