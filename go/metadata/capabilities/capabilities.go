@@ -301,6 +301,35 @@ func (c *Capabilities) ToMixedMode() map[string]interface{} {
 	}
 }
 
+func (c *Capabilities) Strip(capsToStrip ...string) *Capabilities {
+	caps := &Capabilities{
+		AlwaysMatch:  make(map[string]interface{}, len(c.AlwaysMatch)),
+		FirstMatch:   make([]map[string]interface{}, 0, len(c.FirstMatch)),
+		W3CSupported: c.W3CSupported,
+	}
+
+	for k, v := range c.AlwaysMatch {
+		caps.AlwaysMatch[k] = v
+	}
+
+	for _, fm := range c.FirstMatch {
+		newFM := make(map[string]interface{}, len(fm))
+		for k, v := range fm {
+			newFM[k] = v
+		}
+		caps.FirstMatch = append(caps.FirstMatch, newFM)
+	}
+
+	for _, c := range capsToStrip {
+		delete(caps.AlwaysMatch, c)
+		for _, fm := range caps.FirstMatch {
+			delete(fm, c)
+		}
+	}
+
+	return caps
+}
+
 // Merge takes two JSON objects, and merges them.
 //
 // The resulting object will have all of the keys in the two input objects.
