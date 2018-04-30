@@ -361,7 +361,7 @@ func (d *Driver) Forward(w http.ResponseWriter, r *http.Request) {
 
 // NewSessionW3C creates a new session using the W3C protocol.
 func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities, w http.ResponseWriter) (string, error) {
-	wd, err := webdriver.CreateSession(ctx, d.Address, 1, caps.Strip("google:wslConfig", "google:sessionID"))
+	wd, err := webdriver.CreateSession(ctx, d.Address, 1, caps.Strip("google:wslConfig", "google:sessionId"))
 
 	if err != nil {
 		return "", err
