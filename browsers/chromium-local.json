@@ -9,7 +9,8 @@
     "google:wslConfig": {
     	"binary": "%CHROMEDRIVER%",
     	"args": ["--port=%WSL:PORT%"],
-      "shutdownEndpoint": true
+      "status": true,
+      "shutdown": true
     }
   }
 }

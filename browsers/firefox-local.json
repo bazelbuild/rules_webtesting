@@ -8,8 +8,9 @@
         },
         "google:wslConfig": {
 	    	"binary": "%GECKODRIVER%",
-	    	"args": ["--port", "%WSL:PORT%", "--binary", "%FIREFOX%"],
-            "shutdownEndpoint": false
+	    	"args": ["--port=%WSL:PORT%"],
+            "status": true,
+            "shutdown": false
 	    }
     }
 } 
