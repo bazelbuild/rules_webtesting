@@ -1,4 +1,4 @@
 {
-    "environment": "external",
-    "capabilities": {"browserName": "firefox"}
+  "environment": "external",
+  "capabilities": {"browserName": "firefox"}
 }

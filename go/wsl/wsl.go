@@ -77,7 +77,7 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 
 	handler.HandleFunc("/quitquitquit", shutdownFunc)
 
-	handler.HandleFunc("/shutdown", shutdownFunc)	
+	handler.HandleFunc("/shutdown", shutdownFunc)
 
 	handler.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")

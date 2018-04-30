@@ -24,11 +24,11 @@ import (
 )
 
 var (
-	port          = flag.Int("port", 4444, "Port to start WSL on.")
-	downloadRoot  = flag.String("download_root", "", "Directory served at /google/staticfile/.")
-	uploadRoot    = flag.String("upload_root", "", "Directory to which files sent to /session/<id>/upload will be uploaded.")
-	logFile       = flag.String("log_file", "", "File for WSL logs.")
-	localHost = flag.String("local_host", "localhost", "Name to use for localhost.")
+	port         = flag.Int("port", 4444, "Port to start WSL on.")
+	downloadRoot = flag.String("download_root", "", "Directory served at /google/staticfile/.")
+	uploadRoot   = flag.String("upload_root", "", "Directory to which files sent to /session/<id>/upload will be uploaded.")
+	logFile      = flag.String("log_file", "", "File for WSL logs.")
+	localHost    = flag.String("local_host", "localhost", "Name to use for localhost.")
 )
 
 func main() {

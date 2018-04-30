@@ -40,6 +40,12 @@ go_web_test_suite(
         "webtest_test.go",
     ],
     browser_overrides = {
+        "//browsers:chrome-external": {
+            "tags": [
+                "manual",
+                "noci",
+            ],
+        },
         "//browsers:chromium-local": {
             "tags": ["noci"],
         },
@@ -51,6 +57,7 @@ go_web_test_suite(
         },
     },
     browsers = [
+        "//browsers:chrome-external",
         "//browsers:chromium-local",
         "//browsers:firefox-local",
         "//browsers/sauce:chrome-win10",
