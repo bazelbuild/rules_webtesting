@@ -240,7 +240,7 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 	if s, ok := caps["shutdown"]; ok {
 		sb, ok := s.(bool)
 		if !ok {
-			return nil, fmt.Errorf("shutdown %#v is not a boolean ")
+			return nil, fmt.Errorf("shutdown %#v is not a boolean", s)
 		}
 		shutdown = sb
 	}
@@ -249,7 +249,7 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 	if s, ok := caps["status"]; ok {
 		sb, ok := s.(bool)
 		if !ok {
-			return nil, fmt.Errorf("status %#v is not a boolean ")
+			return nil, fmt.Errorf("status %#v is not a boolean", s)
 		}
 		status = sb
 	}
@@ -261,7 +261,7 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 		}
 		sb, ok := s.(string)
 		if !ok {
-			return nil, fmt.Errorf("stdout %#v is not a boolean ")
+			return nil, fmt.Errorf("stdout %#v is not a string", s)
 		}
 		stdout = sb
 	}
@@ -273,7 +273,7 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 		}
 		sb, ok := s.(string)
 		if !ok {
-			return nil, fmt.Errorf("stderr %#v is not a boolean ")
+			return nil, fmt.Errorf("stderr %#v is not a string", s)
 		}
 		stderr = sb
 	}
