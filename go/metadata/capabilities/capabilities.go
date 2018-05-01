@@ -301,6 +301,7 @@ func (c *Capabilities) ToMixedMode() map[string]interface{} {
 	}
 }
 
+// Strip returns a copy of c with all top-level capabilities capsToStrip removed.
 func (c *Capabilities) Strip(capsToStrip ...string) *Capabilities {
 	caps := &Capabilities{
 		AlwaysMatch:  make(map[string]interface{}, len(c.AlwaysMatch)),
