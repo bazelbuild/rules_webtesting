@@ -24,16 +24,22 @@ def _impl(repository_ctx):
     urls = repository_ctx.attr.amd64_urls
     sha256 = repository_ctx.attr.amd64_sha256
   basename = urls[0][urls[0].rindex("/") + 1:]
-  basename_sanitized = basename.replace('%20', '-')
-  repository_ctx.download(urls, basename_sanitized, sha256)
-  repository_ctx.symlink(basename_sanitized, "file/" + basename_sanitized)
+  # sanitize the basename (for filenames with %20 in them)
+  basename = basename.replace("%20", "-")
+  repository_ctx.download(urls, basename, sha256)
+  # if archive is a dmg then convert it to a zip
+  if basename.endswith(".dmg"):
+    zipfile = basename.replace(".dmg", ".zip")
+    repository_ctx.execute([repository_ctx.path(Label("//web/internal:convert_dmg.sh")), basename, zipfile])
+    basename = zipfile
+  repository_ctx.symlink(basename, "file/" + basename)
   repository_ctx.file(
       "file/BUILD", "\n".join([
           ("# DO NOT EDIT: automatically generated BUILD file for " +
            "platform_http_file rule " + repository_ctx.name),
           "filegroup(",
           "    name = 'file',",
-          "    srcs = ['%s']," % basename_sanitized,
+          "    srcs = ['%s']," % basename,
           "    visibility = ['//visibility:public'],",
           ")",
       ]))

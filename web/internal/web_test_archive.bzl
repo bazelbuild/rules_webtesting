@@ -97,7 +97,6 @@ web_test_archive = rule(
                 ".tgz",
                 ".tar.Z",
                 ".zip",
-                ".dmg",
             ],
             mandatory = True,
         ),
