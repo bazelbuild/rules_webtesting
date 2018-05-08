@@ -24,15 +24,16 @@ def _impl(repository_ctx):
     urls = repository_ctx.attr.amd64_urls
     sha256 = repository_ctx.attr.amd64_sha256
   basename = urls[0][urls[0].rindex("/") + 1:]
-  repository_ctx.download(urls, basename, sha256)
-  repository_ctx.symlink(basename, "file/" + basename)
+  basename_sanitized = basename.replace('%20', '-')
+  repository_ctx.download(urls, basename_sanitized, sha256)
+  repository_ctx.symlink(basename_sanitized, "file/" + basename_sanitized)
   repository_ctx.file(
       "file/BUILD", "\n".join([
           ("# DO NOT EDIT: automatically generated BUILD file for " +
            "platform_http_file rule " + repository_ctx.name),
           "filegroup(",
           "    name = 'file',",
-          "    srcs = ['%s']," % basename,
+          "    srcs = ['%s']," % basename_sanitized,
           "    visibility = ['//visibility:public'],",
           ")",
       ]))

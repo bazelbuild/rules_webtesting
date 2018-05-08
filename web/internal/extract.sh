@@ -36,6 +36,10 @@ elif [[ "${BASENAME}" == *.tar.Z ]]; then
   tar xZf "${ARCHIVE}" -C "${OUT_DIR}"
 elif [[ "${BASENAME}" == *.zip ]]; then
   unzip "${ARCHIVE}" -d "${OUT_DIR}"
+elif [[ "${BASENAME}" == *.dmg ]]; then
+  VOLUME=$(hdiutil attach "${ARCHIVE}" | tail -1 | awk '{print $3}')
+  cp -r "${VOLUME}/"*.app ${OUT_DIR}
+  hdiutil detach "$VOLUME" >/dev/null
 else
   exit -1
 fi

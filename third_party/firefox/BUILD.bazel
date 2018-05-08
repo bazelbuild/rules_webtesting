@@ -31,7 +31,7 @@ web_test_archive(
             "FIREFOX": "firefox/firefox",
         },
         "//common/conditions:mac": {
-            "FIREFOX": "firefox-sdk/bin/Firefox.app/Contents/MacOS/firefox",
+            "FIREFOX": "Firefox.app/Contents/MacOS/firefox",
         },
     }),
     visibility = ["//browsers:__subpackages__"],
