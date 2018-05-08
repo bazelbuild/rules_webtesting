@@ -396,9 +396,9 @@ def org_mozilla_firefox():
           "https://ftp.mozilla.org/pub/firefox/releases/58.0/linux-x86_64/en-US/firefox-58.0.tar.bz2",
       ],
       macos_sha256=
-      "b9e9f383fd12d6deb6b36b3c2844647ce065142e1eb934499559a8a9842d01ad",
+      "a853eb20821a21c0bedeb0263d7b5975e7704f20b78edfef129c73804b1fb962",
       macos_urls=[
-          "https://ftp.mozilla.org/pub/firefox/releases/52.1.2esr/firefox-52.1.2esr.mac-x86_64.sdk.tar.bz2",
+          "https://ftp.mozilla.org/pub/firefox/releases/58.0/mac/en-US/Firefox%2058.0.dmg",
       ])
 
 def org_mozilla_geckodriver():

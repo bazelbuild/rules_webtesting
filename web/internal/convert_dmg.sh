@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc.
+#!/bin/bash
+# Copyright 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,25 +15,15 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "web_test_archive")
 
-package(default_testonly = 1)
-
-licenses(["reciprocal"])  # MPL 2.0
-
-exports_files(["LICENSE"])
-
-web_test_archive(
-    name = "firefox",
-    archive = "@org_mozilla_firefox//file",
-    extract = "build",
-    named_files = select({
-        "//common/conditions:linux": {
-            "FIREFOX": "firefox/firefox",
-        },
-        "//common/conditions:mac": {
-            "FIREFOX": "Firefox.app/Contents/MacOS/firefox",
-        },
-    }),
-    visibility = ["//browsers:__subpackages__"],
-)
+DMGFILE=$1
+OUTFILE=$2
+mkdir -p tmp
+VOLUME=$(hdiutil attach "${DMGFILE}" | tail -1 | awk '{print $3}')
+cp -r "${VOLUME}/"*.app tmp
+hdiutil detach "${VOLUME}" >/dev/null
+cd tmp
+zip -r "../${OUTFILE}" *
+cd ..
+rm -rf tmp
+rm "${DMGFILE}"
