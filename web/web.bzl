@@ -86,6 +86,9 @@ def web_test_suite(name,
     overrides = browser_overrides.get(browser) or browser_overrides.get(
         unqualified_browser) or {}
     overridden_kwargs = _apply_browser_overrides(kwargs, overrides)
+    if not 'tags' in overridden_kwargs:
+      overridden_kwargs['tags'] = []
+    overridden_kwargs['tags'] = lists.clone(overridden_kwargs['tags']) + ["browser:" + unqualified_browser]
 
     web_test(
         name=test_name,
