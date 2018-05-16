@@ -662,3 +662,11 @@ func TestMergeOver(t *testing.T) {
 		})
 	}
 }
+
+func TestResolve(t *testing.T) {
+	
+
+
+
+	
+}

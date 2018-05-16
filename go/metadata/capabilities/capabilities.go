@@ -430,3 +430,117 @@ func CanReuseSession(caps *Capabilities) bool {
 	reuse, _ := caps.AlwaysMatch["google:canReuseSession"].(bool)
 	return reuse
 }
+
+
+// A Resolver resolves a prefix, name pair to a replacement value.
+type Resolver func(prefix, name string) (string, error)
+
+// NoOPResolver resolves to %prefix:name%.
+func NoOPResolver(prefix, name string) (string, error) {
+	return "%" + prefix + ":" + name + "%", nil
+}
+
+// MapResolver returns a new Resolver that uses key-value pairs in names to
+// resolve names for prefix, and otherwise uses the NoOPResolver.
+func MapResolver(prefix string, names map[string]string) Resolver {
+	return func(p, n string) (string, error) {
+		if p == name {
+			v, ok := name[n]
+			if !ok {
+				return "", errors.New("unable to resolve %s:%s", p, n)
+			}
+			return v
+		}
+		return NoOPResolver(p, n)
+	}
+}
+
+// Resolve returns a new Capabilities object with all %PREFIX:NAME% substrings replaced using resolver.
+func (c *Capabilities) Resolve(resolver Resolver) (*Capabilities, error) {
+	am, err := resolveMap(c.AlwaysMatch, resolver)
+	if err != nil {
+		return nil, err
+	}
+
+	var fms []map[string]interface{}
+
+	for _, fm := range c.FirstMatch {
+		u, err := resolveMap(fm, resolver)
+		if err != nil {
+			return nil, err
+		}
+		fms = append(fms, u)
+	}
+
+	return &Capabilities{
+		AlwaysMatch:  am,
+		FirstMatch:   fms,
+		W3CSupported: c.W3CSupported,
+	}, nil
+}
+
+func resolve(v interface{}, resolver Resolver) (interface{}, error) {
+	switch tv := v.(type) {
+	case string:
+		return resolveString(tv, resolver)
+	case []interface{}:
+		return resolveSlice(tv, resolver)
+	case map[string]interface{}:
+		return resolveMap(tv, resolver)
+	default:
+		return v, nil
+	}
+}
+
+func resolveMap(m map[string]interface{}, resolver Resolver) (map[string]interface{}, error) {
+	caps := map[string]interface{}{}
+	for k, v := range m {
+		u, err := resolve(v, resolver)
+		if err != nil {
+			return nil, err
+		}
+
+		caps[k] = u
+	}
+	return caps, nil
+}
+
+func resolveSlice(l []interface{}, resolver Resolver) ([]interface{}, error) {
+	caps := []interface{}{}
+	for _, v := range l {
+		u, err := resolve(v, resolver)
+		if err != nil {
+			return nil, err
+		}
+		caps = append(caps, u)
+	}
+	return caps, nil
+}
+
+var varRegExp = regexp.MustCompile(`%(w+):(\w+)%`)
+
+func resolveString(s string, resolver Resolver) (string, error) {
+	result := ""
+	previous := 0
+	for _, match := range varRegExp.FindAllStringSubmatchIndex(s, -1) {
+		// Append everything after the previous match to the beginning of this match
+		result += s[previous:match[0]]
+		// Set previous to the first character after this match
+		previous = match[1]
+
+		// match[2], match[3]
+		prefix := s[match[2]:match[3]]
+		varName := s[match[4]:match[5]]
+
+		value, err := resolver(prefix, varName)
+		if err != nil {
+			return "", err
+		}
+
+		result += value
+	}
+	// Append everything after the last match
+	result += s[previous:]
+
+	return result, nil
+}
