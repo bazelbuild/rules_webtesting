@@ -6,7 +6,7 @@ In a separate terminal run the following:
 ```sh
 export SAUCE_USERNAME=<your user name>
 export SAUCE_ACCESS_KEY=<your access key>
-export TUNNEL_IDENTIFER=<whatever you want>
+export TUNNEL_IDENTIFIER=<whatever you want>
 sc -i $TUNNEL_IDENTIFIER
 ```
 
@@ -17,7 +17,7 @@ Then in the terminal where you are going to run Bazel do the following:
 ```sh
 export SAUCE_USERNAME=<your user name>
 export SAUCE_ACCESS_KEY=<your access key>
-export TUNNEL_IDENTIFER=<whatever you want>
+export TUNNEL_IDENTIFIER=<whatever you want>
 ```
 
 Then to actually run the SauceLabs tests, use the following:
