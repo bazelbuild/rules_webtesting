@@ -51,13 +51,13 @@ Why was this browser disabled?
 def _generate_noop_test(ctx, reason, status = 0):
     """Generates a no-op test.
 
-  Args:
-    ctx: the ctx object for this rule.
-    reason: string, a description of why the no-op test is being used.
-    status: int, the exit code the test should return
-  Returns:
-    an empty struct for this rule.
-  """
+    Args:
+        ctx: the ctx object for this rule.
+        reason: string, a description of why the no-op test is being used.
+        status: int, the exit code the test should return
+    Returns:
+        an empty struct for this rule.
+    """
     if status:
         success = "fails"
     else:

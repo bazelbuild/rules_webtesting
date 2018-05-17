@@ -16,15 +16,15 @@
 def _collect(ctx, files = [], targets = []):
     """Builds a runfiles object with transitive files from all targets.
 
-  Args:
-    ctx: Context object for the rule where this being used.
-    files: a list of File object to include in the runfiles.
-    targets: a list of Target object from which runfiles will be collected.
+    Args:
+        ctx: Context object for the rule where this being used.
+        files: a list of File object to include in the runfiles.
+        targets: a list of Target object from which runfiles will be collected.
 
-  Returns:
-    A configured runfiles object that include data and default runfiles for the
-    rule, all transitive runfiles from targets, and all files from files.
-  """
+    Returns:
+        A configured runfiles object that include data and default runfiles for the
+        rule, all transitive runfiles from targets, and all files from files.
+    """
     transitive_runfiles = depset()
     dep_files = depset()
     default_runfiles = []

@@ -20,22 +20,22 @@ load("@io_bazel_rules_go//go:def.bzl", "go_repository")
 def web_test_repositories(**kwargs):
     """Defines external repositories required by Webtesting Rules.
 
-  This function exists for other Bazel projects to call from their WORKSPACE
-  file when depending on rules_webtesting using http_archive. This function
-  makes it easy to import these transitive dependencies into the parent
-  workspace. This will check to see if a repository has been previously defined
-  before defining a new repository.
+    This function exists for other Bazel projects to call from their WORKSPACE
+    file when depending on rules_webtesting using http_archive. This function
+    makes it easy to import these transitive dependencies into the parent
+    workspace. This will check to see if a repository has been previously defined
+    before defining a new repository.
 
-  Alternatively, individual dependencies may be excluded with an
-  "omit_" + name parameter. This is useful for users who want to be rigorous
-  about declaring their own direct dependencies, or when another Bazel project
-  is depended upon (e.g. rules_closure) that defines the same dependencies as
-  this one (e.g. com_google_guava.) Alternatively, a whitelist model may be
-  used by calling the individual functions this method references.
+    Alternatively, individual dependencies may be excluded with an
+    "omit_" + name parameter. This is useful for users who want to be rigorous
+    about declaring their own direct dependencies, or when another Bazel project
+    is depended upon (e.g. rules_closure) that defines the same dependencies as
+    this one (e.g. com_google_guava.) Alternatively, a whitelist model may be
+    used by calling the individual functions this method references.
 
-  Please note that while these dependencies are defined, they are not actually
-  downloaded, unless a target is built that depends on them.
-  """
+    Please note that while these dependencies are defined, they are not actually
+    downloaded, unless a target is built that depends on them.
+    """
     if should_create_repository("bazel_skylib", kwargs):
         bazel_skylib()
     if should_create_repository("com_github_blang_semver", kwargs):
@@ -91,11 +91,11 @@ def web_test_repositories(**kwargs):
 def should_create_repository(name, args):
     """Returns whether the name repository should be created.
 
-  This allows creation of a repository to be disabled by either an
-  "omit_" _+ name parameter or by previously defining a rule for the repository.
+    This allows creation of a repository to be disabled by either an
+    "omit_" _+ name parameter or by previously defining a rule for the repository.
 
-  The args dict will be mutated to remove "omit_" + name.
-  """
+    The args dict will be mutated to remove "omit_" + name.
+    """
     key = "omit_" + name
     if key in args:
         val = args.pop(key)
@@ -108,13 +108,13 @@ def should_create_repository(name, args):
 def browser_repositories(firefox = False, chromium = False):
     """Sets up repositories for browsers defined in //browsers/....
 
-  This should only be used on an experimental basis; projects should define
-  their own browsers.
+    This should only be used on an experimental basis; projects should define
+    their own browsers.
 
-  Args:
-    firefox: Configure repositories for //browsers:firefox-native.
-    chromium: Configure repositories for //browsers:chromium-native.
-  """
+    Args:
+        firefox: Configure repositories for //browsers:firefox-native.
+        chromium: Configure repositories for //browsers:chromium-native.
+    """
     if chromium:
         org_chromium_chromedriver()
         org_chromium_chromium()

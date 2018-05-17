@@ -18,12 +18,12 @@ load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 def py_web_test_suite(name, py_test_tags = None, main = None, **kwargs):
     """Defines a test_suite of web_test targets that wrap a py_test target.
 
-  Args:
-    name: The base name of the test.
-    py_test_tags: A list of test tag strings to use for the py_test target.
-    main: Optional; default computed from name.
-    **kwargs: Arguments for wrapped_web_test_suite
-  """
+    Args:
+        name: The base name of the test.
+        py_test_tags: A list of test tag strings to use for the py_test target.
+        main: Optional; default computed from name.
+        **kwargs: Arguments for wrapped_web_test_suite
+    """
     if main == None:
         main = name + ".py"
 

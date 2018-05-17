@@ -19,12 +19,12 @@ load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 def go_web_test_suite(name, go_test_tags = None, glaze_kind = None, **kwargs):
     """Defines a test_suite of web_test targets that wrap a go_test target.
 
-  Args:
-    name: The base name of the test.
-    go_test_tags: A list of test tag strings to use for the dart_test target.
-    glaze_kind: For internal Google use.
-    **kwargs: Arguments for wrapped_web_test_suite
-  """
+    Args:
+        name: The base name of the test.
+        go_test_tags: A list of test tag strings to use for the dart_test target.
+        glaze_kind: For internal Google use.
+        **kwargs: Arguments for wrapped_web_test_suite
+    """
     wrap_web_test_suite(
         name = name,
         rule = go_test,

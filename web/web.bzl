@@ -53,18 +53,18 @@ def web_test_suite(
         **kwargs):
     """Defines a test_suite of web_test targets to be run.
 
-  Args:
-    name: Name; required. A unique name for this rule.
-    browsers: List of labels; required. The browsers with which to run the test.
-    browser_overrides: Dictionary; optional; default is an empty dictionary. A
-      dictionary mapping from browser names to browser-specific web_test
-      attributes, such as shard_count, flakiness, timeout, etc. For example:
-      {'//browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
-       '//browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
-    test_suite_tags: List of strings; tags for the generated test_suite rule.
-    visibility: List of labels; optional.
-    **kwargs: Additional arguments for web_test rule.
-  """
+    Args:
+        name: Name; required. A unique name for this rule.
+        browsers: List of labels; required. The browsers with which to run the test.
+        browser_overrides: Dictionary; optional; default is an empty dictionary. A
+          dictionary mapping from browser names to browser-specific web_test
+          attributes, such as shard_count, flakiness, timeout, etc. For example:
+          {'//browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
+           '//browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
+        test_suite_tags: List of strings; tags for the generated test_suite rule.
+        visibility: List of labels; optional.
+        **kwargs: Additional arguments for web_test rule.
+    """
     if not lists.is_list_like(browsers):
         fail("expected a sequence type for attribute 'browsers' but got '%s'" %
              type(browsers))
@@ -110,15 +110,15 @@ def web_test_suite(
 def _apply_browser_overrides(kwargs, overrides):
     """Handles browser-specific options that override the top-level definitions.
 
-  Args:
-    kwargs: A dictionary of arguments that will be overridden.
-    overrides: A dictionary of attributes with the new attributes that should
-      replace the top-level definitions.
+    Args:
+        kwargs: A dictionary of arguments that will be overridden.
+        overrides: A dictionary of attributes with the new attributes that should
+          replace the top-level definitions.
 
-  Returns:
-    A dictionary of updated attributes.  For example:
-    {'shard_count': 4, 'size': 'medium', 'timeout': 100, 'flaky': 1}
-  """
+    Returns:
+        A dictionary of updated attributes.  For example:
+        {'shard_count': 4, 'size': 'medium', 'timeout': 100, 'flaky': 1}
+    """
     overridden_kwargs = maps.clone(kwargs)
     overridden_kwargs.update(overrides)
 

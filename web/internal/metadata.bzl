@@ -18,14 +18,14 @@ load(":files.bzl", "files")
 def _merge_files(ctx, merger, output, inputs):
     """Produces a merged web test metadata file.
 
-  Args:
-    ctx: a Skylark rule context.
-    merger: the WTL metadata merger executable.
-    output: a File object for the output file.
-    inputs: a list of File objects. These files are in order of priority;
-      i.e. values in the first file will take precedence over values in the
-      second file, etc.
-  """
+    Args:
+        ctx: a Skylark rule context.
+        merger: the WTL metadata merger executable.
+        output: a File object for the output file.
+        inputs: a list of File objects. These files are in order of priority;
+          i.e. values in the first file will take precedence over values in the
+          second file, etc.
+    """
     paths = [i.path for i in reversed(inputs)]
     short_paths = [i.short_path for i in inputs]
     args = ["--output", output.path] + paths
