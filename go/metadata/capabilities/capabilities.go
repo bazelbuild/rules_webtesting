@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -301,34 +302,39 @@ func (c *Capabilities) ToMixedMode() map[string]interface{} {
 	}
 }
 
-// Strip returns a copy of c with all top-level capabilities capsToStrip removed.
+// Strip returns a copy of c with all top-level capabilities capsToStrip and with nil values removed.
 func (c *Capabilities) Strip(capsToStrip ...string) *Capabilities {
-	caps := &Capabilities{
-		AlwaysMatch:  make(map[string]interface{}, len(c.AlwaysMatch)),
-		FirstMatch:   make([]map[string]interface{}, 0, len(c.FirstMatch)),
-		W3CSupported: c.W3CSupported,
-	}
+	am := map[string]interface{}{}
+	var fms []map[string]interface{}
 
 	for k, v := range c.AlwaysMatch {
-		caps.AlwaysMatch[k] = v
+		if v != nil {
+			am[k] = v
+		}
 	}
 
 	for _, fm := range c.FirstMatch {
-		newFM := make(map[string]interface{}, len(fm))
+		newFM := map[string]interface{}{}
 		for k, v := range fm {
-			newFM[k] = v
+			if v != nil {
+				newFM[k] = v
+			}
 		}
-		caps.FirstMatch = append(caps.FirstMatch, newFM)
+		fms = append(fms, newFM)
 	}
 
 	for _, c := range capsToStrip {
-		delete(caps.AlwaysMatch, c)
-		for _, fm := range caps.FirstMatch {
+		delete(am, c)
+		for _, fm := range fms {
 			delete(fm, c)
 		}
 	}
 
-	return caps
+	return &Capabilities{
+		AlwaysMatch:  am,
+		FirstMatch:   fms,
+		W3CSupported: c.W3CSupported,
+	}
 }
 
 // Merge takes two JSON objects, and merges them.
@@ -341,18 +347,18 @@ func (c *Capabilities) Strip(capsToStrip ...string) *Capabilities {
 //     a value resulting from concatenating the two lists.
 //   - Otherwise the result object will have the value from the second object.
 func Merge(m1, m2 map[string]interface{}) map[string]interface{} {
-	if len(m1) == 0 {
+	if m1 == nil {
 		return m2
 	}
-	if len(m2) == 0 {
+	if m2 == nil {
 		return m1
 	}
-	nm := make(map[string]interface{})
+	nm := map[string]interface{}{}
 	for k, v := range m1 {
 		nm[k] = v
 	}
-	for k, v2 := range m2 {
-		nm[k] = mergeValues(nm[k], v2, k)
+	for k, v := range m2 {
+		nm[k] = mergeValues(nm[k], v, k)
 	}
 	return nm
 }
@@ -375,26 +381,19 @@ func mergeValues(j1, j2 interface{}, name string) interface{} {
 }
 
 func mergeLists(m1, m2 []interface{}) []interface{} {
-	if len(m1) == 0 {
+	if m1 == nil {
 		return m2
 	}
-	if len(m2) == 0 {
+	if m2 == nil {
 		return m1
 	}
-	nl := make([]interface{}, 0, len(m1)+len(m2))
+	nl := []interface{}{}
 	nl = append(nl, m1...)
 	nl = append(nl, m2...)
 	return nl
 }
 
 func mergeArgs(m1, m2 []interface{}) []interface{} {
-	if len(m1) == 0 {
-		return m2
-	}
-	if len(m2) == 0 {
-		return m1
-	}
-
 	m2Opts := map[string]bool{}
 
 	for _, a := range m2 {
@@ -406,7 +405,7 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 		}
 	}
 
-	nl := make([]interface{}, 0, len(m1)+len(m2))
+	nl := []interface{}{}
 
 	for _, a := range m1 {
 		if arg, ok := a.(string); ok {
@@ -431,7 +430,6 @@ func CanReuseSession(caps *Capabilities) bool {
 	return reuse
 }
 
-
 // A Resolver resolves a prefix, name pair to a replacement value.
 type Resolver func(prefix, name string) (string, error)
 
@@ -444,12 +442,12 @@ func NoOPResolver(prefix, name string) (string, error) {
 // resolve names for prefix, and otherwise uses the NoOPResolver.
 func MapResolver(prefix string, names map[string]string) Resolver {
 	return func(p, n string) (string, error) {
-		if p == name {
-			v, ok := name[n]
+		if p == prefix {
+			v, ok := names[n]
 			if !ok {
-				return "", errors.New("unable to resolve %s:%s", p, n)
+				return "", fmt.Errorf("unable to resolve %s:%s", p, n)
 			}
-			return v
+			return v, nil
 		}
 		return NoOPResolver(p, n)
 	}
@@ -494,6 +492,7 @@ func resolve(v interface{}, resolver Resolver) (interface{}, error) {
 
 func resolveMap(m map[string]interface{}, resolver Resolver) (map[string]interface{}, error) {
 	caps := map[string]interface{}{}
+
 	for k, v := range m {
 		u, err := resolve(v, resolver)
 		if err != nil {
@@ -502,11 +501,13 @@ func resolveMap(m map[string]interface{}, resolver Resolver) (map[string]interfa
 
 		caps[k] = u
 	}
+
 	return caps, nil
 }
 
 func resolveSlice(l []interface{}, resolver Resolver) ([]interface{}, error) {
 	caps := []interface{}{}
+
 	for _, v := range l {
 		u, err := resolve(v, resolver)
 		if err != nil {
@@ -514,10 +515,11 @@ func resolveSlice(l []interface{}, resolver Resolver) ([]interface{}, error) {
 		}
 		caps = append(caps, u)
 	}
+
 	return caps, nil
 }
 
-var varRegExp = regexp.MustCompile(`%(w+):(\w+)%`)
+var varRegExp = regexp.MustCompile(`%(\w+):(\w+)%`)
 
 func resolveString(s string, resolver Resolver) (string, error) {
 	result := ""
@@ -528,7 +530,6 @@ func resolveString(s string, resolver Resolver) (string, error) {
 		// Set previous to the first character after this match
 		previous = match[1]
 
-		// match[2], match[3]
 		prefix := s[match[2]:match[3]]
 		varName := s[match[4]:match[5]]
 
@@ -539,6 +540,7 @@ func resolveString(s string, resolver Resolver) (string, error) {
 
 		result += value
 	}
+
 	// Append everything after the last match
 	result += s[previous:]
 

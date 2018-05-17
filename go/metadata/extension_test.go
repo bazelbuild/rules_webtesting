@@ -16,6 +16,7 @@ package metadata
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
@@ -36,8 +37,8 @@ func TestFromFileWithExtension(t *testing.T) {
 
 	expected := &SampleExtension{"hello", 512}
 
-	if !extension.Equals(expected) {
-		t.Errorf("Got %+v, expected %+v", extension, expected)
+	if !reflect.DeepEqual(extension, expected) {
+		t.Errorf("Got %#v, expected %#v", extension, expected)
 	}
 }
 
@@ -78,16 +79,19 @@ func TestMergeWithExtension(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			a, err := Merge(tc.input1, tc.input2)
 
-			if err == nil {
-				if tc.result == nil {
-					t.Errorf("Got Merge(%+v, %+v) == %+v, expected error", tc.input1, tc.input2, a)
-				} else if !Equals(a, tc.result) {
-					t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, a, tc.result)
-				}
-			} else {
+			if err != nil {
 				if tc.result != nil {
-					t.Error(err)
+					t.Fatal(err)
 				}
+				return
+			}
+
+			if tc.result == nil {
+				t.Fatalf("Got %#v, expected error", tc.input1, tc.input2, a)
+			}
+
+			if !reflect.DeepEqual(a, tc.result) {
+				t.Fatalf("Got %#v, expected %#v", tc.input1, tc.input2, a, tc.result)
 			}
 		})
 	}
@@ -104,7 +108,7 @@ func (s *SampleExtension) Merge(other Extension) (Extension, error) {
 	}
 	o, ok := other.(*SampleExtension)
 	if !ok {
-		return nil, fmt.Errorf("cannot merge %+v with %+v", s, other)
+		return nil, fmt.Errorf("cannot merge %#v with %#v", s, other)
 	}
 	return &SampleExtension{
 		ExtensionField1: s.ExtensionField1,
@@ -117,11 +121,6 @@ func (s *SampleExtension) Normalize() error {
 	return nil
 }
 
-func (s *SampleExtension) Equals(other Extension) bool {
-	o, ok := other.(*SampleExtension)
-	return ok && o.ExtensionField1 == s.ExtensionField1 && o.ExtensionField2 == s.ExtensionField2
-}
-
 type SampleExtension2 struct {
 	X int
 }
@@ -132,9 +131,4 @@ func (s *SampleExtension2) Merge(other Extension) (Extension, error) {
 
 func (s *SampleExtension2) Normalize() error {
 	return nil
-}
-
-func (s *SampleExtension2) Equals(other Extension) bool {
-	o, ok := other.(*SampleExtension2)
-	return ok && o.X == s.X
 }

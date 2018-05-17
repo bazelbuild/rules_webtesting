@@ -16,24 +16,25 @@
 load("//web:web.bzl", "web_test_suite")
 load(":constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
 
-def wrap_web_test_suite(name,
-                        browsers,
-                        rule,
-                        args=None,
-                        browser_overrides=None,
-                        config=None,
-                        flaky=None,
-                        local=None,
-                        shard_count=None,
-                        size=None,
-                        tags=None,
-                        test_suite_tags=None,
-                        timeout=None,
-                        visibility=None,
-                        web_test_data=None,
-                        wrapped_test_tags=None,
-                        **remaining_keyword_args):
-  """Defines a test_suite of web_test targets that wrap a given rule.
+def wrap_web_test_suite(
+        name,
+        browsers,
+        rule,
+        args = None,
+        browser_overrides = None,
+        config = None,
+        flaky = None,
+        local = None,
+        shard_count = None,
+        size = None,
+        tags = None,
+        test_suite_tags = None,
+        timeout = None,
+        visibility = None,
+        web_test_data = None,
+        wrapped_test_tags = None,
+        **remaining_keyword_args):
+    """Defines a test_suite of web_test targets that wrap a given rule.
 
   Args:
     name: The base name of the test.
@@ -60,39 +61,41 @@ def wrap_web_test_suite(name,
     **remaining_keyword_args: Arguments for the wrapped test target.
   """
 
-  # Check explicitly for None so that users can set this to the empty list
-  if wrapped_test_tags == None:
-    wrapped_test_tags = DEFAULT_WRAPPED_TEST_TAGS
+    # Check explicitly for None so that users can set this to the empty list
+    if wrapped_test_tags == None:
+        wrapped_test_tags = DEFAULT_WRAPPED_TEST_TAGS
 
-  size = size or "large"
+    size = size or "large"
 
-  wrapped_test_name = name + "_wrapped_test"
+    wrapped_test_name = name + "_wrapped_test"
 
-  rule(
-      name=wrapped_test_name,
-      args=args,
-      flaky=flaky,
-      local=local,
-      shard_count=shard_count,
-      size=size,
-      tags=wrapped_test_tags,
-      timeout=timeout,
-      visibility=["//visibility:private"],
-      **remaining_keyword_args)
+    rule(
+        name = wrapped_test_name,
+        args = args,
+        flaky = flaky,
+        local = local,
+        shard_count = shard_count,
+        size = size,
+        tags = wrapped_test_tags,
+        timeout = timeout,
+        visibility = ["//visibility:private"],
+        **remaining_keyword_args
+    )
 
-  web_test_suite(
-      name=name,
-      args=args,
-      browsers=browsers,
-      browser_overrides=browser_overrides,
-      config=config,
-      data=web_test_data,
-      flaky=flaky,
-      local=local,
-      shard_count=shard_count,
-      size=size,
-      tags=tags,
-      test=wrapped_test_name,
-      test_suite_tags=test_suite_tags,
-      timeout=timeout,
-      visibility=visibility)
+    web_test_suite(
+        name = name,
+        args = args,
+        browsers = browsers,
+        browser_overrides = browser_overrides,
+        config = config,
+        data = web_test_data,
+        flaky = flaky,
+        local = local,
+        shard_count = shard_count,
+        size = size,
+        tags = tags,
+        test = wrapped_test_name,
+        test_suite_tags = test_suite_tags,
+        timeout = timeout,
+        visibility = visibility,
+    )

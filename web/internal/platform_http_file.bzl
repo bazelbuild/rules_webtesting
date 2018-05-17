@@ -14,35 +14,39 @@
 """Downloads files based on local platform."""
 
 def _impl(repository_ctx):
-  if repository_ctx.os.name.lower().startswith("mac os"):
-    urls = repository_ctx.attr.macos_urls
-    sha256 = repository_ctx.attr.macos_sha256
-  elif repository_ctx.os.name.lower().startswith("windows"):
-    urls = repository_ctx.attr.windows_urls
-    sha256 = repository_ctx.attr.windows_sha256
-  else:
-    urls = repository_ctx.attr.amd64_urls
-    sha256 = repository_ctx.attr.amd64_sha256
-  basename = urls[0][urls[0].rindex("/") + 1:]
-  # sanitize the basename (for filenames with %20 in them)
-  basename = basename.replace("%20", "-")
-  repository_ctx.download(urls, basename, sha256)
-  # if archive is a dmg then convert it to a zip
-  if basename.endswith(".dmg"):
-    zipfile = basename.replace(".dmg", ".zip")
-    repository_ctx.execute([repository_ctx.path(Label("//web/internal:convert_dmg.sh")), basename, zipfile])
-    basename = zipfile
-  repository_ctx.symlink(basename, "file/" + basename)
-  repository_ctx.file(
-      "file/BUILD", "\n".join([
-          ("# DO NOT EDIT: automatically generated BUILD file for " +
-           "platform_http_file rule " + repository_ctx.name),
-          "filegroup(",
-          "    name = 'file',",
-          "    srcs = ['%s']," % basename,
-          "    visibility = ['//visibility:public'],",
-          ")",
-      ]))
+    if repository_ctx.os.name.lower().startswith("mac os"):
+        urls = repository_ctx.attr.macos_urls
+        sha256 = repository_ctx.attr.macos_sha256
+    elif repository_ctx.os.name.lower().startswith("windows"):
+        urls = repository_ctx.attr.windows_urls
+        sha256 = repository_ctx.attr.windows_sha256
+    else:
+        urls = repository_ctx.attr.amd64_urls
+        sha256 = repository_ctx.attr.amd64_sha256
+    basename = urls[0][urls[0].rindex("/") + 1:]
+
+    # sanitize the basename (for filenames with %20 in them)
+    basename = basename.replace("%20", "-")
+    repository_ctx.download(urls, basename, sha256)
+
+    # if archive is a dmg then convert it to a zip
+    if basename.endswith(".dmg"):
+        zipfile = basename.replace(".dmg", ".zip")
+        repository_ctx.execute([repository_ctx.path(Label("//web/internal:convert_dmg.sh")), basename, zipfile])
+        basename = zipfile
+    repository_ctx.symlink(basename, "file/" + basename)
+    repository_ctx.file(
+        "file/BUILD",
+        "\n".join([
+            ("# DO NOT EDIT: automatically generated BUILD file for " +
+             "platform_http_file rule " + repository_ctx.name),
+            "filegroup(",
+            "    name = 'file',",
+            "    srcs = ['%s']," % basename,
+            "    visibility = ['//visibility:public'],",
+            ")",
+        ]),
+    )
 
 platform_http_file = repository_rule(
     attrs = {

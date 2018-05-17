@@ -13,8 +13,8 @@
 # limitations under the License.
 """Runfiles modules contains utility functions for working with runfiles."""
 
-def _collect(ctx, files=[], targets=[]):
-  """Builds a runfiles object with transitive files from all targets.
+def _collect(ctx, files = [], targets = []):
+    """Builds a runfiles object with transitive files from all targets.
 
   Args:
     ctx: Context object for the rule where this being used.
@@ -25,34 +25,36 @@ def _collect(ctx, files=[], targets=[]):
     A configured runfiles object that include data and default runfiles for the
     rule, all transitive runfiles from targets, and all files from files.
   """
-  transitive_runfiles = depset()
-  dep_files = depset()
-  default_runfiles = []
-  data_runfiles = []
+    transitive_runfiles = depset()
+    dep_files = depset()
+    default_runfiles = []
+    data_runfiles = []
 
-  for target in targets:
-    if hasattr(target, "transitive_runfiles"):
-      transitive_runfiles = depset(
-          transitive=[transitive_runfiles, target.transitive_runfiles])
-    if hasattr(target, "default_runfiles"):
-      default_runfiles += [target.default_runfiles]
-    if hasattr(target, "data_runfiles"):
-      data_runfiles += [target.data_runfiles]
-    if hasattr(target, "files"):
-      dep_files = depset(transitive=[dep_files, target.files])
+    for target in targets:
+        if hasattr(target, "transitive_runfiles"):
+            transitive_runfiles = depset(
+                transitive = [transitive_runfiles, target.transitive_runfiles],
+            )
+        if hasattr(target, "default_runfiles"):
+            default_runfiles += [target.default_runfiles]
+        if hasattr(target, "data_runfiles"):
+            data_runfiles += [target.data_runfiles]
+        if hasattr(target, "files"):
+            dep_files = depset(transitive = [dep_files, target.files])
 
-  result = ctx.runfiles(
-      collect_data=True,
-      collect_default=True,
-      files=files + dep_files.to_list(),
-      transitive_files=transitive_runfiles)
+    result = ctx.runfiles(
+        collect_data = True,
+        collect_default = True,
+        files = files + dep_files.to_list(),
+        transitive_files = transitive_runfiles,
+    )
 
-  for default in default_runfiles:
-    result = result.merge(default)
+    for default in default_runfiles:
+        result = result.merge(default)
 
-  for data in data_runfiles:
-    result = result.merge(data)
+    for data in data_runfiles:
+        result = result.merge(data)
 
-  return result
+    return result
 
 runfiles = struct(collect = _collect)

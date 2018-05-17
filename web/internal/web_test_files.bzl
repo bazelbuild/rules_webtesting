@@ -20,31 +20,35 @@ load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 
 def _web_test_files_impl(ctx):
-  named_files = {}
-  runfiles = depset()
+    named_files = {}
+    runfiles = depset()
 
-  for target, name in ctx.attr.files.items():
-    if name in named_files:
-      fail("%s appears multiple times." % name, "files")
-    if len(target.files) != 1:
-      fail("%s refers to multiple files." % target.label, "files")
-    named_files[name] = target.files.to_list()[0]
-    runfiles = depset(transitive=[target.files, runfiles])
+    for target, name in ctx.attr.files.items():
+        if name in named_files:
+            fail("%s appears multiple times." % name, "files")
+        if len(target.files) != 1:
+            fail("%s refers to multiple files." % target.label, "files")
+        named_files[name] = target.files.to_list()[0]
+        runfiles = depset(transitive = [target.files, runfiles])
 
-  metadata.create_file(
-      ctx=ctx,
-      output=ctx.outputs.web_test_metadata,
-      web_test_files=[
-          metadata.web_test_files(ctx=ctx, named_files=named_files),
-      ])
+    metadata.create_file(
+        ctx = ctx,
+        output = ctx.outputs.web_test_metadata,
+        web_test_files = [
+            metadata.web_test_files(ctx = ctx, named_files = named_files),
+        ],
+    )
 
-  return [
-      DefaultInfo(
-          runfiles=ctx.runfiles(
-              collect_data=True, collect_default=True,
-              files=runfiles.to_list())),
-      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
-  ]
+    return [
+        DefaultInfo(
+            runfiles = ctx.runfiles(
+                collect_data = True,
+                collect_default = True,
+                files = runfiles.to_list(),
+            ),
+        ),
+        WebTestInfo(metadata = ctx.outputs.web_test_metadata),
+    ]
 
 web_test_files = rule(
     attrs = {

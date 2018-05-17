@@ -20,8 +20,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"reflect"
-	"regexp"
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
@@ -63,8 +61,6 @@ type Extension interface {
 	Merge(other Extension) (Extension, error)
 	// Normalize normalizes and validate the extension data.
 	Normalize() error
-	// Equals returns true iff other should be treated as equal to this.
-	Equals(other Extension) bool
 }
 
 // Merge takes two Metadata objects and merges them into a new Metadata object.
@@ -101,7 +97,7 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		debuggerPort = m2.DebuggerPort
 	}
 
-	webTestFiles := []*WebTestFiles{}
+	var webTestFiles []*WebTestFiles
 	webTestFiles = append(webTestFiles, m1.WebTestFiles...)
 	webTestFiles = append(webTestFiles, m2.WebTestFiles...)
 
@@ -183,25 +179,6 @@ func (m *Metadata) ToBytes() ([]byte, error) {
 	return json.MarshalIndent(m, "", "  ")
 }
 
-// Equals compares two Metadata object and return true iff they are the same.
-func Equals(e, a *Metadata) bool {
-	var extsEqual bool
-	if e.Extension == nil {
-		extsEqual = (a.Extension == nil) || a.Extension.Equals(e.Extension)
-	} else {
-		extsEqual = e.Extension.Equals(a.Extension)
-	}
-	return extsEqual &&
-		e.Environment == a.Environment &&
-		e.Label == a.Label &&
-		e.BrowserLabel == a.BrowserLabel &&
-		e.TestLabel == a.TestLabel &&
-		e.ConfigLabel == a.ConfigLabel &&
-		e.DebuggerPort == a.DebuggerPort &&
-		reflect.DeepEqual(e.Capabilities, a.Capabilities) &&
-		webTestFilesSliceEquals(e.WebTestFiles, a.WebTestFiles)
-}
-
 // GetFilePath returns the path to a file specified by web_test_archive,
 // web_test_named_executable, or web_test_named_file.
 func (m *Metadata) GetFilePath(name string) (string, error) {
@@ -217,117 +194,54 @@ func (m *Metadata) GetFilePath(name string) (string, error) {
 	return "", fmt.Errorf("no named file %q", name)
 }
 
-var varRegExp = regexp.MustCompile(`%\w+%`)
+func (m *Metadata) Resolver() capabilities.Resolver {
+	metadataResolver := capabilities.MapResolver("METADATA", map[string]string{
+		"LABEL":         m.Label,
+		"TEST_LABEL":    m.TestLabel,
+		"BROWSER_LABEL": m.BrowserLabel,
+		"CONFIG_LABEL":  m.ConfigLabel,
+		"ENVIRONMENT":   m.Environment,
+	})
 
-// ResolvedCapabilities returns Capabilities with any strings updated such that:
-//   1. %NAME% will be replaced:
-//      if NAME one of LABEL, TEST_LABEL, BROWSER_LABEL, CONFIG_LABEL, ENVIRONMENT then the corresponding field on m.
-//      otherwise the value m.GetFilePath(NAME).
-//   2. $ENV_VAR or ${ENV_VAR} will be replaced with the value of the environment variable ENV_VAR.
-func (m *Metadata) ResolvedCapabilities() (map[string]interface{}, error) {
-	var resolve func(v interface{}) (interface{}, error)
-
-	resolveMap := func(m map[string]interface{}) (map[string]interface{}, error) {
-		caps := map[string]interface{}{}
-		for k, v := range m {
-			u, err := resolve(v)
-			if err != nil {
-				return nil, err
+	return func(prefix, name string) (string, error) {
+		switch prefix {
+		case "ENV":
+			v, ok := os.LookupEnv(name)
+			if !ok {
+				return "", fmt.Errorf("environment variable %q is not defined", name)
 			}
-			caps[k] = u
-		}
-		return caps, nil
-	}
-	resolveSlice := func(l []interface{}) ([]interface{}, error) {
-		caps := []interface{}{}
-		for _, v := range l {
-			u, err := resolve(v)
-			if err != nil {
-				return nil, err
-			}
-			caps = append(caps, u)
-		}
-		return caps, nil
-	}
-	resolveString := func(s string) (string, error) {
-		result := ""
-		previous := 0
-		for _, match := range varRegExp.FindAllStringIndex(s, -1) {
-			result += s[previous:match[0]]
-			value := ""
-			switch name := s[match[0]+1 : match[1]-1]; name {
-			case "LABEL":
-				value = m.Label
-			case "TEST_LABEL":
-				value = m.TestLabel
-			case "BROWSER_LABEL":
-				value = m.BrowserLabel
-			case "CONFIG_LABEL":
-				value = m.ConfigLabel
-			case "ENVIRONMENT":
-				value = m.Environment
-			default:
-				path, err := m.GetFilePath(name)
-				if err != nil {
-					return "", err
-				}
-				value = path
-			}
-			result += value
-			previous = match[1]
-		}
-		result += s[previous:]
-		return os.ExpandEnv(result), nil
-	}
-	resolve = func(v interface{}) (interface{}, error) {
-		switch tv := v.(type) {
-		case string:
-			return resolveString(tv)
-		case []interface{}:
-			return resolveSlice(tv)
-		case map[string]interface{}:
-			return resolveMap(tv)
-		default:
 			return v, nil
+		case "FILE":
+			return m.GetFilePath(name)
+		default:
+			return metadataResolver(prefix, name)
 		}
 	}
-	return resolveMap(m.Capabilities)
 }
 
-type extension struct {
-	value map[string]interface{}
-}
+type extension map[string]interface{}
 
-func (e *extension) Merge(other Extension) (Extension, error) {
+func (e extension) Merge(other Extension) (Extension, error) {
 	if other == nil {
 		return e, nil
 	}
-	o, ok := other.(*extension)
-	if !ok {
+	if e == nil || len(e) == 0 {
 		return other, nil
 	}
-	return &extension{capabilities.Merge(e.value, o.value)}, nil
+	o, ok := other.(extension)
+	if !ok || len(o) == 0 {
+		return e, nil
+	}
+	ext := extension{}
+	for k, v := range e {
+		ext[k] = v
+	}
+	for k, v := range o {
+		ext[k] = v
+	}
+	return ext, nil
 }
 
-func (e *extension) Normalize() error {
+func (e extension) Normalize() error {
 	return nil
-}
-
-func (e *extension) Equals(other Extension) bool {
-	if e == nil && other != nil {
-		return other.Equals(e)
-	}
-
-	if other == nil && (e == nil || len(e.value) == 0) {
-		return true
-	}
-
-	return reflect.DeepEqual(e, other)
-}
-
-func (e *extension) UnmarshalJSON(b []byte) error {
-	v := map[string]interface{}{}
-	err := json.Unmarshal(b, &v)
-	e.value = v
-	return err
 }

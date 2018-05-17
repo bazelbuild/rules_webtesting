@@ -15,6 +15,7 @@
 package capabilities
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -664,9 +665,155 @@ func TestMergeOver(t *testing.T) {
 }
 
 func TestResolve(t *testing.T) {
-	
+	testCases := []struct {
+		name     string
+		in       *Capabilities
+		resolver Resolver
+		out      *Capabilities
+		err      bool
+	}{
+		{
+			name: "empty capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+			resolver: func(prefix, name string) (string, error) {
+				return "", fmt.Errorf("resolver called with %s:%s", prefix, name)
+			},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+			err: false,
+		},
+		{
+			name: "NoOP resolver",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"abc": "%p:n%",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"xyz": "%n:p%",
+					},
+				},
+			},
+			resolver: NoOPResolver,
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"abc": "%p:n%",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"xyz": "%n:p%",
+					},
+				},
+			},
+			err: false,
+		},
+		{
+			name: "MapResolver",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"abc": "%p:n%",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"xyz": "%n:p%",
+					},
+				},
+			},
+			resolver: MapResolver("p", map[string]string{"n": "some value"}),
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"abc": "some value",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"xyz": "%n:p%",
+					},
+				},
+			},
+			err: false,
+		},
+		{
+			name: "complex input",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"abc": []interface{}{"%p:n%"},
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"xyz": map[string]interface{}{"zyx": "%n:p%=%p:n%"},
+					},
+				},
+			},
+			resolver: func(prefix, name string) (string, error) {
+				if prefix == "p" && name == "n" {
+					return "some-value", nil
+				}
+				if prefix == "n" && name == "p" {
+					return "value-some", nil
+				}
+				return "", fmt.Errorf("unknown %s:%s", prefix, name)
+			},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"abc": []interface{}{"some-value"},
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"xyz": map[string]interface{}{"zyx": "value-some=some-value"},
+					},
+				},
+			},
+			err: false,
+		},
+		{
+			name: "resolver returns error",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"abc": []interface{}{"%p:n%"},
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"xyz": map[string]interface{}{"zyx": "%n:p%=%p:n%"},
+					},
+					{
+						"bad": "%x:y%",
+					},
+				},
+			},
+			resolver: func(prefix, name string) (string, error) {
+				if prefix == "p" && name == "n" {
+					return "some-value", nil
+				}
+				if prefix == "n" && name == "p" {
+					return "value-some", nil
+				}
+				return "", fmt.Errorf("unknown %s:%s", prefix, name)
+			},
+			out: nil,
+			err: true,
+		},
+	}
 
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			out, err := tc.in.Resolve(tc.resolver)
 
+			if err != nil {
+				if !tc.err {
+					t.Fatal(err)
+				}
+				return
+			}
+			if tc.err {
+				t.Fatalf("got nil err, want err")
+			}
 
-	
+			if !reflect.DeepEqual(out, tc.out) {
+				t.Fatalf("got %#v, want %#v", out, tc.out)
+			}
+		})
+	}
 }

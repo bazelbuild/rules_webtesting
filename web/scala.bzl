@@ -16,8 +16,8 @@
 load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_test")
 
-def scala_web_test_suite(name, scala_test_tags=None, **kwargs):
-  """Defines a test_suite of web_test targets that wrap a java_test target.
+def scala_web_test_suite(name, scala_test_tags = None, **kwargs):
+    """Defines a test_suite of web_test targets that wrap a java_test target.
 
   Args:
     name: The base name of the test.
@@ -25,5 +25,9 @@ def scala_web_test_suite(name, scala_test_tags=None, **kwargs):
       target.
     **kwargs: Arguments for wrapped_web_test_suite
   """
-  wrap_web_test_suite(
-      name=name, rule=scala_test, wrapped_test_tags=scala_test_tags, **kwargs)
+    wrap_web_test_suite(
+        name = name,
+        rule = scala_test,
+        wrapped_test_tags = scala_test_tags,
+        **kwargs
+    )

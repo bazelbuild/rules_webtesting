@@ -44,13 +44,14 @@ load(
     web_test_named_file_alias = "web_test_named_file",
 )
 
-def web_test_suite(name,
-                   browsers,
-                   browser_overrides=None,
-                   test_suite_tags=None,
-                   visibility=None,
-                   **kwargs):
-  """Defines a test_suite of web_test targets to be run.
+def web_test_suite(
+        name,
+        browsers,
+        browser_overrides = None,
+        test_suite_tags = None,
+        visibility = None,
+        **kwargs):
+    """Defines a test_suite of web_test targets to be run.
 
   Args:
     name: Name; required. A unique name for this rule.
@@ -64,44 +65,50 @@ def web_test_suite(name,
     visibility: List of labels; optional.
     **kwargs: Additional arguments for web_test rule.
   """
-  if not lists.is_list_like(browsers):
-    fail("expected a sequence type for attribute 'browsers' but got '%s'" %
-         type(browsers))
-  if not browsers:
-    fail("expected non-empty value for attribute 'browsers'")
+    if not lists.is_list_like(browsers):
+        fail("expected a sequence type for attribute 'browsers' but got '%s'" %
+             type(browsers))
+    if not browsers:
+        fail("expected non-empty value for attribute 'browsers'")
 
-  # Check explicitly for None so that users can set this to the empty list.
-  if test_suite_tags == None:
-    test_suite_tags = DEFAULT_TEST_SUITE_TAGS
+        # Check explicitly for None so that users can set this to the empty list.
+    if test_suite_tags == None:
+        test_suite_tags = DEFAULT_TEST_SUITE_TAGS
 
-  tests = []
-  browser_overrides = browser_overrides or {}
+    tests = []
+    browser_overrides = browser_overrides or {}
 
-  for browser in browsers:  # pylint: disable=redefined-outer-name
-    unqualified_browser = browser.split(":", 2)[1]
-    test_name = name + "_" + unqualified_browser
+    for browser in browsers:  # pylint: disable=redefined-outer-name
+        unqualified_browser = browser.split(":", 2)[1]
+        test_name = name + "_" + unqualified_browser
 
-    # Replace current browser attributes with those specified in the browser
-    # overrides.
-    overrides = browser_overrides.get(browser) or browser_overrides.get(
-        unqualified_browser) or {}
-    overridden_kwargs = _apply_browser_overrides(kwargs, overrides)
-    if not 'tags' in overridden_kwargs:
-      overridden_kwargs['tags'] = []
-    overridden_kwargs['tags'] = lists.clone(overridden_kwargs['tags']) + ["browser:" + unqualified_browser]
+        # Replace current browser attributes with those specified in the browser
+        # overrides.
+        overrides = browser_overrides.get(browser) or browser_overrides.get(
+            unqualified_browser,
+        ) or {}
+        overridden_kwargs = _apply_browser_overrides(kwargs, overrides)
+        if not "tags" in overridden_kwargs:
+            overridden_kwargs["tags"] = []
+        overridden_kwargs["tags"] = lists.clone(overridden_kwargs["tags"]) + ["browser:" + unqualified_browser]
 
-    web_test(
-        name=test_name,
-        browser=browser,
-        visibility=visibility,
-        **overridden_kwargs)
-    tests += [test_name]
+        web_test(
+            name = test_name,
+            browser = browser,
+            visibility = visibility,
+            **overridden_kwargs
+        )
+        tests += [test_name]
 
-  native.test_suite(
-      name=name, tests=tests, tags=test_suite_tags, visibility=visibility)
+    native.test_suite(
+        name = name,
+        tests = tests,
+        tags = test_suite_tags,
+        visibility = visibility,
+    )
 
 def _apply_browser_overrides(kwargs, overrides):
-  """Handles browser-specific options that override the top-level definitions.
+    """Handles browser-specific options that override the top-level definitions.
 
   Args:
     kwargs: A dictionary of arguments that will be overridden.
@@ -112,38 +119,38 @@ def _apply_browser_overrides(kwargs, overrides):
     A dictionary of updated attributes.  For example:
     {'shard_count': 4, 'size': 'medium', 'timeout': 100, 'flaky': 1}
   """
-  overridden_kwargs = maps.clone(kwargs)
-  overridden_kwargs.update(overrides)
+    overridden_kwargs = maps.clone(kwargs)
+    overridden_kwargs.update(overrides)
 
-  return overridden_kwargs
+    return overridden_kwargs
 
-def browser(testonly=True, **kwargs):
-  """Wrapper around browser to correctly set defaults."""
-  browser_alias(testonly=testonly, **kwargs)
+def browser(testonly = True, **kwargs):
+    """Wrapper around browser to correctly set defaults."""
+    browser_alias(testonly = testonly, **kwargs)
 
-def web_test(config=None, launcher=None, size=None, **kwargs):
-  """Wrapper around web_test to correctly set defaults."""
-  config = config or str(Label("//web:default_config"))
-  launcher = launcher or str(Label("//go/wtl/main"))
-  size = size or "large"
-  web_test_alias(config=config, launcher=launcher, size=size, **kwargs)
+def web_test(config = None, launcher = None, size = None, **kwargs):
+    """Wrapper around web_test to correctly set defaults."""
+    config = config or str(Label("//web:default_config"))
+    launcher = launcher or str(Label("//go/wtl/main"))
+    size = size or "large"
+    web_test_alias(config = config, launcher = launcher, size = size, **kwargs)
 
-def web_test_config(testonly=True, **kwargs):
-  """Wrapper around web_test_config to correctly set defaults."""
-  web_test_config_alias(testonly=testonly, **kwargs)
+def web_test_config(testonly = True, **kwargs):
+    """Wrapper around web_test_config to correctly set defaults."""
+    web_test_config_alias(testonly = testonly, **kwargs)
 
-def web_test_named_executable(testonly=True, **kwargs):
-  """Wrapper around web_test_named_executable to correctly set defaults."""
-  web_test_named_executable_alias(testonly=testonly, **kwargs)
+def web_test_named_executable(testonly = True, **kwargs):
+    """Wrapper around web_test_named_executable to correctly set defaults."""
+    web_test_named_executable_alias(testonly = testonly, **kwargs)
 
-def web_test_named_file(testonly=True, **kwargs):
-  """Wrapper around web_test_named_file to correctly set defaults."""
-  web_test_named_file_alias(testonly=testonly, **kwargs)
+def web_test_named_file(testonly = True, **kwargs):
+    """Wrapper around web_test_named_file to correctly set defaults."""
+    web_test_named_file_alias(testonly = testonly, **kwargs)
 
-def web_test_archive(testonly=True, **kwargs):
-  """Wrapper around web_test_archive to correctly set defaults."""
-  web_test_archive_alias(testonly=testonly, **kwargs)
+def web_test_archive(testonly = True, **kwargs):
+    """Wrapper around web_test_archive to correctly set defaults."""
+    web_test_archive_alias(testonly = testonly, **kwargs)
 
-def web_test_files(testonly=True, **kwargs):
-  """Wrapper around web_test_files to correctly set defaults."""
-  web_test_files_alias(testonly=testonly, **kwargs)
+def web_test_files(testonly = True, **kwargs):
+    """Wrapper around web_test_files to correctly set defaults."""
+    web_test_files_alias(testonly = testonly, **kwargs)
