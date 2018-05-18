@@ -20,6 +20,7 @@ def _long_path(ctx, file):
         ctx: a Skylark rule context.
         file: a File object. The file should appear in the runfiles for the
           test.
+
     Returns:
         A string path relative to TEST_SRCDIR suitable for use in tests and
         testing infrastructure.
