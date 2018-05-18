@@ -3,7 +3,7 @@
   "capabilities" : {
     "browserName" : "chromium",
     "chromeOptions" : {
-      "binary" : "%FILE:CHROMIUM%",  
+      "binary" : "%FILE:CHROMIUM%",
       "args" : [
         "--headless", 
         "--use-gl=swiftshader-webgl"
