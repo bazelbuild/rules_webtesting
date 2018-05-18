@@ -22,7 +22,7 @@ load(":runfiles.bzl", "runfiles")
 
 def _browser_impl(ctx):
     """Implementation of the browser rule."""
-    patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+    patch = ctx.actions.declare_file("%s.tmp.json" % ctx.label.name)
     metadata.create_file(ctx = ctx, output = patch, browser_label = ctx.label)
     metadata_files = [
         patch,
