@@ -379,6 +379,7 @@ func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities
 func writeW3CNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusOK)
 
 	respJSON := map[string]interface{}{
@@ -394,6 +395,7 @@ func writeW3CNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 func writeJWPNewSessionResponse(wd webdriver.WebDriver, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusOK)
 
 	respJSON := map[string]interface{}{
@@ -436,6 +438,7 @@ func (d *Driver) Shutdown(ctx context.Context) error {
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(httpStatus)
 
 	respJSON := map[string]interface{}{
