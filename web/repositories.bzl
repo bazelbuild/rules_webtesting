@@ -103,6 +103,9 @@ def should_create_repository(name, args):
     Args:
         name: The name of the repository that should be checked.
         args: A dictionary that contains "omit_...": bool pairs.
+
+    Returns:
+        boolean indicating whether the repository should be created.
     """
     key = "omit_" + name
     if key in args:
