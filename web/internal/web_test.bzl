@@ -66,9 +66,10 @@ def _generate_noop_test(ctx, reason, status = 0):
 
     metadata.create_file(ctx, output = ctx.outputs.web_test_metadata)
 
+    test = ctx.actions.declare_file(ctx.label.name)
     ctx.actions.expand_template(
         template = ctx.file.noop_web_test_template,
-        output = ctx.outputs.executable,
+        output = test,
         substitutions = {
             "%TEMPLATED_success%": success,
             "%TEMPLATED_reason%": reason,
@@ -77,10 +78,10 @@ def _generate_noop_test(ctx, reason, status = 0):
         is_executable = True,
     )
 
-    return []
+    return [DefaultInfo(executable = test)]
 
 def _generate_default_test(ctx):
-    patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+    patch = ctx.actions.declare_file("%s.tmp.json" % ctx.label.name)
     metadata.create_file(
         ctx = ctx,
         output = patch,
@@ -106,9 +107,10 @@ def _generate_default_test(ctx):
     for k, v in env.items():
         env_vars += "export %s=%s\n" % (k, v)
 
+    test = ctx.actions.declare_file(ctx.label.name)
     ctx.actions.expand_template(
         template = ctx.file.web_test_template,
-        output = ctx.outputs.executable,
+        output = test,
         substitutions = {
             "%TEMPLATED_env_vars%": env_vars,
             "%TEMPLATED_launcher%": files.long_path(ctx, ctx.executable.launcher),
@@ -120,6 +122,7 @@ def _generate_default_test(ctx):
 
     return [
         DefaultInfo(
+            executable = test,
             runfiles = runfiles.collect(
                 ctx = ctx,
                 files = [ctx.outputs.web_test_metadata],

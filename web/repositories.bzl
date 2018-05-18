@@ -35,6 +35,10 @@ def web_test_repositories(**kwargs):
 
     Please note that while these dependencies are defined, they are not actually
     downloaded, unless a target is built that depends on them.
+
+    Args:
+        **kwargs: omit_... parameters used to prevent importing specific
+          dependencies.
     """
     if should_create_repository("bazel_skylib", kwargs):
         bazel_skylib()
@@ -95,6 +99,10 @@ def should_create_repository(name, args):
     "omit_" _+ name parameter or by previously defining a rule for the repository.
 
     The args dict will be mutated to remove "omit_" + name.
+
+    Args:
+        name: The name of the repository that should be checked.
+        args: A dictionary that contains "omit_...": bool pairs.
     """
     key = "omit_" + name
     if key in args:
