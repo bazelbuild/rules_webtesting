@@ -27,6 +27,7 @@ import (
 	"sync"
 
 	"github.com/bazelbuild/rules_webtesting/go/errors"
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/webdriver"
@@ -273,6 +274,8 @@ func (s *WebDriverSession) defaultHandler(w http.ResponseWriter, r *http.Request
 	// TODO(fisherii): needed to play nice with Dart Sync WebDriver. Delete when Dart Sync WebDriver is deleted.
 	w.Header().Set("Transfer-Encoding", "identity")
 	w.Header().Set("Content-Length", strconv.Itoa(len(resp.Body)))
+
+	httphelper.SetDefaultResponseHeaders(w.Header())
 
 	// Copy status code from resp to w
 	w.WriteHeader(resp.Status)

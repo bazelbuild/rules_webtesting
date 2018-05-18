@@ -294,6 +294,8 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
+	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
 }
 

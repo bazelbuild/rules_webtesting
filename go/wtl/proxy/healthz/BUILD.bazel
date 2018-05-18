@@ -25,5 +25,8 @@ go_library(
     srcs = ["healthz.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/proxy/healthz",
     visibility = ["//go/wtl:__subpackages__"],
-    deps = ["//go/wtl/proxy:go_default_library"],
+    deps = [
+        "//go/httphelper:go_default_library",
+        "//go/wtl/proxy:go_default_library",
+    ],
 )

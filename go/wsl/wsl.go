@@ -71,7 +71,6 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 
 	shutdownFunc := func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.Header().Set("Cache-Control", "no-cache")
 		httphelper.SetDefaultResponseHeaders(w.Header())
 		w.WriteHeader(http.StatusOK)
 
@@ -85,7 +84,6 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 
 	handler.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.Header().Set("Cache-Control", "no-cache")
 		httphelper.SetDefaultResponseHeaders(w.Header())
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("ok"))
@@ -96,7 +94,6 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 
 	handler.HandleFunc("/status", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Header().Set("Cache-Control", "no-cache")
 		httphelper.SetDefaultResponseHeaders(w.Header())
 		w.WriteHeader(http.StatusOK)
 
