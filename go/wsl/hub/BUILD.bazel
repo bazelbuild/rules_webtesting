@@ -26,6 +26,7 @@ go_library(
     importpath = "github.com/bazelbuild/rules_webtesting/go/wsl/hub",
     visibility = ["//go/wsl:__subpackages__"],
     deps = [
+        "//go/httphelper:go_default_library",
         "//go/metadata/capabilities:go_default_library",
         "//go/wsl/driver:go_default_library",
     ],

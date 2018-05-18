@@ -28,6 +28,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/wsl/driver"
 )
@@ -127,12 +128,12 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 			sessionID := "last"
 			if i, ok := caps.AlwaysMatch["google:sessionId"]; ok {
 				switch ii := i.(type) {
-					case string:
-						sessionID = ii
-					case float64:
-						sessionID = strconv.Itoa(int(ii))
-					default:
-						return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
+				case string:
+					sessionID = ii
+				case float64:
+					sessionID = strconv.Itoa(int(ii))
+				default:
+					return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
 				}
 			}
 
@@ -160,12 +161,12 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 			sessionID := "last"
 			if i, ok := caps.AlwaysMatch["google:sessionId"]; ok {
 				switch ii := i.(type) {
-					case string:
-						sessionID = ii
-					case float64:
-						sessionID = strconv.Itoa(int(ii))
-					default:
-						return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
+				case string:
+					sessionID = ii
+				case float64:
+					sessionID = strconv.Itoa(int(ii))
+				default:
+					return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
 				}
 			}
 
@@ -210,6 +211,7 @@ func (h *Hub) quitSession(session string, driver *driver.Driver, w http.Response
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(httpStatus)
 
 	respJSON := map[string]interface{}{

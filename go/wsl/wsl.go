@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// WSL (Webdriver Server Light) is a lightweight replacement for Selenium Server.
+// Package wsl impleements the basic server code for WSL (Webdriver Server Light),
+// a lightweight replacement for Selenium Server.
 package wsl
 
 import (
@@ -24,10 +25,12 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/wsl/hub"
 	"github.com/bazelbuild/rules_webtesting/go/wsl/upload"
 )
 
+// Run starts the WSL server.
 func Run(localHost string, port int, downloadRoot, uploadRoot string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -69,6 +72,7 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 	shutdownFunc := func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "no-cache")
+		httphelper.SetDefaultResponseHeaders(w.Header())
 		w.WriteHeader(http.StatusOK)
 
 		w.Write([]byte("shutting down"))
@@ -82,6 +86,7 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 	handler.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "no-cache")
+		httphelper.SetDefaultResponseHeaders(w.Header())
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("ok"))
 	})
@@ -92,6 +97,7 @@ func createHandler(hub http.Handler, downloadRoot string, shutdown func()) http.
 	handler.HandleFunc("/status", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("Cache-Control", "no-cache")
+		httphelper.SetDefaultResponseHeaders(w.Header())
 		w.WriteHeader(http.StatusOK)
 
 		respJSON := map[string]interface{}{
