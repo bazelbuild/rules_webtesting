@@ -210,7 +210,6 @@ func (h *Hub) quitSession(session string, driver *driver.Driver, w http.Response
 
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-cache")
 	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(httpStatus)
 

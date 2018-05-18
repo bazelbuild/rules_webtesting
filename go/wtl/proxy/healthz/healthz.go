@@ -20,6 +20,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy"
 )
 
@@ -36,6 +37,8 @@ func (h *healthz) Shutdown(context.Context) error {
 
 func (h *healthz) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
+	httphelper.SetDefaultResponseHeaders(w.Header())
+	w.WriteHeader(http.StatusOK)
 	io.WriteString(w, "ok")
 }
 

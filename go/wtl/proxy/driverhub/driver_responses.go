@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 )
 
 const contentType = "application/json; charset=utf-8"
@@ -32,6 +34,7 @@ func success(w http.ResponseWriter, value interface{}) {
 		log.Printf("Error marshalling json: %v", err)
 	}
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
 }
@@ -49,6 +52,7 @@ func sessionNotCreated(w http.ResponseWriter, err error) {
 		log.Printf("Error marshalling json: %v", err)
 	}
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Write(body)
 }
@@ -66,6 +70,7 @@ func unknownError(w http.ResponseWriter, err error) {
 		log.Printf("Error marshalling json: %v", err)
 	}
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Write(body)
 }
@@ -84,6 +89,7 @@ func unknownMethod(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error marshalling json: %v", err)
 	}
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	w.Write(body)
 }
@@ -102,6 +108,7 @@ func unknownCommand(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error marshalling json: %v", err)
 	}
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusNotFound)
 	w.Write(body)
 }
@@ -120,6 +127,7 @@ func invalidSessionID(w http.ResponseWriter, id string) {
 		log.Printf("Error marshalling json: %v", err)
 	}
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusNotFound)
 	w.Write(body)
 }
@@ -138,6 +146,7 @@ func timeout(w http.ResponseWriter, endpoint string) {
 		log.Printf("Error marshalling json: %v", err)
 	}
 	w.Header().Set("Content-Type", contentType)
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusRequestTimeout)
 	w.Write(body)
 }

@@ -25,6 +25,7 @@ go_library(
     srcs = ["upload.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/wsl/upload",
     visibility = ["//go/wsl:__subpackages__"],
+    deps = ["//go/httphelper:go_default_library"],
 )
 
 go_test(

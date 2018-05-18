@@ -92,6 +92,8 @@ func Forward(ctx context.Context, host, trimPrefix string, w http.ResponseWriter
 		}
 	}
 
+	SetDefaultResponseHeaders(w.Header())
+
 	// Copy status code from resp to w
 	w.WriteHeader(resp.StatusCode)
 	_, err = io.Copy(w, resp.Body)
@@ -180,4 +182,5 @@ func SetDefaultResponseHeaders(h http.Header) {
 	h.Set("Access-Control-Allow-Methods", "CONNECT,DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,TRACE")
 	// Adding here in case any other allow headers are already set.
 	h.Add("Access-Control-Allow-Headers", "Accept,Content-Type")
+	h.Set("Cache-Control", "no-cache")
 }

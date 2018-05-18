@@ -26,6 +26,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 )
 
 type Uploader struct {
@@ -86,7 +88,7 @@ func (u *Uploader) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-cache")
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(respJSON)
 }
@@ -147,7 +149,7 @@ func uploadFile(dir string, contents []byte) (string, error) {
 
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-cache")
+	httphelper.SetDefaultResponseHeaders(w.Header())
 	w.WriteHeader(httpStatus)
 
 	respJSON := map[string]interface{}{
