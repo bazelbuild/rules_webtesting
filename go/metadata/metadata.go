@@ -194,7 +194,7 @@ func (m *Metadata) GetFilePath(name string) (string, error) {
 	return "", fmt.Errorf("no named file %q", name)
 }
 
-// Resolver returns a Resolver that process ENV, FILE, and METADATA prefixed
+// Resolver returns a Resolver that processes ENV, FILE, and METADATA prefixed
 // capabilities variables.
 func (m *Metadata) Resolver() capabilities.Resolver {
 	metadataResolver := capabilities.MapResolver("METADATA", map[string]string{
