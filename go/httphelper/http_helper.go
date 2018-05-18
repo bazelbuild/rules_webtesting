@@ -173,3 +173,11 @@ func FQDN() (string, error) {
 
 	return "localhost", nil
 }
+
+// SetDefaultResponseHeaders sets headers that appear in all WebDriver responses.
+func SetDefaultResponseHeaders(h http.Header) {
+	h.Set("Access-Control-Allow-Origin", "*")
+	h.Set("Access-Control-Allow-Methods", "CONNECT,DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,TRACE")
+	// Adding here in case any other allow headers are already set.
+	h.Add("Access-Control-Allow-Headers", "Accept,Content-Type")
+}
