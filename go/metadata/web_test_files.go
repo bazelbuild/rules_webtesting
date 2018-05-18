@@ -19,7 +19,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"reflect"
 	"sync"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
@@ -54,28 +53,6 @@ type WebTestFiles struct {
 	extractedPath string
 }
 
-// Only works correctly on normalized WebTestFiles slices
-func webTestFilesSliceEquals(a, b []*WebTestFiles) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	first := map[string]*WebTestFiles{}
-	for _, f := range a {
-		first[f.ArchiveFile] = f
-	}
-	for _, s := range b {
-		f, ok := first[s.ArchiveFile]
-		if !ok || !webTestFilesEquals(f, s) {
-			return false
-		}
-	}
-	return true
-}
-
-func webTestFilesEquals(a, b *WebTestFiles) bool {
-	return a.ArchiveFile == b.ArchiveFile && reflect.DeepEqual(a.NamedFiles, b.NamedFiles)
-}
-
 func normalizeWebTestFiles(in []*WebTestFiles) ([]*WebTestFiles, error) {
 	merged := map[string]*WebTestFiles{}
 
@@ -96,7 +73,7 @@ func normalizeWebTestFiles(in []*WebTestFiles) ([]*WebTestFiles, error) {
 	}
 
 	names := map[string]bool{}
-	result := []*WebTestFiles{}
+	var result []*WebTestFiles
 	for _, m := range merged {
 		for name := range m.NamedFiles {
 			if names[name] {

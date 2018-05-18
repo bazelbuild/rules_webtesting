@@ -21,21 +21,25 @@ load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
 
 def _web_test_named_executable_impl(ctx):
-  name = ctx.attr.alt_name or ctx.label.name
+    name = ctx.attr.alt_name or ctx.label.name
 
-  metadata.create_file(
-      ctx=ctx,
-      output=ctx.outputs.web_test_metadata,
-      web_test_files=[
-          metadata.web_test_files(
-              ctx=ctx, named_files={name: ctx.executable.executable}),
-      ])
+    metadata.create_file(
+        ctx = ctx,
+        output = ctx.outputs.web_test_metadata,
+        web_test_files = [
+            metadata.web_test_files(
+                ctx = ctx,
+                named_files = {name: ctx.executable.executable},
+            ),
+        ],
+    )
 
-  return [
-      DefaultInfo(
-          runfiles=runfiles.collect(ctx=ctx, targets=[ctx.attr.executable])),
-      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
-  ]
+    return [
+        DefaultInfo(
+            runfiles = runfiles.collect(ctx = ctx, targets = [ctx.attr.executable]),
+        ),
+        WebTestInfo(metadata = ctx.outputs.web_test_metadata),
+    ]
 
 web_test_named_executable = rule(
     attrs = {

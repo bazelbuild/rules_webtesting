@@ -48,8 +48,8 @@ func TestFromFile(t *testing.T) {
 			Extension:    &extension{},
 		}
 
-		if !Equals(expected, file) {
-			t.Errorf("Got %+v, expected %+v", file, expected)
+		if !reflect.DeepEqual(expected, file) {
+			t.Errorf("Got %#v, expected %#v", file, expected)
 		}
 	})
 
@@ -60,7 +60,7 @@ func TestFromFile(t *testing.T) {
 		}
 		d, err := FromFile(f, nil)
 		if err == nil {
-			t.Errorf("Got %+v, expected err", d)
+			t.Errorf("Got %#v, expected err", d)
 		}
 	})
 }
@@ -93,15 +93,16 @@ func TestMergeFromFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if merged, err := Merge(cl, ab); err != nil {
-		t.Error(err)
-	} else if !Equals(merged, fb) {
-		t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", cl, ab, merged, fb)
+	merged, err := Merge(cl, ab)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(merged, fb) {
+		t.Errorf("Got %#v, expected %#v", merged, fb)
 	}
 }
 
 func TestMerge(t *testing.T) {
-
 	testCases := []struct {
 		name   string
 		input1 *Metadata
@@ -168,81 +169,10 @@ func TestMerge(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			a, err := Merge(tc.input1, tc.input2)
 			if err != nil {
-				t.Error(err)
-			} else if !Equals(a, tc.result) {
-				t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, a, tc.result)
+				t.Fatal(err)
 			}
-		})
-	}
-}
-
-func TestEquals(t *testing.T) {
-	testCases := []struct {
-		name   string
-		input1 *Metadata
-		input2 *Metadata
-		result bool
-	}{
-		{
-			"empty",
-			&Metadata{},
-			&Metadata{},
-			true,
-		},
-		{
-			"Environment same",
-			&Metadata{Environment: "local"},
-			&Metadata{Environment: "local"},
-			true,
-		},
-		{
-			"Environment different",
-			&Metadata{Environment: "local"},
-			&Metadata{Environment: "running"},
-			false,
-		},
-		{
-			"BrowserLabel same",
-			&Metadata{BrowserLabel: "//browsers:firefox"},
-			&Metadata{BrowserLabel: "//browsers:firefox"},
-			true,
-		},
-		{
-			"BrowserLabel different",
-			&Metadata{BrowserLabel: "//browsers:chrome"},
-			&Metadata{BrowserLabel: "//browsers:firefox"},
-			false,
-		},
-		{
-			"TestLabel same",
-			&Metadata{TestLabel: "//test:test1"},
-			&Metadata{TestLabel: "//test:test1"},
-			true,
-		},
-		{
-			"TestLabel different",
-			&Metadata{TestLabel: "//test:test1"},
-			&Metadata{TestLabel: "//test:test2"},
-			false,
-		},
-		{
-			"Capabilities same",
-			&Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
-			&Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
-			true,
-		},
-		{
-			"Capabilities different",
-			&Metadata{Capabilities: map[string]interface{}{"browser": "chrome"}},
-			&Metadata{Capabilities: map[string]interface{}{"browser": "firefox"}},
-			false,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if result := Equals(tc.input1, tc.input2); result != tc.result {
-				t.Errorf("Got Equals(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
+			if !reflect.DeepEqual(a, tc.result) {
+				t.Errorf("Got %#v, expected %#v", a, tc.result)
 			}
 		})
 	}
@@ -297,11 +227,11 @@ func TestMergeNamedFiles(t *testing.T) {
 				return
 			}
 			if tc.result == nil {
-				t.Errorf("Got mergeNamedFiles(%+v, %+v) == %+v, expected error", tc.input1, tc.input2, result)
+				t.Errorf("Got %#v, expected error", result)
 				return
 			}
 			if !reflect.DeepEqual(result, tc.result) {
-				t.Errorf("Got mergeNamedFiles(%+v, %+v) == %v, expected %v", tc.input1, tc.input2, result, tc.result)
+				t.Errorf("Got %v, expected %v", result, tc.result)
 			}
 		})
 	}
@@ -357,16 +287,15 @@ func TestMergeWebTestFiles(t *testing.T) {
 			result, err := mergeWebTestFiles(tc.input1, tc.input2)
 			if err != nil {
 				if tc.result != nil {
-					t.Error(err)
+					t.Fatal(err)
 				}
 				return
 			}
 			if tc.result == nil {
-				t.Errorf("Got mergeArchive(%+v, %+v) == %+v, expected error", tc.input1, tc.input2, result)
-				return
+				t.Fatalf("Got %#v, expected error", result)
 			}
-			if !webTestFilesEquals(result, tc.result) {
-				t.Errorf("Got mergeArchive(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, result, tc.result)
+			if !reflect.DeepEqual(result, tc.result) {
+				t.Errorf("Got %#v, expected %#v", result, tc.result)
 			}
 		})
 	}
@@ -380,11 +309,13 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 		// map of archive paths to NamedFiles maps
 		// nil indicates should return an error
 		result []*WebTestFiles
+		err    bool
 	}{
 		{
 			"empty",
-			[]*WebTestFiles{},
-			[]*WebTestFiles{},
+			nil,
+			nil,
+			false,
 		},
 		{
 			"unnormalizable WebTestFiles",
@@ -393,6 +324,7 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "X"}},
 			},
 			nil,
+			true,
 		},
 		{
 			"normalizable WebTestFiles",
@@ -403,6 +335,7 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 			[]*WebTestFiles{
 				{ArchiveFile: "a", NamedFiles: map[string]string{"a": "A"}},
 			},
+			false,
 		},
 		{
 			"multiple WebTestFiles, success",
@@ -417,6 +350,7 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 				{ArchiveFile: "b", NamedFiles: map[string]string{"b": "B"}},
 				{ArchiveFile: "c", NamedFiles: map[string]string{"c": "C"}},
 			},
+			false,
 		},
 		{
 			"multiple WebTestFiles, failure",
@@ -427,6 +361,7 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 				{ArchiveFile: "c", NamedFiles: map[string]string{"a": "A", "c": "C"}},
 			},
 			nil,
+			true,
 		},
 	}
 
@@ -434,17 +369,17 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			result, err := normalizeWebTestFiles(tc.input)
 			if err != nil {
-				if tc.result != nil {
+				if !tc.err {
 					t.Fatal(err)
 				}
 				return
 			}
-			if tc.result == nil {
-				t.Fatalf("Got NormalizeWebTestFiles(%+v) == %+v, expected error", tc.input, result)
+			if tc.err {
+				t.Fatalf("Got %#v, expected error", result)
 			}
 
-			if !webTestFilesSliceEquals(result, tc.result) {
-				t.Fatalf("Got NormalizeWebTestFiles(%+v) == %+v, expected %+v", tc.input, result, tc.result)
+			if !reflect.DeepEqual(result, tc.result) {
+				t.Fatalf("Got  %#v, expected %#v", result, tc.result)
 			}
 		})
 	}

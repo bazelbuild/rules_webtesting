@@ -22,67 +22,74 @@ load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
 
 def _web_test_archive_impl(ctx):
-  if ctx.attr.extract == "run":
-    return _web_test_archive_run_impl(ctx)
-  if ctx.attr.extract == "build":
-    return _web_test_archive_build_impl(ctx)
+    if ctx.attr.extract == "run":
+        return _web_test_archive_run_impl(ctx)
+    if ctx.attr.extract == "build":
+        return _web_test_archive_build_impl(ctx)
 
-  fail("unknown value %s" % ctx.attr.extract, attr="extract")
+    fail("unknown value %s" % ctx.attr.extract, attr = "extract")
 
 def _web_test_archive_run_impl(ctx):
-  metadata.create_file(
-      ctx=ctx,
-      output=ctx.outputs.web_test_metadata,
-      web_test_files=[
-          metadata.web_test_files(
-              ctx=ctx,
-              archive_file=ctx.file.archive,
-              named_files=ctx.attr.named_files,
-              strip_prefix=ctx.attr.strip_prefix),
-          metadata.web_test_files(
-              ctx=ctx,
-              named_files={
-                  "EXTRACT_EXE": ctx.executable.extract_exe_target,
-              }),
-      ])
+    metadata.create_file(
+        ctx = ctx,
+        output = ctx.outputs.web_test_metadata,
+        web_test_files = [
+            metadata.web_test_files(
+                ctx = ctx,
+                archive_file = ctx.file.archive,
+                named_files = ctx.attr.named_files,
+                strip_prefix = ctx.attr.strip_prefix,
+            ),
+            metadata.web_test_files(
+                ctx = ctx,
+                named_files = {
+                    "EXTRACT_EXE": ctx.executable.extract_exe_target,
+                },
+            ),
+        ],
+    )
 
-  return [
-      DefaultInfo(
-          runfiles=runfiles.collect(
-              ctx=ctx,
-              files=[ctx.file.archive],
-              targets=[ctx.attr.extract_exe_target])),
-      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
-  ]
+    return [
+        DefaultInfo(
+            runfiles = runfiles.collect(
+                ctx = ctx,
+                files = [ctx.file.archive],
+                targets = [ctx.attr.extract_exe_target],
+            ),
+        ),
+        WebTestInfo(metadata = ctx.outputs.web_test_metadata),
+    ]
 
 def _web_test_archive_build_impl(ctx):
-  out_dir = ctx.actions.declare_directory(ctx.label.name + ".out")
-  ctx.actions.run(
-      executable=ctx.executable.extract_exe_host,
-      arguments=[ctx.file.archive.path, out_dir.path, ctx.attr.strip_prefix],
-      mnemonic="WebTestArchive",
-      progress_message="Extracting %s" % ctx.file.archive.short_path,
-      use_default_shell_env=True,
-      inputs=[ctx.file.archive],
-      outputs=[out_dir])
+    out_dir = ctx.actions.declare_directory(ctx.label.name + ".out")
+    ctx.actions.run(
+        executable = ctx.executable.extract_exe_host,
+        arguments = [ctx.file.archive.path, out_dir.path, ctx.attr.strip_prefix],
+        mnemonic = "WebTestArchive",
+        progress_message = "Extracting %s" % ctx.file.archive.short_path,
+        use_default_shell_env = True,
+        inputs = [ctx.file.archive],
+        outputs = [out_dir],
+    )
 
-  out_dir_path = files.long_path(ctx, out_dir)
-  named_files = {}
+    out_dir_path = files.long_path(ctx, out_dir)
+    named_files = {}
 
-  for n, p in ctx.attr.named_files.items():
-    named_files[n] = out_dir_path + "/" + p
+    for n, p in ctx.attr.named_files.items():
+        named_files[n] = out_dir_path + "/" + p
 
-  metadata.create_file(
-      ctx=ctx,
-      output=ctx.outputs.web_test_metadata,
-      web_test_files=[
-          metadata.web_test_files(ctx=ctx, named_files=named_files),
-      ])
+    metadata.create_file(
+        ctx = ctx,
+        output = ctx.outputs.web_test_metadata,
+        web_test_files = [
+            metadata.web_test_files(ctx = ctx, named_files = named_files),
+        ],
+    )
 
-  return [
-      DefaultInfo(runfiles=runfiles.collect(ctx=ctx, files=[out_dir])),
-      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
-  ]
+    return [
+        DefaultInfo(runfiles = runfiles.collect(ctx = ctx, files = [out_dir])),
+        WebTestInfo(metadata = ctx.outputs.web_test_metadata),
+    ]
 
 web_test_archive = rule(
     attrs = {

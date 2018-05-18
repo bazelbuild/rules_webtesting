@@ -23,28 +23,30 @@ load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 
 def _web_test_config_impl(ctx):
-  """Implementation of the web_test_config rule."""
-  metadata_files = []
+    """Implementation of the web_test_config rule."""
+    metadata_files = []
 
-  if ctx.attr.metadata:
-    metadata_files = [ctx.file.metadata]
+    if ctx.attr.metadata:
+        metadata_files = [ctx.file.metadata]
 
-  metadata_files += [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
+    metadata_files += [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
 
-  if metadata_files:
-    metadata.merge_files(
-        ctx=ctx,
-        merger=ctx.executable.merger,
-        output=ctx.outputs.web_test_metadata,
-        inputs=metadata_files)
-  else:
-    metadata.create_file(ctx=ctx, output=ctx.outputs.web_test_metadata)
+    if metadata_files:
+        metadata.merge_files(
+            ctx = ctx,
+            merger = ctx.executable.merger,
+            output = ctx.outputs.web_test_metadata,
+            inputs = metadata_files,
+        )
+    else:
+        metadata.create_file(ctx = ctx, output = ctx.outputs.web_test_metadata)
 
-  return [
-      DefaultInfo(
-          runfiles=ctx.runfiles(collect_data=True, collect_default=True)),
-      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
-  ]
+    return [
+        DefaultInfo(
+            runfiles = ctx.runfiles(collect_data = True, collect_default = True),
+        ),
+        WebTestInfo(metadata = ctx.outputs.web_test_metadata),
+    ]
 
 web_test_config = rule(
     attrs = {

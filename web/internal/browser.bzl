@@ -21,29 +21,31 @@ load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
 
 def _browser_impl(ctx):
-  """Implementation of the browser rule."""
-  patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
-  metadata.create_file(ctx=ctx, output=patch, browser_label=ctx.label)
-  metadata_files = [
-      patch,
-      ctx.file.metadata,
-  ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
+    """Implementation of the browser rule."""
+    patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+    metadata.create_file(ctx = ctx, output = patch, browser_label = ctx.label)
+    metadata_files = [
+        patch,
+        ctx.file.metadata,
+    ] + [dep[WebTestInfo].metadata for dep in ctx.attr.deps]
 
-  metadata.merge_files(
-      ctx=ctx,
-      merger=ctx.executable.merger,
-      output=ctx.outputs.web_test_metadata,
-      inputs=metadata_files)
+    metadata.merge_files(
+        ctx = ctx,
+        merger = ctx.executable.merger,
+        output = ctx.outputs.web_test_metadata,
+        inputs = metadata_files,
+    )
 
-  return [
-      DefaultInfo(runfiles=runfiles.collect(ctx)),
-      WebTestInfo(
-          disabled=ctx.attr.disabled,
-          environment=ctx.attr.environment,
-          execution_requirements=ctx.attr.execution_requirements,
-          metadata=ctx.outputs.web_test_metadata,
-          required_tags=ctx.attr.required_tags),
-  ]
+    return [
+        DefaultInfo(runfiles = runfiles.collect(ctx)),
+        WebTestInfo(
+            disabled = ctx.attr.disabled,
+            environment = ctx.attr.environment,
+            execution_requirements = ctx.attr.execution_requirements,
+            metadata = ctx.outputs.web_test_metadata,
+            required_tags = ctx.attr.required_tags,
+        ),
+    ]
 
 browser = rule(
     attrs = {
