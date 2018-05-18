@@ -20,21 +20,26 @@ load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 
 def _web_test_named_file_impl(ctx):
-  name = ctx.attr.alt_name or ctx.label.name
+    name = ctx.attr.alt_name or ctx.label.name
 
-  metadata.create_file(
-      ctx=ctx,
-      output=ctx.outputs.web_test_metadata,
-      web_test_files=[
-          metadata.web_test_files(ctx=ctx, named_files={name: ctx.file.file}),
-      ])
+    metadata.create_file(
+        ctx = ctx,
+        output = ctx.outputs.web_test_metadata,
+        web_test_files = [
+            metadata.web_test_files(ctx = ctx, named_files = {name: ctx.file.file}),
+        ],
+    )
 
-  return [
-      DefaultInfo(
-          runfiles=ctx.runfiles(
-              collect_data=True, collect_default=True, files=[ctx.file.file])),
-      WebTestInfo(metadata=ctx.outputs.web_test_metadata),
-  ]
+    return [
+        DefaultInfo(
+            runfiles = ctx.runfiles(
+                collect_data = True,
+                collect_default = True,
+                files = [ctx.file.file],
+            ),
+        ),
+        WebTestInfo(metadata = ctx.outputs.web_test_metadata),
+    ]
 
 web_test_named_file = rule(
     attrs = {

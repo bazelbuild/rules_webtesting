@@ -16,39 +16,41 @@
 load(":files.bzl", "files")
 
 def _merge_files(ctx, merger, output, inputs):
-  """Produces a merged web test metadata file.
+    """Produces a merged web test metadata file.
 
-  Args:
-    ctx: a Skylark rule context.
-    merger: the WTL metadata merger executable.
-    output: a File object for the output file.
-    inputs: a list of File objects. These files are in order of priority;
-      i.e. values in the first file will take precedence over values in the
-      second file, etc.
-  """
-  paths = [i.path for i in reversed(inputs)]
-  short_paths = [i.short_path for i in inputs]
-  args = ["--output", output.path] + paths
+    Args:
+        ctx: a Skylark rule context.
+        merger: the WTL metadata merger executable.
+        output: a File object for the output file.
+        inputs: a list of File objects. These files are in order of priority;
+          i.e. values in the first file will take precedence over values in the
+          second file, etc.
+    """
+    paths = [i.path for i in reversed(inputs)]
+    short_paths = [i.short_path for i in inputs]
+    args = ["--output", output.path] + paths
 
-  ctx.action(
-      outputs=[output],
-      inputs=inputs,
-      executable=merger,
-      arguments=args,
-      mnemonic="METADATAMERGER",
-      progress_message="merging %s" % (", ".join(short_paths)))
+    ctx.action(
+        outputs = [output],
+        inputs = inputs,
+        executable = merger,
+        arguments = args,
+        mnemonic = "METADATAMERGER",
+        progress_message = "merging %s" % (", ".join(short_paths)),
+    )
 
-def _create_file(ctx,
-                 output,
-                 browser_label=None,
-                 capabilities=None,
-                 config_label=None,
-                 environment=None,
-                 label=None,
-                 test_label=None,
-                 web_test_files=None,
-                 extension=None):
-  """Generates a web_test metadata file with specified contents.
+def _create_file(
+        ctx,
+        output,
+        browser_label = None,
+        capabilities = None,
+        config_label = None,
+        environment = None,
+        label = None,
+        test_label = None,
+        web_test_files = None,
+        extension = None):
+    """Generates a web_test metadata file with specified contents.
 
   Args:
     ctx: a Skylark rule context.
@@ -61,31 +63,34 @@ def _create_file(ctx,
     extension: map or struct defining additional fields that should be added
       metadata file.
   """
-  fields = {}
-  if browser_label:
-    fields["browserLabel"] = str(browser_label)
-  if capabilities:
-    fields["capabilities"] = capabilities
-  if config_label:
-    fields["configLabel"] = str(config_label)
-  if environment:
-    fields["environment"] = environment
-  if label:
-    fields["label"] = str(label)
-  if test_label:
-    fields["testLabel"] = str(test_label)
-  if web_test_files:
-    fields["webTestFiles"] = web_test_files
-  if extension:
-    if type(extension) == type({}):
-      extension = struct(**extension)
-    fields["extension"] = extension
+    fields = {}
+    if browser_label:
+        fields["browserLabel"] = str(browser_label)
+    if capabilities:
+        fields["capabilities"] = capabilities
+    if config_label:
+        fields["configLabel"] = str(config_label)
+    if environment:
+        fields["environment"] = environment
+    if label:
+        fields["label"] = str(label)
+    if test_label:
+        fields["testLabel"] = str(test_label)
+    if web_test_files:
+        fields["webTestFiles"] = web_test_files
+    if extension:
+        if type(extension) == type({}):
+            extension = struct(**extension)
+        fields["extension"] = extension
 
-  ctx.file_action(
-      output=output, content=struct(**fields).to_json(), executable=False)
+    ctx.file_action(
+        output = output,
+        content = struct(**fields).to_json(),
+        executable = False,
+    )
 
-def _web_test_files(ctx, archive_file=None, named_files=None, strip_prefix=""):
-  """Build a web_test_files struct.
+def _web_test_files(ctx, archive_file = None, named_files = None, strip_prefix = ""):
+    """Build a web_test_files struct.
 
   Args:
     ctx: a Skylark rule context.
@@ -99,16 +104,17 @@ def _web_test_files(ctx, archive_file=None, named_files=None, strip_prefix=""):
   Returns:
     A web_test_files struct.
   """
-  named_files = named_files or {}
-  for k, v in named_files.items():
-    if type(v) != type(""):
-      named_files[k] = files.long_path(ctx, v)
-  if archive_file:
-    archive_file = files.long_path(ctx, archive_file)
-  return struct(
-      archiveFile=archive_file,
-      namedFiles=struct(**named_files),
-      stripPrefix=strip_prefix)
+    named_files = named_files or {}
+    for k, v in named_files.items():
+        if type(v) != type(""):
+            named_files[k] = files.long_path(ctx, v)
+    if archive_file:
+        archive_file = files.long_path(ctx, archive_file)
+    return struct(
+        archiveFile = archive_file,
+        namedFiles = struct(**named_files),
+        stripPrefix = strip_prefix,
+    )
 
 metadata = struct(
     create_file = _create_file,

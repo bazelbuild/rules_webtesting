@@ -21,26 +21,26 @@ Usage:
 """
 
 def _is_list_like(val):
-  """Checks is val is a list-like (list, depset, tuple) value."""
-  return type(val) in [type([]), type(depset()), type(())]
+    """Checks is val is a list-like (list, depset, tuple) value."""
+    return (type(val) in [type([]), type(depset()), type(())])
 
 def _list_ensure_contains(lst, item):
-  """Appends the specified item to the list if its not already a member."""
-  if item not in lst:
-    lst.append(item)
+    """Appends the specified item to the list if its not already a member."""
+    if item not in lst:
+        lst.append(item)
 
 def _list_ensure_contains_all(lst, items):
-  """Appends the specified items to the list if not already members."""
-  for item in items:
-    _list_ensure_contains(lst, item)
+    """Appends the specified items to the list if not already members."""
+    for item in items:
+        _list_ensure_contains(lst, item)
 
 def _list_clone(original):
-  """Create a new list with content of original."""
-  if _is_list_like(original):
-    return list(original)
-  if original:
-    fail('got "' + original + '", but expected none or a list-like value')
-  return []
+    """Create a new list with content of original."""
+    if _is_list_like(original):
+        return list(original)
+    if original:
+        fail("got \"" + original + "\", but expected none or a list-like value")
+    return []
 
 lists = struct(
     clone = _list_clone,
@@ -50,9 +50,9 @@ lists = struct(
 )
 
 def _map_clone(original):
-  new_map = {}
-  if original:
-    new_map.update(original)
-  return new_map
+    new_map = {}
+    if original:
+        new_map.update(original)
+    return new_map
 
 maps = struct(clone = _map_clone)

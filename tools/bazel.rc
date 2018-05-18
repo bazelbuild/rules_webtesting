@@ -6,3 +6,4 @@ test --test_env=SAUCE_USERNAME
 test --test_env=SAUCE_ACCESS_KEY
 test --test_env=TUNNEL_IDENTIFIER
 test --test_env=BUILD_TAG
+test --local_test_jobs=5

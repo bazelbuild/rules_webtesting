@@ -81,18 +81,14 @@ func (b *Base) SetUp(ctx context.Context) error {
 	return nil
 }
 
-// StartSession merges the passed in caps with b.Metadata.caps and returns the merged
+// StartSession merges the passed in caps with b.Metadata.Capabilities and returns the merged
 // capabilities that should be used when calling new session on the WebDriver
 // server.
 func (b *Base) StartSession(ctx context.Context, id int, caps *capabilities.Capabilities) (*capabilities.Capabilities, error) {
 	if err := b.Healthy(ctx); err != nil {
 		return nil, err
 	}
-	resolved, err := b.Metadata.ResolvedCapabilities()
-	if err != nil {
-		return nil, err
-	}
-	return caps.MergeOver(resolved), nil
+	return caps.MergeOver(b.Metadata.Capabilities).Resolve(b.Metadata.Resolver())
 }
 
 // StopSession is a no-op implementation of Env.StopSession.
