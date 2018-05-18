@@ -54,7 +54,8 @@ def _generate_noop_test(ctx, reason, status = 0):
     Args:
         ctx: the ctx object for this rule.
         reason: string, a description of why the no-op test is being used.
-        status: int, the exit code the test should return
+        status: int, the exit code the test should return.
+
     Returns:
         an empty struct for this rule.
     """
@@ -65,7 +66,7 @@ def _generate_noop_test(ctx, reason, status = 0):
 
     metadata.create_file(ctx, output = ctx.outputs.web_test_metadata)
 
-    ctx.template_action(
+    ctx.actions.expand_template(
         template = ctx.file.noop_web_test_template,
         output = ctx.outputs.executable,
         substitutions = {
@@ -73,7 +74,7 @@ def _generate_noop_test(ctx, reason, status = 0):
             "%TEMPLATED_reason%": reason,
             "%TEMPLATED_status%": str(status),
         },
-        executable = True,
+        is_executable = True,
     )
 
     return []
@@ -105,7 +106,7 @@ def _generate_default_test(ctx):
     for k, v in env.items():
         env_vars += "export %s=%s\n" % (k, v)
 
-    ctx.template_action(
+    ctx.actions.expand_template(
         template = ctx.file.web_test_template,
         output = ctx.outputs.executable,
         substitutions = {
@@ -114,7 +115,7 @@ def _generate_default_test(ctx):
             "%TEMPLATED_metadata%": files.long_path(ctx, ctx.outputs.web_test_metadata),
             "%TEMPLATED_test%": files.long_path(ctx, ctx.executable.test),
         },
-        executable = True,
+        is_executable = True,
     )
 
     return [

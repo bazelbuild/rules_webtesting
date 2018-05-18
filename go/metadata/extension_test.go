@@ -87,11 +87,11 @@ func TestMergeWithExtension(t *testing.T) {
 			}
 
 			if tc.result == nil {
-				t.Fatalf("Got %#v, expected error", tc.input1, tc.input2, a)
+				t.Fatalf("Got %#v, expected error", a)
 			}
 
 			if !reflect.DeepEqual(a, tc.result) {
-				t.Fatalf("Got %#v, expected %#v", tc.input1, tc.input2, a, tc.result)
+				t.Fatalf("Got %#v, expected %#v", a, tc.result)
 			}
 		})
 	}
