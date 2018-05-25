@@ -16,26 +16,30 @@
 #
 workspace(name = "io_bazel_rules_webtesting")
 
-rules_go_version = "0.10.3"
+# NOTE: URLs are mirrored by an asynchronous review process. They must
+#       be greppable for that to happen. It's OK to submit broken mirror
+#       URLs, so long as they're correctly formatted. Bazel's downloader
+#       has fast failover.
 
 http_archive(
     name = "io_bazel_rules_go",
     sha256 = "feba3278c13cde8d67e341a837f69a029f698d7a27ddbb2a202be7a10b22142a",
     urls = [
-        "http://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/{v}/rules_go-{v}.tar.gz".format(v = rules_go_version),
-        "https://github.com/bazelbuild/rules_go/releases/download/{v}/rules_go-{v}.tar.gz".format(v = rules_go_version),
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/0.10.3/rules_go-0.10.3.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/0.10.3/rules_go-0.10.3.tar.gz",
     ],
 )
-
-gazelle_version = "0.10.1"
 
 http_archive(
     name = "bazel_gazelle",
     sha256 = "d03625db67e9fb0905bbd206fa97e32ae9da894fe234a493e7517fd25faec914",
-    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/{v}/bazel-gazelle-{v}.tar.gz".format(v = gazelle_version),
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/0.10.1/bazel-gazelle-0.10.1.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.10.1/bazel-gazelle-0.10.1.tar.gz",
+    ],
 )
 
-load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
 
@@ -54,14 +58,14 @@ browser_repositories(
     firefox = True,
 )
 
-rules_scala_version = "55c5bd2c4af311008bcfa0f989af39026ed567fe"
-
 http_archive(
     name = "io_bazel_rules_scala",
-    sha256 = "d45b5d621f216eee004e1aaed0f9f9df43c75f55c81fa742b27fc6969d2cbc2b",
-    strip_prefix = "rules_scala-{v}".format(v = rules_scala_version),
-    type = "zip",
-    url = "https://github.com/bazelbuild/rules_scala/archive/{v}.zip".format(v = rules_scala_version),
+    sha256 = "0ac3ef277205d10ca353a5760da9710c8dbf2fca5bd1d2b6143a073ed2a1a50f",
+    strip_prefix = "rules_scala-55c5bd2c4af311008bcfa0f989af39026ed567fe",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_scala/archive/55c5bd2c4af311008bcfa0f989af39026ed567fe.tar.gz",
+        "https://github.com/bazelbuild/rules_scala/archive/55c5bd2c4af311008bcfa0f989af39026ed567fe.tar.gz",
+    ],
 )
 
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
