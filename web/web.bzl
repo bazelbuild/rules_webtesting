@@ -71,7 +71,7 @@ def web_test_suite(
     if not browsers:
         fail("expected non-empty value for attribute 'browsers'")
 
-        # Check explicitly for None so that users can set this to the empty list.
+    # Check explicitly for None so that users can set this to the empty list.
     if test_suite_tags == None:
         test_suite_tags = DEFAULT_TEST_SUITE_TAGS
 

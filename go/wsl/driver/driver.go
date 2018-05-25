@@ -29,6 +29,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/cmdhelper"
@@ -421,11 +422,13 @@ func (d *Driver) Shutdown(ctx context.Context) error {
 		close(d.stopped)
 		return nil
 	}
-	if !d.caps.shutdown {
-		return d.cmd.Process.Kill()
+	if d.caps.shutdown {
+		httphelper.Get(ctx, d.Address+"/shutdown")
+	} else if err := d.cmd.Process.Signal(syscall.SIGTERM); err != nil {
+		if err := d.cmd.Process.Signal(os.Interrupt); err != nil {
+			d.cmd.Process.Kill()
+		}
 	}
-
-	httphelper.Get(ctx, d.Address+"/shutdown")
 
 	if err := d.Wait(ctx); err != nil {
 		return d.cmd.Process.Kill()
