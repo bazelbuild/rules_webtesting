@@ -40,6 +40,7 @@ def _impl(repository_ctx):
         "\n".join([
             ("# DO NOT EDIT: automatically generated BUILD file for " +
              "platform_http_file rule " + repository_ctx.name),
+            "licenses(%s)" % repr(repository_ctx.attr.licenses),
             "filegroup(",
             "    name = 'file',",
             "    srcs = ['%s']," % basename,
@@ -50,6 +51,7 @@ def _impl(repository_ctx):
 
 platform_http_file = repository_rule(
     attrs = {
+        "licenses": attr.string_list(mandatory=True, allow_empty=False),
         "amd64_urls": attr.string_list(),
         "amd64_sha256": attr.string(),
         "macos_urls": attr.string_list(),
