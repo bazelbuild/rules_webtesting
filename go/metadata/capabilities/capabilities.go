@@ -24,16 +24,16 @@ import (
 )
 
 // See https://w3c.github.io/webdriver/webdriver-spec.html#capabilities
-var w3cSupportedCapabilities = []string{
-	"acceptInsecureCerts",
-	"browserName",
-	"browserVersion",
-	"pageLoadStrategy",
-	"platformName",
-	"proxy",
-	"setWindowRect",
-	"timeouts",
-	"unhandledPromptBehavior",
+var w3cSupportedCapabilities = map[string]bool{
+	"acceptInsecureCerts": true,
+	"browserName": true,
+	"browserVersion": true,
+	"pageLoadStrategy": true,
+	"platformName": true,
+	"proxy": true,
+	"setWindowRect": true,
+	"timeouts": true,
+	"unhandledPromptBehavior": true,
 }
 
 // Capabilities is a WebDriver capabilities object. It is modeled after W3C capabilities, but supports
@@ -200,23 +200,58 @@ func anyContains(maps []map[string]interface{}, key string) bool {
 	return false
 }
 
+func isW3CCapName(name string) bool {
+	return w3cSupportedCapabilities[name] || strings.Contains(name, ":")
+}
+
+// W3CCompatible returns true iff all capability names in these capabilities are
+// W3C compatible.
+func (c *Capabilities) W3CCompatible() bool {
+	if c == nil {
+		return true
+	}
+	for k := range c.AlwaysMatch {
+		if !isW3CCapName(k) {
+			return false
+		}
+	}
+
+	for _, fm := range c.FirstMatch {
+		for k := range fm {
+			if !isW3CCapName(k) {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+// JWPCompatible returns true iff there is at most 1 entry in FirstMatch.
+func (c *Capabilities) JWPCompatible() bool {
+	if c == nil {
+		return true
+	}
+	return len(c.FirstMatch) < 2
+}
+
 // ToJWP creates a map suitable for use as arguments to a New Session request for JSON Wire Protocol remote ends.
 // Since JWP does not support an equivalent to FirstMatch, if FirstMatch contains more than 1 entry
 // then this returns an error (if it contains exactly 1 entry, it will be merged over AlwaysMatch).
 func (c *Capabilities) ToJWP() (map[string]interface{}, error) {
+	if !c.JWPCompatible {
+		return nil, errors.New("capabilities includes multiple FirstMatch entries")
+	}
+
 	if c == nil {
 		return map[string]interface{}{
 			"desiredCapabilities": map[string]interface{}{},
 		}, nil
 	}
 
-	if len(c.FirstMatch) > 1 {
-		return nil, errors.New("can not convert Capabilities with multiple FirstMatch entries to JWP")
-	}
-
 	desired := c.AlwaysMatch
-	if len(c.FirstMatch) == 1 {
-		desired = Merge(desired, c.FirstMatch[0])
+	for _, fm := range c.FirstMatch {
+		desired = Merge(desired, fm)
 	}
 
 	return map[string]interface{}{
@@ -225,7 +260,11 @@ func (c *Capabilities) ToJWP() (map[string]interface{}, error) {
 }
 
 // ToW3C creates a map suitable for use as arguments to a New Session request for W3C remote ends.
-func (c *Capabilities) ToW3C() map[string]interface{} {
+func (c *Capabilities) ToW3C() (map[string]interface{}, error) {
+	if !c.W3CCompatible() {
+		return nil, errors.New("capabilities includes non-W3C compatible keys")
+	}
+
 	if c == nil {
 		return map[string]interface{}{
 			"capabilities": map[string]interface{}{},
@@ -234,19 +273,12 @@ func (c *Capabilities) ToW3C() map[string]interface{} {
 
 	caps := map[string]interface{}{}
 
-	alwaysMatch := w3cCapabilities(c.AlwaysMatch)
-	var firstMatch []map[string]interface{}
-
-	for _, fm := range c.FirstMatch {
-		firstMatch = append(firstMatch, w3cCapabilities(fm))
+	if len(c.AlwaysMatch) != 0 {
+		caps["alwaysMatch"] = c.AlwaysMatch
 	}
 
-	if len(alwaysMatch) != 0 {
-		caps["alwaysMatch"] = alwaysMatch
-	}
-
-	if len(firstMatch) != 0 {
-		caps["firstMatch"] = firstMatch
+	if len(c.FirstMatch) != 0 {
+		caps["firstMatch"] = c.FirstMatch
 	}
 
 	return map[string]interface{}{
