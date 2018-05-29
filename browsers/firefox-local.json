@@ -8,7 +8,12 @@
     },
     "google:wslConfig": {
       "binary": "%FILE:GECKODRIVER%",
-      "args": ["--port=%WSL:PORT%"],
+      "port":"%WSLPORT:WSL%",
+      "args": [
+        "--port=%WSLPORT:WSL%",
+        "--host=%WSL:HOST_IP%",
+        "--marionette-port=%WSLPORT:MARIONETTE%"
+      ],
       "status": true,
       "shutdown": false
     }

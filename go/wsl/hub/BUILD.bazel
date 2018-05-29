@@ -29,5 +29,6 @@ go_library(
         "//go/httphelper:go_default_library",
         "//go/metadata/capabilities:go_default_library",
         "//go/wsl/driver:go_default_library",
+        "//go/wsl/resolver:go_default_library",
     ],
 )

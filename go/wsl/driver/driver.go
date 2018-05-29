@@ -27,7 +27,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -35,7 +34,6 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/cmdhelper"
 	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
-	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/webdriver"
 )
 
@@ -157,21 +155,9 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 		}
 	}
 
-	if port == 0 && binary == "" {
-		return nil, errors.New("neither binary nor port is set")
-	}
-
 	if port == 0 {
-		if binary == "" {
-			return nil, errors.New("at least one of binary or port must set")
-		}
-		p, err := portpicker.PickUnusedPort()
-		if err != nil {
-			return nil, err
-		}
-		port = p
+		return nil, errors.New(`port must be set (use "%WSLPORT:WSL%" if you don't care what port is used)`)
 	}
-	portStr := strconv.Itoa(port)
 
 	var args []string
 	if a, ok := caps["args"]; ok {
@@ -189,9 +175,6 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 			if !ok {
 				return nil, fmt.Errorf("element %#v in args is not a string", argInterface)
 			}
-
-			arg = strings.Replace(arg, "%WSL:PORT%", portStr, -1)
-			arg = strings.Replace(arg, "%WSL:SESSION_ID%", sessionID, -1)
 			args = append(args, arg)
 		}
 	}
@@ -231,8 +214,6 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 			if !ok {
 				return nil, fmt.Errorf("value %#v for key %q in env is not a string", v, k)
 			}
-			vs = strings.Replace(vs, "%WSL:PORT%", portStr, -1)
-			vs = strings.Replace(vs, "%WSL:SESSION_ID%", sessionID, -1)
 			env[k] = vs
 		}
 	}

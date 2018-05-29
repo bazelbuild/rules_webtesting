@@ -11,7 +11,8 @@
     },
     "google:wslConfig": {
       "binary": "%FILE:CHROMEDRIVER%",
-      "args": ["--port=%WSL:PORT%"],
+      "port":"%WSLPORT:WSL%",
+      "args": ["--port=%WSLPORT:WSL%"],
       "status": true,
       "shutdown": true
     }
