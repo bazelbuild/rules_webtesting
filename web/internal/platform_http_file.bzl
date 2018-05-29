@@ -51,7 +51,7 @@ def _impl(repository_ctx):
 
 platform_http_file = repository_rule(
     attrs = {
-        "licenses": attr.string_list(mandatory=True, allow_empty=False),
+        "licenses": attr.string_list(mandatory = True, allow_empty = False),
         "amd64_urls": attr.string_list(),
         "amd64_sha256": attr.string(),
         "macos_urls": attr.string_list(),

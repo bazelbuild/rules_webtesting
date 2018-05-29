@@ -33,7 +33,8 @@ def _long_path(ctx, file):
         # if the file has an owner and that owner has a workspace_root,
         # prepend it.
         return (file.owner.workspace_root + "/" + file.short_path)
-        # otherwise assume the file is in the same workspace as the current rule.
+
+    # otherwise assume the file is in the same workspace as the current rule.
 
     return (ctx.workspace_name + "/" + file.short_path)
 
