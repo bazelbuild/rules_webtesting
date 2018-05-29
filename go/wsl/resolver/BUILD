@@ -22,13 +22,11 @@ licenses(["notice"])  # Apache 2.0
 
 go_library(
     name = "go_default_library",
-    srcs = ["driver.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/wsl/driver",
-    visibility = ["//go/wsl:__subpackages__"],
+    srcs = ["resolver.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/wsl/resolver",
+    visibility = ["//visibility:public"],
     deps = [
-        "//go/cmdhelper:go_default_library",
-        "//go/httphelper:go_default_library",
         "//go/metadata/capabilities:go_default_library",
-        "//go/webdriver:go_default_library",
+        "//go/portpicker:go_default_library",
     ],
 )
