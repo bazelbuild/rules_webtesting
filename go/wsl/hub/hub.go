@@ -31,6 +31,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/wsl/driver"
+	"github.com/bazelbuild/rules_webtesting/go/wsl/resolver"
 )
 
 // A Hub is an HTTP handler that manages incoming WebDriver requests.
@@ -122,36 +123,38 @@ func (h *Hub) newSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabilities, w http.ResponseWriter) (string, *driver.Driver, error) {
-	if caps.AlwaysMatch != nil {
-		wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{})
-		if ok {
-			sessionID := "last"
-			if i, ok := caps.AlwaysMatch["google:sessionId"]; ok {
-				switch ii := i.(type) {
-				case string:
-					sessionID = ii
-				case float64:
-					sessionID = strconv.Itoa(int(ii))
-				default:
-					return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
-				}
-			}
-
-			d, err := driver.New(ctx, h.localHost, sessionID, wslConfig)
-			if err != nil {
-				return "", nil, err
-			}
-
-			s, err := d.NewSession(ctx, caps, w)
-			if err != nil {
-				ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-				defer cancel()
-				d.Shutdown(ctx)
-				return "", nil, err
-			}
-
-			return s, d, nil
+	sessionID := "last"
+	if i, ok := caps.AlwaysMatch["google:sessionId"]; ok {
+		switch ii := i.(type) {
+		case string:
+			sessionID = ii
+		case float64:
+			sessionID = strconv.Itoa(int(ii))
+		default:
+			return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
 		}
+	}
+
+	caps, err := caps.Resolve(resolver.New(sessionID))
+	if err != nil {
+		return "", nil, err
+	}
+
+	if wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{}); ok {
+		d, err := driver.New(ctx, h.localHost, sessionID, wslConfig)
+		if err != nil {
+			return "", nil, err
+		}
+
+		s, err := d.NewSession(ctx, caps, w)
+		if err != nil {
+			ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+			defer cancel()
+			d.Shutdown(ctx)
+			return "", nil, err
+		}
+
+		return s, d, nil
 	}
 
 	for _, fm := range caps.FirstMatch {
