@@ -63,6 +63,7 @@ type wslCaps struct {
 	stderr   string
 }
 
+// PortRecycler is an interface for an object that includes ports that are owned by this driver.
 type PortRecycler interface {
 	RecyclePorts() error
 }
