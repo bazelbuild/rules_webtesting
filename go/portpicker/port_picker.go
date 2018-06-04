@@ -20,12 +20,18 @@ import (
 	"io"
 	"net"
 	"strconv"
+	"sync"
 )
 
-var claimedPorts = map[int]bool{}
+var (
+	mu           sync.Mutex
+	claimedPorts = map[int]bool{}
+)
 
 // PickUnusedPort picks an unused TCP port.
 func PickUnusedPort() (int, error) {
+	mu.Lock()
+	defer mu.Unlock()
 	var listeners []io.Closer
 	defer func() {
 		for _, c := range listeners {
@@ -56,4 +62,12 @@ func PickUnusedPort() (int, error) {
 		}
 	}
 	return 0, errors.New("unable to get a port")
+}
+
+// RecycleUnusedPort makes a port claimable by a call to PickUnusedPort.
+func RecycleUnusedPort(port int) error {
+	mu.Lock()
+	defer mu.Unlock()
+	delete(claimedPorts, port)
+	return nil
 }

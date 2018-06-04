@@ -84,7 +84,7 @@ func (s *Server) Stop(ctx context.Context) error {
 	if err := s.Cmd.Stop(ctx); err != nil {
 		return err
 	}
-	return nil
+	return portpicker.RecycleUnusedPort(s.port)
 }
 
 // Healthy returns nil if the server responds OK to requests to health page.
