@@ -41,10 +41,11 @@ const compName = "WSL Driver"
 
 // Driver is wrapper around a running WebDriver endpoint binary.
 type Driver struct {
-	Address string
-	caps    *wslCaps
-	stopped chan error
-	cmd     *exec.Cmd
+	Address      string
+	caps         *wslCaps
+	stopped      chan error
+	cmd          *exec.Cmd
+	portRecycler PortRecycler
 
 	// Mutex to prevent overlapping commands to remote end.
 	mu sync.Mutex
@@ -62,9 +63,13 @@ type wslCaps struct {
 	stderr   string
 }
 
+type PortRecycler interface {
+	RecyclePorts() error
+}
+
 // New creates starts a WebDriver endpoint binary based on caps. Argument caps should just be
 // the google:wslConfig capability extracted from the capabilities passed into a new session request.
-func New(ctx context.Context, localHost, sessionID string, caps map[string]interface{}) (*Driver, error) {
+func New(ctx context.Context, localHost, sessionID string, caps map[string]interface{}, portRecycler PortRecycler) (*Driver, error) {
 	wslCaps, err := extractWSLCaps(sessionID, caps)
 	if err != nil {
 		return nil, err
@@ -72,9 +77,10 @@ func New(ctx context.Context, localHost, sessionID string, caps map[string]inter
 	hostPort := net.JoinHostPort(localHost, strconv.Itoa(wslCaps.port))
 
 	d := &Driver{
-		Address: fmt.Sprintf("http://%s", hostPort),
-		caps:    wslCaps,
-		stopped: make(chan error),
+		Address:      fmt.Sprintf("http://%s", hostPort),
+		caps:         wslCaps,
+		stopped:      make(chan error),
+		portRecycler: portRecycler,
 	}
 
 	errChan, err := d.startDriver()
@@ -156,7 +162,7 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 	}
 
 	if port == 0 {
-		return nil, errors.New(`port must be set (use "%WSLPORT:WSL%" if you don't care what port is used)`)
+		return nil, errors.New(`port must be set (use "%WSLPORT:DRIVER%" if you don't care what port is used)`)
 	}
 
 	var args []string
@@ -316,6 +322,11 @@ func (d *Driver) startDriver() (chan error, error) {
 	go func() {
 		err := cmd.Wait()
 		log.Printf("%s has exited: %v", d.caps.binary, err)
+
+		if err := d.portRecycler.RecyclePorts(); err != nil {
+			log.Printf("Error cleaning up used ports: %v", err)
+		}
+
 		errChan <- err
 		d.stopped <- err
 		if stdout != os.Stdout {

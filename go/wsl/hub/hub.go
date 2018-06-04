@@ -134,66 +134,41 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 			return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
 		}
 	}
+	resolver := resolver.New(sessionID)
 
-	caps, err := caps.Resolve(resolver.New(sessionID))
+	caps, err := caps.Resolve(resolver.Resolve)
 	if err != nil {
 		return "", nil, err
 	}
 
-	if wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{}); ok {
-		d, err := driver.New(ctx, h.localHost, sessionID, wslConfig)
-		if err != nil {
-			return "", nil, err
-		}
+	wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{})
 
-		s, err := d.NewSession(ctx, caps, w)
-		if err != nil {
-			ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-			defer cancel()
-			d.Shutdown(ctx)
-			return "", nil, err
+	if !ok {
+		if err := resolver.RecyclePorts(); err != nil {
+			log.Printf("Error recycling ports: %v", err)
 		}
-
-		return s, d, nil
+		return "", nil, errors.New("alwaysMatch capabilites must include google:wslConfig")
 	}
 
-	for _, fm := range caps.FirstMatch {
-		wslConfig, ok := fm["google:wslConfig"].(map[string]interface{})
-
-		if ok {
-			sessionID := "last"
-			if i, ok := caps.AlwaysMatch["google:sessionId"]; ok {
-				switch ii := i.(type) {
-				case string:
-					sessionID = ii
-				case float64:
-					sessionID = strconv.Itoa(int(ii))
-				default:
-					return "", nil, fmt.Errorf("google:sessionId %#v is not a string or number", i)
-				}
-			}
-
-			d, err := driver.New(ctx, h.localHost, sessionID, wslConfig)
-			if err != nil {
-				continue
-			}
-
-			s, err := d.NewSession(ctx, &capabilities.Capabilities{
-				AlwaysMatch: caps.AlwaysMatch,
-				FirstMatch:  []map[string]interface{}{fm},
-			}, w)
-			if err != nil {
-				ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-				defer cancel()
-				d.Shutdown(ctx)
-				continue
-			}
-
-			return s, d, nil
+	d, err := driver.New(ctx, h.localHost, sessionID, wslConfig, resolver)
+	if err != nil {
+		if err := resolver.RecyclePorts(); err != nil {
+			log.Printf("Error recycling ports: %v", err)
 		}
+		return "", nil, err
 	}
 
-	return "", nil, errors.New("No first match caps worked")
+	s, err := d.NewSession(ctx, caps, w)
+	if err != nil {
+		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+		defer cancel()
+		if err := d.Shutdown(ctx); err != nil {
+			log.Printf("Error shutting down driver: %v", err)
+		}
+		return "", nil, err
+	}
+
+	return s, d, nil
 }
 
 func (h *Hub) quitSession(session string, driver *driver.Driver, w http.ResponseWriter, r *http.Request) {

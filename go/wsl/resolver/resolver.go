@@ -21,53 +21,84 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 )
 
-// Resolver returns a capabilities.Resolver for WSL, WSLPORT, and WSLENV capabilities variables.
-func New(sessionID string) capabilities.Resolver {
-	ports := map[string]string{}
+// A WSLResolver reolves WSL, WSLENV, and WSLPORT capabilities variables.
+type WSLResolver struct {
+	mu        sync.Mutex
+	sessionID string
+	ports     map[string]int
+}
 
-	return func(p, n string) (string, error) {
-		switch p {
-		case "WSLPORT":
-			portStr, ok := ports[n]
-			if ok {
-				return portStr, nil
-			}
-			port, err := portpicker.PickUnusedPort()
+// New returns a new WSLResolver struct ready for use.
+func New(sessionID string) *WSLResolver {
+	return &WSLResolver{
+		sessionID: sessionID,
+		ports:     map[string]int{},
+	}
+}
+
+// Resolve resolves a WSL, WSLENV, and WSLPORT capabilities variable.
+func (w *WSLResolver) Resolve(p, n string) (string, error) {
+	switch p {
+	case "WSLPORT":
+		w.mu.Lock()
+		defer w.mu.Unlock()
+		port, ok := w.ports[n]
+		if ok {
+			return strconv.Itoa(port), nil
+		}
+		port, err := portpicker.PickUnusedPort()
+		if err != nil {
+			return "", err
+		}
+		w.ports[n] = port
+		return strconv.Itoa(port), nil
+	case "WSLENV":
+		env, ok := os.LookupEnv(n)
+		if !ok {
+			return "", fmt.Errorf("environment variable %s is undefined", n)
+		}
+		return env, nil
+	case "WSL":
+		switch n {
+		case "SESSION_ID":
+			return w.sessionID, nil
+		case "HOST_IP":
+			ips, err := net.LookupIP("localhost")
 			if err != nil {
 				return "", err
 			}
-			portStr = strconv.Itoa(port)
-			ports[n] = portStr
-			return portStr, nil
-		case "WSLENV":
-			env, ok := os.LookupEnv(n)
-			if !ok {
-				return "", fmt.Errorf("environment variable %s is undefined", n)
+			if len(ips) == 0 {
+				return "", errors.New("no ip found for localhost")
 			}
-			return env, nil
-		case "WSL":
-			switch n {
-			case "SESSION_ID":
-				return sessionID, nil
-			case "HOST_IP":
-				ips, err := net.LookupIP("localhost")
-				if err != nil {
-					return "", err
-				}
-				if len(ips) == 0 {
-					return "", errors.New("no ip found for localhost")
-				}
-				return ips[0].String(), nil
-			default:
-				return "", fmt.Errorf("unknown variable WSL:%s", n)
-			}
+			return ips[0].String(), nil
 		default:
-			return capabilities.NoOPResolver(p, n)
+			return "", fmt.Errorf("unknown variable WSL:%s", n)
+		}
+	default:
+		return capabilities.NoOPResolver(p, n)
+	}
+}
+
+// RecyclePorts returns the ports allocated by Resolve to the portpicker.
+func (w *WSLResolver) RecyclePorts() error {
+	var errs []error
+	for _, port := range w.ports {
+		if err := portpicker.RecycleUnusedPort(port); err != nil {
+			errs = append(errs, err)
 		}
 	}
+
+	if len(errs) == 0 {
+		return nil
+	}
+	if len(errs) == 1 {
+		return errs[0]
+	}
+	return fmt.Errorf("errors recycling ports: %v", errs)
 }
