@@ -15,7 +15,7 @@
 
 load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
-load("@io_bazel_rules_go//go:def.bzl", "go_repository")
+load("@bazel_gazelle//:deps.bzl", "go_repository")
 
 # NOTE: URLs are mirrored by an asynchronous review process. They must
 #       be greppable for that to happen. It's OK to submit broken mirror
