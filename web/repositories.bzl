@@ -395,19 +395,19 @@ def org_chromium_chromium():
         name = "org_chromium_chromium",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
         amd64_sha256 =
-            "51a189382cb5272d240a729da0ae77d0211c1bbc0d10b701a2723b5b068c1e3a",
+            "edb9807d40a57d235d8477beabe1dfa3d98e275312e7a48bc0cb9b44adb68236",
         amd64_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/539259/chrome-linux.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/564817/chrome-linux.zip"
         ],
         macos_sha256 =
-            "866ec9aa4e07cc86ae1d5aeb6e9bdafb5f94989c7c0be661302930ad667f41f3",
+            "b5a8641b187c623fad11ddccaa7f3053ac469a4a568ef8a593341846406ac965",
         macos_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/539251/chrome-mac.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/564814/chrome-mac.zip"
         ],
         windows_sha256 =
-            "be4fcc7257d85c12ae2de10aef0150ddbb7b9ecbd5ada6a898d247cf867a058a",
+            "1684732c817ce037fb22866ad579347c1eeebfb9a404155a78c02b783bcb1d06",
         windows_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/539249/chrome-win32.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/564812/chrome-win32.zip"
         ],
     )
 
