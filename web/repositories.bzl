@@ -374,19 +374,19 @@ def org_chromium_chromedriver():
         name = "org_chromium_chromedriver",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
         amd64_sha256 =
-            "67fad24c4a85e3f33f51c97924a98b619722db15ce92dcd27484fb748af93e8e",
+            "6f403bb3e94f9a335929dfb2f5ec16c12856f916979deb075691d1b293a36de6",
         amd64_urls = [
-            "https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip",
+            "https://chromedriver.storage.googleapis.com/2.39/chromedriver_linux64.zip",
         ],
         macos_sha256 =
-            "c11521bdc991874a0a29cf36beea6a4b8d73616ce6c8d1e6b90067d85718aa87",
+            "8a98819f27b12db041268fa12201dcd3d4683c8cf0f5e91dc69e7c8001b0100c",
         macos_urls = [
-            "https://chromedriver.storage.googleapis.com/2.35/chromedriver_mac64.zip",
+            "https://chromedriver.storage.googleapis.com/2.39/chromedriver_mac64.zip",
         ],
         windows_sha256 =
-            "b32fdcc1c19bb829032f0447a8aac4f5436565ec1d0f105b63c4451ba4e6ae8a",
+            "cc9d2d714f06f3d07cc599df82fdf73bad656c90c5a915b20e7aa52d31c47bbb",
         windows_urls = [
-            "https://chromedriver.storage.googleapis.com/2.35/chromedriver_win32.zip",
+            "https://chromedriver.storage.googleapis.com/2.39/chromedriver_win32.zip",
         ],
     )
 
