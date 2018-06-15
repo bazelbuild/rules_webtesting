@@ -24,9 +24,11 @@ import (
 )
 
 var (
-	test             = flag.String("test", "", "Test script to launch")
-	metadataFileFlag = flag.String("metadata", "", "metadata file")
-	debuggerPort     = flag.Int("debugger_port", 0, "Start WTL debugger on given port")
+	test             = flag.String("test", "", "Test to run.")
+	metadataFileFlag = flag.String("metadata", "", "Metadata file for the browser.")
+	debuggerPort     = flag.Int("debugger_port", 0, "Port to start WTL debugger on.")
+	httpPort         = flag.Int("http_port", 0, "Port to start WTL HTTP Proxy on.")
+	httpsPort        = flag.Int("https_port", 0, "Port to start WTL HTTPS Proxy on.")
 )
 
 func main() {
@@ -34,7 +36,7 @@ func main() {
 
 	d := diagnostics.NoOP()
 
-	status := wtl.Run(d, *test, *metadataFileFlag, *debuggerPort)
+	status := wtl.Run(d, *test, *metadataFileFlag, *httpPort, *httpsPort, *debuggerPort)
 
 	d.Close()
 	os.Exit(status)

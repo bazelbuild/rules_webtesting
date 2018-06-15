@@ -29,7 +29,6 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/healthreporter"
 	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
-	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/environment"
 )
@@ -80,28 +79,20 @@ type Proxy struct {
 }
 
 // New creates a new Proxy object.
-func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics) (*Proxy, error) {
+func New(env environment.Env, m *metadata.Metadata, d diagnostics.Diagnostics, httpPort, httpsPort int) (*Proxy, error) {
 	fqdn, err := httphelper.FQDN()
-	if err != nil {
-		return nil, errors.New(compName, err)
-	}
-
-	httpPort, err := portpicker.PickUnusedPort()
 	if err != nil {
 		return nil, errors.New(compName, err)
 	}
 
 	httpAddress := net.JoinHostPort(fqdn, strconv.Itoa(httpPort))
 
-	httpsPort := -1
 	httpsAddress := ""
 	certs := newCerts(m)
 	if certs != nil {
-		httpsPort, err = portpicker.PickUnusedPort()
-		if err != nil {
-			return nil, errors.New(compName, err)
-		}
 		httpsAddress = net.JoinHostPort(fqdn, strconv.Itoa(httpsPort))
+	} else {
+		httpsPort = -1
 	}
 
 	p := &Proxy{

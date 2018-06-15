@@ -55,6 +55,7 @@ type WebTestFiles struct {
 
 func normalizeWebTestFiles(in []*WebTestFiles) ([]*WebTestFiles, error) {
 	merged := map[string]*WebTestFiles{}
+	var archiveFiles []string
 
 	for _, a := range in {
 		// skip entries with no named files.
@@ -68,13 +69,15 @@ func normalizeWebTestFiles(in []*WebTestFiles) ([]*WebTestFiles, error) {
 			}
 			merged[m.ArchiveFile] = m
 		} else {
+			archiveFiles = append(archiveFiles, a.ArchiveFile)
 			merged[a.ArchiveFile] = a
 		}
 	}
 
 	names := map[string]bool{}
 	var result []*WebTestFiles
-	for _, m := range merged {
+	for _, a := range archiveFiles {
+		m := merged[a]
 		for name := range m.NamedFiles {
 			if names[name] {
 				return nil, fmt.Errorf("name %q exists in multiple WebTestFiles", name)
@@ -167,4 +170,15 @@ func (w *WebTestFiles) extract(m *Metadata) error {
 
 	w.extractedPath = extractPath
 	return nil
+}
+
+func (w *WebTestFiles) String() string {
+	return fmt.Sprintf(
+		`WebTestFiles{
+	ArchiveFile: %q,
+	StripPrefix: %q,
+	NamedFiles: %+v,
+}
+`, w.ArchiveFile, w.StripPrefix, w.NamedFiles)
+
 }

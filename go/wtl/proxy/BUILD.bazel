@@ -31,7 +31,6 @@ go_library(
         "//go/healthreporter:go_default_library",
         "//go/httphelper:go_default_library",
         "//go/metadata:go_default_library",
-        "//go/portpicker:go_default_library",
         "//go/wtl/diagnostics:go_default_library",
         "//go/wtl/environment:go_default_library",
     ],
