@@ -227,11 +227,11 @@ func TestMergeNamedFiles(t *testing.T) {
 				return
 			}
 			if tc.result == nil {
-				t.Errorf("Got %#v, expected error", result)
+				t.Errorf("Got %s, expected error", result)
 				return
 			}
 			if !reflect.DeepEqual(result, tc.result) {
-				t.Errorf("Got %v, expected %v", result, tc.result)
+				t.Errorf("Got %s, expected %s", result, tc.result)
 			}
 		})
 	}
@@ -292,10 +292,10 @@ func TestMergeWebTestFiles(t *testing.T) {
 				return
 			}
 			if tc.result == nil {
-				t.Fatalf("Got %#v, expected error", result)
+				t.Fatalf("Got %v, expected error", result)
 			}
 			if !reflect.DeepEqual(result, tc.result) {
-				t.Errorf("Got %#v, expected %#v", result, tc.result)
+				t.Errorf("Got %v, expected %v", result, tc.result)
 			}
 		})
 	}
@@ -375,11 +375,11 @@ func TestNormalizeWebTestFiles(t *testing.T) {
 				return
 			}
 			if tc.err {
-				t.Fatalf("Got %#v, expected error", result)
+				t.Fatalf("Got %v, expected error", result)
 			}
 
 			if !reflect.DeepEqual(result, tc.result) {
-				t.Fatalf("Got  %#v, expected %#v", result, tc.result)
+				t.Fatalf("Got  %v, expected %v", result, tc.result)
 			}
 		})
 	}

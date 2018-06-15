@@ -30,6 +30,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/cmdhelper"
 	"github.com/bazelbuild/rules_webtesting/go/errors"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/diagnostics"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/environment"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/environment/external"
@@ -73,7 +74,7 @@ func RegisterEnvProviderFunc(name string, p envProvider) {
 }
 
 // Run runs the test.
-func Run(d diagnostics.Diagnostics, testPath, mdPath string, debuggerPort int) int {
+func Run(d diagnostics.Diagnostics, testPath, mdPath string, httpPort, httpsPort, debuggerPort int) int {
 	ctx := context.Background()
 
 	testTerminated := make(chan os.Signal)
@@ -112,7 +113,27 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string, debuggerPort int) i
 		return 127
 	}
 
-	p, err := proxy.New(env, md, d)
+	if httpPort == 0 {
+		p, err := portpicker.PickUnusedPort()
+		if err != nil {
+			d.Severe(err)
+			return 127
+		}
+		httpPort = p
+		defer portpicker.RecycleUnusedPort(httpPort)
+	}
+
+	if httpsPort == 0 {
+		p, err := portpicker.PickUnusedPort()
+		if err != nil {
+			d.Severe(err)
+			return 127
+		}
+		httpsPort = p
+		defer portpicker.RecycleUnusedPort(httpsPort)
+	}
+
+	p, err := proxy.New(env, md, d, httpPort, httpsPort)
 	if err != nil {
 		d.Severe(err)
 		return 127
