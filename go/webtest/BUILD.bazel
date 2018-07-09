@@ -55,12 +55,16 @@ go_web_test_suite(
         "//browsers/sauce:chrome-win10": {
             "tags": ["sauce"],
         },
+        "//browsers/sauce:chrome-win10-connect": {
+            "tags": ["sauce"],
+        },        
     },
     browsers = [
         "//browsers:chrome-external",
         "//browsers:chromium-local",
         "//browsers:firefox-local",
         "//browsers/sauce:chrome-win10",
+        "//browsers/sauce:chrome-win10-connect",        
     ],
     data = ["//testdata"],
     embed = [":go_default_library"],

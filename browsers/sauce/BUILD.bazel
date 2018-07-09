@@ -29,3 +29,11 @@ browser(
     metadata = "chrome-win10.json",
     required_tags = ["sauce"],
 )
+
+browser(
+    name = "chrome-win10-connect",
+    execution_requirements = {"requires-network": ""},
+    metadata = "chrome-win10-connect.json",
+    required_tags = ["sauce"],
+    deps = ["//third_party/sauceconnect"],
+)

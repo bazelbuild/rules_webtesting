@@ -247,3 +247,16 @@ func (e extension) Merge(other Extension) (Extension, error) {
 func (e extension) Normalize() error {
 	return nil
 }
+
+func (m *Metadata) ExtensionMap() (map[string]interface{}, bool) {
+	if m.Extension == nil {
+		return nil, false
+	}
+
+	ext, ok := m.Extension.(*extension)
+	if !ok {
+		return nil, false
+	}
+
+	return map[string]interface{}(*ext), true
+}
