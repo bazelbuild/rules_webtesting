@@ -5,8 +5,15 @@
     "platform": "Windows 10",
     "version": "64.0",
     "name": "%METADATA:LABEL%",
-    "build": "%ENV:BUILD_TAG%",
     "tags": ["%METADATA:ENVIRONMENT%", "%METADATA:TEST_LABEL%", "%METADATA:BROWSER_LABEL%", "%METADATA:CONFIG_LABEL%"],
     "tunnel-identifier": "%SAUCE:TUNNEL_ID%"
+  },
+  "extension": {
+    "sauceOptions": {
+      "username": "bazel_rules_webtesting",
+      "accessKey": "c5bed09c-a8a6-44c8-af02-a545905f957f",
+      "tunnelId": "local-%d",
+      "startConnect": true
+    }
   }
 }

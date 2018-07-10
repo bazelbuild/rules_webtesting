@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,14 +22,11 @@ licenses(["notice"])  # Apache 2.0
 
 go_library(
     name = "go_default_library",
-    srcs = ["sauce.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/environment/sauce",
-    visibility = ["//go/wtl:__subpackages__"],
+    srcs = ["connect.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/service/sauce",
+    visibility = ["//visibility:public"],
     deps = [
+        "//go/errors:go_default_library",
         "//go/metadata:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
-        "//go/wtl/diagnostics:go_default_library",
-        "//go/wtl/environment:go_default_library",
-        "//go/wtl/service/sauce:go_default_library",
     ],
 )

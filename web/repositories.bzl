@@ -121,7 +121,7 @@ def should_create_repository(name, args):
         return False
     return True
 
-def browser_repositories(firefox = False, chromium = False):
+def browser_repositories(firefox = False, chromium = False, sauce = False):
     """Sets up repositories for browsers defined in //browsers/....
 
     This should only be used on an experimental basis; projects should define
@@ -130,6 +130,7 @@ def browser_repositories(firefox = False, chromium = False):
     Args:
         firefox: Configure repositories for //browsers:firefox-native.
         chromium: Configure repositories for //browsers:chromium-native.
+        sauce: Configure repositories for //browser/sauce:chrome-win10.
     """
     if chromium:
         org_chromium_chromedriver()
@@ -137,6 +138,8 @@ def browser_repositories(firefox = False, chromium = False):
     if firefox:
         org_mozilla_firefox()
         org_mozilla_geckodriver()
+    if sauce:
+        com_saucelabs_sauce_connect()
 
 def bazel_skylib():
     native.http_archive(
@@ -246,6 +249,27 @@ def com_google_guava():
         exports = [
             "@com_google_code_findbugs_jsr305",
             "@com_google_errorprone_error_prone_annotations",
+        ],
+    )
+
+def com_saucelabs_sauce_connect():
+    platform_http_file(
+        name = "com_saucelabs_sauce_connect",
+        licenses = ["by_exception_only"],  # SauceLabs EULA
+        amd64_sha256 =
+            "dc47e3b42206f7ac073a06df168395eba215fdafef4f0e1b3c02c7b788e91bfb",
+        amd64_urls = [
+            "https://saucelabs.com/downloads/sc-4.4.12-linux.tar.gz",
+        ],
+        macos_sha256 =
+            "624f27fcef2b7797ab1b26d6149cc7559f40305e761ac4c6844c59e3125f1abf",
+        macos_urls = [
+            "https://saucelabs.com/downloads/sc-4.4.12-osx.zip",
+        ],
+        windows_sha256 =
+            "ec11b4ee029c9f0cba316820995df6ab5a4f394053102e1871b9f9589d0a9eb5",
+        windows_urls = [
+            "https://saucelabs.com/downloads/sc-4.4.12-win32.zip",
         ],
     )
 

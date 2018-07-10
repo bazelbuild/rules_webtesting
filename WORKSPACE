@@ -56,6 +56,7 @@ web_test_repositories()
 browser_repositories(
     chromium = True,
     firefox = True,
+    sauce = True,
 )
 
 http_archive(
