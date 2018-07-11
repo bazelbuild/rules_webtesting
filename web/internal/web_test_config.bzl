@@ -53,7 +53,6 @@ web_test_config = rule(
         "data": attr.label_list(
             doc = "Runtime dependencies for this configuration.",
             allow_files = True,
-            cfg = "data",
         ),
         "deps": attr.label_list(
             doc = "Other web_test-related rules that this rule depends on.",
