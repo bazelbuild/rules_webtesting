@@ -28,5 +28,6 @@ go_library(
     deps = [
         "//go/errors:go_default_library",
         "//go/metadata:go_default_library",
+        "//go/portpicker:go_default_library",
     ],
 )
