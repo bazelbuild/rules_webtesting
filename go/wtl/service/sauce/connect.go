@@ -143,6 +143,7 @@ func (c *Connect) monitor() {
 	portpicker.RecycleUnusedPort(c.port)
 }
 
+// Name is the name of this component used in error and log messages.
 func (c *Connect) Name() string {
 	return compName
 }

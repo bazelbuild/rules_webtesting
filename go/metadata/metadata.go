@@ -248,6 +248,8 @@ func (e extension) Normalize() error {
 	return nil
 }
 
+// ExtensionMap returns the Extension field as a map if, when the metadata was read,
+// no extension type was specified.
 func (m *Metadata) ExtensionMap() (map[string]interface{}, bool) {
 	if m.Extension == nil {
 		return nil, false
