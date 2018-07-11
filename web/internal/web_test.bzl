@@ -153,7 +153,6 @@ web_test = rule(
         "data": attr.label_list(
             doc = "Additional runtime dependencies for the test.",
             allow_files = True,
-            cfg = "data",
         ),
         "launcher": attr.label(
             doc = "The web test launcher binary.",
