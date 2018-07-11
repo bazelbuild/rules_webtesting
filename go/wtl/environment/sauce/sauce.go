@@ -58,6 +58,7 @@ func NewEnv(m *metadata.Metadata, d diagnostics.Diagnostics) (environment.Env, e
 		}
 
 		connect = c
+		address = c.Address
 	}
 
 	base, err := environment.NewBase(name, m, d)

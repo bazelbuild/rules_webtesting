@@ -16,6 +16,8 @@
 #
 workspace(name = "io_bazel_rules_webtesting")
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 # NOTE: URLs are mirrored by an asynchronous review process. They must
 #       be greppable for that to happen. It's OK to submit broken mirror
 #       URLs, so long as they're correctly formatted. Bazel's downloader

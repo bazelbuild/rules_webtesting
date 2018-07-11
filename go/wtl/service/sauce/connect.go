@@ -18,12 +18,15 @@ package sauce
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/bazelbuild/rules_webtesting/go/errors"
 	"github.com/bazelbuild/rules_webtesting/go/metadata"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 )
 
 const (
@@ -31,12 +34,17 @@ const (
 	scNamedFile = "SAUCE_CONNECT"
 )
 
+// Connect is a service that manages Sauce Connect.
 type Connect struct {
+	// Address is the address that the Sauce Connect Selenium relay is running on.
+	Address string
+
 	cmd *exec.Cmd
 
 	mu    sync.Mutex
 	ready bool
 	err   error
+	port  int
 }
 
 // New creates a new service that manages Sauce Connect.
@@ -46,13 +54,23 @@ func New(m *metadata.Metadata, username, accessKey, tunnelID string) (*Connect, 
 		return nil, errors.New(compName, err)
 	}
 
+	port, err := portpicker.PickUnusedPort()
+	if err != nil {
+		return nil, errors.New(compName, err)
+	}
+
 	cmd := exec.Command(
 		scPath,
 		"--user", username,
 		"--api-key", accessKey,
-		"--tunnel-identifier", tunnelID)
+		"--tunnel-identifier", tunnelID,
+		"--se-port", strconv.Itoa(port))
 
-	return &Connect{cmd: cmd}, nil
+	return &Connect{
+		cmd:     cmd,
+		port:    port,
+		Address: fmt.Sprintf("http://%s:%s@localhost:%d/wd/hub/", username, accessKey, port),
+	}, nil
 }
 
 // Start starts Sauce Connect and waits for it to be ready for use.
@@ -121,6 +139,8 @@ func (c *Connect) monitor() {
 		c.ready = false
 		c.err = err
 	}
+
+	portpicker.RecycleUnusedPort(c.port)
 }
 
 func (c *Connect) Name() string {
