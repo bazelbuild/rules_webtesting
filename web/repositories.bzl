@@ -16,6 +16,7 @@
 load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@bazel_gazelle//:deps.bzl", "go_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # NOTE: URLs are mirrored by an asynchronous review process. They must
 #       be greppable for that to happen. It's OK to submit broken mirror
@@ -142,7 +143,7 @@ def browser_repositories(firefox = False, chromium = False, sauce = False):
         com_saucelabs_sauce_connect()
 
 def bazel_skylib():
-    native.http_archive(
+    http_archive(
         name = "bazel_skylib",
         sha256 = "d7cffbed034d1203858ca19ff2e88d241781f45652a4c719ed48eedc74bc82a9",
         strip_prefix = "bazel-skylib-0.3.1",
@@ -498,7 +499,7 @@ def org_mozilla_geckodriver():
     )
 
 def org_seleniumhq_py():
-    native.new_http_archive(
+    http_archive(
         name = "org_seleniumhq_py",
         build_file = str(Label("//build_files:org_seleniumhq_py.BUILD")),
         sha256 = "5841fb30c3965866220c34d16de8e3d091e2833fcac385160a63db0c3522a297",
