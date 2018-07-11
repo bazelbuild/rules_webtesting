@@ -421,17 +421,17 @@ def org_chromium_chromium():
         amd64_sha256 =
             "665f3ec731ea93ca4d4593cd9ab7095634dd89b7e332d92bb7722f3f1a59e0f7",
         amd64_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/573780/chrome-linux.zip"
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/573780/chrome-linux.zip",
         ],
         macos_sha256 =
             "029e4647ea579c0df38e770bd47a5c229723580b7c655fcf2bffb909dfb19e29",
         macos_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/573760/chrome-mac.zip"
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/573760/chrome-mac.zip",
         ],
         windows_sha256 =
             "59d1464c11c1d84d3c8941fe1a3a828771382c997b57be1039d8cdc0911f3ce2",
         windows_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/573768/chrome-win32.zip"
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/573768/chrome-win32.zip",
         ],
     )
 
