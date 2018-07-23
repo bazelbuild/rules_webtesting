@@ -158,7 +158,9 @@ func (h *WebDriverHub) GetActiveSessions() []string {
 func (h *WebDriverHub) Shutdown(ctx context.Context) error {
 	for _, id := range h.GetActiveSessions() {
 		session := h.GetSession(id)
-		session.quit(ctx, false)
+		if session != nil {
+			session.quit(ctx, false)
+		}
 	}
 	for _, session := range h.reusableSessions {
 		session.quit(ctx, false)
