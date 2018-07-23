@@ -34,20 +34,6 @@ py_library(
 py_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.py"],
-    browser_overrides = {
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
-        "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
-        },
-        "//browsers/sauce:chrome-win10-connect": {
-            "tags": ["sauce"],
-        },
-    },
     browsers = [
         "//browsers:chromium-local",
         "//browsers:firefox-local",
@@ -55,5 +41,10 @@ py_web_test_suite(
         "//browsers/sauce:chrome-win10-connect",
     ],
     srcs_version = "PY2AND3",
+    tags = {
+        "default": ["noci"],
+        "chrome-win10": ["sauce"],
+        "chrome-win10-connect": ["sauce"],
+    },
     deps = [":web"],
 )

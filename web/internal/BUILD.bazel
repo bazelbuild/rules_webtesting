@@ -42,11 +42,6 @@ skylark_library(
 )
 
 skylark_library(
-    name = "collections",
-    srcs = ["collections.bzl"],
-)
-
-skylark_library(
     name = "constants",
     srcs = ["constants.bzl"],
 )
@@ -54,11 +49,6 @@ skylark_library(
 skylark_library(
     name = "files",
     srcs = ["files.bzl"],
-)
-
-skylark_library(
-    name = "java_import_external",
-    srcs = ["java_import_external.bzl"],
 )
 
 skylark_library(
@@ -86,7 +76,6 @@ skylark_library(
     name = "web_test",
     srcs = ["web_test.bzl"],
     deps = [
-        ":collections",
         ":files",
         ":metadata",
         ":provider",

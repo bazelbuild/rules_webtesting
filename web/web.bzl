@@ -17,7 +17,6 @@ load(
     "//web/internal:browser.bzl",
     browser_alias = "browser",
 )
-load("//web/internal:collections.bzl", "lists", "maps")
 load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS")
 load(
     "//web/internal:web_test.bzl",
@@ -43,11 +42,11 @@ load(
     "//web/internal:web_test_named_file.bzl",
     web_test_named_file_alias = "web_test_named_file",
 )
+load("@bazel_skylib//:lib.bzl", "types")
 
 def web_test_suite(
         name,
         browsers,
-        browser_overrides = None,
         test_suite_tags = None,
         visibility = None,
         **kwargs):
@@ -56,17 +55,12 @@ def web_test_suite(
     Args:
         name: Name; required. A unique name for this rule.
         browsers: List of labels; required. The browsers with which to run the test.
-        browser_overrides: Dictionary; optional; default is an empty dictionary. A
-          dictionary mapping from browser names to browser-specific web_test
-          attributes, such as shard_count, flakiness, timeout, etc. For example:
-          {'//browsers:chrome-native': {'shard_count': 3, 'flaky': 1}
-           '//browsers:firefox-native': {'shard_count': 1, 'timeout': 100}}.
         test_suite_tags: List of strings; tags for the generated test_suite rule.
         visibility: List of labels; optional.
         **kwargs: Additional arguments for web_test rule.
     """
-    if not lists.is_list_like(browsers):
-        fail("expected a sequence type for attribute 'browsers' but got '%s'" %
+    if not types.is_list(browsers):
+        fail("expected a list for attribute 'browsers' but got '%s'" %
              type(browsers))
     if not browsers:
         fail("expected non-empty value for attribute 'browsers'")
@@ -76,21 +70,12 @@ def web_test_suite(
         test_suite_tags = DEFAULT_TEST_SUITE_TAGS
 
     tests = []
-    browser_overrides = browser_overrides or {}
 
     for browser in browsers:  # pylint: disable=redefined-outer-name
         unqualified_browser = browser.split(":", 2)[1]
         test_name = name + "_" + unqualified_browser
 
-        # Replace current browser attributes with those specified in the browser
-        # overrides.
-        overrides = browser_overrides.get(browser) or browser_overrides.get(
-            unqualified_browser,
-        ) or {}
-        overridden_kwargs = _apply_browser_overrides(kwargs, overrides)
-        if not "tags" in overridden_kwargs:
-            overridden_kwargs["tags"] = []
-        overridden_kwargs["tags"] = lists.clone(overridden_kwargs["tags"]) + ["browser:" + unqualified_browser]
+        overridden_kwargs = _get_kwargs(unqualified_browser, kwargs)
 
         web_test(
             name = test_name,
@@ -107,22 +92,25 @@ def web_test_suite(
         visibility = visibility,
     )
 
-def _apply_browser_overrides(kwargs, overrides):
-    """Handles browser-specific options that override the top-level definitions.
+def _get_kwargs(browser, in_kwargs):
+    """Returns the arguments that should be used for a particular browser."""
+    out_kwargs = {}
 
-    Args:
-        kwargs: A dictionary of arguments that will be overridden.
-        overrides: A dictionary of attributes with the new attributes that should
-          replace the top-level definitions.
+    for k, v in in_kwargs.items():
+        if types.is_dict(v):
+            if browser in v:
+                out_kwargs[k] = v[browser]
+            elif "default" in v:
+                out_kwargs[k] = v["default"]
+        else:
+            out_kwargs[k] = v
 
-    Returns:
-        A dictionary of updated attributes.  For example:
-        {'shard_count': 4, 'size': 'medium', 'timeout': 100, 'flaky': 1}
-    """
-    overridden_kwargs = maps.clone(kwargs)
-    overridden_kwargs.update(overrides)
+    if not out_kwargs["tags"]:
+        out_kwargs["tags"] = ["browser:" + browser]
+    else:
+        out_kwargs["tags"] = ["browser:" + browser] + out_kwargs["tags"]
 
-    return overridden_kwargs
+    return out_kwargs
 
 def browser(testonly = True, **kwargs):
     """Wrapper around browser to correctly set defaults."""
