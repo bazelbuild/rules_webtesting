@@ -23,19 +23,12 @@ licenses(["notice"])  # Apache 2.0
 scala_web_test_suite(
     name = "ScreenshotterTest",
     srcs = ["ScreenshotterTest.scala"],
-    browser_overrides = {
-        "//browsers:chromium-native": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-native": {
-            "tags": ["noci"],
-        },
-    },
     browsers = [
         "//browsers:chromium-local",
         "//browsers:firefox-local",
     ],
     data = ["//testdata"],
+    tags = ["noci"],
     deps = [
         "//java/com/google/testing/bazel",
         "//java/com/google/testing/web",

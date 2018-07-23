@@ -13,10 +13,10 @@
 # limitations under the License.
 """Defines external repositories needed by rules_webtesting."""
 
-load("//web/internal:java_import_external.bzl", "java_import_external")
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@bazel_gazelle//:deps.bzl", "go_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:java.bzl", "java_import_external")
 
 # NOTE: URLs are mirrored by an asynchronous review process. They must
 #       be greppable for that to happen. It's OK to submit broken mirror
@@ -145,11 +145,11 @@ def browser_repositories(firefox = False, chromium = False, sauce = False):
 def bazel_skylib():
     http_archive(
         name = "bazel_skylib",
-        sha256 = "d7cffbed034d1203858ca19ff2e88d241781f45652a4c719ed48eedc74bc82a9",
-        strip_prefix = "bazel-skylib-0.3.1",
+        sha256 = "b5f6abe419da897b7901f90cbab08af958b97a8f3575b0d3dd062ac7ce78541f",
+        strip_prefix = "bazel-skylib-0.5.0",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/archive/0.3.1.tar.gz",
-            "https://github.com/bazelbuild/bazel-skylib/archive/0.3.1.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/archive/0.5.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-skylib/archive/0.5.0.tar.gz",
         ],
     )
 
@@ -181,11 +181,11 @@ def com_github_gorilla_mux():
     go_repository(
         name = "com_github_gorilla_mux",
         importpath = "github.com/gorilla/mux",
-        sha256 = "fe4d6909570b53121eb0d5e6f933ef7c49d5de094705af6ba07fab9c299df0f9",
-        strip_prefix = "mux-1.6.1",
+        sha256 = "0dc18fb09413efea7393e9c2bd8b5b442ce08e729058f5f7e328d912c6c3d3e3",
+        strip_prefix = "mux-1.6.2",
         urls = [
-            "https://mirror.bazel.build/github.com/gorilla/mux/archive/v1.6.1.tar.gz",
-            "https://github.com/gorilla/mux/archive/v1.6.1.tar.gz",
+            "https://mirror.bazel.build/github.com/gorilla/mux/archive/v1.6.2.tar.gz",
+            "https://github.com/gorilla/mux/archive/v1.6.2.tar.gz",
         ],
     )
 
@@ -193,11 +193,11 @@ def com_github_tebeka_selenium():
     go_repository(
         name = "com_github_tebeka_selenium",
         importpath = "github.com/tebeka/selenium",
-        sha256 = "c731518d8f4724b1c581bdca90215978bf4d2658a5dc49b720d7c61294888396",
-        strip_prefix = "selenium-a789e65b0e7f126888873e84f528c1c8537dff3e",
+        sha256 = "c506637fd690f4125136233a3ea405908b8255e2d7aa2aa9d3b746d96df50dcd",
+        strip_prefix = "selenium-a49cf4b98a36c2b21b1ccb012852bd142d5fc04a",
         urls = [
-            "https://mirror.bazel.build/github.com/tebeka/selenium/archive/a789e65b0e7f126888873e84f528c1c8537dff3e.tar.gz",
-            "https://github.com/tebeka/selenium/archive/a789e65b0e7f126888873e84f528c1c8537dff3e.tar.gz",
+            "https://mirror.bazel.build/github.com/tebeka/selenium/archive/a49cf4b98a36c2b21b1ccb012852bd142d5fc04a.tar.gz",
+            "https://github.com/tebeka/selenium/archive/a49cf4b98a36c2b21b1ccb012852bd142d5fc04a.tar.gz",
         ],
     )
 
@@ -217,10 +217,10 @@ def com_google_code_gson():
     java_import_external(
         name = "com_google_code_gson",
         jar_sha256 =
-            "b7134929f7cc7c04021ec1cc27ef63ab907e410cf0588e397b8851181eb91092",
+            "233a0149fc365c9f6edbd683cfe266b19bdc773be98eabdaf6b3c924b48e7d81",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/code/gson/gson/2.8.2/gson-2.8.2.jar",
-            "https://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.2/gson-2.8.2.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar",
+            "https://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
     )
@@ -229,10 +229,10 @@ def com_google_errorprone_error_prone_annotations():
     java_import_external(
         name = "com_google_errorprone_error_prone_annotations",
         jar_sha256 =
-            "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+            "10a5949aa0f95c8de4fd47edfe20534d2acefd8c224f8afea1f607e112816120",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar",
-            "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.jar",
+            "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
     )
@@ -241,10 +241,10 @@ def com_google_guava():
     java_import_external(
         name = "com_google_guava",
         jar_sha256 =
-            "31bfe27bdf9cba00cb4f3691136d3bc7847dfc87bfe772ca7a9eb68ff31d79f5",
+            "6db0c3a244c397429c2e362ea2837c3622d5b68bb95105d37c21c36e5bc70abf",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/24.1-jre/guava-24.1-jre.jar",
-            "https://repo1.maven.org/maven2/com/google/guava/guava/24.1-jre/guava-24.1-jre.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/25.1-jre/guava-25.1-jre.jar",
+            "https://repo1.maven.org/maven2/com/google/guava/guava/25.1-jre/guava-25.1-jre.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         exports = [
@@ -293,12 +293,12 @@ def com_squareup_okhttp3_okhttp():
 def com_squareup_okio():
     java_import_external(
         name = "com_squareup_okio",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/1.14.0/okio-1.14.0.jar",
-            "https://repo1.maven.org/maven2/com/squareup/okio/okio/1.14.0/okio-1.14.0.jar",
-        ],
         jar_sha256 =
-            "4633c331f50642ebe795dc089d6a5928aff43071c9d17e7840a009eea2fe95a3",
+            "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
+        jar_urls = [
+            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/1.15.0/okio-1.15.0.jar",
+            "https://repo1.maven.org/maven2/com/squareup/okio/okio/1.15.0/okio-1.15.0.jar",
+        ],
         licenses = ["notice"],  # Apache 2.0
         deps = ["@com_google_code_findbugs_jsr305"],
     )
@@ -345,10 +345,10 @@ def net_bytebuddy():
     java_import_external(
         name = "net_bytebuddy",
         jar_sha256 =
-            "1c7c222d5c317481538117e54029c289c5a1605a3cdcadf4e7f7cc1fe7469277",
+            "35c47d53ec21f6b3bff018b07306c35d8b078b11642a610699f6718f75157e52",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.3/byte-buddy-1.8.3.jar",
-            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.3/byte-buddy-1.8.3.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.9/byte-buddy-1.8.9.jar",
+            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.9/byte-buddy-1.8.9.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
     )
@@ -369,10 +369,10 @@ def org_apache_httpcomponents_httpclient():
     java_import_external(
         name = "org_apache_httpcomponents_httpclient",
         jar_sha256 =
-            "7e97724443ad2a25ad8c73183431d47cc7946271bcbbdfa91a8a17522a566573",
+            "c03f813195e7a80e3608d0ddd8da80b21696a4c92a6a2298865bf149071551c7",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.5/httpclient-4.5.5.jar",
-            "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.5/httpclient-4.5.5.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6.jar",
+            "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6.jar",
         ],
         licenses = ["notice"],  # Apache License, Version 2.0
         deps = [
@@ -502,11 +502,10 @@ def org_seleniumhq_py():
     http_archive(
         name = "org_seleniumhq_py",
         build_file = str(Label("//build_files:org_seleniumhq_py.BUILD")),
-        sha256 = "5841fb30c3965866220c34d16de8e3d091e2833fcac385160a63db0c3522a297",
-        strip_prefix = "selenium-3.11.0",
+        sha256 = "f35bb209cab740c195276a323c1b750dbcfdb9f6983e7d6e3abba9cd8838f355",
+        strip_prefix = "selenium-3.13.0",
         urls = [
-            "https://mirror.bazel.build/pypi.python.org/packages/d4/28/8124d32415bd3d67fabea52480395427576b582771283e89ce10a56d9e5b/selenium-3.11.0.tar.gz",
-            "https://pypi.python.org/packages/d4/28/8124d32415bd3d67fabea52480395427576b582771283e89ce10a56d9e5b/selenium-3.11.0.tar.gz",
+            "https://files.pythonhosted.org/packages/6d/4b/30b28589f2b6051b04d6f8014537749dc08fa787a5569cebb33e892d34d3/selenium-3.13.0.tar.gz",
         ],
     )
 
@@ -514,10 +513,10 @@ def org_seleniumhq_selenium_api():
     java_import_external(
         name = "org_seleniumhq_selenium_api",
         jar_sha256 =
-            "3e81810f61a1930d4ca868475cefdbe10b7260e352d09c4bfeda5e9ede5dd538",
+            "2aa536043b519c5e9d9eb8de387d40f17a707e53eebad27d243f641043fa7df0",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.11.0/selenium-api-3.11.0.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.11.0/selenium-api-3.11.0.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.13.0/selenium-api-3.13.0.jar",
+            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.13.0/selenium-api-3.13.0.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
         testonly_ = 1,
@@ -527,10 +526,10 @@ def org_seleniumhq_selenium_remote_driver():
     java_import_external(
         name = "org_seleniumhq_selenium_remote_driver",
         jar_sha256 =
-            "7a9c23a6a304bdcaec5a642f6641e07f798adc2f213cce456e4a829ad4454deb",
+            "f0d4acd03221bea01471b7171acbc1c97d18e8deb6bbb7c5102bc3712c234fa2",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.11.0/selenium-remote-driver-3.11.0.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.11.0/selenium-remote-driver-3.11.0.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.13.0/selenium-remote-driver-3.13.0.jar",
+            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.13.0/selenium-remote-driver-3.13.0.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
         testonly_ = 1,

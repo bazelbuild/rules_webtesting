@@ -34,7 +34,7 @@ skylark_library(
     srcs = ["go.bzl"],
     deps = [
         "//web/internal:wrap_web_test_suite",
-        # should depend on Go build rules.
+        # should depend on @io_bazel_rules_go//go:def
     ],
 )
 
@@ -54,10 +54,9 @@ skylark_library(
     name = "repositories",
     srcs = ["repositories.bzl"],
     deps = [
-        "//web/internal:java_import_external",
         "//web/internal:platform_http_file",
-        "@bazel_skylib//:lib",
-        # should depend on Go build rules.
+        # should depend on @bazel_gazelle//:def
+        # should depend on @bazel_tools//tools/build_defs/repo:{http,java}
     ],
 )
 
@@ -66,7 +65,7 @@ skylark_library(
     srcs = ["scala.bzl"],
     deps = [
         "//web/internal:wrap_web_test_suite",
-        # should depend on Scala build rules.
+        # should depend on @io_bazel_rules_scala//scala:scala
     ],
 )
 
@@ -75,7 +74,6 @@ skylark_library(
     srcs = ["web.bzl"],
     deps = [
         "//web/internal:browser",
-        "//web/internal:collections",
         "//web/internal:constants",
         "//web/internal:web_test",
         "//web/internal:web_test_archive",
@@ -83,5 +81,6 @@ skylark_library(
         "//web/internal:web_test_files",
         "//web/internal:web_test_named_executable",
         "//web/internal:web_test_named_file",
+        "@bazel_skylib//:lib",
     ],
 )
