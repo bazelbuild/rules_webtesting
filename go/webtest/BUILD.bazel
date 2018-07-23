@@ -39,26 +39,6 @@ go_web_test_suite(
         "browserinfo_test.go",
         "webtest_test.go",
     ],
-    browser_overrides = {
-        "//browsers:chrome-external": {
-            "tags": [
-                "manual",
-                "noci",
-            ],
-        },
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
-        "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
-        },
-        "//browsers/sauce:chrome-win10-connect": {
-            "tags": ["sauce"],
-        },
-    },
     browsers = [
         "//browsers:chrome-external",
         "//browsers:chromium-local",
@@ -68,5 +48,14 @@ go_web_test_suite(
     ],
     data = ["//testdata"],
     embed = [":go_default_library"],
+    tags = {
+        "default": ["noci"],
+        "chrome-external": [
+            "manual",
+            "noci",
+        ],
+        "chrome-win10": ["sauce"],
+        "chrome-win10-connect": ["sauce"],
+    },
     deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )

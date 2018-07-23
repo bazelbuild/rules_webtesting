@@ -32,17 +32,6 @@ go_library(
 go_web_test_suite(
     name = "go_default_test",
     srcs = ["screenshotter_test.go"],
-    browser_overrides = {
-        "//browsers:chromium-local": {
-            "tags": ["noci"],
-        },
-        "//browsers:firefox-local": {
-            "tags": ["noci"],
-        },
-        "//browsers/sauce:chrome-win10": {
-            "tags": ["sauce"],
-        },
-    },
     browsers = [
         "//browsers:chromium-local",
         "//browsers:firefox-local",
@@ -50,6 +39,10 @@ go_web_test_suite(
     ],
     data = ["//testdata"],
     embed = [":go_default_library"],
+    tags = {
+        "default": ["noci"],
+        "chrome-win10": ["sauce"],
+    },
     deps = [
         "//go/bazel:go_default_library",
         "//go/portpicker:go_default_library",
