@@ -16,13 +16,16 @@
 package wtl
 
 import (
+	"bufio"
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -76,6 +79,8 @@ func RegisterEnvProviderFunc(name string, p envProvider) {
 // Run runs the test.
 func Run(d diagnostics.Diagnostics, testPath, mdPath string, httpPort, httpsPort, debuggerPort int) int {
 	ctx := context.Background()
+
+	ibazel := cmdhelper.IsTruthyEnv("IBAZEL_NOTIFY_CHANGES")
 
 	testTerminated := make(chan os.Signal)
 	signal.Notify(testTerminated, syscall.SIGTERM, syscall.SIGINT)
@@ -145,26 +150,6 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string, httpPort, httpsPort
 		return 127
 	}
 
-	testCmd := exec.Command(testExe, flag.Args()...)
-
-	envVars := map[string]string{
-		"WEB_TEST_HTTP_SERVER":      fmt.Sprintf("http://%s", p.HTTPAddress),
-		"WEB_TEST_WEBDRIVER_SERVER": fmt.Sprintf("http://%s/wd/hub", p.HTTPAddress),
-		"TEST_TMPDIR":               tmpDir,
-		"WEB_TEST_TMPDIR":           bazel.TestTmpDir(),
-		"WEB_TEST_TARGET":           testPath,
-	}
-
-	if p.HTTPSAddress != "" {
-		envVars["WEB_TEST_HTTPS_SERVER"] = fmt.Sprintf("https://%s", p.HTTPSAddress)
-	}
-
-	testCmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), envVars)
-
-	testCmd.Stdout = os.Stdout
-	testCmd.Stderr = os.Stderr
-	testCmd.Stdin = os.Stdin
-
 	go func() {
 		envStarted <- env.SetUp(ctx)
 	}()
@@ -228,18 +213,68 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string, httpPort, httpsPort
 	}
 
 	go func() {
-		if status := testCmd.Run(); status != nil {
-			log.Printf("test failed %v", status)
-			if ee, ok := err.(*exec.ExitError); ok {
-				if ws, ok := ee.Sys().(syscall.WaitStatus); ok {
-					testFinished <- ws.ExitStatus()
+		var in *bufio.Reader
+		if ibazel {
+			fmt.Println("Web Test Launcher iBazel enabled")
+			// in = bufio.NewReader(os.Stdin)
+		}
+
+		for {
+			testCmd := exec.Command(testExe, flag.Args()...)
+
+			envVars := map[string]string{
+				"WEB_TEST_HTTP_SERVER":      fmt.Sprintf("http://%s", p.HTTPAddress),
+				"WEB_TEST_WEBDRIVER_SERVER": fmt.Sprintf("http://%s/wd/hub", p.HTTPAddress),
+				"TEST_TMPDIR":               tmpDir,
+				"WEB_TEST_TMPDIR":           bazel.TestTmpDir(),
+				"WEB_TEST_TARGET":           testPath,
+			}
+
+			if p.HTTPSAddress != "" {
+				envVars["WEB_TEST_HTTPS_SERVER"] = fmt.Sprintf("https://%s", p.HTTPSAddress)
+			}
+
+			testCmd.Env = cmdhelper.BulkUpdateEnv(os.Environ(), envVars)
+
+			testCmd.Stdout = os.Stdout
+			testCmd.Stderr = os.Stderr
+
+			func() {
+				if status := testCmd.Run(); status != nil {
+					log.Printf("test failed %v", status)
+					if ee, ok := err.(*exec.ExitError); ok {
+						if ws, ok := ee.Sys().(syscall.WaitStatus); ok {
+							testFinished <- ws.ExitStatus()
+							return
+						}
+					}
+					testFinished <- 1
 					return
 				}
+				testFinished <- 0
+			}()
+
+			if !ibazel {
+				return
 			}
-			testFinished <- 1
-			return
+
+
+			io.Copy(os.Stdin, os.Stdout)
+
+			fmt.Println("Waiting for ibazel input...")
+
+
+			for line, err := in.ReadString('\n'); ; line, err = in.ReadString('\n') {
+				fmt.Printf("from iBazel: %s\n", line)
+				if err != nil {
+					return
+				}
+				if strings.HasPrefix(line, "IBAZEL_BUILD_COMPLETED SUCCEEDED") {
+					break
+				}
+			}
+
 		}
-		testFinished <- 0
 	}()
 
 	for {
@@ -253,7 +288,15 @@ func Run(d diagnostics.Diagnostics, testPath, mdPath string, httpPort, httpsPort
 			}
 			defer shutdownFunc()
 		case status := <-testFinished:
-			return status
+			if !ibazel {
+				return status
+			}
+			if status == 0 {
+				fmt.Printf("\n\n***** Tests Passed *****\n\n")
+			} else {
+				fmt.Printf("\n\n***** Tests Failed *****\n\n")
+			}
+
 		}
 	}
 }

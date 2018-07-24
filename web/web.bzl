@@ -116,12 +116,14 @@ def browser(testonly = True, **kwargs):
     """Wrapper around browser to correctly set defaults."""
     browser_alias(testonly = testonly, **kwargs)
 
-def web_test(config = None, launcher = None, size = None, **kwargs):
+def web_test(config = None, launcher = None, size = None, tags = None, **kwargs):
     """Wrapper around web_test to correctly set defaults."""
     config = config or str(Label("//web:default_config"))
     launcher = launcher or str(Label("//go/wtl/main"))
     size = size or "large"
-    web_test_alias(config = config, launcher = launcher, size = size, **kwargs)
+    tags = tags or []
+    tags += ["ibazel_notify_changes"]
+    web_test_alias(config = config, launcher = launcher, size = size, tags = tags, **kwargs)
 
 def web_test_config(testonly = True, **kwargs):
     """Wrapper around web_test_config to correctly set defaults."""
