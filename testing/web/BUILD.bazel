@@ -44,7 +44,10 @@ py_web_test_suite(
     tags = {
         "default": ["noci"],
         "chrome-win10": ["sauce"],
-        "chrome-win10-connect": ["sauce"],
+        "chrome-win10-connect": [
+            "sauce",
+            "notravis",
+        ],
     },
     deps = [":web"],
 )
