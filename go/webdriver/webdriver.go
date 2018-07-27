@@ -546,14 +546,15 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 
 	respBody := &jsonResp{Value: value}
 	if err := json.Unmarshal(bytes, respBody); err != nil || respBody.isError() {
-		if value != nil {
-			// Reparsing to ensure we have a clean value.
-			respBody = &jsonResp{}
+		if value == nil {
+			return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
+		}
 
-			if err := json.Unmarshal(bytes, respBody); err != nil {
-				// The body was unparseable, so returning an error
-				return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
-			}
+		// Reparsing to ensure we have a clean value.
+		respBody = &jsonResp{}
+		if err := json.Unmarshal(bytes, respBody); err != nil {
+			// The body was unparseable, so returning an error
+			return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
 		}
 
 		if respBody.isError() {
@@ -563,7 +564,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 
 		// The body was unparseable with the passed in value, but was otherwise parseable and not an error value.
 		// Return the body and an error indicating that the original parse failed.
-		return respBody, errors.New(compName, fmt.Errorf("%v unmarshalling %+v", err, respBody))
+		return respBody, errors.New(compName, fmt.Errorf("%v unmarshaling %+v into #+v", err, respBody, value))
 	}
 
 	// Everything is good. Return the body.
