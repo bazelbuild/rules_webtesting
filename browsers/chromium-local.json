@@ -5,7 +5,8 @@
     "chromeOptions" : {
       "binary" : "%FILE:CHROMIUM%",
       "args" : [
-        "--headless", 
+        "--headless",
+        "--no-sandbox",
         "--use-gl=swiftshader-webgl"
       ]
     },
