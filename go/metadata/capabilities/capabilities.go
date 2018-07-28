@@ -58,36 +58,33 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 
 	if w3c != nil {
 		if am, ok := w3c["alwaysMatch"].(map[string]interface{}); ok {
-			for k, v := range am {
-				always[k] = normalize(k, v)
+			n, err := normalize(am)
+			if err != nil {
+				return nil, err
+			}
+			if err := mergeIntoNoReplace(always, n); err != nil {
+				return nil, err
 			}
 		}
 	}
 
 	if required, ok := args["requiredCapabilities"].(map[string]interface{}); ok {
-		for k, v := range required {
-			nv := normalize(k, v)
-			if a, ok := always[k]; ok {
-				if !reflect.DeepEqual(a, nv) {
-					return nil, fmt.Errorf("alwaysMatch[%q] == %+v, required[%q] == %+v, they must be equal", k, a, k, v)
-				}
-				continue
-			}
-			always[k] = nv
-
+		n, err := normalize(required)
+		if err != nil {
+			return nil, err
+		}
+		if err := mergeIntoNoReplace(always, n); err != nil {
+			return nil, err
 		}
 	}
 
 	if desired, ok := args["desiredCapabilities"].(map[string]interface{}); ok {
-		for k, v := range desired {
-			nv := normalize(k, v)
-			if a, ok := always[k]; ok {
-				if !reflect.DeepEqual(a, nv) {
-					return nil, fmt.Errorf("alwaysMatch|required[%q] == %+v, desired[%q] == %+v, they must be equal", k, a, k, v)
-				}
-				continue
-			}
-			always[k] = nv
+		n, err := normalize(desired)
+		if err != nil {
+			return nil, err
+		}
+		if err := mergeIntoNoReplace(always, n); err != nil {
+			return nil, err
 		}
 	}
 
@@ -100,19 +97,46 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 				return nil, fmt.Errorf("firstMatch entries must be JSON Objects, found %#v", e)
 			}
 			newFM := map[string]interface{}{}
-			for k, v := range fme {
-				nv := normalize(k, v)
+			nfme, err := normalize(fme)
+			if err != nil {
+				return nil, err
+			}
+			for k, v := range nfme {
 				if a, ok := always[k]; ok {
-					if !reflect.DeepEqual(a, nv) {
+					if !reflect.DeepEqual(a, v) {
 						return nil, fmt.Errorf("alwaysMatch|required|desired[%q] == %+v, firstMatch[%q] == %+v, they must be equal", k, a, k, v)
 					}
 					continue
 				}
-				newFM[k] = nv
-
+				newFM[k] = v
 			}
 			first = append(first, newFM)
 		}
+	}
+
+	var reduced []map[string]interface{}
+
+	for i, needle := range first {
+		duped := false
+		for _, cand := range first[i+1:] {
+			if reflect.DeepEqual(needle, cand) {
+				duped = true
+				break
+			}
+		}
+
+		if !duped {
+			reduced = append(reduced, needle)
+		}
+	}
+
+	first = reduced
+
+	if len(first) == 1 {
+		if err := mergeIntoNoReplace(always, first[0]); err != nil {
+			return nil, err
+		}
+		first = nil
 	}
 
 	return &Capabilities{
@@ -122,28 +146,166 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 	}, nil
 }
 
-func normalize(key string, value interface{}) interface{} {
-	if key != "proxy" {
-		return value
-	}
-
-	proxy, ok := value.(map[string]interface{})
-	if !ok {
-		return value
-	}
-
-	// If the value if a proxy config, normalize by removing nulls and ensuring proxyType is lower case.
+func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 	out := map[string]interface{}{}
 
-	for k, v := range proxy {
-		if v == nil {
+	outCO := map[string]interface{}{}
+
+	if co, ok := in["chromeOptions"]; ok {
+		coMap, ok := co.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("chromeOptions %v is %T, should be map[string]interface", co, co)
+		}
+		if err := mergeIntoNoReplace(outCO, coMap); err != nil {
+			return nil, err
+		}
+	}
+
+	if co, ok := in["goog:chromeOptions"]; ok {
+		coMap, ok := co.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("goog:chromeOptions %v is %T, should be map[string]interface", co, co)
+		}
+		if err := mergeIntoNoReplace(outCO, coMap); err != nil {
+			return nil, err
+		}
+	}
+
+	if len(outCO) != 0 {
+		out["goog:chromeOptions"] = outCO
+	}
+
+	outProxy := map[string]interface{}{}
+
+	if proxy, ok := in["proxy"]; ok {
+		proxyMap, ok := proxy.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("proxy %v is %T, should be map[string]interface", proxy, proxy)
+		}
+		for k, v := range proxyMap {
+			switch k {
+			case "proxyType":
+				pt, ok := v.(string)
+				if !ok {
+					return nil, fmt.Errorf("proxyType %v is %T, should be map[string]interface", k, k)
+				}
+				outProxy["proxyType"] = strings.ToLower(pt)
+				continue
+
+			case "noProxy":
+				var outNP []interface{}
+				switch np := v.(type) {
+				case []interface{}:
+					outNP = append(outNP, np...)
+				case string:
+					for _, h := range strings.Split(np, ",") {
+						outNP = append(outNP, h)
+					}
+				default:
+					return nil, fmt.Errorf("noProxy %v is %T, should be string or []interface{}", k, k)
+				}
+				if len(outNP) != 0 {
+					outProxy["noProxy"] = outNP
+				}
+			default:
+				if v != nil {
+					outProxy[k] = v
+				}
+			}
+		}
+	}
+
+	if len(outProxy) != 0 {
+		out["proxy"] = outProxy
+	}
+
+	for k, v := range in {
+		if k != "chromeOptions" && k != "goog:chromeOptions" && k != "proxy" {
+			out[k] = v
+		}
+	}
+
+	return out, nil
+}
+
+func mergeIntoNoReplace(dst, src map[string]interface{}) error {
+	for k, sv := range src {
+		dv, ok := dst[k]
+		if ok && !reflect.DeepEqual(dv, sv) {
+			return fmt.Errorf("dst[%q] == %v, src[%q] == %v, they must be equal.", k, dv, k, sv)
+		}
+		dst[k] = sv
+	}
+	return nil
+}
+
+// denormalizeW3C removes non-W3C capabilities.
+func denormalizeW3C(in map[string]interface{}) map[string]interface{} {
+	out := map[string]interface{}{}
+
+	for k, v := range in {
+		// extension capabilities
+		if strings.Contains(k, ":") {
+			out[k] = v
 			continue
 		}
-		if k == "proxyType" {
-			out[k] = strings.ToLower(v.(string))
+		for _, a := range w3cSupportedCapabilities {
+			if k == a {
+				out[k] = v
+				break
+			}
+		}
+	}
+
+	return out
+}
+
+// denormalizeJWP duplicates goog:chromeOptions into chromeOptions and converts noProxy from []interface{} into string.
+func denormalizeJWP(caps map[string]interface{}) map[string]interface{} {
+	out := map[string]interface{}{}
+
+	for k, v := range caps {
+		if k == "goog:chromeOptions" {
+			out["chromeOptions"] = v
+			out["goog:chromeOptions"] = v
 			continue
 		}
-		out[k] = v
+
+		if k != "proxy" {
+			out[k] = v
+			continue
+		}
+
+		proxy, ok := v.(map[string]interface{})
+		if !ok {
+			out[k] = v
+			continue
+		}
+
+		outProxy := map[string]interface{}{}
+		for pk, pv := range proxy {
+			if pk != "noProxy" {
+				outProxy[pk] = pv
+				continue
+			}
+
+			noProxy, ok := pv.([]interface{})
+			if !ok {
+				outProxy["noProxy"] = pv
+				continue
+			}
+
+			var noProxys []string
+
+			for _, npv := range noProxy {
+				nps := npv.(string)
+				noProxys = append(noProxys, nps)
+			}
+
+			outProxy["noProxy"] = strings.Join(noProxys, ",")
+		}
+
+		out["proxy"] = outProxy
 	}
 
 	return out
@@ -220,7 +382,7 @@ func (c *Capabilities) ToJWP() (map[string]interface{}, error) {
 	}
 
 	return map[string]interface{}{
-		"desiredCapabilities": desired,
+		"desiredCapabilities": denormalizeJWP(desired),
 	}, nil
 }
 
@@ -234,11 +396,11 @@ func (c *Capabilities) ToW3C() map[string]interface{} {
 
 	caps := map[string]interface{}{}
 
-	alwaysMatch := w3cCapabilities(c.AlwaysMatch)
+	alwaysMatch := denormalizeW3C(c.AlwaysMatch)
 	var firstMatch []map[string]interface{}
 
 	for _, fm := range c.FirstMatch {
-		firstMatch = append(firstMatch, w3cCapabilities(fm))
+		firstMatch = append(firstMatch, denormalizeW3C(fm))
 	}
 
 	if len(alwaysMatch) != 0 {
@@ -252,27 +414,6 @@ func (c *Capabilities) ToW3C() map[string]interface{} {
 	return map[string]interface{}{
 		"capabilities": caps,
 	}
-}
-
-// w3cCapabilities remove non-W3C capabilities.
-func w3cCapabilities(in map[string]interface{}) map[string]interface{} {
-	out := map[string]interface{}{}
-
-	for k, v := range in {
-		// extension capabilities
-		if strings.Contains(k, ":") {
-			out[k] = v
-			continue
-		}
-		for _, a := range w3cSupportedCapabilities {
-			if k == a {
-				out[k] = v
-				break
-			}
-		}
-	}
-
-	return out
 }
 
 // ToMixedMode creates a map suitable for use as arguments to a New Session request for arbitrary remote ends.
@@ -355,9 +496,15 @@ func Merge(m1, m2 map[string]interface{}) map[string]interface{} {
 	}
 	nm := map[string]interface{}{}
 	for k, v := range m1 {
+		if k == "chromeOptions" {
+			k = "goog:chromeOptions"
+		}
 		nm[k] = v
 	}
 	for k, v := range m2 {
+		if k == "chromeOptions" {
+			k = "goog:chromeOptions"
+		}
 		nm[k] = mergeValues(nm[k], v, k)
 	}
 	return nm
