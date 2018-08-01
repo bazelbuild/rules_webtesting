@@ -1,7 +1,7 @@
 {
   "capabilities": {
     "browserName": "chrome",
-    "chromeOptions": {
+    "goog:chromeOptions": {
       "mobileEmulation": {
         "deviceMetrics": {
           "height": 400,
