@@ -20,6 +20,241 @@ import (
 	"testing"
 )
 
+func TestDenormalizeW3C(t *testing.T) {
+	testCases := []struct {
+		name string
+		args map[string]interface{}
+		want map[string]interface{}
+	}{
+		{
+			name: "nil args",
+			args: nil,
+			want: map[string]interface{}{},
+		},
+		{
+			name: "W3C args preserved",
+			args: map[string]interface{}{
+				"browserName": "chrome",
+				"browserVersion": "1",
+			},
+			want: map[string]interface{}{
+				"browserName": "chrome",
+				"browserVersion": "1",
+			},
+		},
+		{
+			name: "non-W3C args removed",
+			args: map[string]interface{}{
+				"notW3C": "foo",
+			},
+			want: map[string]interface{}{},
+		},
+		{
+			name: "extension capabilities preserved",
+			args: map[string]interface{}{
+				"goog:notW3C": "foo",
+			},
+			want: map[string]interface{}{
+				"goog:notW3C": "foo",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := denormalizeW3C(tc.args)
+
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Fatalf("got %#v, want %#v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestDenormalizeJWP(t *testing.T) {
+	testCases := []struct {
+		name string
+		args map[string]interface{}
+		want map[string]interface{}
+	}{
+		{
+			name: "nil args",
+			args: nil,
+			want: map[string]interface{}{},
+		},
+		{
+			name: "duplicates goog:chromeOptions into chromeOptions",
+			args: map[string]interface{}{
+				"goog:chromeOptions": map[string]interface{}{
+					"key": "value",
+				},
+			},
+			want: map[string]interface{}{
+				"goog:chromeOptions": map[string]interface{}{
+					"key": "value",
+				},
+				"chromeOptions": map[string]interface{}{
+					"key": "value",
+				},
+			},
+		},
+		{
+			name: "converts noProxy from []interface{} into string",
+			args: map[string]interface{}{
+				"proxy": map[string]interface{}{
+					"noProxy": []interface{}{
+						"127.0.0.1",
+						"localhost",
+					},
+				},
+			},
+			want: map[string]interface{}{
+				"proxy": map[string]interface{}{
+					"noProxy": "127.0.0.1,localhost",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := denormalizeJWP(tc.args)
+
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Fatalf("got %#v, want %#v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestNormalize(t *testing.T) {
+	testCases := []struct {
+		name    string
+		args    map[string]interface{}
+		want    map[string]interface{}
+		wantErr bool
+	}{
+		{
+			name: "empty args",
+			args: map[string]interface{}{},
+			want: map[string]interface{}{},
+			wantErr: false,
+		},
+		{
+			name: "normalizes chromeOptions",
+			args: map[string]interface{}{
+				"goog:chromeOptions": map[string]interface{}{
+					"key1": "value1",
+				},
+				"chromeOptions": map[string]interface{}{
+					"key2": "value2",
+				},
+			},
+			want: map[string]interface{}{
+				"goog:chromeOptions": map[string]interface{}{
+					"key1": "value1",
+					"key2": "value2",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "err if chromeOptions not map[string]{}",
+			args: map[string]interface{}{
+				"chromeOptions": "foo",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "err if goog:chromeOptions not map[string]{}",
+			args: map[string]interface{}{
+				"goog:chromeOptions": "foo",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "err if goog:chromeOptions and chromeOptions same key different value",
+			args: map[string]interface{}{
+				"goog:chromeOptions": map[string]interface{}{
+					"key": "value1",
+				},
+				"chromeOptions": map[string]interface{}{
+					"key": "value2",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "normalizes proxy",
+			args: map[string]interface{}{
+				"proxy": map[string]interface{}{
+					"proxyType": "DIRECT",
+					"noProxy": "[::1]:8080,localhost",
+				},
+			},
+			want: map[string]interface{}{
+				"proxy": map[string]interface{}{
+					"proxyType": "direct",
+					"noProxy": []interface{}{
+						"[::1]:8080",
+						"localhost",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "err if proxy not map[string]{}",
+			args: map[string]interface{}{
+				"proxy": "foo",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "err if proxy[\"proxyType\"] not string",
+			args: map[string]interface{}{
+				"proxy": map[string]interface{}{
+					"proxyType": map[string]interface{}{},
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "err if proxy[\"noProxy\"] not string or []interface{}",
+			args: map[string]interface{}{
+				"proxy": map[string]interface{}{
+					"noProxy": 0,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := normalize(tc.args)
+
+			if err != nil || tc.wantErr {
+				if (err != nil) != tc.wantErr {
+					t.Fatalf("got err %v, wantErr==%t", err, tc.wantErr)
+				}
+				return
+			}
+
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Fatalf("got %#v, want %#v", got, tc.want)
+			}
+		})
+	}
+}
+
+
 func TestMerge(t *testing.T) {
 	testCases := []struct {
 		name   string
@@ -182,6 +417,25 @@ func TestMerge(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "chromeOptions to goog:chromeOptions",
+			input1: map[string]interface{}{
+				"chromeOptions": []interface{}{
+					"foo",
+				},
+			},
+			input2: map[string]interface{}{
+				"chromeOptions": []interface{}{
+					"bar",
+				},
+			},
+			result: map[string]interface{}{
+				"goog:chromeOptions": []interface{}{
+					"foo",
+					"bar",
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -276,6 +530,37 @@ func TestFromNewSessionArgs(t *testing.T) {
 					"key1": "value1",
 					"key2": "value2",
 					"key3": "value3",
+				},
+				W3CSupported: true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "all three normalized",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"alwaysMatch": map[string]interface{}{
+						"chromeOptions": map[string]interface{}{
+							"key": "value",
+						},
+					},
+				},
+				"desiredCapabilities": map[string]interface{}{
+					"chromeOptions": map[string]interface{}{
+						"key": "value",
+					},
+				},
+				"requiredCapabilities": map[string]interface{}{
+					"chromeOptions": map[string]interface{}{
+						"key": "value",
+					},
+				},
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"goog:chromeOptions": map[string]interface{}{
+						"key": "value",
+					},
 				},
 				W3CSupported: true,
 			},
@@ -445,6 +730,60 @@ func TestFromNewSessionArgs(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: true,
+		},
+		{
+			name: "firstMatch, deduped",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"firstMatch": []interface{}{
+						map[string]interface{}{
+							"key1": "value1",
+						},
+						map[string]interface{}{
+							"key2": "value2",
+						},
+						map[string]interface{}{
+							"key2": "value2",
+						},
+					},
+				},
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key1": "value1",
+					},
+					{
+						"key2": "value2",
+					},
+				},
+				W3CSupported: true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "single deduped firstMatch entry becomes alwaysMatch",
+			args: map[string]interface{}{
+				"capabilities": map[string]interface{}{
+					"firstMatch": []interface{}{
+						map[string]interface{}{
+							"key1": "value1",
+						},
+						map[string]interface{}{
+							"key1": "value1",
+						},
+					},
+				},
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}(nil),
+				W3CSupported: true,
+			},
+			wantErr: false,
 		},
 	}
 
