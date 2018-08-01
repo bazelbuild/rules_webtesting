@@ -564,7 +564,7 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 
 		// The body was unparseable with the passed in value, but was otherwise parseable and not an error value.
 		// Return the body and an error indicating that the original parse failed.
-		return respBody, errors.New(compName, fmt.Errorf("%v unmarshaling %+v into #+v", err, respBody, value))
+		return respBody, errors.New(compName, fmt.Errorf("%v unmarshaling %+v into %#v", err, respBody, value))
 	}
 
 	// Everything is good. Return the body.

@@ -233,7 +233,7 @@ func mergeIntoNoReplace(dst, src map[string]interface{}) error {
 	for k, sv := range src {
 		dv, ok := dst[k]
 		if ok && !reflect.DeepEqual(dv, sv) {
-			return fmt.Errorf("dst[%q] == %v, src[%q] == %v, they must be equal.", k, dv, k, sv)
+			return fmt.Errorf("dst[%q] == %v, src[%q] == %v, they must be equal", k, dv, k, sv)
 		}
 		dst[k] = sv
 	}
