@@ -355,6 +355,11 @@ func (d *Driver) Forward(w http.ResponseWriter, r *http.Request) {
 
 // NewSessionW3C creates a new session using the W3C protocol.
 func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities, w http.ResponseWriter) (string, error) {
+	// IEDriver does not handle capabilities with unknown prefixes, so they must be stripped.
+	if bn, ok := caps.AlwaysMatch["browserName"].(string); ok && bn == "internet explorer" {
+		caps = caps.Strip("goog:chromeOptions", "moz:firefoxOptions")
+	}
+
 	wd, err := webdriver.CreateSession(ctx, d.Address, 1, caps.Strip("google:wslConfig", "google:sessionId"))
 
 	if err != nil {
