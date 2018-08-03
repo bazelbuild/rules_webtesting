@@ -544,30 +544,24 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 		return nil, errors.New(compName, err)
 	}
 
-	respBody := &jsonResp{Value: value}
-	if err := json.Unmarshal(bytes, respBody); err != nil || respBody.isError() {
-		if value == nil {
-			return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
-		}
-
-		// Reparsing to ensure we have a clean value.
-		respBody = &jsonResp{}
-		if err := json.Unmarshal(bytes, respBody); err != nil {
-			// The body was unparseable, so returning an error
-			return nil, errors.New(compName, fmt.Errorf("%v unmarshalling %q", err, string(bytes)))
-		}
-
-		if respBody.isError() {
-			// The remote end returned an error. Return the body and an error constructed from the body.
-			return respBody, newWebDriverError(respBody)
-		}
-
-		// The body was unparseable with the passed in value, but was otherwise parseable and not an error value.
-		// Return the body and an error indicating that the original parse failed.
-		return respBody, errors.New(compName, fmt.Errorf("%v unmarshaling %+v into %#v", err, respBody, value))
+	// Parse once for errors.
+	respBody := &jsonResp{}
+	if err := json.Unmarshal(bytes, respBody); err != nil {
+		return nil, errors.New(compName, fmt.Errorf("%v unmarshaling %s", err, string(bytes)))
+	}
+	if respBody.isError() {
+		return respBody, newWebDriverError(respBody)
+	}
+	if value == nil {
+		return respBody, nil
 	}
 
-	// Everything is good. Return the body.
+	// Parse again to get value.
+	respBodyValue := &jsonResp{Value: value}
+	if err := json.Unmarshal(bytes, respBodyValue); err != nil {
+		return respBody, errors.New(compName, fmt.Errorf("%v unmarshaling %v into %#v", err, string(bytes), value))
+	}
+
 	return respBody, nil
 }
 

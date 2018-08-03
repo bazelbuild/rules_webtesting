@@ -73,11 +73,11 @@ browser_repositories(
 
 http_archive(
     name = "io_bazel_rules_scala",
-    sha256 = "0ac3ef277205d10ca353a5760da9710c8dbf2fca5bd1d2b6143a073ed2a1a50f",
-    strip_prefix = "rules_scala-55c5bd2c4af311008bcfa0f989af39026ed567fe",
+    sha256 = "abb99e42364c1b2f707b345bcd0a67fa45953cc249f8550e9aebeb8ad8dd45f6",
+    strip_prefix = "rules_scala-b537bddc58a77318b34165812a0311ef52806318",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_scala/archive/55c5bd2c4af311008bcfa0f989af39026ed567fe.tar.gz",
-        "https://github.com/bazelbuild/rules_scala/archive/55c5bd2c4af311008bcfa0f989af39026ed567fe.tar.gz",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_scala/archive/b537bddc58a77318b34165812a0311ef52806318.tar.gz",
+        "https://github.com/bazelbuild/rules_scala/archive/b537bddc58a77318b34165812a0311ef52806318.tar.gz",
     ],
 )
 
