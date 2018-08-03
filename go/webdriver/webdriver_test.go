@@ -358,19 +358,19 @@ func TestGetWindowRect(t *testing.T) {
 	}
 
 	if rect.X < 0 {
-		t.Errorf("got rect.X == %d, expected >= 0", rect.X)
+		t.Errorf("got rect.X == %v, expected >= 0", rect.X)
 	}
 
 	if rect.Y < 0 {
-		t.Errorf("got rect.Y == %d, expected >= 0", rect.Y)
+		t.Errorf("got rect.Y == %v, expected >= 0", rect.Y)
 	}
 
 	if rect.Width <= 0 {
-		t.Errorf("got rect.Width == %d, expected > 0", rect.Width)
+		t.Errorf("got rect.Width == %v, expected > 0", rect.Width)
 	}
 
 	if rect.Height <= 0 {
-		t.Errorf("got rect.Height == %d, expected > 0", rect.Height)
+		t.Errorf("got rect.Height == %v, expected > 0", rect.Height)
 	}
 }
 
@@ -504,7 +504,7 @@ func TestSetWindowSize(t *testing.T) {
 			}
 
 			if tc.width != rect.Width || tc.height != rect.Height {
-				t.Errorf("got (w, h) == (%d, %d), expected (%d, %d)", rect.Width, rect.Height, tc.width, tc.height)
+				t.Errorf("got (w, h) == (%v, %v), expected (%v, %v)", rect.Width, rect.Height, tc.width, tc.height)
 			}
 		})
 	}
@@ -575,7 +575,7 @@ func TestSetWindowPosition(t *testing.T) {
 			}
 
 			if rect.X != tc.x || rect.Y != tc.y {
-				t.Errorf("got rect == %+v, expected X: %d, Y: %d", rect, tc.x, tc.y)
+				t.Errorf("got rect == %+v, expected X: %v, Y: %v", rect, tc.x, tc.y)
 			}
 		})
 	}
