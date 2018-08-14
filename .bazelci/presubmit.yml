@@ -4,25 +4,39 @@ platforms:
     sauce: true
     build_targets:
     - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci"
     test_targets:
     - "//..."
-  # ubuntu1604:
-  #   build_targets:
-  #   - "//..."
-  #   test_targets:
-  #   - "//..."
-  # ubuntu1804:
-  #   build_targets:
-  #   - "//..."
-  #   test_targets:
-  #   - "//..."
-  # macos:
-  #   build_targets:
-  #   - "//..."
-  #   test_targets:
-  #   - "//..."
-  # windows:
-  #   build_targets:
-  #   - "//..."
-  #   test_targets:
-  #   - "//..."
+  ubuntu1604:
+    sauce: true
+    build_targets:
+    - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci"
+    test_targets:
+    - "//..."
+  ubuntu1804:
+    sauce: true
+    build_targets:
+    - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci"
+    test_targets:
+    - "//..."
+  macos:
+    sauce: true
+    build_targets:
+    - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci"
+    test_targets:
+    - "//..."
+  windows:
+    sauce: true
+    build_targets:
+    - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci"
+    test_targets:
+    - "//..."
