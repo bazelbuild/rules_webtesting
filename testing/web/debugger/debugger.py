@@ -83,11 +83,11 @@ class Debugger:
     """Set a WTL breakpoint.
 
     Args:
-      path: string, Go regular expression to compare to WebDriver command
-        paths.
+      path: string, Go regular expression to compare to WebDriver command paths.
       methods: list of strings, a list of HTTP methods ("POST", "GET", etc).
       body: string, Go regular expression to compare to body of WebDriver
         command.
+
     Returns:
       int, id of the breakpoint (can be used in delete_breakpoint command).
     """

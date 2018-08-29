@@ -33,9 +33,6 @@ web_test_archive(
         "//common/conditions:mac": {
             "CHROMIUM": "Chromium.app/Contents/MacOS/chromium",
         },
-        "//common/conditions:windows": {
-            "CHROMIUM": "chrome.exe",
-        },
     }),
     strip_prefix = "chrome-*",
     visibility = ["//browsers:__subpackages__"],
