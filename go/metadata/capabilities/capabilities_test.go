@@ -34,11 +34,11 @@ func TestDenormalizeW3C(t *testing.T) {
 		{
 			name: "W3C args preserved",
 			args: map[string]interface{}{
-				"browserName": "chrome",
+				"browserName":    "chrome",
 				"browserVersion": "1",
 			},
 			want: map[string]interface{}{
-				"browserName": "chrome",
+				"browserName":    "chrome",
 				"browserVersion": "1",
 			},
 		},
@@ -135,9 +135,9 @@ func TestNormalize(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "empty args",
-			args: map[string]interface{}{},
-			want: map[string]interface{}{},
+			name:    "empty args",
+			args:    map[string]interface{}{},
+			want:    map[string]interface{}{},
 			wantErr: false,
 		},
 		{
@@ -192,7 +192,7 @@ func TestNormalize(t *testing.T) {
 			args: map[string]interface{}{
 				"proxy": map[string]interface{}{
 					"proxyType": "DIRECT",
-					"noProxy": "[::1]:8080,localhost",
+					"noProxy":   "[::1]:8080,localhost",
 				},
 			},
 			want: map[string]interface{}{
@@ -253,7 +253,6 @@ func TestNormalize(t *testing.T) {
 		})
 	}
 }
-
 
 func TestMerge(t *testing.T) {
 	testCases := []struct {
@@ -780,7 +779,7 @@ func TestFromNewSessionArgs(t *testing.T) {
 				AlwaysMatch: map[string]interface{}{
 					"key1": "value1",
 				},
-				FirstMatch: []map[string]interface{}(nil),
+				FirstMatch:   []map[string]interface{}(nil),
 				W3CSupported: true,
 			},
 			wantErr: false,

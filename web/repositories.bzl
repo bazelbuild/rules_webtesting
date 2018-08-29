@@ -87,6 +87,8 @@ def web_test_repositories(**kwargs):
         org_apache_httpcomponents_httpcore()
     if should_create_repository("org_hamcrest_core", kwargs):
         org_hamcrest_core()
+    if should_create_repository("org_jetbrains_kotlin_stdlib", kwargs):
+        org_jetbrains_kotlin_stdlib()
     if should_create_repository("org_json", kwargs):
         org_json()
     if should_create_repository("org_seleniumhq_py", kwargs):
@@ -169,11 +171,11 @@ def com_github_gorilla_context():
     go_repository(
         name = "com_github_gorilla_context",
         importpath = "github.com/gorilla/context",
-        sha256 = "12a849b4e9a08619233d4490a281aa2d34a69f9eaf85c2295f5357927e4d1763",
-        strip_prefix = "context-1.1",
+        sha256 = "2dfdd051c238695bf9ebfed0bf6a8c533507ac0893bce23be5930e973736bb03",
+        strip_prefix = "context-1.1.1",
         urls = [
-            "https://mirror.bazel.build/github.com/gorilla/context/archive/v1.1.tar.gz",
-            "https://github.com/gorilla/context/archive/v1.1.tar.gz",
+            "https://mirror.bazel.build/github.com/gorilla/context/archive/v1.1.1.tar.gz",
+            "https://github.com/gorilla/context/archive/v1.1.1.tar.gz",
         ],
     )
 
@@ -240,11 +242,10 @@ def com_google_errorprone_error_prone_annotations():
 def com_google_guava():
     java_import_external(
         name = "com_google_guava",
-        jar_sha256 =
-            "6db0c3a244c397429c2e362ea2837c3622d5b68bb95105d37c21c36e5bc70abf",
+        jar_sha256 = "a0e9cabad665bc20bcd2b01f108e5fc03f756e13aea80abaadb9f407033bea2c",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/25.1-jre/guava-25.1-jre.jar",
-            "https://repo1.maven.org/maven2/com/google/guava/guava/25.1-jre/guava-25.1-jre.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/26.0-jre/guava-26.9-jre.jar",
+            "https://repo1.maven.org/maven2/com/google/guava/guava/26.0-jre/guava-26.0-jre.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         exports = [
@@ -257,20 +258,13 @@ def com_saucelabs_sauce_connect():
     platform_http_file(
         name = "com_saucelabs_sauce_connect",
         licenses = ["by_exception_only"],  # SauceLabs EULA
-        amd64_sha256 =
-            "dc47e3b42206f7ac073a06df168395eba215fdafef4f0e1b3c02c7b788e91bfb",
+        amd64_sha256 = "dd53f2cdcec489fbc2443942b853b51bf44af39f230600573119cdd315ddee52",
         amd64_urls = [
-            "https://saucelabs.com/downloads/sc-4.4.12-linux.tar.gz",
+            "https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz",
         ],
-        macos_sha256 =
-            "624f27fcef2b7797ab1b26d6149cc7559f40305e761ac4c6844c59e3125f1abf",
+        macos_sha256 = "920ae7bd5657bccdcd27bb596593588654a2820486043e9a12c9062700697e66",
         macos_urls = [
-            "https://saucelabs.com/downloads/sc-4.4.12-osx.zip",
-        ],
-        windows_sha256 =
-            "ec11b4ee029c9f0cba316820995df6ab5a4f394053102e1871b9f9589d0a9eb5",
-        windows_urls = [
-            "https://saucelabs.com/downloads/sc-4.4.12-win32.zip",
+            "https://saucelabs.com/downloads/sc-4.5.1-osx.zip",
         ],
     )
 
@@ -293,14 +287,16 @@ def com_squareup_okhttp3_okhttp():
 def com_squareup_okio():
     java_import_external(
         name = "com_squareup_okio",
-        jar_sha256 =
-            "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
+        jar_sha256 = "79b948cf77504750fdf7aeaf362b5060415136ab6635e5113bd22925e0e9e737",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/1.15.0/okio-1.15.0.jar",
-            "https://repo1.maven.org/maven2/com/squareup/okio/okio/1.15.0/okio-1.15.0.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/2.0.0/okio-2.0.0.jar",
+            "https://repo1.maven.org/maven2/com/squareup/okio/okio/2.0.0/okio-2.0.0.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
-        deps = ["@com_google_code_findbugs_jsr305"],
+        deps = [
+            "@com_google_code_findbugs_jsr305",
+            "@org_jetbrains_kotlin_stdlib",
+        ],
     )
 
 def commons_codec():
@@ -344,13 +340,13 @@ def junit():
 def net_bytebuddy():
     java_import_external(
         name = "net_bytebuddy",
-        jar_sha256 =
-            "35c47d53ec21f6b3bff018b07306c35d8b078b11642a610699f6718f75157e52",
+        jar_sha256 = "4b87ad52a8f64a1197508e176e84076584160e3d65229ff757efee870cd4a8e2",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.9/byte-buddy-1.8.9.jar",
-            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.9/byte-buddy-1.8.9.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.19/byte-buddy-1.8.19.jar",
+            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.19/byte-buddy-1.8.19.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
+        deps = ["@com_google_code_findbugs_jsr305"],
     )
 
 def org_apache_commons_exec():
@@ -399,19 +395,14 @@ def org_chromium_chromedriver():
         name = "org_chromium_chromedriver",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
         amd64_sha256 =
-            "2ad85db0d73e642af4698ed889977784640445e873ceb956f7a364fa824c631d",
+            "71eafe087900dbca4bc0b354a1d172df48b31a4a502e21f7c7b156d7e76c95c7",
         amd64_urls = [
-            "https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip",
+            "https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip",
         ],
         macos_sha256 =
-            "3a5e47d7530923268e6ade36eb4647b6a327fc48c7a54e72d7ea67791a0cae29",
+            "fd32a27148f44796a55f5ce3397015c89ebd9f600d9dda2bcaca54575e2497ae",
         macos_urls = [
-            "https://chromedriver.storage.googleapis.com/2.40/chromedriver_mac64.zip",
-        ],
-        windows_sha256 =
-            "035e7cac5dcf1eed73f3c9d0594fe1cd3c7b578670b4e7f2cadb5b3f6d48eaf2",
-        windows_urls = [
-            "https://chromedriver.storage.googleapis.com/2.40/chromedriver_win32.zip",
+            "https://chromedriver.storage.googleapis.com/2.41/chromedriver_mac64.zip",
         ],
     )
 
@@ -420,19 +411,14 @@ def org_chromium_chromium():
         name = "org_chromium_chromium",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
         amd64_sha256 =
-            "665f3ec731ea93ca4d4593cd9ab7095634dd89b7e332d92bb7722f3f1a59e0f7",
+            "6933d0afce6e17304b62029fbbd246cbe9e130eb0d90d7682d3765d3dbc8e1c8",
         amd64_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/573780/chrome-linux.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/561732/chrome-linux.zip",
         ],
         macos_sha256 =
-            "029e4647ea579c0df38e770bd47a5c229723580b7c655fcf2bffb909dfb19e29",
+            "084884e91841a923d7b6e81101f0105bbc3b0026f9f6f7a3477f5b313ee89e32",
         macos_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/573760/chrome-mac.zip",
-        ],
-        windows_sha256 =
-            "59d1464c11c1d84d3c8941fe1a3a828771382c997b57be1039d8cdc0911f3ce2",
-        windows_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/573768/chrome-win32.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/561733/chrome-mac.zip",
         ],
     )
 
@@ -449,14 +435,24 @@ def org_hamcrest_core():
         testonly_ = 1,
     )
 
+def org_jetbrains_kotlin_stdlib():
+    java_import_external(
+        name = "org_jetbrains_kotlin_stdlib",
+        jar_sha256 = "62eaf9cc6e746cef4593abe7cdb4dd48694ef5f817c852e0d9fbbd11fcfc564e",
+        jar_urls = [
+            "https://mirror.bazel.build/repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.2.61/kotlin-stdlib-1.2.61.jar",
+            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.2.61/kotlin-stdlib-1.2.61.jar",
+        ],
+        licenses = ["notice"],  # The Apache Software License, Version 2.0
+    )
+
 def org_json():
     java_import_external(
         name = "org_json",
-        jar_sha256 =
-            "3eddf6d9d50e770650e62abe62885f4393aa911430ecde73ebafb1ffd2cfad16",
+        jar_sha256 = "518080049ba83181914419d11a25d9bc9833a2d729b6a6e7469fa52851356da8",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/json/json/20180130/json-20180130.jar",
-            "https://repo1.maven.org/maven2/org/json/json/20180130/json-20180130.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/org/json/json/20180813/json-20180813.jar",
+            "https://repo1.maven.org/maven2/org/json/json/20180813/json-20180813.jar",
         ],
         licenses = ["notice"],  # MIT-style license
     )
@@ -466,16 +462,16 @@ def org_mozilla_firefox():
         name = "org_mozilla_firefox",
         licenses = ["reciprocal"],  # MPL 2.0
         amd64_sha256 =
-            "134fec04819eb56fa7b644cdd6d89623b21f4020bbedc3bd122db2a2caa4e434",
+            "3a729ddcb1e0f5d63933177a35177ac6172f12edbf9fbbbf45305f49333608de",
         amd64_urls = [
-            "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/58.0/linux-x86_64/en-US/firefox-58.0.tar.bz2",
-            "https://ftp.mozilla.org/pub/firefox/releases/58.0/linux-x86_64/en-US/firefox-58.0.tar.bz2",
+            "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/61.0.2/linux-x86_64/en-US/firefox-61.0.2.tar.bz2",
+            "https://ftp.mozilla.org/pub/firefox/releases/61.0.2/linux-x86_64/en-US/firefox-61.0.2.tar.bz2",
         ],
         macos_sha256 =
-            "a853eb20821a21c0bedeb0263d7b5975e7704f20b78edfef129c73804b1fb962",
+            "bf23f659ae34832605dd0576affcca060d1077b7bf7395bc9874f62b84936dc5",
         macos_urls = [
-            "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/58.0/mac/en-US/Firefox%2058.0.dmg",
-            "https://ftp.mozilla.org/pub/firefox/releases/58.0/mac/en-US/Firefox%2058.0.dmg",
+            "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/61.0.2/mac/en-US/Firefox%2061.0.2.dmg",
+            "https://ftp.mozilla.org/pub/firefox/releases/61.0.2/mac/en-US/Firefox%2061.0.2.dmg",
         ],
     )
 
@@ -484,17 +480,16 @@ def org_mozilla_geckodriver():
         name = "org_mozilla_geckodriver",
         licenses = ["reciprocal"],  # MPL 2.0
         amd64_sha256 =
-            "7f55c4c89695fd1e6f8fc7372345acc1e2dbaa4a8003cee4bd282eed88145937",
+            "c9ae92348cf00aa719be6337a608fae8304691a95668e8e338d92623ba9e0ec6",
         amd64_urls = [
-            "https://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.19.1/geckodriver-v0.19.1-linux64.tar.gz",
-            "https://github.com/mozilla/geckodriver/releases/download/v0.19.1/geckodriver-v0.19.1-linux64.tar.gz",
+            "https://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz",
+            "https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz",
         ],
         macos_sha256 =
-            "eb5a2971e5eb4a2fe74a3b8089f0f2cc96eed548c28526b8351f0f459c080836",
+            "ce4a3e9d706db94e8760988de1ad562630412fa8cf898819572522be584f01ce",
         macos_urls = [
-            # TODO(fisherii): v0.19.1 is mirrored and ready to go.
-            "https://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-macos.tar.gz",
-            "https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-macos.tar.gz",
+            "https://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-macos.tar.gz",
+            "https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-macos.tar.gz",
         ],
     )
 
@@ -502,21 +497,20 @@ def org_seleniumhq_py():
     http_archive(
         name = "org_seleniumhq_py",
         build_file = str(Label("//build_files:org_seleniumhq_py.BUILD")),
-        sha256 = "f35bb209cab740c195276a323c1b750dbcfdb9f6983e7d6e3abba9cd8838f355",
-        strip_prefix = "selenium-3.13.0",
+        sha256 = "f9ca21919b564a0a86012cd2177923e3a7f37c4a574207086e710192452a7c40",
+        strip_prefix = "selenium-3.14.0",
         urls = [
-            "https://files.pythonhosted.org/packages/6d/4b/30b28589f2b6051b04d6f8014537749dc08fa787a5569cebb33e892d34d3/selenium-3.13.0.tar.gz",
+            "https://files.pythonhosted.org/packages/af/7c/3f76140976b1c8f8a6b437ccd1f04efaed37bdc2600530e76ba981c677b9/selenium-3.14.0.tar.gz",
         ],
     )
 
 def org_seleniumhq_selenium_api():
     java_import_external(
         name = "org_seleniumhq_selenium_api",
-        jar_sha256 =
-            "2aa536043b519c5e9d9eb8de387d40f17a707e53eebad27d243f641043fa7df0",
+        jar_sha256 = "1fc941f86ba4fefeae9a705c1468e65beeaeb63688e19ad3fcbda74cc883ee5b",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.13.0/selenium-api-3.13.0.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.13.0/selenium-api-3.13.0.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.14.0/selenium-api-3.14.0.jar",
+            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.14.0/selenium-api-3.14.0.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
         testonly_ = 1,
@@ -526,10 +520,10 @@ def org_seleniumhq_selenium_remote_driver():
     java_import_external(
         name = "org_seleniumhq_selenium_remote_driver",
         jar_sha256 =
-            "f0d4acd03221bea01471b7171acbc1c97d18e8deb6bbb7c5102bc3712c234fa2",
+            "284cb4ea043539353bd5ecd774cbd726b705d423ea4569376c863d0b66e5eaf2",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.13.0/selenium-remote-driver-3.13.0.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.13.0/selenium-remote-driver-3.13.0.jar",
+            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.14.0/selenium-remote-driver-3.14.0.jar",
+            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.14.0/selenium-remote-driver-3.14.0.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
         testonly_ = 1,

@@ -81,6 +81,6 @@ skylark_library(
         "//web/internal:web_test_files",
         "//web/internal:web_test_named_executable",
         "//web/internal:web_test_named_file",
-        "@bazel_skylib//:lib",
+        "@bazel_skylib//lib:types",
     ],
 )

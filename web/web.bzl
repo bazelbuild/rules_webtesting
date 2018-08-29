@@ -42,7 +42,7 @@ load(
     "//web/internal:web_test_named_file.bzl",
     web_test_named_file_alias = "web_test_named_file",
 )
-load("@bazel_skylib//:lib.bzl", "types")
+load("@bazel_skylib//lib:types.bzl", "types")
 
 def web_test_suite(
         name,
