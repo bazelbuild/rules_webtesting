@@ -1,0 +1,13 @@
+{
+  "environment": "local",
+  "capabilities": {
+    "browserName": "safari",
+    "google:wslConfig": {
+      "port": 49152,
+      "binary": "/Users/fisherii/test.sh",
+      "args": ["--port=%WSL:PORT%"],
+      "status": false,
+      "shutdown": false
+    }
+  }
+}

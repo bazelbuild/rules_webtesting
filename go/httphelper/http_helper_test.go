@@ -28,6 +28,7 @@ func TestFQDN(t *testing.T) {
 	}
 
 	name, _ := os.Hostname()
+	name = strings.ToLower(name)
 
 	if !strings.HasPrefix(fqdn, name) && fqdn != "localhost" {
 		t.Errorf("Got %q, expected localhost or to start with %q", fqdn, name)
