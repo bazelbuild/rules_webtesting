@@ -25,7 +25,7 @@ exports_files(["LICENSE"])
 web_test_archive(
     name = "geckodriver",
     archive = "@org_mozilla_geckodriver//file",
-    extract = "run",
+    extract = "build",
     named_files = {
         "GECKODRIVER": "geckodriver",
     },
