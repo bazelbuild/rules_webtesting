@@ -133,11 +133,19 @@ func TestCloseTwoWindows(t *testing.T) {
 		time.Sleep(100 * time.Millisecond)
 	}
 
+	handles, err := driver.WindowHandles()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(handles) != 2 {
+		t.Fatalf("got %v, expected two window handles")
+	}
+
 	if err := driver.CloseWindow(""); err != nil {
 		t.Fatal(err)
 	}
 
-	handles, err := driver.WindowHandles()
+	handles, err = driver.WindowHandles()
 	if err != nil {
 		t.Fatal(err)
 	}

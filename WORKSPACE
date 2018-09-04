@@ -35,19 +35,19 @@ http_archive(
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "ba79c532ac400cefd1859cbc8a9829346aa69e3b99482cd5a54432092cbc3933",
+    sha256 = "5f3b0304cdf0c505ec9e5b3c4fc4a87b5ca21b13d8ecc780c97df3d1809b9ce6",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/0.13.0/rules_go-0.13.0.tar.gz",
-        "https://github.com/bazelbuild/rules_go/releases/download/0.13.0/rules_go-0.13.0.tar.gz",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/0.15.1/rules_go-0.15.1.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/0.15.1/rules_go-0.15.1.tar.gz",
     ],
 )
 
 http_archive(
     name = "bazel_gazelle",
-    sha256 = "bc653d3e058964a5a26dcad02b6c72d7d63e6bb88d94704990b908a1445b8758",
+    sha256 = "c0a5739d12c6d05b6c1ad56f2200cb0b57c5a70e03ebd2f7b87ce88cabf09c7b",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/0.13.0/bazel-gazelle-0.13.0.tar.gz",
-        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.13.0/bazel-gazelle-0.13.0.tar.gz",
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/0.14.0/bazel-gazelle-0.14.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.14.0/bazel-gazelle-0.14.0.tar.gz",
     ],
 )
 
@@ -73,11 +73,11 @@ browser_repositories(
 
 http_archive(
     name = "io_bazel_rules_scala",
-    sha256 = "abb99e42364c1b2f707b345bcd0a67fa45953cc249f8550e9aebeb8ad8dd45f6",
-    strip_prefix = "rules_scala-b537bddc58a77318b34165812a0311ef52806318",
+    sha256 = "6c69597f373a01989b9f7119bd5d28cffc9cc35d44d1f6440c409d8ef420057d",
+    strip_prefix = "rules_scala-da5ba6d97a1abdadef89d509b30a9dcfde7ffbe4",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_scala/archive/b537bddc58a77318b34165812a0311ef52806318.tar.gz",
-        "https://github.com/bazelbuild/rules_scala/archive/b537bddc58a77318b34165812a0311ef52806318.tar.gz",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_scala/archive/da5ba6d97a1abdadef89d509b30a9dcfde7ffbe4.tar.gz",
+        "https://github.com/bazelbuild/rules_scala/archive/da5ba6d97a1abdadef89d509b30a9dcfde7ffbe4.tar.gz",
     ],
 )
 
