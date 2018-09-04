@@ -56,6 +56,8 @@ def web_test_repositories(**kwargs):
         com_github_gorilla_mux()
     if should_create_repository("com_github_tebeka_selenium", kwargs):
         com_github_tebeka_selenium()
+    if should_create_repository("com_github_urllib3", kwargs):
+        com_github_urllib3()
     if should_create_repository("com_google_code_findbugs_jsr305", kwargs):
         com_google_code_findbugs_jsr305()
     if should_create_repository("com_google_code_gson", kwargs):
@@ -200,6 +202,17 @@ def com_github_tebeka_selenium():
         urls = [
             "https://mirror.bazel.build/github.com/tebeka/selenium/archive/a49cf4b98a36c2b21b1ccb012852bd142d5fc04a.tar.gz",
             "https://github.com/tebeka/selenium/archive/a49cf4b98a36c2b21b1ccb012852bd142d5fc04a.tar.gz",
+        ],
+    )
+
+def com_github_urllib3():
+    http_archive(
+        name = "com_github_urllib3",
+        build_file = str(Label("//build_files:com_github_urllib3.BUILD")),
+        sha256 = "a68ac5e15e76e7e5dd2b8f94007233e01effe3e50e8daddf69acfd81cb686baf",
+        strip_prefix = "urllib3-1.23",
+        urls = [
+            "https://files.pythonhosted.org/packages/3c/d2/dc5471622bd200db1cd9319e02e71bc655e9ea27b8e0ce65fc69de0dac15/urllib3-1.23.tar.gz",
         ],
     )
 

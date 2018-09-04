@@ -25,6 +25,7 @@ exports_files(["LICENSE"])
 web_test_archive(
     name = "firefox",
     archive = "@org_mozilla_firefox//file",
+    # Firefox needs to be in a writable directory.
     extract = "run",
     named_files = select({
         "//common/conditions:linux": {

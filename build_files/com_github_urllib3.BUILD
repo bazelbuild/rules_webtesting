@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
 #
 ################################################################################
 #
-licenses(["notice"])  # Apache 2
+licenses(["notice"])  # MIT-style license
 
 py_library(
-    name = "org_seleniumhq_py",
+    name = "com_github_urllib3",
     srcs = glob(["**/*.py"]),
     data = glob(
         ["**/*"],
         exclude = ["**/*.py"],
     ),
     visibility = ["//visibility:public"],
-    deps = ["@com_github_urllib3"],
 )
