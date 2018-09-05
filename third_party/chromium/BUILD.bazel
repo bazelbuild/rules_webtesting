@@ -35,5 +35,5 @@ web_test_archive(
         },
     }),
     strip_prefix = "chrome-*",
-    visibility = ["//browsers:__subpackages__"],
+    visibility = ["//visibility:public"],
 )
