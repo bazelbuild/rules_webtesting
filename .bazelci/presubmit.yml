@@ -1,0 +1,18 @@
+---
+platforms:
+  ubuntu1804:
+    sauce: true
+    build_targets:
+    - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci"
+    test_targets:
+    - "//..."
+  macos:
+    sauce: true
+    build_targets:
+    - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci"
+    test_targets:
+    - "//..."
