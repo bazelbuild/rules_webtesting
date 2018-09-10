@@ -27,6 +27,9 @@ web_test_archive(
     archive = "@com_saucelabs_sauce_connect//file",
     extract = "build",
     named_files = select({
+        "//common/conditions:windows": {
+            "SAUCE_CONNECT": "bin/sc.exe",
+        },
         "//conditions:default": {
             "SAUCE_CONNECT": "bin/sc",
         },

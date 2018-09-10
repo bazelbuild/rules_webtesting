@@ -279,6 +279,11 @@ def com_saucelabs_sauce_connect():
         macos_urls = [
             "https://saucelabs.com/downloads/sc-4.5.1-osx.zip",
         ],
+        windows_sha256 =
+            "ec11b4ee029c9f0cba316820995df6ab5a4f394053102e1871b9f9589d0a9eb5",
+        windows_urls = [
+            "https://saucelabs.com/downloads/sc-4.4.12-win32.zip",
+        ],
     )
 
 def com_squareup_okhttp3_okhttp():
@@ -417,6 +422,11 @@ def org_chromium_chromedriver():
         macos_urls = [
             "https://chromedriver.storage.googleapis.com/2.41/chromedriver_mac64.zip",
         ],
+        windows_sha256 =
+            "035e7cac5dcf1eed73f3c9d0594fe1cd3c7b578670b4e7f2cadb5b3f6d48eaf2",
+        windows_urls = [
+            "https://chromedriver.storage.googleapis.com/2.40/chromedriver_win32.zip",
+        ],
     )
 
 def org_chromium_chromium():
@@ -432,6 +442,11 @@ def org_chromium_chromium():
             "084884e91841a923d7b6e81101f0105bbc3b0026f9f6f7a3477f5b313ee89e32",
         macos_urls = [
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/561733/chrome-mac.zip",
+        ],
+        windows_sha256 =
+            "59d1464c11c1d84d3c8941fe1a3a828771382c997b57be1039d8cdc0911f3ce2",
+        windows_urls = [
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/573768/chrome-win32.zip",
         ],
     )
 
