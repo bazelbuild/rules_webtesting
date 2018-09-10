@@ -29,8 +29,13 @@ web_test_archive(
     name = "chromedriver",
     archive = "@org_chromium_chromedriver//file",
     extract = "build",
-    named_files = {
-        "CHROMEDRIVER": "chromedriver",
-    },
+    named_files = select({
+        "//common/conditions:windows": {
+            "CHROMEDRIVER": "chromedriver.exe",
+        },
+        "//conditions:default": {
+            "CHROMEDRIVER": "chromedriver",
+        },
+    }),
     visibility = ["//browsers:__subpackages__"],
 )

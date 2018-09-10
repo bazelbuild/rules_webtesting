@@ -28,15 +28,14 @@ web_test_archive(
     extract = "build",
     named_files = select({
         "//common/conditions:linux": {
-            "CHROMIUM": "chrome",
+            "CHROMIUM": "chrome-linux/chrome",
         },
         "//common/conditions:mac": {
-            "CHROMIUM": "Chromium.app/Contents/MacOS/chromium",
+            "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
         },
         "//common/conditions:windows": {
-            "CHROMIUM": "chrome.exe",
+            "CHROMIUM": "chrome-win32/chrome.exe",
         },
     }),
-    strip_prefix = "chrome-*",
     visibility = ["//browsers:__subpackages__"],
 )

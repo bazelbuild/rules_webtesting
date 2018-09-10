@@ -30,4 +30,5 @@ web_test_archive(
         "GECKODRIVER": "geckodriver",
     },
     visibility = ["//browsers:__subpackages__"],
+    tags = ["manual"],
 )
