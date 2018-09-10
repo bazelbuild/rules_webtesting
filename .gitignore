@@ -2,3 +2,4 @@ bazel-*
 *~
 *.sublime-*
 *.pyc
+.vs/*

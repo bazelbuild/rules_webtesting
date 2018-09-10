@@ -54,9 +54,16 @@ browser(
 browser(
     name = "firefox-local",
     metadata = "firefox-local.json",
-    deps = [
-        "//go/wsl",
-        "//third_party/firefox",
-        "//third_party/geckodriver",
-    ],
+    deps = select({
+        "//common/conditions:windows":[],
+        "//conditions:default": [
+            "//go/wsl",
+            "//third_party/firefox",
+            "//third_party/geckodriver",
+        ],
+    }),
+    disabled = select({
+        "//common/conditions:windows": "firefox not supported on windows",
+        "//conditions:default": None,
+    }),
 )
