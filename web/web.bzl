@@ -146,8 +146,9 @@ def web_test_archive(testonly = True, **kwargs):
             "//common/conditions:windows": "//web/internal:extract.bat",
             "//conditions:default": "//web/internal:extract.sh",
         }),
-        testonly = testonly, 
-        **kwargs)
+        testonly = testonly,
+        **kwargs
+    )
 
 def web_test_files(testonly = True, **kwargs):
     """Wrapper around web_test_files to correctly set defaults."""

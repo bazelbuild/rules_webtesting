@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 	"strings"
 
-    "github.com/bazelbuild/rules_webtesting/go/cmdhelper"
+	"github.com/bazelbuild/rules_webtesting/go/cmdhelper"
 )
 
 // DefaultWorkspace is the name of the default Bazel workspace.
@@ -39,9 +39,9 @@ func Runfile(path string) (string, error) {
 		return path, nil
 	}
 
-    if cmdhelper.IsTruthyEnv("RUNFILES_MANIFEST_ONLY") {
-        return runfileInManifest(path)
-    }
+	if cmdhelper.IsTruthyEnv("RUNFILES_MANIFEST_ONLY") {
+		return runfileInManifest(path)
+	}
 
 	runfiles, err := RunfilesPath()
 	if err != nil {
@@ -60,7 +60,7 @@ func Runfile(path string) (string, error) {
 		return filename, nil
 	}
 
-    return runfileInManifest(path)
+	return runfileInManifest(path)
 }
 
 // RunfilesPath return the path to the run files tree for this test.
@@ -98,56 +98,56 @@ func TestWorkspace() string {
 
 // RunfilesManifest returns the runfiles MANIFEST file.
 func RunfilesManifest() (string, error) {
-    mp, ok := os.LookupEnv("RUNFILES_MANIFEST_FILE")
-    if !ok {
-        return "", errors.New("environment variable RUNFILES_MANIFEST_FILE is not defined, are you running with bazel test")
-    }
+	mp, ok := os.LookupEnv("RUNFILES_MANIFEST_FILE")
+	if !ok {
+		return "", errors.New("environment variable RUNFILES_MANIFEST_FILE is not defined, are you running with bazel test")
+	}
 
-    _, err := os.Stat(mp)
+	_, err := os.Stat(mp)
 
-    return mp, err
+	return mp, err
 }
 
 func runfileInManifest(path string) (string, error) {
-    // TODO(DrMarcII): Consider support for finding for TestWorkspace()/path in the manifest.
-    mp, err := RunfilesManifest()
-    if err != nil {
-        return "", err
-    }
+	// TODO(DrMarcII): Consider support for finding for TestWorkspace()/path in the manifest.
+	mp, err := RunfilesManifest()
+	if err != nil {
+		return "", err
+	}
 
-    f, err := os.Open(mp)
-    if err != nil {
-        return "", err
-    }
+	f, err := os.Open(mp)
+	if err != nil {
+		return "", err
+	}
 
-    scanner := bufio.NewScanner(f)
-    for scanner.Scan() {
-        tokens := strings.SplitN(scanner.Text(), " ", 2)
-        
-        if len(tokens) != 2 {
-            continue
-        }
-        
-        if tokens[0] == path {
-            if _, err := os.Stat(tokens[1]); err != nil {
-                continue
-            } 
-            return tokens[1], nil
-            continue
-        }
-        
-        if strings.HasPrefix(path, tokens[0]) {
-            rel, err := filepath.Rel(tokens[0], path)
-            if err != nil {
-                continue
-            }
-            f := filepath.Join(tokens[1], rel)
-            if _, err := os.Stat(f); err != nil {
-                continue
-            }
-            return f, nil
-        }
-    }
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		tokens := strings.SplitN(scanner.Text(), " ", 2)
 
-    return "", fmt.Errorf("cannot find runfile %q in manifest %q", path, mp)
+		if len(tokens) != 2 {
+			continue
+		}
+
+		if tokens[0] == path {
+			if _, err := os.Stat(tokens[1]); err != nil {
+				continue
+			}
+			return tokens[1], nil
+			continue
+		}
+
+		if strings.HasPrefix(path, tokens[0]) {
+			rel, err := filepath.Rel(tokens[0], path)
+			if err != nil {
+				continue
+			}
+			f := filepath.Join(tokens[1], rel)
+			if _, err := os.Stat(f); err != nil {
+				continue
+			}
+			return f, nil
+		}
+	}
+
+	return "", fmt.Errorf("cannot find runfile %q in manifest %q", path, mp)
 }

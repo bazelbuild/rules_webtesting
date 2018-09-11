@@ -38,6 +38,6 @@ web_test_archive(
             "FIREFOX": "firefox.exe",
         },
     }),
-    visibility = ["//browsers:__subpackages__"],
     tags = ["manual"],
+    visibility = ["//browsers:__subpackages__"],
 )
