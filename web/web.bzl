@@ -137,7 +137,18 @@ def web_test_named_file(testonly = True, **kwargs):
 
 def web_test_archive(testonly = True, **kwargs):
     """Wrapper around web_test_archive to correctly set defaults."""
-    web_test_archive_alias(testonly = testonly, **kwargs)
+    web_test_archive_alias(
+        extract_exe_host = select({
+            "//common/conditions:windows": "//web/internal:extract.bat",
+            "//conditions:default": "//web/internal:extract.sh",
+        }),
+        extract_exe_target = select({
+            "//common/conditions:windows": "//web/internal:extract.bat",
+            "//conditions:default": "//web/internal:extract.sh",
+        }),
+        testonly = testonly,
+        **kwargs
+    )
 
 def web_test_files(testonly = True, **kwargs):
     """Wrapper around web_test_files to correctly set defaults."""

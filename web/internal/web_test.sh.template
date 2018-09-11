@@ -60,8 +60,8 @@ for arg in "$@"; do
   fi
 done
 
-"$TEST_SRCDIR/%TEMPLATED_launcher%" \
-  --metadata="%TEMPLATED_metadata%" \
-  --test="%TEMPLATED_test%" \
+"$(rlocation %TEMPLATED_launcher%)" \
+  --metadata="$(rlocation %TEMPLATED_metadata%)" \
+  --test="$(rlocation %TEMPLATED_test%)" \
   "${wtl_launcher_args[@]}" \
   -- "${wtl_test_args[@]}"

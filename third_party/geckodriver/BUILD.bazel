@@ -29,5 +29,6 @@ web_test_archive(
     named_files = {
         "GECKODRIVER": "geckodriver",
     },
+    tags = ["manual"],
     visibility = ["//browsers:__subpackages__"],
 )
