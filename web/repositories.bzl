@@ -423,9 +423,9 @@ def org_chromium_chromedriver():
             "https://chromedriver.storage.googleapis.com/2.41/chromedriver_mac64.zip",
         ],
         windows_sha256 =
-            "035e7cac5dcf1eed73f3c9d0594fe1cd3c7b578670b4e7f2cadb5b3f6d48eaf2",
+            "a8fa028acebef7b931ef9cb093f02865f9f7495e49351f556e919f7be77f072e",
         windows_urls = [
-            "https://chromedriver.storage.googleapis.com/2.40/chromedriver_win32.zip",
+            "https://chromedriver.storage.googleapis.com/2.38/chromedriver_win32.zip",
         ],
     )
 
@@ -444,9 +444,9 @@ def org_chromium_chromium():
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/561733/chrome-mac.zip",
         ],
         windows_sha256 =
-            "59d1464c11c1d84d3c8941fe1a3a828771382c997b57be1039d8cdc0911f3ce2",
+            "d1bb728118c12ea436d8ea07dba980789e7d860aa664dd1fad78bc20e8d9391c",
         windows_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/573768/chrome-win32.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/540270/chrome-win32.zip",
         ],
     )
 
