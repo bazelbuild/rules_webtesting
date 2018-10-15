@@ -73,7 +73,7 @@ browser = rule(
         ),
         "metadata": attr.label(
             doc = "The web_test metadata file that defines how this browser is " +
-                  "launched and default capabilities for this browser.",
+                  "launched and the default capabilities for this browser.",
             mandatory = True,
             allow_single_file = [".json"],
         ),

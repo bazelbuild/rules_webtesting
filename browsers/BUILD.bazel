@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "browser")
+load("//web:web.bzl", "browser", "custom_browser")
 
 package(
     default_testonly = True,
@@ -66,4 +66,10 @@ browser(
             "//third_party/geckodriver",
         ],
     }),
+)
+
+custom_browser(
+    name = "chromium-local-1024x768",
+    browser = ":chromium-local",
+    metadata = "size.json",
 )
