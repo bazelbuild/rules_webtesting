@@ -34,7 +34,7 @@ http_archive(
 )
 
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
-load("//web/internal:platform_http_file.bzl", "platform_http_file")
+load("@io_bazel_rules_webtesting///web/internal:platform_http_file.bzl", "platform_http_file")
 
 web_test_repositories()
 
