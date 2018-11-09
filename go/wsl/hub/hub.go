@@ -172,26 +172,12 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 }
 
 func (h *Hub) quitSession(session string, driver *driver.Driver, w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	driver.Forward(ctx, &fakeResponseWriter{}, r)
-
-	defer cancel()
-	if err := driver.Shutdown(ctx); err != nil {
-		log.Printf("Error shutting down driver: %v", err)
-	}
+	driver.Quit(w, r)
 
 	delete(h.sessions, session)
-
-	respJSON := map[string]interface{}{
-		"status": 0,
-		"value": nil,
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(respJSON)
 }
 
 func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message string) {
@@ -209,16 +195,3 @@ func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message s
 
 	json.NewEncoder(w).Encode(respJSON)
 }
-
-type fakeResponseWriter struct {}
-
-
-func (*fakeResponseWriter) Header() http.Header {
-	return http.Header{}
-}
-
-func (*fakeResponseWriter) Write(b []byte) (int, error) {
-	return len(b), nil
-}
-
-func (*fakeResponseWriter) WriteHeader(statusCode int) {}

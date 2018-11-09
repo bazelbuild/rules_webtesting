@@ -61,6 +61,7 @@ type wslCaps struct {
 	status   bool
 	stdout   string
 	stderr   string
+	quitTimeout time.Duration
 }
 
 // PortRecycler is an interface for an object that includes ports that are owned by this driver.
@@ -267,6 +268,27 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 		stderr = sb
 	}
 
+	quitTimeout := 0 * time.Second
+	if t, ok := caps["quitTimeout"]; ok {
+		switch tt := t.(type) {
+		case float64:
+			// Incoming value is in seconds.
+			to, err := time.ParseDuration(fmt.Sprintf("%fs", tt))
+			if err != nil {
+				return nil, err
+			}
+			quitTimeout = to
+		case string:
+			to, err := time.ParseDuration(tt)
+			if err != nil {
+				return nil, err
+			}
+			quitTimeout = to
+		default:
+			return nil, fmt.Errorf("quitTimeout %#v is not a number or string", t)
+		}
+	}
+
 	return &wslCaps{
 		binary:   binary,
 		args:     args,
@@ -277,6 +299,7 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 		status:   status,
 		stdout:   stdout,
 		stderr:   stderr,
+		quitTimeout: quitTimeout,
 	}, nil
 }
 
@@ -414,7 +437,42 @@ func (d *Driver) Wait(ctx context.Context) error {
 	}
 }
 
-// Kill kills a running WebDriver server.
+// Quit forwards a Quit command and shuts down a driver.
+func (d *Driver) Quit(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+		defer cancel()
+
+		if err := d.Shutdown(ctx); err != nil {
+			log.Printf("Error shutting down: %v", err)
+		}
+	}()
+
+	if d.caps.quitTimeout <= 0 {
+		// If no quitTimeout is set, then forward normally
+		d.Forward(r.Context(), w, r)
+		return
+	}
+
+	// Otherwise forward with timeout, and swallow any error response.
+	ctx, cancel := context.WithTimeout(r.Context(), d.caps.quitTimeout)
+	defer cancel()
+
+	d.Forward(ctx, &fakeResponseWriter{
+		prefix: "quit session",
+		header: http.Header{},
+	}, r)
+
+	respJSON := map[string]interface{}{
+		"status": 0,
+		"value": nil,
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(respJSON)
+}
+
+// Shutdown shuts down a running WebDriver server.
 func (d *Driver) Shutdown(ctx context.Context) error {
 	if d.cmd == nil {
 		close(d.stopped)
@@ -424,12 +482,15 @@ func (d *Driver) Shutdown(ctx context.Context) error {
 		httphelper.Get(ctx, d.Address+"/shutdown")
 	} else if err := d.cmd.Process.Signal(syscall.SIGTERM); err != nil {
 		if err := d.cmd.Process.Signal(os.Interrupt); err != nil {
-			d.cmd.Process.Kill()
+			return d.cmd.Process.Kill()
 		}
 	}
 
 	if err := d.Wait(ctx); err != nil {
-		return d.cmd.Process.Kill()
+		if err == context.DeadlineExceeded {
+			return d.cmd.Process.Kill()
+		}
+		return err
 	}
 	return nil
 }
@@ -448,4 +509,23 @@ func errorResponse(w http.ResponseWriter, httpStatus, status int, err, message s
 	}
 
 	json.NewEncoder(w).Encode(respJSON)
+}
+
+// fakeResponseWriter is used when we don't want to send responses from forwarded commands back to caller.
+type fakeResponseWriter struct {
+	prefix string
+	header http.Header
+}
+
+func (f *fakeResponseWriter) Header() http.Header {
+	return f.header
+}
+
+func (f *fakeResponseWriter) Write(b []byte) (int, error) {
+	log.Printf("%s body: %s", f.prefix, string(b))
+	return len(b), nil
+}
+
+func (f *fakeResponseWriter) WriteHeader(statusCode int) {
+	log.Printf("%s status code: %d", f.prefix, statusCode)
 }
