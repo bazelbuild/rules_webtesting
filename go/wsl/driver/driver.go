@@ -344,11 +344,11 @@ func (d *Driver) startDriver() (chan error, error) {
 }
 
 // Forward forwards a request to the WebDriver endpoint managed by this server.
-func (d *Driver) Forward(w http.ResponseWriter, r *http.Request) {
+func (d *Driver) Forward(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
-	if err := httphelper.Forward(r.Context(), d.Address, "", w, r); err != nil {
+	if err := httphelper.Forward(ctx, d.Address, "", w, r); err != nil {
 		errorResponse(w, http.StatusInternalServerError, 13, "unknown error", err.Error())
 	}
 }
