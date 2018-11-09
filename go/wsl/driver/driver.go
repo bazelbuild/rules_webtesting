@@ -52,15 +52,15 @@ type Driver struct {
 }
 
 type wslCaps struct {
-	binary   string
-	args     []string
-	port     int
-	timeout  time.Duration
-	env      map[string]string
-	shutdown bool
-	status   bool
-	stdout   string
-	stderr   string
+	binary      string
+	args        []string
+	port        int
+	timeout     time.Duration
+	env         map[string]string
+	shutdown    bool
+	status      bool
+	stdout      string
+	stderr      string
 	quitTimeout time.Duration
 }
 
@@ -290,15 +290,15 @@ func extractWSLCaps(sessionID string, caps map[string]interface{}) (*wslCaps, er
 	}
 
 	return &wslCaps{
-		binary:   binary,
-		args:     args,
-		port:     port,
-		timeout:  timeout,
-		env:      env,
-		shutdown: shutdown,
-		status:   status,
-		stdout:   stdout,
-		stderr:   stderr,
+		binary:      binary,
+		args:        args,
+		port:        port,
+		timeout:     timeout,
+		env:         env,
+		shutdown:    shutdown,
+		status:      status,
+		stdout:      stdout,
+		stderr:      stderr,
 		quitTimeout: quitTimeout,
 	}, nil
 }
@@ -465,7 +465,7 @@ func (d *Driver) Quit(w http.ResponseWriter, r *http.Request) {
 
 	respJSON := map[string]interface{}{
 		"status": 0,
-		"value": nil,
+		"value":  nil,
 	}
 
 	w.WriteHeader(http.StatusOK)
