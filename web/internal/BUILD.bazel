@@ -43,6 +43,17 @@ skylark_library(
 )
 
 skylark_library(
+    name = "custom_browser",
+    srcs = ["custom_browser.bzl"],
+    deps = [
+        ":metadata",
+        ":provider",
+        ":runfiles",
+        "@bazel_skylib//lib:dicts",
+    ],
+)
+
+skylark_library(
     name = "constants",
     srcs = ["constants.bzl"],
 )
