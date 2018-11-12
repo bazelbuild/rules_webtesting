@@ -473,7 +473,7 @@ def org_seleniumhq_selenium_remote_driver():
     java_import_external(
         name = "org_seleniumhq_selenium_remote_driver",
         jar_sha256 =
-            "284cb4ea043539353bd5ecd774cbd726b705d423ea4569376c863d0b66e5eaf2",
+            "fe144c413fba8dcf5dc490cfd063588758b2ac8a960e3d2117b06f28a16d04b5",
         jar_urls = [
             "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.141.5/selenium-remote-driver-3.141.5.jar",
             "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.141.5/selenium-remote-driver-3.141.5.jar",
