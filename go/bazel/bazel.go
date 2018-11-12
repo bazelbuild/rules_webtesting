@@ -133,7 +133,6 @@ func runfileInManifest(path string) (string, error) {
 				continue
 			}
 			return tokens[1], nil
-			continue
 		}
 
 		if strings.HasPrefix(path, tokens[0]) {

@@ -31,7 +31,7 @@ def _custom_browser_impl(ctx):
     if ctx.files.metadata:
         metadata_files.append(ctx.file.metadata)
 
-    patch = ctx.new_file("%s.tmp.json" % ctx.label.name)
+    patch = ctx.actions.declare_file("%s.tmp.json" % ctx.label.name)
     metadata.create_file(ctx = ctx, output = patch, browser_label = ctx.label)
     metadata_files.append(patch)
 
