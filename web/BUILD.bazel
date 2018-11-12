@@ -75,6 +75,7 @@ skylark_library(
     deps = [
         "//web/internal:browser",
         "//web/internal:constants",
+        "//web/internal:custom_browser",
         "//web/internal:web_test",
         "//web/internal:web_test_archive",
         "//web/internal:web_test_config",
