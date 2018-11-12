@@ -3,3 +3,4 @@ bazel-*
 *.sublime-*
 *.pyc
 .vs/*
+user.bazelrc

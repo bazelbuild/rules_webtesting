@@ -143,17 +143,18 @@ def web_test_named_file(testonly = True, **kwargs):
     """Wrapper around web_test_named_file to correctly set defaults."""
     _web_test_named_file(testonly = testonly, **kwargs)
 
-def web_test_archive(testonly = True, **kwargs):
+def web_test_archive(extract_exe_host = None, extract_exe_target = None, testonly = True, **kwargs):
     """Wrapper around web_test_archive to correctly set defaults."""
+    extract = select({
+        str(Label("//common/conditions:windows")): str(Label("//web/internal:extract.bat")),
+        str(Label("//conditions:default")): str(Label("//web/internal:extract.sh")),
+    })
+    extract_exe_host = extract_exe_host or extract
+    extract_exe_target = extract_exe_target or extract
+
     _web_test_archive(
-        extract_exe_host = select({
-            "//common/conditions:windows": "//web/internal:extract.bat",
-            "//conditions:default": "//web/internal:extract.sh",
-        }),
-        extract_exe_target = select({
-            "//common/conditions:windows": "//web/internal:extract.bat",
-            "//conditions:default": "//web/internal:extract.sh",
-        }),
+        extract_exe_host = extract_exe_host,
+        extract_exe_target = extract_exe_target,
         testonly = testonly,
         **kwargs
     )
