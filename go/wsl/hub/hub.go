@@ -172,16 +172,10 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 }
 
 func (h *Hub) quitSession(session string, driver *driver.Driver, w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	driver.Forward(ctx, w, r)
-
-	defer cancel()
-	if err := driver.Shutdown(ctx); err != nil {
-		log.Printf("Error shutting down driver: %v", err)
-	}
+	driver.Quit(w, r)
 
 	delete(h.sessions, session)
 }
