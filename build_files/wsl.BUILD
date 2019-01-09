@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc.
+# Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = True,
-    default_visibility = ["//:__subpackages__"],
-)
+load("//web:web.bzl", "web_test_named_executable")
 
-config_setting(
-    name = "mac",
-    values = {"cpu": "darwin"},
-)
+package(default_testonly = True)
 
-config_setting(
-    name = "linux",
-    values = {"cpu": "k8"},
-)
+licenses(["notice"])  # Apache 2.0
 
-config_setting(
-    name = "windows",
-    values = {"cpu": "x64_windows"},
+web_test_named_executable(
+    name = "wsl",
+    alt_name = "WEBDRIVER_SERVER_LIGHT",
+    executable = select({
+        "//common/conditions:linux": "main/linux_amd64_stripped/main",
+        "//common/conditions:mac": "main/darwin_amd64_pure_stripped/main",
+        "//common/conditions:windows": "main/windows_amd64_pure_stripped/main.exe",
+    }),
+    visibility = ["//visibility:public"],
 )

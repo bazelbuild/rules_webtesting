@@ -66,10 +66,11 @@ browser = rule(
             doc = "Map of execution requirements for this browser.",
         ),
         "merger": attr.label(
-            doc = "Metadata merger executable.",
+            doc = "The metadata merger binary.",
             default = Label("//go/metadata/main"),
-            executable = True,
+            allow_files = True,
             cfg = "host",
+            executable = True,
         ),
         "metadata": attr.label(
             doc = "The web_test metadata file that defines how this browser is " +

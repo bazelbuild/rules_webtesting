@@ -156,12 +156,14 @@ web_test = rule(
         ),
         "launcher": attr.label(
             doc = "The web test launcher binary.",
+            allow_files = True,
             cfg = "target",
             executable = True,
         ),
         "merger": attr.label(
             doc = "The metadata merger binary.",
             default = Label("//go/metadata/main"),
+            allow_files = True,
             cfg = "host",
             executable = True,
         ),

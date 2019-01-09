@@ -59,10 +59,11 @@ web_test_config = rule(
             providers = [WebTestInfo],
         ),
         "merger": attr.label(
-            doc = "Metadata merger executable.",
-            executable = True,
-            cfg = "host",
+            doc = "The metadata merger binary.",
             default = Label("//go/metadata/main"),
+            allow_files = True,
+            cfg = "host",
+            executable = True,
         ),
         "metadata": attr.label(
             doc = "A web_test metadata file.",

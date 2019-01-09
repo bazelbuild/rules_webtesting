@@ -52,12 +52,6 @@ def _web_test_files_impl(ctx):
 
 web_test_files = rule(
     attrs = {
-        "merger": attr.label(
-            doc = "Metadata merger executable.",
-            executable = True,
-            cfg = "host",
-            default = Label("//go/metadata/main"),
-        ),
         "files": attr.label_keyed_string_dict(
             doc = "A map of files to names.",
             mandatory = True,

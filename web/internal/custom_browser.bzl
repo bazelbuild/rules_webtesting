@@ -84,10 +84,11 @@ custom_browser = rule(
             allow_single_file = True,
         ),
         "merger": attr.label(
-            doc = "Metadata merger executable.",
+            doc = "The metadata merger binary.",
             default = Label("//go/metadata/main"),
-            executable = True,
+            allow_files = True,
             cfg = "host",
+            executable = True,
         ),
         "environment": attr.string_dict(doc = "Map of environment variables-values to set."),
     },

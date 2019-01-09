@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc.
+# Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,16 @@
 #
 ################################################################################
 #
-package(
-    default_testonly = True,
-    default_visibility = ["//:__subpackages__"],
-)
+package(default_testonly = True)
 
-config_setting(
-    name = "mac",
-    values = {"cpu": "darwin"},
-)
+licenses(["notice"])  # Apache 2.0
 
-config_setting(
-    name = "linux",
-    values = {"cpu": "k8"},
-)
-
-config_setting(
-    name = "windows",
-    values = {"cpu": "x64_windows"},
+alias(
+    name = "main",
+    actual  = select({
+        "//common/conditions:linux": "linux_amd64_stripped/main",
+        "//common/conditions:mac": "darwin_amd64_pure_stripped/main",
+        "//common/conditions:windows": "windows_amd64_pure_stripped/main.exe",
+    }),
+    visibility = ["//visibility:public"],
 )
