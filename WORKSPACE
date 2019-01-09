@@ -71,6 +71,20 @@ browser_repositories(
     sauce = True,
 )
 
+load("//web:go_repositories.bzl", "go_repositories", "go_internal_repositories")
+
+go_repositories()
+
+go_internal_repositories()
+
+load("//web:java_repositories.bzl", "java_repositories")
+
+java_repositories()
+
+load("//web:py_repositories.bzl", "py_repositories")
+
+py_repositories()
+
 http_archive(
     name = "io_bazel_rules_scala",
     sha256 = "6c69597f373a01989b9f7119bd5d28cffc9cc35d44d1f6440c409d8ef420057d",

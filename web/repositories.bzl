@@ -14,17 +14,10 @@
 """Defines external repositories needed by rules_webtesting."""
 
 load("//web/internal:platform_http_file.bzl", "platform_http_file")
-load("@bazel_gazelle//:deps.bzl", "go_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("@bazel_tools//tools/build_defs/repo:java.bzl", "java_import_external")
-
-# NOTE: URLs are mirrored by an asynchronous review process. They must
-#       be greppable for that to happen. It's OK to submit broken mirror
-#       URLs, so long as they're correctly formatted. Bazel's downloader
-#       has fast failover.
 
 def web_test_repositories(**kwargs):
-    """Defines external repositories required by Webtesting Rules.
+    """Defines external repositories required by WebTesting Rules.
 
     This function exists for other Bazel projects to call from their WORKSPACE
     file when depending on rules_webtesting using http_archive. This function
@@ -48,62 +41,17 @@ def web_test_repositories(**kwargs):
     """
     if should_create_repository("bazel_skylib", kwargs):
         bazel_skylib()
-    if should_create_repository("com_github_blang_semver", kwargs):
-        com_github_blang_semver()
-    if should_create_repository("com_github_gorilla_context", kwargs):
-        com_github_gorilla_context()
-    if should_create_repository("com_github_gorilla_mux", kwargs):
-        com_github_gorilla_mux()
-    if should_create_repository("com_github_tebeka_selenium", kwargs):
-        com_github_tebeka_selenium()
-    if should_create_repository("com_github_urllib3", kwargs):
-        com_github_urllib3()
-    if should_create_repository("com_google_code_findbugs_jsr305", kwargs):
-        com_google_code_findbugs_jsr305()
-    if should_create_repository(
-        "com_google_errorprone_error_prone_annotations",
-        kwargs,
-    ):
-        com_google_errorprone_error_prone_annotations()
-    if should_create_repository("com_google_guava", kwargs):
-        com_google_guava()
-    if should_create_repository("com_squareup_okhttp3_okhttp", kwargs):
-        com_squareup_okhttp3_okhttp()
-    if should_create_repository("com_squareup_okio", kwargs):
-        com_squareup_okio()
-    if should_create_repository("junit", kwargs):
-        junit()
-    if should_create_repository("net_bytebuddy", kwargs):
-        net_bytebuddy()
-    if should_create_repository("org_apache_commons_exec", kwargs):
-        org_apache_commons_exec()
-    if should_create_repository("org_hamcrest_core", kwargs):
-        org_hamcrest_core()
-    if should_create_repository("org_jetbrains_kotlin_stdlib", kwargs):
-        org_jetbrains_kotlin_stdlib()
-    if should_create_repository("org_json", kwargs):
-        org_json()
-    if should_create_repository("org_seleniumhq_py", kwargs):
-        org_seleniumhq_py()
-    if should_create_repository("org_seleniumhq_selenium_api", kwargs):
-        org_seleniumhq_selenium_api()
-    if should_create_repository("org_seleniumhq_selenium_remote_driver", kwargs):
-        org_seleniumhq_selenium_remote_driver()
     if kwargs.keys():
         print("The following parameters are unknown: " + str(kwargs.keys()))
 
 def should_create_repository(name, args):
     """Returns whether the name repository should be created.
-
     This allows creation of a repository to be disabled by either an
     "omit_" _+ name parameter or by previously defining a rule for the repository.
-
     The args dict will be mutated to remove "omit_" + name.
-
     Args:
         name: The name of the repository that should be checked.
         args: A dictionary that contains "omit_...": bool pairs.
-
     Returns:
         boolean indicating whether the repository should be created.
     """
@@ -147,104 +95,6 @@ def bazel_skylib():
         ],
     )
 
-def com_github_blang_semver():
-    go_repository(
-        name = "com_github_blang_semver",
-        importpath = "github.com/blang/semver",
-        sha256 = "3d9da53f4c2d3169bfa9b25f2f36f301a37556a47259c870881524c643c69c57",
-        strip_prefix = "semver-3.5.1",
-        urls = [
-            "https://mirror.bazel.build/github.com/blang/semver/archive/v3.5.1.tar.gz",
-            "https://github.com/blang/semver/archive/v3.5.1.tar.gz",
-        ],
-    )
-
-def com_github_gorilla_context():
-    go_repository(
-        name = "com_github_gorilla_context",
-        importpath = "github.com/gorilla/context",
-        sha256 = "2dfdd051c238695bf9ebfed0bf6a8c533507ac0893bce23be5930e973736bb03",
-        strip_prefix = "context-1.1.1",
-        urls = [
-            "https://mirror.bazel.build/github.com/gorilla/context/archive/v1.1.1.tar.gz",
-            "https://github.com/gorilla/context/archive/v1.1.1.tar.gz",
-        ],
-    )
-
-def com_github_gorilla_mux():
-    go_repository(
-        name = "com_github_gorilla_mux",
-        importpath = "github.com/gorilla/mux",
-        sha256 = "0dc18fb09413efea7393e9c2bd8b5b442ce08e729058f5f7e328d912c6c3d3e3",
-        strip_prefix = "mux-1.6.2",
-        urls = [
-            "https://mirror.bazel.build/github.com/gorilla/mux/archive/v1.6.2.tar.gz",
-            "https://github.com/gorilla/mux/archive/v1.6.2.tar.gz",
-        ],
-    )
-
-def com_github_tebeka_selenium():
-    go_repository(
-        name = "com_github_tebeka_selenium",
-        importpath = "github.com/tebeka/selenium",
-        sha256 = "4f0e1b9f54825580707fca637a4b174872dce5da6685c010b98eff45c1b3064a",
-        strip_prefix = "selenium-edf31bb7fd715ad505d9190f8d65d13f39a7c825",
-        urls = [
-            "https://mirror.bazel.build/github.com/tebeka/selenium/archive/edf31bb7fd715ad505d9190f8d65d13f39a7c825.tar.gz",
-            "https://github.com/tebeka/selenium/archive/edf31bb7fd715ad505d9190f8d65d13f39a7c825.tar.gz",
-        ],
-    )
-
-def com_github_urllib3():
-    http_archive(
-        name = "com_github_urllib3",
-        build_file = str(Label("//build_files:com_github_urllib3.BUILD")),
-        sha256 = "de9529817c93f27c8ccbfead6985011db27bd0ddfcdb2d86f3f663385c6a9c22",
-        strip_prefix = "urllib3-1.24.1",
-        urls = [
-            "https://files.pythonhosted.org/packages/b1/53/37d82ab391393565f2f831b8eedbffd57db5a718216f82f1a8b4d381a1c1/urllib3-1.24.1.tar.gz",
-        ],
-    )
-
-def com_google_code_findbugs_jsr305():
-    java_import_external(
-        name = "com_google_code_findbugs_jsr305",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
-            "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
-        ],
-        jar_sha256 =
-            "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
-        licenses = ["notice"],  # BSD 3-clause
-    )
-
-def com_google_errorprone_error_prone_annotations():
-    java_import_external(
-        name = "com_google_errorprone_error_prone_annotations",
-        jar_sha256 =
-            "357cd6cfb067c969226c442451502aee13800a24e950fdfde77bcdb4565a668d",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.2/error_prone_annotations-2.3.2.jar",
-            "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.2/error_prone_annotations-2.3.2.jar",
-        ],
-        licenses = ["notice"],  # Apache 2.0
-    )
-
-def com_google_guava():
-    java_import_external(
-        name = "com_google_guava",
-        jar_sha256 = "63b09db6861011e7fb2481be7790c7fd4b03f0bb884b3de2ecba8823ad19bf3f",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/27.0-jre/guava-27.0-jre.jar",
-            "https://repo1.maven.org/maven2/com/google/guava/guava/27.0-jre/guava-27.0-jre.jar",
-        ],
-        licenses = ["notice"],  # Apache 2.0
-        exports = [
-            "@com_google_code_findbugs_jsr305",
-            "@com_google_errorprone_error_prone_annotations",
-        ],
-    )
-
 def com_saucelabs_sauce_connect():
     platform_http_file(
         name = "com_saucelabs_sauce_connect",
@@ -262,75 +112,6 @@ def com_saucelabs_sauce_connect():
         windows_urls = [
             "https://saucelabs.com/downloads/sc-4.4.12-win32.zip",
         ],
-    )
-
-def com_squareup_okhttp3_okhttp():
-    java_import_external(
-        name = "com_squareup_okhttp3_okhttp",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.jar",
-            "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.jar",
-        ],
-        jar_sha256 =
-            "a0d01017a42bba26e507fc6d448bb36e536f4b6e612f7c42de30bbdac2b7785e",
-        licenses = ["notice"],  # Apache 2.0
-        deps = [
-            "@com_squareup_okio",
-            "@com_google_code_findbugs_jsr305",
-        ],
-    )
-
-def com_squareup_okio():
-    java_import_external(
-        name = "com_squareup_okio",
-        jar_sha256 = "6773b78e61ed63b9dbb36c87f11873883f2cc3539c8be2a9568091248d83b2a2",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/2.1.0/okio-2.1.0.jar",
-            "https://repo1.maven.org/maven2/com/squareup/okio/okio/2.1.0/okio-2.1.0.jar",
-        ],
-        licenses = ["notice"],  # Apache 2.0
-        deps = [
-            "@com_google_code_findbugs_jsr305",
-            "@org_jetbrains_kotlin_stdlib",
-        ],
-    )
-
-def junit():
-    java_import_external(
-        name = "junit",
-        jar_sha256 =
-            "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar",
-            "https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar",
-        ],
-        licenses = ["reciprocal"],  # Eclipse Public License 1.0
-        testonly_ = 1,
-        deps = ["@org_hamcrest_core"],
-    )
-
-def net_bytebuddy():
-    java_import_external(
-        name = "net_bytebuddy",
-        jar_sha256 = "4b87ad52a8f64a1197508e176e84076584160e3d65229ff757efee870cd4a8e2",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.19/byte-buddy-1.8.19.jar",
-            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.19/byte-buddy-1.8.19.jar",
-        ],
-        licenses = ["notice"],  # Apache 2.0
-        deps = ["@com_google_code_findbugs_jsr305"],
-    )
-
-def org_apache_commons_exec():
-    java_import_external(
-        name = "org_apache_commons_exec",
-        jar_sha256 =
-            "cb49812dc1bfb0ea4f20f398bcae1a88c6406e213e67f7524fb10d4f8ad9347b",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar",
-            "https://repo1.maven.org/maven2/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar",
-        ],
-        licenses = ["notice"],  # Apache License, Version 2.0
     )
 
 def org_chromium_chromedriver():
@@ -375,41 +156,6 @@ def org_chromium_chromium():
         ],
     )
 
-def org_hamcrest_core():
-    java_import_external(
-        name = "org_hamcrest_core",
-        jar_sha256 =
-            "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar",
-            "https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar",
-        ],
-        licenses = ["notice"],  # New BSD License
-        testonly_ = 1,
-    )
-
-def org_jetbrains_kotlin_stdlib():
-    java_import_external(
-        name = "org_jetbrains_kotlin_stdlib",
-        jar_sha256 = "4ff0fcb97f4983b4aaba12668c24ad21b08460915db1b021d8f1d8bee687f21c",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.0/kotlin-stdlib-1.3.0.jar",
-            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.0/kotlin-stdlib-1.3.0.jar",
-        ],
-        licenses = ["notice"],  # The Apache Software License, Version 2.0
-    )
-
-def org_json():
-    java_import_external(
-        name = "org_json",
-        jar_sha256 = "518080049ba83181914419d11a25d9bc9833a2d729b6a6e7469fa52851356da8",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/json/json/20180813/json-20180813.jar",
-            "https://repo1.maven.org/maven2/org/json/json/20180813/json-20180813.jar",
-        ],
-        licenses = ["notice"],  # MIT-style license
-    )
-
 def org_mozilla_firefox():
     platform_http_file(
         name = "org_mozilla_firefox",
@@ -443,49 +189,5 @@ def org_mozilla_geckodriver():
         macos_urls = [
             "https://mirror.bazel.build/github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-macos.tar.gz",
             "https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-macos.tar.gz",
-        ],
-    )
-
-def org_seleniumhq_py():
-    http_archive(
-        name = "org_seleniumhq_py",
-        build_file = str(Label("//build_files:org_seleniumhq_py.BUILD")),
-        sha256 = "deaf32b60ad91a4611b98d8002757f29e6f2c2d5fcaf202e1c9ad06d6772300d",
-        strip_prefix = "selenium-3.141.0",
-        urls = [
-            "https://files.pythonhosted.org/packages/ed/9c/9030520bf6ff0b4c98988448a93c04fcbd5b13cd9520074d8ed53569ccfe/selenium-3.141.0.tar.gz",
-        ],
-    )
-
-def org_seleniumhq_selenium_api():
-    java_import_external(
-        name = "org_seleniumhq_selenium_api",
-        jar_sha256 = "c9d8907216650cffac1526fa40caab840ae6fdbe901ce3d4576a435d54dd41fa",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.141.5/selenium-api-3.141.5.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.141.5/selenium-api-3.141.5.jar",
-        ],
-        licenses = ["notice"],  # The Apache Software License, Version 2.0
-        testonly_ = 1,
-    )
-
-def org_seleniumhq_selenium_remote_driver():
-    java_import_external(
-        name = "org_seleniumhq_selenium_remote_driver",
-        jar_sha256 =
-            "fe144c413fba8dcf5dc490cfd063588758b2ac8a960e3d2117b06f28a16d04b5",
-        jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.141.5/selenium-remote-driver-3.141.5.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.141.5/selenium-remote-driver-3.141.5.jar",
-        ],
-        licenses = ["notice"],  # The Apache Software License, Version 2.0
-        testonly_ = 1,
-        deps = [
-            "@com_google_guava",
-            "@net_bytebuddy",
-            "@com_squareup_okhttp3_okhttp",
-            "@com_squareup_okio",
-            "@org_apache_commons_exec",
-            "@org_seleniumhq_selenium_api",
         ],
     )

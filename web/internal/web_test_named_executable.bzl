@@ -51,12 +51,6 @@ web_test_named_executable = rule(
             cfg = "target",
             mandatory = True,
         ),
-        "merger": attr.label(
-            doc = "Metadata merger executable.",
-            executable = True,
-            cfg = "host",
-            default = Label("//go/metadata/main"),
-        ),
     },
     doc = "Defines an executable that can be located by name.",
     outputs = {"web_test_metadata": "%{name}.gen.json"},
