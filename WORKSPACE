@@ -21,10 +21,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "bazel_skylib",
     sha256 = "2b9af2de004d67725c9985540811835389b229c27874f2e15f5e319622a53a3b",
-    strip_prefix = "bazel-skylib-e9fc4750d427196754bebb0e2e1e38d68893490a",
+    strip_prefix = "bazel-skylib-0.7.0",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/archive/e9fc4750d427196754bebb0e2e1e38d68893490a.tar.gz",
-        "https://github.com/bazelbuild/bazel-skylib/archive/e9fc4750d427196754bebb0e2e1e38d68893490a.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/archive/0.7.0.tar.gz",
     ],
 )
 
@@ -35,19 +34,17 @@ http_archive(
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "b7a62250a3a73277ade0ce306d22f122365b513f5402222403e507f2f997d421",
+    sha256 = "492c3ac68ed9dcf527a07e6a1b2dcbf199c6bf8b35517951467ac32e421c06c1",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/0.16.3/rules_go-0.16.3.tar.gz",
-        "https://github.com/bazelbuild/rules_go/releases/download/0.16.3/rules_go-0.16.3.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/0.17.0/rules_go-0.17.0.tar.gz",
     ],
 )
 
 http_archive(
     name = "bazel_gazelle",
-    sha256 = "6e875ab4b6bf64a38c352887760f21203ab054676d9c1b274963907e0768740d",
+    sha256 = "7949fc6cc17b5b191103e97481cf8889217263acf52e00b560683413af204fcb",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/0.15.0/bazel-gazelle-0.15.0.tar.gz",
-        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.15.0/bazel-gazelle-0.15.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.16.0/bazel-gazelle-0.16.0.tar.gz",
     ],
 )
 
@@ -61,9 +58,11 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
 
-load("//web:repositories.bzl", "browser_repositories", "web_test_repositories")
+load("//web:repositories.bzl", "web_test_repositories")
 
 web_test_repositories()
+
+load("//web/versioned:browsers-0.3.1.bzl", "browser_repositories")
 
 browser_repositories(
     chromium = True,
@@ -88,10 +87,9 @@ py_repositories()
 http_archive(
     name = "io_bazel_rules_scala",
     sha256 = "6c69597f373a01989b9f7119bd5d28cffc9cc35d44d1f6440c409d8ef420057d",
-    strip_prefix = "rules_scala-da5ba6d97a1abdadef89d509b30a9dcfde7ffbe4",
+    strip_prefix = "rules_scala-817a6b2f5e4299eeb954e3b25287568a7de472b4",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_scala/archive/da5ba6d97a1abdadef89d509b30a9dcfde7ffbe4.tar.gz",
-        "https://github.com/bazelbuild/rules_scala/archive/da5ba6d97a1abdadef89d509b30a9dcfde7ffbe4.tar.gz",
+        "https://github.com/bazelbuild/rules_scala/archive/817a6b2f5e4299eeb954e3b25287568a7de472b4.tar.gz",
     ],
 )
 

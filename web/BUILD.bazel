@@ -55,6 +55,7 @@ skylark_library(
     srcs = ["repositories.bzl"],
     deps = [
         "//web/internal:platform_http_file",
+        "//web/versioned:browsers-0.3.1",
         # should depend on @bazel_gazelle//:def
         # should depend on @bazel_tools//tools/build_defs/repo:{http,java}
     ],
