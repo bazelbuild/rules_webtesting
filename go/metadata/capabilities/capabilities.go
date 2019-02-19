@@ -327,6 +327,7 @@ func (c *Capabilities) MergeOver(other map[string]interface{}) *Capabilities {
 	always := map[string]interface{}{}
 	first := map[string]interface{}{}
 
+	// Partition other into those that should affect entries in FirstMatch, and those that should affect AlwaysMatch.
 	for k, v := range other {
 		if anyContains(c.FirstMatch, k) {
 			first[k] = v
@@ -336,6 +337,8 @@ func (c *Capabilities) MergeOver(other map[string]interface{}) *Capabilities {
 	}
 
 	firstMatch := c.FirstMatch
+
+	// If any of the entries in other should affect FirstMatch, then merge each FirstMatch of those entries.
 	if len(first) != 0 {
 		firstMatch = nil
 		for _, fm := range c.FirstMatch {
@@ -348,6 +351,62 @@ func (c *Capabilities) MergeOver(other map[string]interface{}) *Capabilities {
 	return &Capabilities{
 		AlwaysMatch:  alwaysMatch,
 		FirstMatch:   firstMatch,
+		W3CSupported: c.W3CSupported,
+	}
+}
+
+// MergeUnder creates a new Capabilities with caps in other removed from all entries in c.FirstMatch and merged over c.AlwaysMatch.
+func (c *Capabilities) MergeUnder(other map[string]interface{}) *Capabilities {
+	if len(other) == 0 {
+		return c
+	}
+
+	if c == nil {
+		return &Capabilities{
+			AlwaysMatch: other,
+		}
+	}
+
+	var first []map[string]interface{}
+
+	// Remove any keys that are in other from all FirstMatch capabilities.
+	for _, oldF := range c.FirstMatch {
+		newF := map[string]interface{}{}
+
+		for k, v := range oldF {
+			if _, ok := other[k]; !ok {
+				newF[k] = v
+			}
+		}
+
+		// Since we are removing keys from FirstMatch capabilities, it is possible for some of them to now
+		// be identical, so only add newF if there isn't one in first that is the same.
+		duped := false
+		for _, v := range first {
+			if reflect.DeepEqual(newF, v) {
+				duped = true
+				break
+			}
+		}
+
+		if !duped {
+			first = append(first, newF)
+		}
+	}
+
+	always := c.AlwaysMatch
+
+	// If first now only contains one entry, then merge it with always.
+	if len(first) == 1 {
+		always = Merge(first[0], always)
+		first = nil
+	}
+
+	always = Merge(always, other)
+
+	return &Capabilities{
+		AlwaysMatch:  always,
+		FirstMatch:   first,
 		W3CSupported: c.W3CSupported,
 	}
 }
