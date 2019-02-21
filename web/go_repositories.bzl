@@ -83,7 +83,7 @@ def com_github_gorilla_mux():
     go_repository(
         name = "com_github_gorilla_mux",
         importpath = "github.com/gorilla/mux",
-        sha256 = "0dc18fb09413efea7393e9c2bd8b5b442ce08e729058f5f7e328d912c6c3d3e3",
+        sha256 = "5aca5bfa16325506b23b66ce34e2b9336a3a341b8c51ba7b0faf7d0daade0116",
         strip_prefix = "mux-1.7.0",
         urls = [
             "https://github.com/gorilla/mux/archive/v1.7.0.tar.gz",

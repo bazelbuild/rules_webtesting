@@ -17,15 +17,9 @@
 workspace(name = "io_bazel_rules_webtesting")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("//web:repositories.bzl", "web_test_repositories")
 
-http_archive(
-    name = "bazel_skylib",
-    sha256 = "2b9af2de004d67725c9985540811835389b229c27874f2e15f5e319622a53a3b",
-    strip_prefix = "bazel-skylib-0.7.0",
-    urls = [
-        "https://github.com/bazelbuild/bazel-skylib/archive/0.7.0.tar.gz",
-    ],
-)
+web_test_repositories()
 
 # NOTE: URLs are mirrored by an asynchronous review process. They must
 #       be greppable for that to happen. It's OK to submit broken mirror
@@ -48,7 +42,7 @@ http_archive(
     ],
 )
 
-load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
 
@@ -57,10 +51,6 @@ go_register_toolchains()
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
-
-load("//web:repositories.bzl", "web_test_repositories")
-
-web_test_repositories()
 
 load("//web/versioned:browsers-0.3.1.bzl", "browser_repositories")
 
@@ -86,10 +76,10 @@ py_repositories()
 
 http_archive(
     name = "io_bazel_rules_scala",
-    sha256 = "6c69597f373a01989b9f7119bd5d28cffc9cc35d44d1f6440c409d8ef420057d",
-    strip_prefix = "rules_scala-817a6b2f5e4299eeb954e3b25287568a7de472b4",
+    sha256 = "8139387780f8b72fd2746450f0b70a92200e75b84818d9d2e8d28ec3a5cf81c3",
+    strip_prefix = "rules_scala-1fa4408d48cbf0da72e9229d49d07e10aa8847cd",
     urls = [
-        "https://github.com/bazelbuild/rules_scala/archive/817a6b2f5e4299eeb954e3b25287568a7de472b4.tar.gz",
+        "https://github.com/bazelbuild/rules_scala/archive/1fa4408d48cbf0da72e9229d49d07e10aa8847cd.tar.gz",
     ],
 )
 

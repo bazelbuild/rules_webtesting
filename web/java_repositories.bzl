@@ -74,22 +74,18 @@ def java_repositories(**kwargs):
 def com_google_code_findbugs_jsr305():
     java_import_external(
         name = "com_google_code_findbugs_jsr305",
+        jar_sha256 = "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
             "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
         ],
-        jar_sha256 =
-            "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
         licenses = ["notice"],  # BSD 3-clause
     )
 
 def com_google_errorprone_error_prone_annotations():
     java_import_external(
         name = "com_google_errorprone_error_prone_annotations",
-        jar_sha256 =
-            "357cd6cfb067c969226c442451502aee13800a24e950fdfde77bcdb4565a668d",
+        jar_sha256 = "357cd6cfb067c969226c442451502aee13800a24e950fdfde77bcdb4565a668d",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.2/error_prone_annotations-2.3.2.jar",
             "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.2/error_prone_annotations-2.3.2.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
@@ -98,10 +94,9 @@ def com_google_errorprone_error_prone_annotations():
 def com_google_guava():
     java_import_external(
         name = "com_google_guava",
-        jar_sha256 = "63b09db6861011e7fb2481be7790c7fd4b03f0bb884b3de2ecba8823ad19bf3f",
+        jar_sha256 = "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/google/guava/guava/27.0-jre/guava-27.0-jre.jar",
-            "https://repo1.maven.org/maven2/com/google/guava/guava/27.0-jre/guava-27.0-jre.jar",
+            "https://repo1.maven.org/maven2/com/google/guava/guava/27.0.1-jre/guava-27.0.1-jre.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         exports = [
@@ -113,12 +108,10 @@ def com_google_guava():
 def com_squareup_okhttp3_okhttp():
     java_import_external(
         name = "com_squareup_okhttp3_okhttp",
+        jar_sha256 = "0ab41a713e2a638efc1f4610ef34c07fef398f9d7b9d79a6f5406b779b0011a5",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.jar",
-            "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.jar",
+            "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.13.1/okhttp-3.13.1.jar",
         ],
-        jar_sha256 =
-            "a0d01017a42bba26e507fc6d448bb36e536f4b6e612f7c42de30bbdac2b7785e",
         licenses = ["notice"],  # Apache 2.0
         deps = [
             "@com_squareup_okio",
@@ -129,10 +122,9 @@ def com_squareup_okhttp3_okhttp():
 def com_squareup_okio():
     java_import_external(
         name = "com_squareup_okio",
-        jar_sha256 = "6773b78e61ed63b9dbb36c87f11873883f2cc3539c8be2a9568091248d83b2a2",
+        jar_sha256 = "e58c97406a6bb1138893750299ac63c6aa04b38b6b49eae1bfcad1a63ef9ba1b",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/com/squareup/okio/okio/2.1.0/okio-2.1.0.jar",
-            "https://repo1.maven.org/maven2/com/squareup/okio/okio/2.1.0/okio-2.1.0.jar",
+            "https://repo1.maven.org/maven2/com/squareup/okio/okio/2.2.2/okio-2.2.2.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         deps = [
@@ -144,10 +136,8 @@ def com_squareup_okio():
 def junit():
     java_import_external(
         name = "junit",
-        jar_sha256 =
-            "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a",
+        jar_sha256 = "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar",
             "https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar",
         ],
         licenses = ["reciprocal"],  # Eclipse Public License 1.0
@@ -158,10 +148,9 @@ def junit():
 def net_bytebuddy():
     java_import_external(
         name = "net_bytebuddy",
-        jar_sha256 = "4b87ad52a8f64a1197508e176e84076584160e3d65229ff757efee870cd4a8e2",
+        jar_sha256 = "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.19/byte-buddy-1.8.19.jar",
-            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.8.19/byte-buddy-1.8.19.jar",
+            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.9.10/byte-buddy-1.9.10.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         deps = ["@com_google_code_findbugs_jsr305"],
@@ -173,7 +162,6 @@ def org_apache_commons_exec():
         jar_sha256 =
             "cb49812dc1bfb0ea4f20f398bcae1a88c6406e213e67f7524fb10d4f8ad9347b",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar",
             "https://repo1.maven.org/maven2/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar",
         ],
         licenses = ["notice"],  # Apache License, Version 2.0
@@ -182,11 +170,9 @@ def org_apache_commons_exec():
 def org_hamcrest_core():
     java_import_external(
         name = "org_hamcrest_core",
-        jar_sha256 =
-            "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9",
+        jar_sha256 = "e09109e54a289d88506b9bfec987ddd199f4217c9464132668351b9a4f00bee9",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar",
-            "https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar",
+            "https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/2.1/hamcrest-core-2.1.jar",
         ],
         licenses = ["notice"],  # New BSD License
         testonly_ = 1,
@@ -195,10 +181,9 @@ def org_hamcrest_core():
 def org_jetbrains_kotlin_stdlib():
     java_import_external(
         name = "org_jetbrains_kotlin_stdlib",
-        jar_sha256 = "4ff0fcb97f4983b4aaba12668c24ad21b08460915db1b021d8f1d8bee687f21c",
+        jar_sha256 = "38ba2370d9f06f50433e06b2ca775b94473c2e2785f410926079ab793c72b034",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.0/kotlin-stdlib-1.3.0.jar",
-            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.0/kotlin-stdlib-1.3.0.jar",
+            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.21/kotlin-stdlib-1.3.21.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
     )
@@ -208,7 +193,6 @@ def org_json():
         name = "org_json",
         jar_sha256 = "518080049ba83181914419d11a25d9bc9833a2d729b6a6e7469fa52851356da8",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/json/json/20180813/json-20180813.jar",
             "https://repo1.maven.org/maven2/org/json/json/20180813/json-20180813.jar",
         ],
         licenses = ["notice"],  # MIT-style license
@@ -217,10 +201,9 @@ def org_json():
 def org_seleniumhq_selenium_api():
     java_import_external(
         name = "org_seleniumhq_selenium_api",
-        jar_sha256 = "c9d8907216650cffac1526fa40caab840ae6fdbe901ce3d4576a435d54dd41fa",
+        jar_sha256 = "8bfd5a736eccfc08866301ffc9b7f529e55976355c5799bed8392486df64dee5",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.141.5/selenium-api-3.141.5.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.141.5/selenium-api-3.141.5.jar",
+            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-api/3.141.59/selenium-api-3.141.59.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
         testonly_ = 1,
@@ -229,11 +212,9 @@ def org_seleniumhq_selenium_api():
 def org_seleniumhq_selenium_remote_driver():
     java_import_external(
         name = "org_seleniumhq_selenium_remote_driver",
-        jar_sha256 =
-            "fe144c413fba8dcf5dc490cfd063588758b2ac8a960e3d2117b06f28a16d04b5",
+        jar_sha256 = "9829fe57adf36743d785d0c2e7db504ba3ba0a3aacac652b8867cc854d2dfc45",
         jar_urls = [
-            "https://mirror.bazel.build/repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.141.5/selenium-remote-driver-3.141.5.jar",
-            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.141.5/selenium-remote-driver-3.141.5.jar",
+            "https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/3.141.59/selenium-remote-driver-3.141.59.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
         testonly_ = 1,

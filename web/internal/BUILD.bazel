@@ -14,11 +14,11 @@
 #
 ################################################################################
 #
-load("@bazel_skylib//:skylark_library.bzl", "skylark_library")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 package(
     default_testonly = True,
-    default_visibility = ["//web:__pkg__"],
+    default_visibility = ["//web:__subpackages__"],
 )
 
 licenses(["notice"])  # Apache 2.0
@@ -32,7 +32,7 @@ exports_files(
     visibility = ["//visibility:public"],
 )
 
-skylark_library(
+bzl_library(
     name = "browser",
     srcs = ["browser.bzl"],
     deps = [
@@ -42,7 +42,12 @@ skylark_library(
     ],
 )
 
-skylark_library(
+bzl_library(
+    name = "constants",
+    srcs = ["constants.bzl"],
+)
+
+bzl_library(
     name = "custom_browser",
     srcs = ["custom_browser.bzl"],
     deps = [
@@ -53,38 +58,33 @@ skylark_library(
     ],
 )
 
-skylark_library(
-    name = "constants",
-    srcs = ["constants.bzl"],
-)
-
-skylark_library(
+bzl_library(
     name = "files",
     srcs = ["files.bzl"],
 )
 
-skylark_library(
+bzl_library(
     name = "metadata",
     srcs = ["metadata.bzl"],
     deps = [":files"],
 )
 
-skylark_library(
+bzl_library(
     name = "platform_http_file",
     srcs = ["platform_http_file.bzl"],
 )
 
-skylark_library(
+bzl_library(
     name = "provider",
     srcs = ["provider.bzl"],
 )
 
-skylark_library(
+bzl_library(
     name = "runfiles",
     srcs = ["runfiles.bzl"],
 )
 
-skylark_library(
+bzl_library(
     name = "web_test",
     srcs = ["web_test.bzl"],
     deps = [
@@ -95,7 +95,7 @@ skylark_library(
     ],
 )
 
-skylark_library(
+bzl_library(
     name = "web_test_archive",
     srcs = ["web_test_archive.bzl"],
     deps = [
@@ -106,7 +106,7 @@ skylark_library(
     ],
 )
 
-skylark_library(
+bzl_library(
     name = "web_test_config",
     srcs = ["web_test_config.bzl"],
     deps = [
@@ -115,7 +115,7 @@ skylark_library(
     ],
 )
 
-skylark_library(
+bzl_library(
     name = "web_test_files",
     srcs = ["web_test_files.bzl"],
     deps = [
@@ -124,7 +124,7 @@ skylark_library(
     ],
 )
 
-skylark_library(
+bzl_library(
     name = "web_test_named_executable",
     srcs = ["web_test_named_executable.bzl"],
     deps = [
@@ -134,7 +134,7 @@ skylark_library(
     ],
 )
 
-skylark_library(
+bzl_library(
     name = "web_test_named_file",
     srcs = ["web_test_named_file.bzl"],
     deps = [
@@ -143,7 +143,7 @@ skylark_library(
     ],
 )
 
-skylark_library(
+bzl_library(
     name = "wrap_web_test_suite",
     srcs = ["wrap_web_test_suite.bzl"],
     deps = [

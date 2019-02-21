@@ -14,14 +14,14 @@
 #
 ################################################################################
 #
-load("@bazel_skylib//:skylark_library.bzl", "skylark_library")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 package(
     default_testonly = True,
     default_visibility = ["//visibility:public"],
 )
 
-skylark_library(
+bzl_library(
     name = "browsers-0.3.1",
     srcs = ["browsers-0.3.1.bzl"],
     deps = [

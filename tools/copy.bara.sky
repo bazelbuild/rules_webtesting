@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Copybara workflow to create a releasable directory. Is used from releaser.sh
-# script.
+"""Copybara workflow to create a releasable directory.
+Is used from releaser.sh script.
+"""
+
 core.workflow(
     name = "release",
     origin = folder.origin(materialize_outside_symlinks = True),
