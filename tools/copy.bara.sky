@@ -1,45 +1,63 @@
-core.workflow(
-	name = "release",
-	origin = folder.origin(materialize_outside_symlinks=True),
-	destination = folder.destination(),
-	authoring = authoring.pass_thru("Marc Fisher <fisherii@google.com>"),
-	origin_files = glob(
-		[
-			# Source paths to include
-			"*",
-			"browsers/**",
-			"build_files/**",
-			"common/**",
-			"go/bazel/**",
-			"go/cmdhelper/**",
-			"go/metadata/**",
-			"go/portpicker/**",
-			"go/screenshotter/**",
-			"go/webtest/**",
-			"java/**",
-			"javatests/**",
-			"scalatests/**",
-			"testdata/**",
-			"testing/**",
-			"third_party/**",
-			"web/**",
+# Copyright 2019 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-			# binaries to include
-			"bazel-bin/go/metadata/main/*/main",
-			"bazel-bin/go/metadata/main/*/main.exe",		
-			"bazel-bin/go/wsl/main/*/main",
-			"bazel-bin/go/wsl/main/*/main.exe",		
-			"bazel-bin/go/wtl/main/*/main",
-			"bazel-bin/go/wtl/main/*/main.exe",		
-		],
-		exclude = ["go/metadata/main/**"],
-	),
-	transformations = [
-		core.move("bazel-bin/go/metadata/main", "go/metadata/main"),
-		core.move("bazel-bin/go/wsl", "go/wsl"),
-		core.move("bazel-bin/go/wtl", "go/wtl"),
-		core.move("build_files/metadata.BUILD", "go/metadata/main/BUILD.bazel"),
-		core.move("build_files/wsl.BUILD", "go/wsl/BUILD.bazel"),
-		core.move("build_files/wtl.BUILD", "go/wtl/main/BUILD.bazel"),
-	],
+"""Copybara workflow to create a releasable directory.
+Is used from releaser.sh script.
+"""
+
+core.workflow(
+    name = "release",
+    origin = folder.origin(materialize_outside_symlinks = True),
+    destination = folder.destination(),
+    authoring = authoring.pass_thru("Marc Fisher <fisherii@google.com>"),
+    origin_files = glob(
+        [
+            # Source paths to include
+            "*",
+            "browsers/**",
+            "build_files/**",
+            "common/**",
+            "go/bazel/**",
+            "go/cmdhelper/**",
+            "go/metadata/**",
+            "go/portpicker/**",
+            "go/screenshotter/**",
+            "go/webtest/**",
+            "java/**",
+            "javatests/**",
+            "scalatests/**",
+            "testdata/**",
+            "testing/**",
+            "third_party/**",
+            "web/**",
+
+            # binaries to include
+            "bazel-bin/go/metadata/main/*/main",
+            "bazel-bin/go/metadata/main/*/main.exe",
+            "bazel-bin/go/wsl/main/*/main",
+            "bazel-bin/go/wsl/main/*/main.exe",
+            "bazel-bin/go/wtl/main/*/main",
+            "bazel-bin/go/wtl/main/*/main.exe",
+        ],
+        exclude = ["go/metadata/main/**"],
+    ),
+    transformations = [
+        core.move("bazel-bin/go/metadata/main", "go/metadata/main"),
+        core.move("bazel-bin/go/wsl", "go/wsl"),
+        core.move("bazel-bin/go/wtl", "go/wtl"),
+        core.move("build_files/metadata.BUILD", "go/metadata/main/BUILD.bazel"),
+        core.move("build_files/wsl.BUILD", "go/wsl/BUILD.bazel"),
+        core.move("build_files/wtl.BUILD", "go/wtl/main/BUILD.bazel"),
+    ],
 )

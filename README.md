@@ -26,10 +26,12 @@ web_test_repositories()
 ```
 
 You can use the predefined browsers in `@io_bazel_rules_webtesting//browsers` by
-adding:
+adding (note we keep versioned browser definitions here, so users can separate
+updating browser versions from updating the version of rules_webtesting they
+use):
 
 ```bzl
-load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories")
+load("@io_bazel_rules_webtesting//web/versioned:browsers-<version>.bzl", "browser_repositories")
 
 browser_repositories(chrome=True, firefox=True)
 ```
@@ -205,9 +207,7 @@ py_web_test_suite(
     name = "browser_test",
     srcs = ["browser_test.py"],
     browsers = [
-        # For experimental purposes only. Eventually you should
-        # create your own browser definitions.
-        "@io_bazel_rules_webtesting//browsers:chromium-native",
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
     ],
     local = True,
     deps = ["@io_bazel_rules_webtesting//testing/web"],
