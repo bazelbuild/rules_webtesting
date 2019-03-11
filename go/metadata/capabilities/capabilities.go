@@ -148,47 +148,79 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 }
 
 func normalize(in map[string]interface{}) (map[string]interface{}, error) {
+	inCpy := map[string]interface{}{}
+	for k, v := range in {
+		inCpy[k] = v
+	}
+
 	out := map[string]interface{}{}
+	if err := normalizeLegacyGoogCapability(inCpy, out, "chromeOptions"); err != nil {
+		return nil, err
+	}
 
-	outCO := map[string]interface{}{}
+	if err := normalizeLegacyGoogCapability(inCpy, out, "loggingPrefs"); err != nil {
+		return nil, err
+	}
 
-	if co, ok := in["chromeOptions"]; ok {
-		coMap, ok := co.(map[string]interface{})
+	if err := normalizeProxyCapability(inCpy, out); err != nil {
+		return nil, err
+	}
+
+	for k, v := range inCpy {
+		out[k] = v
+	}
+
+	return out, nil
+}
+
+// normalizeLegacyGoogCapability duplicates and merges paramName from "in" to "out" with name "goog:"+paramName, deleting the entry from "in".
+func normalizeLegacyGoogCapability(in map[string]interface{}, out map[string]interface{}, paramName string) error {
+	outParamVal := map[string]interface{}{}
+	if param, ok := in[paramName]; ok {
+		inParamVal, ok := param.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("chromeOptions %v is %T, should be map[string]interface{}", co, co)
+			return fmt.Errorf("%s %v is %T, should be map[string]interface{}", paramName, param, param)
 		}
-		if err := mergeIntoNoReplace(outCO, coMap); err != nil {
-			return nil, err
+		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
+			return err
 		}
 	}
 
-	if co, ok := in["goog:chromeOptions"]; ok {
-		coMap, ok := co.(map[string]interface{})
+	if param, ok := in["goog:"+paramName]; ok {
+		inParamVal, ok := param.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("goog:chromeOptions %v is %T, should be map[string]interface{}", co, co)
+			return fmt.Errorf("goog:%s %v is %T, should be map[string]interface{}", paramName, param, param)
 		}
-		if err := mergeIntoNoReplace(outCO, coMap); err != nil {
-			return nil, err
+		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
+			return err
 		}
 	}
 
-	if len(outCO) != 0 {
-		out["goog:chromeOptions"] = outCO
+	if len(outParamVal) != 0 {
+		out["goog:"+paramName] = outParamVal
 	}
+	delete(in, paramName)
+	delete(in, "goog:"+paramName)
 
+	return nil
+}
+
+// normalizeProxyCapability applies several normalization operations to the proxy capability,
+// copies it to "out", and deletes it from "in".
+func normalizeProxyCapability(in map[string]interface{}, out map[string]interface{}) error {
 	outProxy := map[string]interface{}{}
 
 	if proxy, ok := in["proxy"]; ok {
 		proxyMap, ok := proxy.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("proxy %v is %T, should be map[string]interface{}", proxy, proxy)
+			return fmt.Errorf("proxy %v is %T, should be map[string]interface{}", proxy, proxy)
 		}
 		for k, v := range proxyMap {
 			switch k {
 			case "proxyType":
 				pt, ok := v.(string)
 				if !ok {
-					return nil, fmt.Errorf("proxyType %v is %T, should be string", k, k)
+					return fmt.Errorf("proxyType %v is %T, should be string", k, k)
 				}
 				outProxy["proxyType"] = strings.ToLower(pt)
 				continue
@@ -203,7 +235,7 @@ func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 						outNP = append(outNP, h)
 					}
 				default:
-					return nil, fmt.Errorf("noProxy %v is %T, should be string or []interface{}", k, k)
+					return fmt.Errorf("noProxy %v is %T, should be string or []interface{}", k, k)
 				}
 				if len(outNP) != 0 {
 					outProxy["noProxy"] = outNP
@@ -219,14 +251,9 @@ func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 	if len(outProxy) != 0 {
 		out["proxy"] = outProxy
 	}
+	delete(in, "proxy")
 
-	for k, v := range in {
-		if k != "chromeOptions" && k != "goog:chromeOptions" && k != "proxy" {
-			out[k] = v
-		}
-	}
-
-	return out, nil
+	return nil
 }
 
 func mergeIntoNoReplace(dst, src map[string]interface{}) error {
@@ -269,6 +296,10 @@ func denormalizeJWP(caps map[string]interface{}) map[string]interface{} {
 		if k == "goog:chromeOptions" {
 			out["chromeOptions"] = v
 			out["goog:chromeOptions"] = v
+			continue
+		} else if k == "goog:loggingPrefs" {
+			out["loggingPrefs"] = v
+			out["goog:loggingPrefs"] = v
 			continue
 		}
 
@@ -558,12 +589,16 @@ func Merge(m1, m2 map[string]interface{}) map[string]interface{} {
 	for k, v := range m1 {
 		if k == "chromeOptions" {
 			k = "goog:chromeOptions"
+		} else if k == "loggingPrefs" {
+			k = "goog:loggingPrefs"
 		}
 		nm[k] = v
 	}
 	for k, v := range m2 {
 		if k == "chromeOptions" {
 			k = "goog:chromeOptions"
+		} else if k == "loggingPrefs" {
+			k = "goog:loggingPrefs"
 		}
 		nm[k] = mergeValues(nm[k], v, k)
 	}
