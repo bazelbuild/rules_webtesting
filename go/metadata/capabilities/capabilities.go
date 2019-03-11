@@ -148,34 +148,19 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 }
 
 func normalize(in map[string]interface{}) (map[string]interface{}, error) {
-	out := map[string]interface{}{}
-
-	outCO := map[string]interface{}{}
-
-	if co, ok := in["chromeOptions"]; ok {
-		coMap, ok := co.(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("chromeOptions %v is %T, should be map[string]interface{}", co, co)
-		}
-		if err := mergeIntoNoReplace(outCO, coMap); err != nil {
-			return nil, err
-		}
+	// Normalize chromeOptions
+	out, err := normalizeParam(in, map[string]interface{}{}, "chromeOptions")
+	if err != nil {
+		return nil, err
 	}
 
-	if co, ok := in["goog:chromeOptions"]; ok {
-		coMap, ok := co.(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("goog:chromeOptions %v is %T, should be map[string]interface{}", co, co)
-		}
-		if err := mergeIntoNoReplace(outCO, coMap); err != nil {
-			return nil, err
-		}
+	// Normalize loggingPrefs
+	out, err = normalizeParam(in, out, "loggingPrefs")
+	if err != nil {
+		return nil, err
 	}
 
-	if len(outCO) != 0 {
-		out["goog:chromeOptions"] = outCO
-	}
-
+	// Normalize proxy
 	outProxy := map[string]interface{}{}
 
 	if proxy, ok := in["proxy"]; ok {
@@ -221,11 +206,40 @@ func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 	}
 
 	for k, v := range in {
-		if k != "chromeOptions" && k != "goog:chromeOptions" && k != "proxy" {
+		if k != "chromeOptions" && k != "goog:chromeOptions" && k != "proxy" && k != "loggingPrefs" && k != "goog:loggingPrefs" {
 			out[k] = v
 		}
 	}
 
+	return out, nil
+}
+
+// normalizeParam copies and merges paramName from "in" to "out" with name "goog:"+paramName.
+func normalizeParam(in map[string]interface{}, out map[string]interface{}, paramName string) (map[string]interface{}, error) {
+	outParamVal := map[string]interface{}{}
+	if param, ok := in[paramName]; ok {
+		inParamVal, ok := param.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("%s %v is %T, should be map[string]interface{}", paramName, param, param)
+		}
+		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
+			return nil, err
+		}
+	}
+
+	if param, ok := in["goog:"+paramName]; ok {
+		inParamVal, ok := param.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("goog:%s %v is %T, should be map[string]interface{}", paramName, param, param)
+		}
+		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
+			return nil, err
+		}
+	}
+
+	if len(outParamVal) != 0 {
+		out["goog:"+paramName] = outParamVal
+	}
 	return out, nil
 }
 
@@ -269,6 +283,10 @@ func denormalizeJWP(caps map[string]interface{}) map[string]interface{} {
 		if k == "goog:chromeOptions" {
 			out["chromeOptions"] = v
 			out["goog:chromeOptions"] = v
+			continue
+		} else if k == "goog:loggingPrefs" {
+			out["loggingPrefs"] = v
+			out["goog:loggingPrefs"] = v
 			continue
 		}
 
@@ -558,12 +576,16 @@ func Merge(m1, m2 map[string]interface{}) map[string]interface{} {
 	for k, v := range m1 {
 		if k == "chromeOptions" {
 			k = "goog:chromeOptions"
+		} else if k == "loggingPrefs" {
+			k = "goog:loggingPrefs"
 		}
 		nm[k] = v
 	}
 	for k, v := range m2 {
 		if k == "chromeOptions" {
 			k = "goog:chromeOptions"
+		} else if k == "loggingPrefs" {
+			k = "goog:loggingPrefs"
 		}
 		nm[k] = mergeValues(nm[k], v, k)
 	}
@@ -753,3 +775,4 @@ func resolveString(s string, resolver Resolver) (string, error) {
 
 	return result, nil
 }
+
