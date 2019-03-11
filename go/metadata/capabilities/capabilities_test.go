@@ -99,6 +99,22 @@ func TestDenormalizeJWP(t *testing.T) {
 			},
 		},
 		{
+			name: "duplicates goog:loggingPrefs into loggingPrefs",
+			args: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key": "value",
+				},
+			},
+			want: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key": "value",
+				},
+				"loggingPrefs": map[string]interface{}{
+					"key": "value",
+				},
+			},
+		},
+		{
 			name: "converts noProxy from []interface{} into string",
 			args: map[string]interface{}{
 				"proxy": map[string]interface{}{
@@ -186,6 +202,24 @@ func TestNormalize(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: true,
+		},
+		{
+			name: "normalizes loggingPrefs",
+			args: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key1": "value1",
+				},
+				"loggingPrefs": map[string]interface{}{
+					"key2": "value2",
+				},
+			},
+			want: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key1": "value1",
+					"key2": "value2",
+				},
+			},
+			wantErr: false,
 		},
 		{
 			name: "normalizes proxy",
@@ -1369,3 +1403,4 @@ func TestMergeUnder(t *testing.T) {
 		})
 	}
 }
+
