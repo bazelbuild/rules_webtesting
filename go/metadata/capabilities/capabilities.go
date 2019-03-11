@@ -149,13 +149,13 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 
 func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 	// Normalize chromeOptions
-	out, err := normalizeParam(in, map[string]interface{}{}, "chromeOptions")
+	out, err := duplicateLegacyGoogCapability(in, map[string]interface{}{}, "chromeOptions")
 	if err != nil {
 		return nil, err
 	}
 
 	// Normalize loggingPrefs
-	out, err = normalizeParam(in, out, "loggingPrefs")
+	out, err = duplicateLegacyGoogCapability(in, out, "loggingPrefs")
 	if err != nil {
 		return nil, err
 	}
@@ -214,8 +214,8 @@ func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 	return out, nil
 }
 
-// normalizeParam copies and merges paramName from "in" to "out" with name "goog:"+paramName.
-func normalizeParam(in map[string]interface{}, out map[string]interface{}, paramName string) (map[string]interface{}, error) {
+// duplicateLegacyGoogCapability duplicates and merges paramName from "in" to "out" with name "goog:"+paramName.
+func duplicateLegacyGoogCapability(in map[string]interface{}, out map[string]interface{}, paramName string) (map[string]interface{}, error) {
 	outParamVal := map[string]interface{}{}
 	if param, ok := in[paramName]; ok {
 		inParamVal, ok := param.(map[string]interface{})
