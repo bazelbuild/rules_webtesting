@@ -148,32 +148,79 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 }
 
 func normalize(in map[string]interface{}) (map[string]interface{}, error) {
-	// Normalize chromeOptions
-	out, err := duplicateLegacyGoogCapability(in, map[string]interface{}{}, "chromeOptions")
-	if err != nil {
+	inCpy := map[string]interface{}{}
+	for k, v := range in {
+		inCpy[k] = v
+	}
+
+	out := map[string]interface{}{}
+	if err := normalizeLegacyGoogCapability(inCpy, out, "chromeOptions"); err != nil {
 		return nil, err
 	}
 
-	// Normalize loggingPrefs
-	out, err = duplicateLegacyGoogCapability(in, out, "loggingPrefs")
-	if err != nil {
+	if err := normalizeLegacyGoogCapability(inCpy, out, "loggingPrefs"); err != nil {
 		return nil, err
 	}
 
-	// Normalize proxy
+	if err := normalizeProxyCapability(inCpy, out); err != nil {
+		return nil, err
+	}
+
+	for k, v := range inCpy {
+		out[k] = v
+	}
+
+	return out, nil
+}
+
+// normalizeLegacyGoogCapability duplicates and merges paramName from "in" to "out" with name "goog:"+paramName, deleting the entry from "in".
+func normalizeLegacyGoogCapability(in map[string]interface{}, out map[string]interface{}, paramName string) error {
+	outParamVal := map[string]interface{}{}
+	if param, ok := in[paramName]; ok {
+		inParamVal, ok := param.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%s %v is %T, should be map[string]interface{}", paramName, param, param)
+		}
+		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
+			return err
+		}
+	}
+
+	if param, ok := in["goog:"+paramName]; ok {
+		inParamVal, ok := param.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("goog:%s %v is %T, should be map[string]interface{}", paramName, param, param)
+		}
+		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
+			return err
+		}
+	}
+
+	if len(outParamVal) != 0 {
+		out["goog:"+paramName] = outParamVal
+	}
+	delete(in, paramName)
+	delete(in, "goog:"+paramName)
+
+	return nil
+}
+
+// normalizeProxyCapability applies several normalization operations to the proxy capability,
+// copies it to "out", and deletes it from "in".
+func normalizeProxyCapability(in map[string]interface{}, out map[string]interface{}) error {
 	outProxy := map[string]interface{}{}
 
 	if proxy, ok := in["proxy"]; ok {
 		proxyMap, ok := proxy.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("proxy %v is %T, should be map[string]interface{}", proxy, proxy)
+			return fmt.Errorf("proxy %v is %T, should be map[string]interface{}", proxy, proxy)
 		}
 		for k, v := range proxyMap {
 			switch k {
 			case "proxyType":
 				pt, ok := v.(string)
 				if !ok {
-					return nil, fmt.Errorf("proxyType %v is %T, should be string", k, k)
+					return fmt.Errorf("proxyType %v is %T, should be string", k, k)
 				}
 				outProxy["proxyType"] = strings.ToLower(pt)
 				continue
@@ -188,7 +235,7 @@ func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 						outNP = append(outNP, h)
 					}
 				default:
-					return nil, fmt.Errorf("noProxy %v is %T, should be string or []interface{}", k, k)
+					return fmt.Errorf("noProxy %v is %T, should be string or []interface{}", k, k)
 				}
 				if len(outNP) != 0 {
 					outProxy["noProxy"] = outNP
@@ -204,43 +251,9 @@ func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 	if len(outProxy) != 0 {
 		out["proxy"] = outProxy
 	}
+	delete(in, "proxy")
 
-	for k, v := range in {
-		if k != "chromeOptions" && k != "goog:chromeOptions" && k != "proxy" && k != "loggingPrefs" && k != "goog:loggingPrefs" {
-			out[k] = v
-		}
-	}
-
-	return out, nil
-}
-
-// duplicateLegacyGoogCapability duplicates and merges paramName from "in" to "out" with name "goog:"+paramName.
-func duplicateLegacyGoogCapability(in map[string]interface{}, out map[string]interface{}, paramName string) (map[string]interface{}, error) {
-	outParamVal := map[string]interface{}{}
-	if param, ok := in[paramName]; ok {
-		inParamVal, ok := param.(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("%s %v is %T, should be map[string]interface{}", paramName, param, param)
-		}
-		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
-			return nil, err
-		}
-	}
-
-	if param, ok := in["goog:"+paramName]; ok {
-		inParamVal, ok := param.(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("goog:%s %v is %T, should be map[string]interface{}", paramName, param, param)
-		}
-		if err := mergeIntoNoReplace(outParamVal, inParamVal); err != nil {
-			return nil, err
-		}
-	}
-
-	if len(outParamVal) != 0 {
-		out["goog:"+paramName] = outParamVal
-	}
-	return out, nil
+	return nil
 }
 
 func mergeIntoNoReplace(dst, src map[string]interface{}) error {
@@ -775,4 +788,3 @@ func resolveString(s string, resolver Resolver) (string, error) {
 
 	return result, nil
 }
-
