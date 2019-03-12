@@ -569,6 +569,60 @@ func (c *Capabilities) Strip(capsToStrip ...string) *Capabilities {
 	}
 }
 
+// StripAllPrefixedExcept strips all prefixed capabilities, except for the provided exceptions.
+func (c *Capabilities) StripAllPrefixedExcept(ex ...string) *Capabilities {
+	exemptions := map[string]bool{}
+	for _, e := range ex {
+		exemptions[e] = true
+	}
+
+	// Get the always match capabilities.
+	am := map[string]interface{}{}
+	for k, v := range c.AlwaysMatch {
+		if v != nil {
+			am[k] = v
+		}
+	}
+
+	// Get the first match capabilities
+	var fms []map[string]interface{}
+	for _, fm := range c.FirstMatch {
+		newFM := map[string]interface{}{}
+		for k, v := range fm {
+			if v != nil {
+				newFM[k] = v
+			}
+		}
+		fms = append(fms, newFM)
+	}
+
+	// Delete prefixed, non-exempt always match capabilities.
+	for c := range am {
+		if tokens := strings.Split(c, ":"); len(tokens) == 2 {
+			if !exemptions[tokens[0]] {
+				delete(am, c)
+			}
+		}
+	}
+
+	// Delete prefixed, non-exempt first match capabilities.
+	for _, fm := range fms {
+		for c := range fm {
+			if tokens := strings.Split(c, ":"); len(tokens) == 2 {
+				if !exemptions[tokens[0]] {
+					delete(fm, c)
+				}
+			}
+		}
+	}
+
+	return &Capabilities{
+		AlwaysMatch:  am,
+		FirstMatch:   fms,
+		W3CSupported: c.W3CSupported,
+	}
+}
+
 // Merge takes two JSON objects, and merges them.
 //
 // The resulting object will have all of the keys in the two input objects.
@@ -788,3 +842,4 @@ func resolveString(s string, resolver Resolver) (string, error) {
 
 	return result, nil
 }
+
