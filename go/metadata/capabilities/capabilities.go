@@ -32,6 +32,7 @@ var w3cSupportedCapabilities = []string{
 	"platformName",
 	"proxy",
 	"setWindowRect",
+	"strictFileInteractability",
 	"timeouts",
 	"unhandledPromptBehavior",
 }
@@ -842,4 +843,3 @@ func resolveString(s string, resolver Resolver) (string, error) {
 
 	return result, nil
 }
-
