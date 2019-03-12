@@ -380,7 +380,7 @@ func (d *Driver) Forward(ctx context.Context, w http.ResponseWriter, r *http.Req
 func (d *Driver) NewSession(ctx context.Context, caps *capabilities.Capabilities, w http.ResponseWriter) (string, error) {
 	// IEDriver does not handle capabilities with unknown prefixes, so they must be stripped.
 	if bn, ok := caps.AlwaysMatch["browserName"].(string); ok && bn == "internet explorer" {
-		caps = caps.Strip("goog:chromeOptions", "moz:firefoxOptions")
+		caps = caps.StripAllPrefixedExcept("se")
 	}
 
 	wd, err := webdriver.CreateSession(ctx, d.Address, 1, caps.Strip("google:wslConfig", "google:sessionId"))
@@ -529,3 +529,4 @@ func (f *fakeResponseWriter) Write(b []byte) (int, error) {
 func (f *fakeResponseWriter) WriteHeader(statusCode int) {
 	log.Printf("%s status code: %d", f.prefix, statusCode)
 }
+

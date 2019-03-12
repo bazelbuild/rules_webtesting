@@ -1036,6 +1036,122 @@ func TestMergeOver(t *testing.T) {
 	}
 }
 
+func TestStripAllPrefixedExcept(t *testing.T) {
+	testCases := []struct {
+		name   string
+		in     *Capabilities
+		exempt []string
+		out    *Capabilities
+	}{
+		{
+			name: "strips non-exempt AlwaysMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"nonexempt:cap": "val",
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+		},
+		{
+			name: "does not strip exempt AlwaysMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"foo:cap": "val",
+				},
+			},
+			exempt: []string{"foo"},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"foo:cap": "val",
+				},
+			},
+		},
+		{
+			name: "strips non-exempt FirstMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"foo:cap": "val",
+					},
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch:  []map[string]interface{}{map[string]interface{}{}},
+			},
+		},
+		{
+			name: "does not strip exempt FirstMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"foo:cap": "val",
+					},
+				},
+			},
+			exempt: []string{"foo"},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"foo:cap": "val",
+					},
+				},
+			},
+		},
+		{
+			name: "does not strip FirstMatch un-prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"cap": "val",
+					},
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"cap": "val",
+					},
+				},
+			},
+		},
+		{
+			name: "does not strip AlwaysMatch un-prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"cap": "val",
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"cap": "val",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			out := tc.in.StripAllPrefixedExcept(tc.exempt...)
+
+			if !reflect.DeepEqual(out, tc.out) {
+				t.Fatalf("got %#v, want %#v", out, tc.out)
+			}
+		})
+	}
+}
+
 func TestResolve(t *testing.T) {
 	testCases := []struct {
 		name     string
