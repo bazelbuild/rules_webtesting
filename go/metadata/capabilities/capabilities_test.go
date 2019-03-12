@@ -1036,8 +1036,6 @@ func TestMergeOver(t *testing.T) {
 	}
 }
 
-
-
 func TestStripAllPrefixedExcept(t *testing.T) {
 	testCases := []struct {
 		name   string
