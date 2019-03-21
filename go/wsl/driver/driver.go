@@ -529,4 +529,3 @@ func (f *fakeResponseWriter) Write(b []byte) (int, error) {
 func (f *fakeResponseWriter) WriteHeader(statusCode int) {
 	log.Printf("%s status code: %d", f.prefix, statusCode)
 }
-

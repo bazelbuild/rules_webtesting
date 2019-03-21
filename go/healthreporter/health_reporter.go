@@ -59,11 +59,15 @@ func WaitForHealthy(ctx context.Context, h HealthReporter) error {
 	ticker := time.NewTicker(poll)
 	defer ticker.Stop()
 
-	for {
-		err := h.Healthy(ctx)
+	for count := 0; ; count++ {
+		// use a context that is 90% of the poll interval for each call to Healthy.
+		shortCtx, cancel := context.WithTimeout(ctx, poll*9/10)
+		err := h.Healthy(shortCtx)
+		cancel()
 		if err == nil {
 			return nil
 		}
+		log.Printf("error on poll %d of %s: %v", count, h.Name(), err)
 		if errors.IsPermanent(err) {
 			return err
 		}
