@@ -76,10 +76,10 @@ py_repositories()
 
 http_archive(
     name = "io_bazel_rules_scala",
-    sha256 = "8139387780f8b72fd2746450f0b70a92200e75b84818d9d2e8d28ec3a5cf81c3",
-    strip_prefix = "rules_scala-1fa4408d48cbf0da72e9229d49d07e10aa8847cd",
+    sha256 = "684f5b251670d3e6fe179f16aa8c363e9b7f30a0b0b8f2927128a02a341a4653",
+    strip_prefix = "rules_scala-7bc18d07001cbfd425c6761c8384c4e982d25a2b",
     urls = [
-        "https://github.com/bazelbuild/rules_scala/archive/1fa4408d48cbf0da72e9229d49d07e10aa8847cd.tar.gz",
+        "https://github.com/bazelbuild/rules_scala/archive/7bc18d07001cbfd425c6761c8384c4e982d25a2b.tar.gz",
     ],
 )
 
