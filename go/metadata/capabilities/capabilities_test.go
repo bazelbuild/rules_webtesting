@@ -1082,7 +1082,7 @@ func TestStripAllPrefixedExcept(t *testing.T) {
 			exempt: []string{""},
 			out: &Capabilities{
 				AlwaysMatch: map[string]interface{}{},
-				FirstMatch:  []map[string]interface{}{map[string]interface{}{}},
+				FirstMatch:  []map[string]interface{}{{}},
 			},
 		},
 		{
@@ -1519,4 +1519,3 @@ func TestMergeUnder(t *testing.T) {
 		})
 	}
 }
-

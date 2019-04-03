@@ -67,9 +67,13 @@ func WaitForHealthy(ctx context.Context, h HealthReporter) error {
 		if errors.IsPermanent(err) {
 			return err
 		}
+		comp := errors.Component(err)
+		if comp == errors.DefaultComp {
+			comp = h.Name()
+		}
 		select {
 		case <-ctx.Done():
-			return errors.New(h.Name(), fmt.Errorf("%v waiting for healthy: %v", ctx.Err(), err))
+			return errors.New(comp, fmt.Errorf("%v waiting for healthy: %v", ctx.Err(), err))
 		case <-ticker.C:
 		}
 	}
