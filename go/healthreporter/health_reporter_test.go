@@ -38,8 +38,8 @@ func TestWaitForHealthyTimeout(t *testing.T) {
 	if !strings.Contains(err.Error(), failing.health.Error()) {
 		t.Errorf(`expected err to contain "%s", but got %s`, failing.health.Error(), err.Error())
 	}
-	if errors.Component(err) != failing.Name() {
-		t.Errorf(`expected err.Component to be "%s", but got %s`, failing.Name(), errors.Component(err))
+	if errors.Component(err) != "fake" {
+		t.Errorf(`expected err.Component to be "%s", but got %s`, "fake", errors.Component(err))
 	}
 }
 
@@ -55,8 +55,8 @@ func TestWaitForHealthyCancelled(t *testing.T) {
 	if !strings.Contains(err.Error(), ctx.Err().Error()) {
 		t.Errorf(`expected err to contain "%s", but got %s`, ctx.Err().Error(), err.Error())
 	}
-	if errors.Component(err) != failing.Name() {
-		t.Errorf(`expected err.Component to be "%s", but got %s`, failing.Name(), errors.Component(err))
+	if errors.Component(err) != "fake" {
+		t.Errorf(`expected err.Component to be "%s", but got %s`, "fake", errors.Component(err))
 	}
 }
 
