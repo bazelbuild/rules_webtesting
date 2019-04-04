@@ -39,7 +39,6 @@ go_library(
         "//go/wtl/proxy:go_default_library",
         "//go/wtl/proxy/driverhub:go_default_library",
         "//go/wtl/proxy/driverhub/drivermu:go_default_library",
-        "//go/wtl/proxy/driverhub/googlescreenshot:go_default_library",
         "//go/wtl/proxy/driverhub/quithandler:go_default_library",
         "//go/wtl/proxy/driverhub/scripttimeout:go_default_library",
         "//go/wtl/proxy/healthz:go_default_library",
