@@ -155,6 +155,11 @@ func FQDN() (string, error) {
 		return "", err
 	}
 
+	// Discard bogus hostname.
+	if hostname == "nonet5.prod.google.com" {
+		return "localhost", nil
+	}
+
 	addrs, err := net.LookupHost(hostname)
 	if err != nil {
 		return "localhost", nil
