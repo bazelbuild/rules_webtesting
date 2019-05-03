@@ -17,4 +17,4 @@
 
 :: TODO(DrMarcII): Add support for strip_prefix (%3) parameter.
 
-powershell.exe -NoP -NonI -Command "Expand-Archive '%1' '%2'"
+start /b /wait powershell.exe -NoP -NonI -Command "Expand-Archive '%1' '%2'"
