@@ -72,10 +72,10 @@ def com_github_blang_semver():
     go_repository(
         name = "com_github_blang_semver",
         importpath = "github.com/blang/semver",
-        sha256 = "3d9da53f4c2d3169bfa9b25f2f36f301a37556a47259c870881524c643c69c57",
-        strip_prefix = "semver-3.5.1",
+        sha256 = "dc85076e7c5a7a44e33fc24df320904b95e2fa12c94a3ac758a574dadd54ee53",
+        strip_prefix = "semver-3.6.1",
         urls = [
-            "https://github.com/blang/semver/archive/v3.5.1.tar.gz",
+            "https://github.com/blang/semver/archive/v3.6.1.tar.gz",
         ],
     )
 
@@ -83,10 +83,10 @@ def com_github_gorilla_mux():
     go_repository(
         name = "com_github_gorilla_mux",
         importpath = "github.com/gorilla/mux",
-        sha256 = "5aca5bfa16325506b23b66ce34e2b9336a3a341b8c51ba7b0faf7d0daade0116",
-        strip_prefix = "mux-1.7.0",
+        sha256 = "cd2331585690e3751286e33141066108d875416b6dc4d5fabdddaef020e7cab4",
+        strip_prefix = "mux-1.7.1",
         urls = [
-            "https://github.com/gorilla/mux/archive/v1.7.0.tar.gz",
+            "https://github.com/gorilla/mux/archive/v1.7.1.tar.gz",
         ],
     )
 

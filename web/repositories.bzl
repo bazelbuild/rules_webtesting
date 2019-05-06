@@ -67,9 +67,8 @@ def should_create_repository(name, args):
 def bazel_skylib():
     http_archive(
         name = "bazel_skylib",
-        sha256 = "2c62d8cd4ab1e65c08647eb4afe38f51591f43f7f0885e7769832fa137633dcb",
-        strip_prefix = "bazel-skylib-0.7.0",
+        sha256 = "2ef429f5d7ce7111263289644d233707dba35e39696377ebab8b0bc701f7818e",
         urls = [
-            "https://github.com/bazelbuild/bazel-skylib/archive/0.7.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/0.8.0/bazel-skylib.0.8.0.tar.gz",
         ],
     )

@@ -50,10 +50,10 @@ def com_github_urllib3():
     http_archive(
         name = "com_github_urllib3",
         build_file = str(Label("//build_files:com_github_urllib3.BUILD")),
-        sha256 = "de9529817c93f27c8ccbfead6985011db27bd0ddfcdb2d86f3f663385c6a9c22",
-        strip_prefix = "urllib3-1.24.1",
+        sha256 = "a53063d8b9210a7bdec15e7b272776b9d42b2fd6816401a0d43006ad2f9902db",
+        strip_prefix = "urllib3-1.25.2",
         urls = [
-            "https://files.pythonhosted.org/packages/b1/53/37d82ab391393565f2f831b8eedbffd57db5a718216f82f1a8b4d381a1c1/urllib3-1.24.1.tar.gz",
+            "https://files.pythonhosted.org/packages/9a/8b/ea6d2beb2da6e331e9857d0a60b79ed4f72dcbc4e2c7f2d2521b0480fda2/urllib3-1.25.2.tar.gz",
         ],
     )
 

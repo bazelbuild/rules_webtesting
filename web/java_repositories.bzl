@@ -84,9 +84,9 @@ def com_google_code_findbugs_jsr305():
 def com_google_errorprone_error_prone_annotations():
     java_import_external(
         name = "com_google_errorprone_error_prone_annotations",
-        jar_sha256 = "357cd6cfb067c969226c442451502aee13800a24e950fdfde77bcdb4565a668d",
+        jar_sha256 = "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
         jar_urls = [
-            "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.2/error_prone_annotations-2.3.2.jar",
+            "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.3/error_prone_annotations-2.3.2.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
     )
@@ -94,9 +94,9 @@ def com_google_errorprone_error_prone_annotations():
 def com_google_guava():
     java_import_external(
         name = "com_google_guava",
-        jar_sha256 = "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
+        jar_sha256 = "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
         jar_urls = [
-            "https://repo1.maven.org/maven2/com/google/guava/guava/27.0.1-jre/guava-27.0.1-jre.jar",
+            "https://repo1.maven.org/maven2/com/google/guava/guava/27.1-jre/guava-27.1-jre.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         exports = [
@@ -108,9 +108,9 @@ def com_google_guava():
 def com_squareup_okhttp3_okhttp():
     java_import_external(
         name = "com_squareup_okhttp3_okhttp",
-        jar_sha256 = "0ab41a713e2a638efc1f4610ef34c07fef398f9d7b9d79a6f5406b779b0011a5",
+        jar_sha256 = "5a6be691653076aa64dcd361d2e445e4060b4b5dc882b1f6ba49e79ddfc3e563",
         jar_urls = [
-            "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.13.1/okhttp-3.13.1.jar",
+            "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.14.1/okhttp-3.14.1.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         deps = [
@@ -148,9 +148,9 @@ def junit():
 def net_bytebuddy():
     java_import_external(
         name = "net_bytebuddy",
-        jar_sha256 = "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
+        jar_sha256 = "3688c3d434bebc3edc5516296a2ed0f47b65e451071b4afecad84f902f0efc11",
         jar_urls = [
-            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.9.10/byte-buddy-1.9.10.jar",
+            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.9.12/byte-buddy-1.9.12.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         deps = ["@com_google_code_findbugs_jsr305"],
@@ -181,9 +181,9 @@ def org_hamcrest_core():
 def org_jetbrains_kotlin_stdlib():
     java_import_external(
         name = "org_jetbrains_kotlin_stdlib",
-        jar_sha256 = "38ba2370d9f06f50433e06b2ca775b94473c2e2785f410926079ab793c72b034",
+        jar_sha256 = "f38c84326543e66ed4895b20fb3ea0fca527fd5a040e1f49d0946ecf3d2b3b23",
         jar_urls = [
-            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.21/kotlin-stdlib-1.3.21.jar",
+            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.31/kotlin-stdlib-1.3.31.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
     )
