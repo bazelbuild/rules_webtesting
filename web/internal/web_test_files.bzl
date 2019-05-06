@@ -26,7 +26,7 @@ def _web_test_files_impl(ctx):
     for target, name in ctx.attr.files.items():
         if name in named_files:
             fail("%s appears multiple times." % name, "files")
-        if len(target.files) != 1:
+        if len(target.files.to_list()) != 1:
             fail("%s refers to multiple files." % target.label, "files")
         named_files[name] = target.files.to_list()[0]
         runfiles = depset(transitive = [target.files, runfiles])
