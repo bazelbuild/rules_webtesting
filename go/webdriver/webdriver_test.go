@@ -386,7 +386,7 @@ func TestSetWindowRect(t *testing.T) {
 			Rectangle{
 				X:      200,
 				Y:      200,
-				Width:  500,
+				Width:  600,
 				Height: 400,
 			},
 			true,
@@ -461,7 +461,7 @@ func TestSetWindowSize(t *testing.T) {
 	}{
 		{
 			"valid",
-			500,
+			600,
 			400,
 			true,
 			false,
