@@ -28,17 +28,17 @@ web_test_repositories()
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "492c3ac68ed9dcf527a07e6a1b2dcbf199c6bf8b35517951467ac32e421c06c1",
+    sha256 = "86ae934bd4c43b99893fc64be9d9fc684b81461581df7ea8fc291c816f5ee8c5",
     urls = [
-        "https://github.com/bazelbuild/rules_go/releases/download/0.17.0/rules_go-0.17.0.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/0.18.3/rules_go-0.18.3.tar.gz",
     ],
 )
 
 http_archive(
     name = "bazel_gazelle",
-    sha256 = "7949fc6cc17b5b191103e97481cf8889217263acf52e00b560683413af204fcb",
+    sha256 = "3c681998538231a2d24d0c07ed5a7658cb72bfb5fd4bf9911157c0e9ac6a2687",
     urls = [
-        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.16.0/bazel-gazelle-0.16.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.17.0/bazel-gazelle-0.17.0.tar.gz",
     ],
 )
 
@@ -76,10 +76,10 @@ py_repositories()
 
 http_archive(
     name = "io_bazel_rules_scala",
-    sha256 = "684f5b251670d3e6fe179f16aa8c363e9b7f30a0b0b8f2927128a02a341a4653",
-    strip_prefix = "rules_scala-7bc18d07001cbfd425c6761c8384c4e982d25a2b",
+    sha256 = "0cefc401be2519a7e9a4c19e3d2ca058a2cc3b8df30d01df71ccbba5c1cfa5b2",
+    strip_prefix = "rules_scala-8f006056990307cbd8320c97a59cd09c821011d8",
     urls = [
-        "https://github.com/bazelbuild/rules_scala/archive/7bc18d07001cbfd425c6761c8384c4e982d25a2b.tar.gz",
+        "https://github.com/bazelbuild/rules_scala/archive/8f006056990307cbd8320c97a59cd09c821011d8.tar.gz",
     ],
 )
 

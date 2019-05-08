@@ -56,9 +56,9 @@ def org_chromium_chromedriver():
         name = "org_chromium_chromedriver",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
         amd64_sha256 =
-            "258830acdfd1273c47dd06defa92e37944d5379fb74c3bc9cc6dddbfd9b1d26e",
+            "ec9dbe021338f0befaecca702abc576cb7cc31a2f5a852c2c41e94721af5d3ad",
         amd64_urls = [
-            "https://chromedriver.storage.googleapis.com/73.0.3683.68/chromedriver_linux64.zip",
+            "https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip",
         ],
         macos_sha256 =
             "eaaa1b0b7d47b113d228ca99a5d68de52f660ccd9dd78a069df8cd97ff83308a",
@@ -66,9 +66,9 @@ def org_chromium_chromedriver():
             "https://chromedriver.storage.googleapis.com/73.0.3683.68/chromedriver_mac64.zip",
         ],
         windows_sha256 =
-            "8a1f37de201d406f6aeb4a21e81311b685356c6d2ac16512008ba5322939bf69",
+            "9d1088968f645f39234b149201507d0f09c818880ba908ddbb279d352ed9dc58",
         windows_urls = [
-            "https://chromedriver.storage.googleapis.com/73.0.3683.68/chromedriver_win32.zip",
+            "https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_win32.zip",
         ],
     )
 
@@ -77,9 +77,9 @@ def org_chromium_chromium():
         name = "org_chromium_chromium",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
         amd64_sha256 =
-            "07088ae85de4a0c380ddb0bff7d39a9b30efe537293830378d06e609d8112cfb",
+            "eb6754c7918da5eab42a42bbda7efdf7f1661eaa3802b8940841f0c2c312299f",
         amd64_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/625894/chrome-linux.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/638880/chrome-linux.zip",
         ],
         macos_sha256 =
             "65433518ba6269113ad8479369b3563c1c37c2765c88239a0af53f5acd25d8bb",
@@ -87,9 +87,9 @@ def org_chromium_chromium():
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/625854/chrome-mac.zip",
         ],
         windows_sha256 =
-            "bc80a8fa401404d1dc2e1017747fefcc3c7c1abf56dc52c042afafa11e689bae",
+            "5dd49e1c5dce3266d7a5e5935edf291b7031f2916831cc311ec1dbfbf5694933",
         windows_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/625885/chrome-win.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/638870/chrome-win.zip",
         ],
     )
 
@@ -98,14 +98,14 @@ def org_mozilla_firefox():
         name = "org_mozilla_firefox",
         licenses = ["reciprocal"],  # MPL 2.0
         amd64_sha256 =
-            "eda0f0bc2af3a4b19f77d48c7242453477565906337848b51e363291456f41b1",
+            "bfb8de5837fd3174ef08e18ecf2bcd207a5425c628435a76530ca7a81cbd706a",
         amd64_urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/66.0.2/linux-x86_64/en-US/firefox-66.0.2.tar.bz2",
+            "https://ftp.mozilla.org/pub/firefox/releases/66.0.4/linux-x86_64/en-US/firefox-66.0.4.tar.bz2",
         ],
         macos_sha256 =
-            "bc80a8fa401404d1dc2e1017747fefcc3c7c1abf56dc52c042afafa11e689bae",
+            "b697cfcab7b30a2a5e1c89d0bc459a92fac5ffe36b92e6aceff48c64d1b25a20",
         macos_urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/66.0.2/mac/en-US/Firefox%2066.0.2.dmg",
+            "https://ftp.mozilla.org/pub/firefox/releases/66.0.4/mac/en-US/Firefox%2066.0.4.dmg",
         ],
     )
 
