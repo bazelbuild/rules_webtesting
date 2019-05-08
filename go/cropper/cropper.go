@@ -41,9 +41,21 @@ func Crop(src image.Image, bounds image.Rectangle) (image.Image, error) {
 func Blackout(src image.Image, bounds image.Rectangle) (image.Image, error) {
 	s, ok := src.(draw.Image)
 	if !ok {
-		return nil, errors.New("crop only works with images that implement draw.Image")
+		return nil, errors.New("blackout only works with images that implement draw.Image")
 	}
 
 	draw.Draw(s, bounds, image.Black, image.ZP, draw.Src)
+	return s, nil
+}
+
+// Whiteout replaces a given rectangle in the image with a white rectangle.
+// The function may modify the original image.
+func Whiteout(src image.Image, bounds image.Rectangle) (image.Image, error) {
+	s, ok := src.(draw.Image)
+	if !ok {
+		return nil, errors.New("whiteout only works with images that implement draw.Image")
+	}
+
+	draw.Draw(s, bounds, image.White, image.ZP, draw.Src)
 	return s, nil
 }
