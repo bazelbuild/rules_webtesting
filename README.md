@@ -16,7 +16,7 @@ http_archive(
     name = "io_bazel_rules_webtesting",
     sha256 = "<version-specific-sha>",
     urls = [
-        https://github.com/bazelbuild/rules_webtesting/releases/download/<version>/rules_webtesting.tar.gz
+        "https://github.com/bazelbuild/rules_webtesting/releases/download/<version>/rules_webtesting.tar.gz",
     ],
 )
 
@@ -33,7 +33,7 @@ use):
 ```bzl
 load("@io_bazel_rules_webtesting//web/versioned:browsers-<version>.bzl", "browser_repositories")
 
-browser_repositories(chrome=True, firefox=True)
+browser_repositories(chromium=True, firefox=True)
 ```
 
 Then you should add the appropriate dependencies depending on what language you
