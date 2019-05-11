@@ -69,6 +69,8 @@ type WebDriver interface {
 	Capabilities() map[string]interface{}
 	// Screenshot takes a screenshot of the current browser window.
 	Screenshot(context.Context) (image.Image, error)
+	// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
+	ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error)
 	// WindowHandles returns a slice of the current window handles.
 	WindowHandles(context.Context) ([]string, error)
 	// ElementFromID returns a new WebElement object for the given id.
@@ -367,6 +369,15 @@ func (d *webDriver) NavigateTo(ctx context.Context, u *url.URL) error {
 func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
 	var value string
 	if err := d.get(ctx, "screenshot", &value); err != nil {
+		return nil, err
+	}
+	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
+}
+
+// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
+func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error) {
+	var value string
+	if err := d.get(ctx, fmt.Sprintf("element/%s/screenshot", el.ID()), &value); err != nil {
 		return nil, err
 	}
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
