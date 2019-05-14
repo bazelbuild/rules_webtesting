@@ -73,6 +73,8 @@ type WebDriver interface {
 	ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error)
 	// WindowHandles returns a slice of the current window handles.
 	WindowHandles(context.Context) ([]string, error)
+	// CurrentWindowHandle returns the handle of the active window.
+	CurrentWindowHandle(context.Context) (string, error)
 	// ElementFromID returns a new WebElement object for the given id.
 	ElementFromID(string) WebElement
 	// ElementFromMap returns a new WebElement from a map representing a JSON object.
@@ -392,6 +394,19 @@ func (d *webDriver) WindowHandles(ctx context.Context) ([]string, error) {
 	}
 	if err := d.get(ctx, command, &value); err != nil {
 		return nil, err
+	}
+	return value, nil
+}
+
+// CurrentWindowHandle returns the handle of the currently active window.
+func (d *webDriver) CurrentWindowHandle(ctx context.Context) (string, error) {
+	var value string
+	command := "window_handle"
+	if d.W3C() {
+		command = "window"
+	}
+	if err := d.get(ctx, command, &value); err != nil {
+		return "", err
 	}
 	return value, nil
 }
