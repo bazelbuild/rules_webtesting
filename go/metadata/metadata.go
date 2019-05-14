@@ -21,8 +21,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"google3/third_party/bazel_rules/rules_webtesting/go/httphelper/httphelper"
-	"google3/third_party/bazel_rules/rules_webtesting/go/metadata/capabilities/capabilities"
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
+	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
 
 // Values for Metadata.RecordVideo.
