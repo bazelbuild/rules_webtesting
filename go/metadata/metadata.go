@@ -21,7 +21,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
+	"google3/third_party/bazel_rules/rules_webtesting/go/httphelper/httphelper"
+	"google3/third_party/bazel_rules/rules_webtesting/go/metadata/capabilities/capabilities"
 )
 
 // Values for Metadata.RecordVideo.
@@ -215,6 +216,13 @@ func (m *Metadata) Resolver() capabilities.Resolver {
 			return v, nil
 		case "FILE":
 			return m.GetFilePath(name)
+		case "WTL":
+			switch name {
+			case "FQDN":
+				return httphelper.FQDN()
+			default:
+				return "", fmt.Errorf("WTL:%q is not defined", name)
+			}
 		default:
 			return metadataResolver(prefix, name)
 		}
