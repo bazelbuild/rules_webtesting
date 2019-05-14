@@ -263,6 +263,22 @@ func TestWindowHandles(t *testing.T) {
 	}
 }
 
+func TestCurrentWindowHandle(t *testing.T) {
+	ctx := context.Background()
+
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer driver.Quit(ctx)
+
+	if handle, err := driver.CurrentWindowHandle(ctx); err != nil {
+		t.Fatal(err)
+	} else if handle == "" {
+		t.Fatal(`Got "" handle, expected non-empty string`)
+	}
+}
+
 func TestQuit(t *testing.T) {
 	ctx := context.Background()
 
