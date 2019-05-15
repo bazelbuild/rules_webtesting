@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
 )
 
@@ -215,6 +216,13 @@ func (m *Metadata) Resolver() capabilities.Resolver {
 			return v, nil
 		case "FILE":
 			return m.GetFilePath(name)
+		case "WTL":
+			switch name {
+			case "FQDN":
+				return httphelper.FQDN()
+			default:
+				return "", fmt.Errorf("WTL:%q is not defined", name)
+			}
 		default:
 			return metadataResolver(prefix, name)
 		}
