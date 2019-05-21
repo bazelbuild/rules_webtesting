@@ -70,6 +70,24 @@ func (we *wtlError) Error() string {
 
 type multiErr []error
 
+func (me multiErr) Component() string {
+	for _, v := range me {
+		if c := Component(v); c != DefaultComp {
+			return c
+		}
+	}
+	return DefaultComp
+}
+
+func (me multiErr) Permanent() bool {
+	for _, v := range me {
+		if IsPermanent(v) {
+			return true
+		}
+	}
+	return false
+}
+
 func (me multiErr) Error() string {
 	if len(me) == 0 {
 		return ""
