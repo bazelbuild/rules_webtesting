@@ -68,6 +68,67 @@ func (we *wtlError) Error() string {
 	return fmt.Sprintf("[%s%s]: %v", we.component, p, we.error)
 }
 
+type multiErr []error
+
+func (me multiErr) Component() string {
+	for _, v := range me {
+		if c := Component(v); c != DefaultComp {
+			return c
+		}
+	}
+	return DefaultComp
+}
+
+func (me multiErr) Permanent() bool {
+	for _, v := range me {
+		if IsPermanent(v) {
+			return true
+		}
+	}
+	return false
+}
+
+func (me multiErr) Error() string {
+	if len(me) == 0 {
+		return ""
+	}
+
+	msg := "errors:"
+	for _, err := range me {
+		msg = msg + "\n\t" + err.Error()
+	}
+	return msg
+}
+
+func (me multiErr) String() string {
+	return me.Error()
+}
+
+// JoinErrs joins multiple errors together into an error.
+func JoinErrs(errs ...error) error {
+	var joined multiErr
+
+	for _, err := range errs {
+		if err == nil {
+			continue
+		}
+		if me, ok := err.(multiErr); ok {
+			joined = append(joined, me...)
+		} else {
+			joined = append(joined, err)
+		}
+	}
+
+	if len(joined) == 0 {
+		return nil
+	}
+	if len(joined) == 1 {
+		return joined[0]
+	}
+
+	return joined
+}
+
 // New returns an error, e, such that:
 //   Permanent(e) is false
 //   If Component(err) is not DefaultComp, Component(e) is Component(err)
