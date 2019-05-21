@@ -16,6 +16,7 @@ package errors
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -44,5 +45,38 @@ func TestNewFromString(t *testing.T) {
 
 	if newComp := New("newComp", fromString); newComp != fromString {
 		t.Errorf("expected newComp == %+v, got %+v", fromString, newComp)
+	}
+}
+
+func TestJoinErrors(t *testing.T) {
+	testCases := []struct {
+		name  string
+		input []error
+		want  string
+	}{
+		{
+			name:  "one error",
+			input: []error{fmt.Errorf("error1")},
+			want:  "error1",
+		},
+		{
+			name:  "two errors",
+			input: []error{fmt.Errorf("error1"), fmt.Errorf("error2")},
+			want:  "errors:\n\terror1\n\terror2",
+		},
+		{
+			name:  "nil and error",
+			input: []error{nil, fmt.Errorf("error1")},
+			want:  "error1",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := JoinErrs(tc.input...).Error()
+			if got != tc.want {
+				t.Errorf("got:\n%#v\n\nwant:\n%#v", got, tc.want)
+			}
+		})
 	}
 }
