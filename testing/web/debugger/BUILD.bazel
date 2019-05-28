@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 py_binary(

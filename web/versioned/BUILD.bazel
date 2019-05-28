@@ -28,3 +28,11 @@ bzl_library(
         "//web/internal:platform_http_file",
     ],
 )
+
+bzl_library(
+    name = "browsers-0.3.2",
+    srcs = ["browsers-0.3.2.bzl"],
+    deps = [
+        "//web/internal:platform_http_file",
+    ],
+)
