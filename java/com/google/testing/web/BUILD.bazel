@@ -14,12 +14,11 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 java_library(
     name = "web",
+    testonly = True,
     srcs = glob(["*.java"]),
     visibility = ["//visibility:public"],
     deps = [

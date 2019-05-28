@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 alias(
@@ -26,4 +24,5 @@ alias(
         "//common/conditions:windows": "windows_amd64_pure_stripped/main.exe",
     }),
     visibility = ["//visibility:public"],
+    testonly = True,
 )

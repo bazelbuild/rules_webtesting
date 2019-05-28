@@ -16,14 +16,13 @@
 #
 load("//web:web.bzl", "web_test_archive")
 
-package(default_testonly = 1)
-
 licenses(["by_exception_only"])  # SauceLabs EULA
 
 exports_files(["license.html"])
 
 web_test_archive(
     name = "sauceconnect",
+    testonly = True,
     archive = "@com_saucelabs_sauce_connect//file",
     extract = "build",
     named_files = select({
