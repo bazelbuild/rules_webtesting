@@ -17,8 +17,6 @@
 load("//web:go.bzl", "go_web_test_suite")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 go_library(

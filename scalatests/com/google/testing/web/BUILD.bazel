@@ -16,8 +16,6 @@
 #
 load("//web:scala.bzl", "scala_web_test_suite")
 
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 scala_web_test_suite(

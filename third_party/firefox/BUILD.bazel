@@ -16,14 +16,13 @@
 #
 load("//web:web.bzl", "web_test_archive")
 
-package(default_testonly = 1)
-
 licenses(["reciprocal"])  # MPL 2.0
 
 exports_files(["LICENSE"])
 
 web_test_archive(
     name = "firefox",
+    testonly = True,
     archive = "@org_mozilla_firefox//file",
     # Firefox needs to be in a writable directory.
     extract = "run",

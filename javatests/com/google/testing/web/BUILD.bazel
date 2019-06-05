@@ -16,8 +16,6 @@
 #
 load("//web:java.bzl", "java_web_test_suite")
 
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 java_web_test_suite(

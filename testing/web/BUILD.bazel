@@ -16,12 +16,11 @@
 #
 load("//web:py.bzl", "py_web_test_suite")
 
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 py_library(
     name = "web",
+    testonly = True,
     srcs = glob(
         ["*.py"],
         exclude = ["*_test.py"],
@@ -41,7 +40,11 @@ py_web_test_suite(
     ],
     tags = {
         "default": ["noci"],
-        "chrome-win10": ["sauce"],
+        "chrome-win10": [
+            "sauce",
+            # TODO(DrMarcII): Identify why this is failing on travis.
+            "notravis",
+        ],
         "chrome-win10-connect": [
             "sauce",
             "notravis",

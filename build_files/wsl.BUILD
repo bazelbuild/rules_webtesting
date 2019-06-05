@@ -16,8 +16,6 @@
 #
 load("//web:web.bzl", "web_test_named_executable")
 
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 web_test_named_executable(
@@ -29,4 +27,5 @@ web_test_named_executable(
         "//common/conditions:windows": "main/windows_amd64_pure_stripped/main.exe",
     }),
     visibility = ["//visibility:public"],
+    testonly = True,
 )
