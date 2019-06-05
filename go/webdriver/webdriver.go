@@ -26,6 +26,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"path"
@@ -108,15 +109,20 @@ type WebElement interface {
 	// Bounds returns the bounds of the WebElement within the viewport.
 	// This will not scroll the element into the viewport first.
 	// Will return an error if the element is not in the viewport.
-	Bounds(ctx context.Context) (image.Rectangle, error)
+	Bounds(ctx context.Context) (Rectangle, error)
 }
 
-// Rectangle represents a window's position and size.
+// Rectangle represents a rectangle with floating point precision.
 type Rectangle struct {
 	X      float64 `json:"x"`
 	Y      float64 `json:"y"`
 	Width  float64 `json:"width"`
 	Height float64 `json:"height"`
+}
+
+// ToImageRectangle converts webdriver.Rectangle to an image.Rectangle.
+func (r *Rectangle) ToImageRectangle() image.Rectangle {
+	return image.Rect(int(math.Round(r.X)), int(math.Round(r.Y)), int(math.Round(r.X+r.Width)), int(math.Round(r.Y+r.Height)))
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
@@ -665,7 +671,7 @@ func (e *webElement) ScrollIntoView(ctx context.Context) error {
 // Bounds returns the bounds of the WebElement within the viewport.
 // This will not scroll the element into the viewport first.
 // Will return an error if the element is not in the viewport.
-func (e *webElement) Bounds(ctx context.Context) (image.Rectangle, error) {
+func (e *webElement) Bounds(ctx context.Context) (Rectangle, error) {
 	const script = `
 var element = arguments[0];
 var rect = element.getBoundingClientRect();
@@ -679,18 +685,13 @@ while (element != null) {
   element = currentWindow.frameElement;
   currentWindow = currentWindow.parent;
 }
-return {"X0": Math.round(left), "Y0": Math.round(top), "X1": Math.round(left + rect.width), "Y1": Math.round(top + rect.height)};
+return {"X": left, "Y": top, "Width": rect.width, "Height": rect.height};
 `
-	bounds := struct {
-		X0 int
-		Y0 int
-		X1 int
-		Y1 int
-	}{}
+	bounds := Rectangle{}
 	args := []interface{}{e.ToMap()}
 	err := e.driver.ExecuteScript(ctx, script, args, &bounds)
 	log.Printf("Err: %v", err)
-	return image.Rect(bounds.X0, bounds.Y0, bounds.X1, bounds.Y1), err
+	return bounds, err
 }
 
 func scriptTimeout(caps *capabilities.Capabilities) time.Duration {
