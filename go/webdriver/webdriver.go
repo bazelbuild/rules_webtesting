@@ -122,7 +122,7 @@ type Rectangle struct {
 
 // ToImageRectangle converts webdriver.Rectangle to an image.Rectangle.
 func (r *Rectangle) ToImageRectangle() image.Rectangle {
-	return image.Rect(int(math.Round(r.X)), int(math.Round(r.Y)), int(math.Round(r.X+r.Width)), int(math.Round(r.Y+r.Height)))
+	return image.Rect(int(math.Trunc(r.X)), int(math.Trunc(r.Y)), int(math.Ceil(r.X+r.Width)), int(math.Ceil(r.Y+r.Height)))
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
