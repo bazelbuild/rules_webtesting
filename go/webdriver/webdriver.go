@@ -690,7 +690,9 @@ return {"X": left, "Y": top, "Width": rect.width, "Height": rect.height};
 	bounds := Rectangle{}
 	args := []interface{}{e.ToMap()}
 	err := e.driver.ExecuteScript(ctx, script, args, &bounds)
-	log.Printf("Err: %v", err)
+	if err != nil {
+		log.Printf("Err: %v", err)
+	}
 	return bounds, err
 }
 
