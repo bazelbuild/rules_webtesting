@@ -29,7 +29,7 @@ def go_repositories(**kwargs):
     "omit_" + name parameter. This is useful for users who want to be rigorous
     about declaring their own direct dependencies, or when another Bazel project
     is depended upon (e.g. rules_closure) that defines the same dependencies as
-    this one (e.g. com_google_guava.) Alternatively, a whitelist model may be
+    this one (e.g. com_google_guava_guava.) Alternatively, a whitelist model may be
     used by calling the individual functions this method references.
 
     Please note that while these dependencies are defined, they are not actually
@@ -53,7 +53,7 @@ def go_internal_repositories(**kwargs):
     "omit_" + name parameter. This is useful for users who want to be rigorous
     about declaring their own direct dependencies, or when another Bazel project
     is depended upon (e.g. rules_closure) that defines the same dependencies as
-    this one (e.g. com_google_guava.) Alternatively, a whitelist model may be
+    this one (e.g. com_google_guava_guava.) Alternatively, a whitelist model may be
     used by calling the individual functions this method references.
 
     Please note that while these dependencies are defined, they are not actually
