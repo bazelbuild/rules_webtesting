@@ -20,11 +20,15 @@ before_install:
 
 script:
     - |
+      FILTERS="-notravis,-noci"
+      if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
+        FILTERS="${FILTERS},-nosauce"
+      fi
       bazel \
-      --output_base=$HOME/.cache/bazel \
+      --output_base="${HOME}/.cache/bazel" \
       --batch \
       test \
-      --test_tag_filters=-notravis,-noci \
+      --test_tag_filters="${FILTERS}" \
       --test_output=streamed \
       --test_env=TUNNEL_IDENTIFIER="${TRAVIS_JOB_NUMBER}" \
       --test_env=BUILD_TAG="${TRAVIS_COMMIT}" \
