@@ -16,3 +16,11 @@ platforms:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
+  windows:
+    sauce: true
+    build_targets:
+    - "//..."
+    test_flags:
+    - "--test_tag_filters=-noci,-sauce"
+    test_targets:
+    - "//..."
