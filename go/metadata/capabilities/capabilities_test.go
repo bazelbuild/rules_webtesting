@@ -99,6 +99,22 @@ func TestDenormalizeJWP(t *testing.T) {
 			},
 		},
 		{
+			name: "duplicates goog:loggingPrefs into loggingPrefs",
+			args: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key": "value",
+				},
+			},
+			want: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key": "value",
+				},
+				"loggingPrefs": map[string]interface{}{
+					"key": "value",
+				},
+			},
+		},
+		{
 			name: "converts noProxy from []interface{} into string",
 			args: map[string]interface{}{
 				"proxy": map[string]interface{}{
@@ -186,6 +202,24 @@ func TestNormalize(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: true,
+		},
+		{
+			name: "normalizes loggingPrefs",
+			args: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key1": "value1",
+				},
+				"loggingPrefs": map[string]interface{}{
+					"key2": "value2",
+				},
+			},
+			want: map[string]interface{}{
+				"goog:loggingPrefs": map[string]interface{}{
+					"key1": "value1",
+					"key2": "value2",
+				},
+			},
+			wantErr: false,
 		},
 		{
 			name: "normalizes proxy",
@@ -1002,6 +1036,122 @@ func TestMergeOver(t *testing.T) {
 	}
 }
 
+func TestStripAllPrefixedExcept(t *testing.T) {
+	testCases := []struct {
+		name   string
+		in     *Capabilities
+		exempt []string
+		out    *Capabilities
+	}{
+		{
+			name: "strips non-exempt AlwaysMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"nonexempt:cap": "val",
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+		},
+		{
+			name: "does not strip exempt AlwaysMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"foo:cap": "val",
+				},
+			},
+			exempt: []string{"foo"},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"foo:cap": "val",
+				},
+			},
+		},
+		{
+			name: "strips non-exempt FirstMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"foo:cap": "val",
+					},
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch:  []map[string]interface{}{{}},
+			},
+		},
+		{
+			name: "does not strip exempt FirstMatch prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"foo:cap": "val",
+					},
+				},
+			},
+			exempt: []string{"foo"},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"foo:cap": "val",
+					},
+				},
+			},
+		},
+		{
+			name: "does not strip FirstMatch un-prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"cap": "val",
+					},
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+				FirstMatch: []map[string]interface{}{
+					{
+						"cap": "val",
+					},
+				},
+			},
+		},
+		{
+			name: "does not strip AlwaysMatch un-prefixed capabilities",
+			in: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"cap": "val",
+				},
+			},
+			exempt: []string{""},
+			out: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"cap": "val",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			out := tc.in.StripAllPrefixedExcept(tc.exempt...)
+
+			if !reflect.DeepEqual(out, tc.out) {
+				t.Fatalf("got %#v, want %#v", out, tc.out)
+			}
+		})
+	}
+}
+
 func TestResolve(t *testing.T) {
 	testCases := []struct {
 		name     string
@@ -1151,6 +1301,220 @@ func TestResolve(t *testing.T) {
 
 			if !reflect.DeepEqual(out, tc.out) {
 				t.Fatalf("got %#v, want %#v", out, tc.out)
+			}
+		})
+	}
+}
+
+func TestMergeUnder(t *testing.T) {
+	testCases := []struct {
+		name  string
+		this  *Capabilities
+		other map[string]interface{}
+		want  *Capabilities
+	}{
+		{
+			name:  "nil, nil",
+			this:  nil,
+			other: nil,
+			want:  nil,
+		},
+		{
+			name: "empty, nil",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+			other: nil,
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+		},
+		{
+			name:  "nil, empty",
+			this:  nil,
+			other: map[string]interface{}{},
+			want:  nil,
+		},
+		{
+			name: "empty, empty",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+			other: map[string]interface{}{},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{},
+			},
+		},
+		{
+			name: "no overlap",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key4": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+					"key4": "value4",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+		},
+		{
+			name: "overlaps always",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key1": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value4",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+		},
+		{
+			name: "overlaps first[0]",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key2": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+					"key2": "value4",
+				},
+				FirstMatch: []map[string]interface{}{
+					{},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+		},
+		{
+			name: "overlaps first[1]",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{
+						"key3": "value3",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key3": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+					"key3": "value4",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+					},
+					{},
+				},
+			},
+		},
+		{
+			name: "overlap and non-overlap",
+			this: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key1": "value1",
+					"key5": "value5",
+				},
+				FirstMatch: []map[string]interface{}{
+					{
+						"key2": "value2",
+						"key6": "value6",
+					},
+					{
+						"key3": "value3",
+						"key6": "value6",
+					},
+				},
+			},
+			other: map[string]interface{}{
+				"key1": "value11",
+				"key2": "value22",
+				"key3": "value33",
+				"key4": "value4",
+			},
+			want: &Capabilities{
+				AlwaysMatch: map[string]interface{}{
+					"key4": "value4",
+					"key1": "value11",
+					"key2": "value22",
+					"key3": "value33",
+					"key5": "value5",
+					"key6": "value6",
+				},
+				FirstMatch: nil,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := tc.this.MergeUnder(tc.other)
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Fatalf("got %#v, want %#v", got, tc.want)
 			}
 		})
 	}

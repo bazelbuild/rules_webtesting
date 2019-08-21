@@ -15,8 +15,7 @@
 ################################################################################
 #
 package(
-    default_testonly = True,
-    default_visibility = ["//third_party:__subpackages__"],
+    default_visibility = ["//:__subpackages__"],
 )
 
 config_setting(

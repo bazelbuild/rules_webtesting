@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
 # limitations under the License.
 """Defines external repositories needed by rules_webtesting."""
 
-load("//web/internal:platform_http_file.bzl", "platform_http_file")
+load(":repositories.bzl", "should_create_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-def web_test_repositories(**kwargs):
-    """Defines external repositories required by WebTesting Rules.
+def py_repositories(**kwargs):
+    """Defines external repositories required to use Python webtest and screenshotter APIs.
 
     This function exists for other Bazel projects to call from their WORKSPACE
     file when depending on rules_webtesting using http_archive. This function
@@ -39,36 +39,31 @@ def web_test_repositories(**kwargs):
         **kwargs: omit_... parameters used to prevent importing specific
           dependencies.
     """
-    if should_create_repository("bazel_skylib", kwargs):
-        bazel_skylib()
+    if should_create_repository("com_github_urllib3", kwargs):
+        com_github_urllib3()
+    if should_create_repository("org_seleniumhq_py", kwargs):
+        org_seleniumhq_py()
     if kwargs.keys():
         print("The following parameters are unknown: " + str(kwargs.keys()))
 
-def should_create_repository(name, args):
-    """Returns whether the name repository should be created.
-    This allows creation of a repository to be disabled by either an
-    "omit_" _+ name parameter or by previously defining a rule for the repository.
-    The args dict will be mutated to remove "omit_" + name.
-    Args:
-        name: The name of the repository that should be checked.
-        args: A dictionary that contains "omit_...": bool pairs.
-    Returns:
-        boolean indicating whether the repository should be created.
-    """
-    key = "omit_" + name
-    if key in args:
-        val = args.pop(key)
-        if val:
-            return False
-    if native.existing_rule(name):
-        return False
-    return True
-
-def bazel_skylib():
+def com_github_urllib3():
     http_archive(
-        name = "bazel_skylib",
-        sha256 = "2ef429f5d7ce7111263289644d233707dba35e39696377ebab8b0bc701f7818e",
+        name = "com_github_urllib3",
+        build_file = str(Label("//build_files:com_github_urllib3.BUILD")),
+        sha256 = "a53063d8b9210a7bdec15e7b272776b9d42b2fd6816401a0d43006ad2f9902db",
+        strip_prefix = "urllib3-1.25.2",
         urls = [
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/0.8.0/bazel-skylib.0.8.0.tar.gz",
+            "https://files.pythonhosted.org/packages/9a/8b/ea6d2beb2da6e331e9857d0a60b79ed4f72dcbc4e2c7f2d2521b0480fda2/urllib3-1.25.2.tar.gz",
+        ],
+    )
+
+def org_seleniumhq_py():
+    http_archive(
+        name = "org_seleniumhq_py",
+        build_file = str(Label("//build_files:org_seleniumhq_py.BUILD")),
+        sha256 = "deaf32b60ad91a4611b98d8002757f29e6f2c2d5fcaf202e1c9ad06d6772300d",
+        strip_prefix = "selenium-3.141.0",
+        urls = [
+            "https://files.pythonhosted.org/packages/ed/9c/9030520bf6ff0b4c98988448a93c04fcbd5b13cd9520074d8ed53569ccfe/selenium-3.141.0.tar.gz",
         ],
     )

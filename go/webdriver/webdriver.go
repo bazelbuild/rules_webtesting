@@ -26,6 +26,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"path"
@@ -69,8 +70,12 @@ type WebDriver interface {
 	Capabilities() map[string]interface{}
 	// Screenshot takes a screenshot of the current browser window.
 	Screenshot(context.Context) (image.Image, error)
+	// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
+	ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error)
 	// WindowHandles returns a slice of the current window handles.
 	WindowHandles(context.Context) ([]string, error)
+	// CurrentWindowHandle returns the handle of the active window.
+	CurrentWindowHandle(context.Context) (string, error)
 	// ElementFromID returns a new WebElement object for the given id.
 	ElementFromID(string) WebElement
 	// ElementFromMap returns a new WebElement from a map representing a JSON object.
@@ -104,15 +109,20 @@ type WebElement interface {
 	// Bounds returns the bounds of the WebElement within the viewport.
 	// This will not scroll the element into the viewport first.
 	// Will return an error if the element is not in the viewport.
-	Bounds(ctx context.Context) (image.Rectangle, error)
+	Bounds(ctx context.Context) (Rectangle, error)
 }
 
-// Rectangle represents a window's position and size.
+// Rectangle represents a rectangle with floating point precision.
 type Rectangle struct {
 	X      float64 `json:"x"`
 	Y      float64 `json:"y"`
 	Width  float64 `json:"width"`
 	Height float64 `json:"height"`
+}
+
+// ToImageRectangle converts webdriver.Rectangle to an image.Rectangle.
+func (r *Rectangle) ToImageRectangle() image.Rectangle {
+	return image.Rect(int(math.Trunc(r.X)), int(math.Trunc(r.Y)), int(math.Ceil(r.X+r.Width)), int(math.Ceil(r.Y+r.Height)))
 }
 
 // LogEntry is an entry parsed from the logs retrieved from the remote WebDriver.
@@ -372,6 +382,15 @@ func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
 }
 
+// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
+func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error) {
+	var value string
+	if err := d.get(ctx, fmt.Sprintf("element/%s/screenshot", el.ID()), &value); err != nil {
+		return nil, err
+	}
+	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
+}
+
 // WindowHandles returns a slice of the current window handles.
 func (d *webDriver) WindowHandles(ctx context.Context) ([]string, error) {
 	var value []string
@@ -381,6 +400,19 @@ func (d *webDriver) WindowHandles(ctx context.Context) ([]string, error) {
 	}
 	if err := d.get(ctx, command, &value); err != nil {
 		return nil, err
+	}
+	return value, nil
+}
+
+// CurrentWindowHandle returns the handle of the currently active window.
+func (d *webDriver) CurrentWindowHandle(ctx context.Context) (string, error) {
+	var value string
+	command := "window_handle"
+	if d.W3C() {
+		command = "window"
+	}
+	if err := d.get(ctx, command, &value); err != nil {
+		return "", err
 	}
 	return value, nil
 }
@@ -639,7 +671,7 @@ func (e *webElement) ScrollIntoView(ctx context.Context) error {
 // Bounds returns the bounds of the WebElement within the viewport.
 // This will not scroll the element into the viewport first.
 // Will return an error if the element is not in the viewport.
-func (e *webElement) Bounds(ctx context.Context) (image.Rectangle, error) {
+func (e *webElement) Bounds(ctx context.Context) (Rectangle, error) {
 	const script = `
 var element = arguments[0];
 var rect = element.getBoundingClientRect();
@@ -653,18 +685,15 @@ while (element != null) {
   element = currentWindow.frameElement;
   currentWindow = currentWindow.parent;
 }
-return {"X0": Math.round(left), "Y0": Math.round(top), "X1": Math.round(left + rect.width), "Y1": Math.round(top + rect.height)};
+return {"X": left, "Y": top, "Width": rect.width, "Height": rect.height};
 `
-	bounds := struct {
-		X0 int
-		Y0 int
-		X1 int
-		Y1 int
-	}{}
+	bounds := Rectangle{}
 	args := []interface{}{e.ToMap()}
 	err := e.driver.ExecuteScript(ctx, script, args, &bounds)
-	log.Printf("Err: %v", err)
-	return image.Rect(bounds.X0, bounds.Y0, bounds.X1, bounds.Y1), err
+	if err != nil {
+		log.Printf("Err: %v", err)
+	}
+	return bounds, err
 }
 
 func scriptTimeout(caps *capabilities.Capabilities) time.Duration {

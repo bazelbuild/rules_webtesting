@@ -16,14 +16,13 @@
 #
 load("//web:web.bzl", "web_test_archive")
 
-package(default_testonly = 1)
-
 licenses(["by_exception_only"])
 
 exports_files(["LICENSE"])
 
 web_test_archive(
     name = "chromium",
+    testonly = True,
     archive = "@org_chromium_chromium//file",
     extract = "build",
     named_files = select({

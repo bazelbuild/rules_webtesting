@@ -16,8 +16,6 @@
 #
 load("//web:java.bzl", "java_web_test_suite")
 
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 java_web_test_suite(
@@ -34,7 +32,7 @@ java_web_test_suite(
     },
     deps = [
         "//java/com/google/testing/web",
-        "@junit",
-        "@org_seleniumhq_selenium_api",
+        "@junit_junit",
+        "@org_seleniumhq_selenium_selenium_api",
     ],
 )

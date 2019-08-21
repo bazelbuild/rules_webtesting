@@ -14,8 +14,6 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 licenses(["notice"])  # Apache 2.0
@@ -39,7 +37,6 @@ go_library(
         "//go/wtl/proxy:go_default_library",
         "//go/wtl/proxy/driverhub:go_default_library",
         "//go/wtl/proxy/driverhub/drivermu:go_default_library",
-        "//go/wtl/proxy/driverhub/googlescreenshot:go_default_library",
         "//go/wtl/proxy/driverhub/quithandler:go_default_library",
         "//go/wtl/proxy/driverhub/scripttimeout:go_default_library",
         "//go/wtl/proxy/healthz:go_default_library",

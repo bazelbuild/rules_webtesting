@@ -225,7 +225,7 @@ func TestNavigateTo(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !strings.Contains(cu.Hostname(), "google.com") {
-		t.Fatalf("got %s, expected to contain google.com", cu)
+		t.Fatalf("got %v, expected to contain google.com", cu)
 	}
 }
 
@@ -259,7 +259,23 @@ func TestWindowHandles(t *testing.T) {
 	if windows, err := driver.WindowHandles(ctx); err != nil {
 		t.Fatal(err)
 	} else if len(windows) != 1 {
-		t.Fatalf("Got %d handles, expected 1", len(windows))
+		t.Fatalf("Got %v handles, expected 1", len(windows))
+	}
+}
+
+func TestCurrentWindowHandle(t *testing.T) {
+	ctx := context.Background()
+
+	driver, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer driver.Quit(ctx)
+
+	if handle, err := driver.CurrentWindowHandle(ctx); err != nil {
+		t.Fatal(err)
+	} else if handle == "" {
+		t.Fatal(`Got "" handle, expected non-empty string`)
 	}
 }
 
@@ -295,7 +311,7 @@ func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
 		t.Error("Got nil err, expected timeout err")
 	}
 	if run := time.Now().Sub(start); run < time.Second || run > 5*time.Second {
-		t.Errorf("Got runtime %s, expected < 1 and < 5 seconds", run)
+		t.Errorf("Got runtime %v, expected < 1 and < 5 seconds", run)
 	}
 
 	start = time.Now()
@@ -303,7 +319,7 @@ func TestExecuteScriptAsyncWithTimeout(t *testing.T) {
 		t.Error("Got nil err, expected timeout err")
 	}
 	if run := time.Now().Sub(start); run < 5*time.Second {
-		t.Errorf("Got runtime %s, expected > 5 seconds", run)
+		t.Errorf("Got runtime %v, expected > 5 seconds", run)
 	}
 }
 
@@ -327,7 +343,7 @@ func TestExecuteScriptAsyncWithTimeoutWithCaps(t *testing.T) {
 		t.Error("Got nil err, expected timeout err")
 	}
 	if run := time.Now().Sub(start); run < time.Second || run > 5*time.Second {
-		t.Errorf("Got runtime %s, expected < 1 and < 5 seconds", run)
+		t.Errorf("Got runtime %v, expected < 1 and < 5 seconds", run)
 	}
 
 	start = time.Now()
@@ -335,7 +351,7 @@ func TestExecuteScriptAsyncWithTimeoutWithCaps(t *testing.T) {
 		t.Error("Got nil err, expected timeout err")
 	}
 	if run := time.Now().Sub(start); run < 5*time.Second {
-		t.Errorf("Got runtime %s, expected > 5 seconds", run)
+		t.Errorf("Got runtime %v, expected > 5 seconds", run)
 	}
 }
 
@@ -386,7 +402,7 @@ func TestSetWindowRect(t *testing.T) {
 			Rectangle{
 				X:      200,
 				Y:      200,
-				Width:  500,
+				Width:  600,
 				Height: 400,
 			},
 			true,
@@ -461,7 +477,7 @@ func TestSetWindowSize(t *testing.T) {
 	}{
 		{
 			"valid",
-			500,
+			600,
 			400,
 			true,
 			false,

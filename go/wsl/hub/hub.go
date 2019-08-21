@@ -87,7 +87,7 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	driver.Forward(w, r)
+	driver.Forward(r.Context(), w, r)
 }
 
 func (h *Hub) driver(session string) *driver.Driver {
@@ -175,13 +175,7 @@ func (h *Hub) quitSession(session string, driver *driver.Driver, w http.Response
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	driver.Forward(w, r)
-
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
-	defer cancel()
-	if err := driver.Shutdown(ctx); err != nil {
-		log.Printf("Error shutting down driver: %v", err)
-	}
+	driver.Quit(w, r)
 
 	delete(h.sessions, session)
 }

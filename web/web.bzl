@@ -15,32 +15,36 @@
 
 load(
     "//web/internal:browser.bzl",
-    browser_alias = "browser",
+    _browser = "browser",
 )
 load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS")
 load(
+    "//web/internal:custom_browser.bzl",
+    _custom_browser = "custom_browser",
+)
+load(
     "//web/internal:web_test.bzl",
-    web_test_alias = "web_test",
+    _web_test = "web_test",
 )
 load(
     "//web/internal:web_test_archive.bzl",
-    web_test_archive_alias = "web_test_archive",
+    _web_test_archive = "web_test_archive",
 )
 load(
     "//web/internal:web_test_config.bzl",
-    web_test_config_alias = "web_test_config",
+    _web_test_config = "web_test_config",
 )
 load(
     "//web/internal:web_test_files.bzl",
-    web_test_files_alias = "web_test_files",
+    _web_test_files = "web_test_files",
 )
 load(
     "//web/internal:web_test_named_executable.bzl",
-    web_test_named_executable_alias = "web_test_named_executable",
+    _web_test_named_executable = "web_test_named_executable",
 )
 load(
     "//web/internal:web_test_named_file.bzl",
-    web_test_named_file_alias = "web_test_named_file",
+    _web_test_named_file = "web_test_named_file",
 )
 load("@bazel_skylib//lib:types.bzl", "types")
 
@@ -114,42 +118,47 @@ def _get_kwargs(browser, in_kwargs):
 
 def browser(testonly = True, **kwargs):
     """Wrapper around browser to correctly set defaults."""
-    browser_alias(testonly = testonly, **kwargs)
+    _browser(testonly = testonly, **kwargs)
+
+def custom_browser(testonly = True, **kwargs):
+    """Wrapper around custom_browser to correctly set defaults."""
+    _custom_browser(testonly = testonly, **kwargs)
 
 def web_test(config = None, launcher = None, size = None, **kwargs):
     """Wrapper around web_test to correctly set defaults."""
     config = config or str(Label("//web:default_config"))
     launcher = launcher or str(Label("//go/wtl/main"))
     size = size or "large"
-    web_test_alias(config = config, launcher = launcher, size = size, **kwargs)
+    _web_test(config = config, launcher = launcher, size = size, **kwargs)
 
 def web_test_config(testonly = True, **kwargs):
     """Wrapper around web_test_config to correctly set defaults."""
-    web_test_config_alias(testonly = testonly, **kwargs)
+    _web_test_config(testonly = testonly, **kwargs)
 
 def web_test_named_executable(testonly = True, **kwargs):
     """Wrapper around web_test_named_executable to correctly set defaults."""
-    web_test_named_executable_alias(testonly = testonly, **kwargs)
+    _web_test_named_executable(testonly = testonly, **kwargs)
 
 def web_test_named_file(testonly = True, **kwargs):
     """Wrapper around web_test_named_file to correctly set defaults."""
-    web_test_named_file_alias(testonly = testonly, **kwargs)
+    _web_test_named_file(testonly = testonly, **kwargs)
 
-def web_test_archive(testonly = True, **kwargs):
+def web_test_archive(extract_exe_host = None, extract_exe_target = None, testonly = True, **kwargs):
     """Wrapper around web_test_archive to correctly set defaults."""
-    web_test_archive_alias(
-        extract_exe_host = select({
-            "//common/conditions:windows": "//web/internal:extract.bat",
-            "//conditions:default": "//web/internal:extract.sh",
-        }),
-        extract_exe_target = select({
-            "//common/conditions:windows": "//web/internal:extract.bat",
-            "//conditions:default": "//web/internal:extract.sh",
-        }),
+    extract = select({
+        str(Label("//common/conditions:windows")): str(Label("//web/internal:extract.bat")),
+        str(Label("//conditions:default")): str(Label("//web/internal:extract.sh")),
+    })
+    extract_exe_host = extract_exe_host or extract
+    extract_exe_target = extract_exe_target or extract
+
+    _web_test_archive(
+        extract_exe_host = extract_exe_host,
+        extract_exe_target = extract_exe_target,
         testonly = testonly,
         **kwargs
     )
 
 def web_test_files(testonly = True, **kwargs):
     """Wrapper around web_test_files to correctly set defaults."""
-    web_test_files_alias(testonly = testonly, **kwargs)
+    _web_test_files(testonly = testonly, **kwargs)

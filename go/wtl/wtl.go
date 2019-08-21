@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc.
+// Copyright 2016 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary launcher is used to manage the envrionment for web tests and start the underlying test.
+// Package wtl is used to manage the environment for web tests and start the underlying test.
 package wtl
 
 import (
@@ -39,7 +39,6 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub/drivermu"
-	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub/googlescreenshot"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub/quithandler"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub/scripttimeout"
 	"github.com/bazelbuild/rules_webtesting/go/wtl/proxy/healthz"
@@ -62,7 +61,6 @@ func init() {
 	// Configure WebDriver handlers.
 	driverhub.HandlerProviderFunc(quithandler.ProviderFunc)
 	driverhub.HandlerProviderFunc(scripttimeout.ProviderFunc)
-	driverhub.HandlerProviderFunc(googlescreenshot.ProviderFunc)
 
 	// drivermu should always be last.
 	driverhub.HandlerProviderFunc(drivermu.ProviderFunc)

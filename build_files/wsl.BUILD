@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,27 +14,18 @@
 #
 ################################################################################
 #
-load("//web:scala.bzl", "scala_web_test_suite")
-
-package(default_testonly = True)
+load("//web:web.bzl", "web_test_named_executable")
 
 licenses(["notice"])  # Apache 2.0
 
-scala_web_test_suite(
-    name = "ScreenshotterTest",
-    srcs = ["ScreenshotterTest.scala"],
-    browsers = [
-        "//browsers:chromium-local",
-        "//browsers:firefox-local",
-    ],
-    data = ["//testdata"],
-    tags = ["noci"],
-    deps = [
-        "//java/com/google/testing/bazel",
-        "//java/com/google/testing/web",
-        "//java/com/google/testing/web/screenshotter",
-        "@junit",
-        "@org_json",
-        "@org_seleniumhq_selenium_api",
-    ],
+web_test_named_executable(
+    name = "wsl",
+    alt_name = "WEBDRIVER_SERVER_LIGHT",
+    executable = select({
+        "//common/conditions:linux": "main/linux_amd64_stripped/main",
+        "//common/conditions:mac": "main/darwin_amd64_pure_stripped/main",
+        "//common/conditions:windows": "main/windows_amd64_pure_stripped/main.exe",
+    }),
+    visibility = ["//visibility:public"],
+    testonly = True,
 )

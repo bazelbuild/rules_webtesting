@@ -15,7 +15,7 @@
 ################################################################################
 #
 load(":web.bzl", "web_test_config")
-load("@bazel_skylib//:skylark_library.bzl", "skylark_library")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 package(
     default_testonly = True,
@@ -29,52 +29,78 @@ web_test_config(
     visibility = ["//visibility:public"],
 )
 
-skylark_library(
+bzl_library(
     name = "go",
     srcs = ["go.bzl"],
     deps = [
         "//web/internal:wrap_web_test_suite",
-        # should depend on @io_bazel_rules_go//go:def
+        # should depend on @io_bazel_rules_go//go:def.bzl
     ],
 )
 
-skylark_library(
+bzl_library(
+    name = "go_repositories",
+    srcs = ["go_repositories.bzl"],
+    deps = [
+        ":repositories",
+        # should depend on @bazel_gazelle//:deps.bzl
+    ],
+)
+
+bzl_library(
     name = "java",
     srcs = ["java.bzl"],
     deps = ["//web/internal:wrap_web_test_suite"],
 )
 
-skylark_library(
+bzl_library(
+    name = "java_repositories",
+    srcs = ["java_repositories.bzl"],
+    deps = [
+        ":repositories",
+        # should depend on "@bazel_tools//tools/build_defs/repo:lib",
+    ],
+)
+
+bzl_library(
     name = "py",
     srcs = ["py.bzl"],
     deps = ["//web/internal:wrap_web_test_suite"],
 )
 
-skylark_library(
-    name = "repositories",
-    srcs = ["repositories.bzl"],
+bzl_library(
+    name = "py_repositories",
+    srcs = ["py_repositories.bzl"],
     deps = [
-        "//web/internal:platform_http_file",
-        # should depend on @bazel_gazelle//:def
-        # should depend on @bazel_tools//tools/build_defs/repo:{http,java}
+        ":repositories",
+        # should depend on "@bazel_tools//tools/build_defs/repo:lib",
     ],
 )
 
-skylark_library(
+bzl_library(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    deps = [
+        # should depend on "@bazel_tools//tools/build_defs/repo:lib",
+    ],
+)
+
+bzl_library(
     name = "scala",
     srcs = ["scala.bzl"],
     deps = [
         "//web/internal:wrap_web_test_suite",
-        # should depend on @io_bazel_rules_scala//scala:scala
+        # should depend on @io_bazel_rules_scala//scala:scala.bzl
     ],
 )
 
-skylark_library(
+bzl_library(
     name = "web",
     srcs = ["web.bzl"],
     deps = [
         "//web/internal:browser",
         "//web/internal:constants",
+        "//web/internal:custom_browser",
         "//web/internal:web_test",
         "//web/internal:web_test_archive",
         "//web/internal:web_test_config",

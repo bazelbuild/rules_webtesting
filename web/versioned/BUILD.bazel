@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,26 +14,25 @@
 #
 ################################################################################
 #
-load("//web:java.bzl", "java_web_test_suite")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
-package(default_testonly = True)
+package(
+    default_testonly = True,
+    default_visibility = ["//visibility:public"],
+)
 
-licenses(["notice"])  # Apache 2.0
-
-java_web_test_suite(
-    name = "ScreenshotterTest",
-    srcs = ["ScreenshotterTest.java"],
-    browsers = [
-        "//browsers:chromium-local",
-        "//browsers:firefox-local",
-    ],
-    data = ["//testdata"],
-    tags = ["noci"],
+bzl_library(
+    name = "browsers-0.3.1",
+    srcs = ["browsers-0.3.1.bzl"],
     deps = [
-        "//java/com/google/testing/bazel",
-        "//java/com/google/testing/web",
-        "//java/com/google/testing/web/screenshotter",
-        "@junit",
-        "@org_seleniumhq_selenium_api",
+        "//web/internal:platform_http_file",
+    ],
+)
+
+bzl_library(
+    name = "browsers-0.3.2",
+    srcs = ["browsers-0.3.2.bzl"],
+    deps = [
+        "//web/internal:platform_http_file",
     ],
 )

@@ -14,16 +14,15 @@
 #
 ################################################################################
 #
-package(default_testonly = True)
-
 licenses(["notice"])  # Apache 2.0
 
 java_library(
     name = "web",
+    testonly = True,
     srcs = glob(["*.java"]),
     visibility = ["//visibility:public"],
     deps = [
-        "@org_seleniumhq_selenium_api",
-        "@org_seleniumhq_selenium_remote_driver",
+        "@org_seleniumhq_selenium_selenium_api",
+        "@org_seleniumhq_selenium_selenium_remote_driver",
     ],
 )

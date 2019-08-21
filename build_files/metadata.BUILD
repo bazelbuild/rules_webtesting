@@ -1,6 +1,4 @@
-#!/bin/bash -eu
-#
-# Copyright 2017 Google Inc.
+# Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +14,15 @@
 #
 ################################################################################
 #
+licenses(["notice"])  # Apache 2.0
 
-unset DISPLAY
-bazel test --test_tag_filters=-sauce ...
+alias(
+    name = "main",
+    actual  = select({
+        "//common/conditions:linux": "linux_amd64_stripped/main",
+        "//common/conditions:mac": "darwin_amd64_pure_stripped/main",
+        "//common/conditions:windows": "windows_amd64_pure_stripped/main.exe",
+    }),
+    visibility = ["//visibility:public"],
+    testonly = True,
+)
