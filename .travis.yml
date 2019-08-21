@@ -26,7 +26,6 @@ script:
       fi
       bazel \
       --output_base="${HOME}/.cache/bazel" \
-      --batch \
       test \
       --test_tag_filters="${FILTERS}" \
       --test_output=streamed \
