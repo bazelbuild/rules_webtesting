@@ -24,3 +24,4 @@ platforms:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
+    

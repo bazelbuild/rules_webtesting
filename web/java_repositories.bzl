@@ -84,9 +84,9 @@ def com_google_code_findbugs_jsr305():
 def com_google_errorprone_error_prone_annotations():
     java_import_external(
         name = "com_google_errorprone_error_prone_annotations",
-        jar_sha256 = "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        jar_sha256 = "ec59f1b702d9afc09e8c3929f5c42777dec623a6ea2731ac694332c7d7680f5a",
         jar_urls = [
-            "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.3/error_prone_annotations-2.3.2.jar",
+            "https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.3.3/error_prone_annotations-2.3.3.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
     )
