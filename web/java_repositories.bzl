@@ -94,9 +94,9 @@ def com_google_errorprone_error_prone_annotations():
 def com_google_guava_guava():
     java_import_external(
         name = "com_google_guava_guava",
-        jar_sha256 = "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
+        jar_sha256 = "73e4d6ae5f0e8f9d292a4db83a2479b5468f83d972ac1ff36d6d0b43943b4f91",
         jar_urls = [
-            "https://repo1.maven.org/maven2/com/google/guava/guava/27.1-jre/guava-27.1-jre.jar",
+            "https://repo1.maven.org/maven2/com/google/guava/guava/28.0-jre/guava-28.0-jre.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         exports = [
@@ -108,9 +108,9 @@ def com_google_guava_guava():
 def com_squareup_okhttp3_okhttp():
     java_import_external(
         name = "com_squareup_okhttp3_okhttp",
-        jar_sha256 = "5a6be691653076aa64dcd361d2e445e4060b4b5dc882b1f6ba49e79ddfc3e563",
+        jar_sha256 = "20f483a62087faa1dc8240150fa500b0a42c822735a12481ae32c5238d9922cc",
         jar_urls = [
-            "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.14.1/okhttp-3.14.1.jar",
+            "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/4.1.0/okhttp-4.1.0.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         deps = [
@@ -122,9 +122,9 @@ def com_squareup_okhttp3_okhttp():
 def com_squareup_okio_okio():
     java_import_external(
         name = "com_squareup_okio_okio",
-        jar_sha256 = "e58c97406a6bb1138893750299ac63c6aa04b38b6b49eae1bfcad1a63ef9ba1b",
+        jar_sha256 = "1c52079b6159b096181a2fad4df7f15423ee6c66266d1dcb0264bf37c58178b0",
         jar_urls = [
-            "https://repo1.maven.org/maven2/com/squareup/okio/okio/2.2.2/okio-2.2.2.jar",
+            "https://repo1.maven.org/maven2/com/squareup/okio/okio/2.3.0/okio-2.3.0.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         deps = [
@@ -148,9 +148,9 @@ def junit():
 def net_bytebuddy_byte_buddy():
     java_import_external(
         name = "net_bytebuddy_byte_buddy",
-        jar_sha256 = "3688c3d434bebc3edc5516296a2ed0f47b65e451071b4afecad84f902f0efc11",
+        jar_sha256 = "6b71e4f70c96b67d420f592148aa4fd1966aba458b35d11f491ff13de97dc862",
         jar_urls = [
-            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.9.12/byte-buddy-1.9.12.jar",
+            "https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy/1.9.16/byte-buddy-1.9.16.jar",
         ],
         licenses = ["notice"],  # Apache 2.0
         deps = ["@com_google_code_findbugs_jsr305"],
@@ -181,9 +181,9 @@ def org_hamcrest_hamcrest_core():
 def org_jetbrains_kotlin_kotlin_stdlib():
     java_import_external(
         name = "org_jetbrains_kotlin_kotlin_stdlib",
-        jar_sha256 = "f38c84326543e66ed4895b20fb3ea0fca527fd5a040e1f49d0946ecf3d2b3b23",
+        jar_sha256 = "6ea3d0921b26919b286f05cbdb906266666a36f9a7c096197114f7495708ffbc",
         jar_urls = [
-            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.31/kotlin-stdlib-1.3.31.jar",
+            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.41/kotlin-stdlib-1.3.41.jar",
         ],
         licenses = ["notice"],  # The Apache Software License, Version 2.0
     )
@@ -191,9 +191,9 @@ def org_jetbrains_kotlin_kotlin_stdlib():
 def org_json_json():
     java_import_external(
         name = "org_json_json",
-        jar_sha256 = "518080049ba83181914419d11a25d9bc9833a2d729b6a6e7469fa52851356da8",
+        jar_sha256 = "518080049ba83181914419d11a25d9bc9833a2d729b6a6e7469fa52851356da7",
         jar_urls = [
-            "https://repo1.maven.org/maven2/org/json/json/20180813/json-20180813.jar",
+            "https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar",
         ],
         licenses = ["notice"],  # MIT-style license
     )
@@ -233,6 +233,6 @@ def org_seleniumhq_selenium_selenium_remote_driver():
 RULES_WEBTESTING_ARTIFACTS = [
     "org.seleniumhq.selenium:selenium-api:3.141.59",
     "org.seleniumhq.selenium:selenium-remote-driver:3.141.59",
-    "com.google.guava:guava:22.0-jre",
+    "com.google.guava:guava:28.0-jre",
 ]
 

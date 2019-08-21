@@ -4,7 +4,7 @@ language: java
 
 os: linux
 
-env: V=0.26.0
+env: V=0.28.1
 
 addons:
   sauce_connect: true
