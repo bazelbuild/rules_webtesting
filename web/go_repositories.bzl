@@ -83,10 +83,10 @@ def com_github_gorilla_mux():
     go_repository(
         name = "com_github_gorilla_mux",
         importpath = "github.com/gorilla/mux",
-        sha256 = "cd2331585690e3751286e33141066108d875416b6dc4d5fabdddaef020e7cab4",
-        strip_prefix = "mux-1.7.1",
+        sha256 = "92adb9aea022f8b35686b75be50ba1206c4457c2f8a0e2a9d10d8721f35b3f11",
+        strip_prefix = "mux-1.7.3",
         urls = [
-            "https://github.com/gorilla/mux/archive/v1.7.1.tar.gz",
+            "https://github.com/gorilla/mux/archive/v1.7.3.tar.gz",
         ],
     )
 
@@ -94,9 +94,9 @@ def com_github_tebeka_selenium():
     go_repository(
         name = "com_github_tebeka_selenium",
         importpath = "github.com/tebeka/selenium",
-        sha256 = "4f0e1b9f54825580707fca637a4b174872dce5da6685c010b98eff45c1b3064a",
-        strip_prefix = "selenium-edf31bb7fd715ad505d9190f8d65d13f39a7c825",
+        sha256 = "82846f237b742983a293619e712dcf167e3d7998df3239f3443303d9036ad412",
+        strip_prefix = "selenium-0.9.9",
         urls = [
-            "https://github.com/tebeka/selenium/archive/edf31bb7fd715ad505d9190f8d65d13f39a7c825.tar.gz",
+            "https://github.com/tebeka/selenium/archive/v0.9.9.tar.gz",
         ],
     )
