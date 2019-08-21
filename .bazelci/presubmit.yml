@@ -21,7 +21,7 @@ platforms:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
-
+    

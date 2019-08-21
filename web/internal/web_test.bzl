@@ -20,6 +20,7 @@ load(":files.bzl", "files")
 load(":metadata.bzl", "metadata")
 load(":provider.bzl", "WebTestInfo")
 load(":runfiles.bzl", "runfiles")
+load(":windows_utils.bzl", "create_windows_native_launcher_script", "is_windows")
 
 def _web_test_impl(ctx):
     if ctx.attr.browser[WebTestInfo].disabled:
@@ -65,7 +66,7 @@ def _generate_noop_test(ctx, reason, status = 0):
 
     metadata.create_file(ctx, output = ctx.outputs.web_test_metadata)
 
-    test = ctx.actions.declare_file(ctx.label.name)
+    test = ctx.outputs.script
     ctx.actions.expand_template(
         template = ctx.file.noop_web_test_template,
         output = test,
@@ -77,7 +78,14 @@ def _generate_noop_test(ctx, reason, status = 0):
         is_executable = True,
     )
 
-    return [DefaultInfo(executable = test)]
+    runfiles = list(ctx.files._bash_runfile_helpers)
+    if is_windows(ctx):
+        runfiles += [test]
+        executable = create_windows_native_launcher_script(ctx, test)
+    else:
+        executable = test
+
+    return [DefaultInfo(executable = executable, runfiles = depset(runfiles))]
 
 def _generate_default_test(ctx):
     patch = ctx.actions.declare_file("%s.tmp.json" % ctx.label.name)
@@ -107,7 +115,7 @@ def _generate_default_test(ctx):
     for k, v in env.items():
         env_vars += "export %s=%s\n" % (k, v)
 
-    test = ctx.actions.declare_file(ctx.label.name)
+    test = ctx.outputs.script
     ctx.actions.expand_template(
         template = ctx.file.web_test_template,
         output = test,
@@ -120,12 +128,20 @@ def _generate_default_test(ctx):
         is_executable = True,
     )
 
+    additional_runfiles = list(ctx.files._bash_runfile_helpers)
+    if is_windows(ctx):
+        additional_runfiles += [test]
+        executable = create_windows_native_launcher_script(ctx, test)
+    else:
+        additional_runfiles = []
+        executable = test
+
     return [
         DefaultInfo(
-            executable = test,
+            executable = executable,
             runfiles = runfiles.collect(
                 ctx = ctx,
-                files = [ctx.outputs.web_test_metadata],
+                files = [ctx.outputs.web_test_metadata] + additional_runfiles,
                 targets = [
                     ctx.attr.browser,
                     ctx.attr.config,
@@ -184,10 +200,13 @@ web_test = rule(
             default = Label("//web/internal:web_test.sh.template"),
             allow_single_file = True,
         ),
+        "_bash_runfile_helpers": attr.label(default = Label("@bazel_tools//tools/bash/runfiles")),
     },
+    toolchains = ["@bazel_tools//tools/sh:toolchain_type"],
     doc = "Runs a provided test against a provided browser configuration.",
     outputs = {
         "web_test_metadata": "%{name}.gen.json",
+        "script": "%{name}.sh",
     },
     test = True,
     implementation = _web_test_impl,
