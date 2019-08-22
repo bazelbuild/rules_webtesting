@@ -133,7 +133,6 @@ def _generate_default_test(ctx):
         additional_runfiles += [test]
         executable = create_windows_native_launcher_script(ctx, test)
     else:
-        additional_runfiles = []
         executable = test
 
     return [
