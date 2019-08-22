@@ -103,7 +103,7 @@ def org_mozilla_firefox():
             "https://ftp.mozilla.org/pub/firefox/releases/68.0.2/linux-x86_64/en-US/firefox-68.0.2.tar.bz2",
         ],
         macos_sha256 =
-            "284f58b5ee75daec5eaf8c994fe2c8b14aff6c65331e5deeaed6ba650673357c",
+            "173440ca6147c6e1eebbe36f332da2c4347e37269152ad55c431f6b0d7078862",
         macos_urls = [
             "https://ftp.mozilla.org/pub/firefox/releases/68.0.2/mac/en-US/Firefox%2068.0.2.dmg",
         ],
