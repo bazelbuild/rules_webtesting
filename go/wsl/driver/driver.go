@@ -110,7 +110,6 @@ func New(ctx context.Context, localHost, sessionID string, caps map[string]inter
 			if response.StatusCode == http.StatusOK {
 				respJSON := map[string]interface{}{}
 				if err := json.NewDecoder(response.Body).Decode(&respJSON); err == nil {
-					log.Printf("Response: %+v", respJSON)
 					if status, ok := respJSON["status"].(float64); ok {
 						if int(status) == 0 {
 							break
@@ -345,7 +344,6 @@ func (d *Driver) startDriver() (chan error, error) {
 
 	go func() {
 		err := cmd.Wait()
-		log.Printf("%s has exited: %v", d.caps.binary, err)
 
 		if err := d.portRecycler.RecyclePorts(); err != nil {
 			log.Printf("Error cleaning up used ports: %v", err)
@@ -522,10 +520,8 @@ func (f *fakeResponseWriter) Header() http.Header {
 }
 
 func (f *fakeResponseWriter) Write(b []byte) (int, error) {
-	log.Printf("%s body: %s", f.prefix, string(b))
 	return len(b), nil
 }
 
 func (f *fakeResponseWriter) WriteHeader(statusCode int) {
-	log.Printf("%s status code: %d", f.prefix, statusCode)
 }

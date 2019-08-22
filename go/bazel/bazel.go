@@ -40,12 +40,16 @@ func Runfile(path string) (string, error) {
 	}
 
 	if cmdhelper.IsTruthyEnv("RUNFILES_MANIFEST_ONLY") {
-		return runfileInManifest(path)
+		filename, err := runfileInManifest(path)
+		if err != nil {
+			return "", fmt.Errorf("RUNFILES_MANIFEST_ONLY is set but unable to locate %q in RUNFILES_MANIFEST_FILE: %v", path, err)
+		}
+		return filename, nil
 	}
 
 	runfiles, err := RunfilesPath()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Unable to locate TEST_SRCDIR while looking for %q: %v", path, err)
 	}
 
 	filename := filepath.Join(runfiles, path)
@@ -60,7 +64,11 @@ func Runfile(path string) (string, error) {
 		return filename, nil
 	}
 
-	return runfileInManifest(path)
+	filename, err = runfileInManifest(path)
+	if err != nil {
+		return "", fmt.Errorf("Unable to locate %q in TEST_SRCDIR or RUNFILES_MANIFEST_FILE", path)
+	}
+	return filename, nil
 }
 
 // RunfilesPath return the path to the run files tree for this test.
