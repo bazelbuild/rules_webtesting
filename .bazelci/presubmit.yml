@@ -6,6 +6,7 @@ platforms:
     - "//..."
     test_flags:
     - "--test_tag_filters=-noci"
+    - "--test_output=streamed"
     test_targets:
     - "//..."
   macos:
@@ -14,6 +15,7 @@ platforms:
     - "//..."
     test_flags:
     - "--test_tag_filters=-noci"
+    - "--test_output=streamed"
     test_targets:
     - "//..."
   windows:
@@ -22,6 +24,7 @@ platforms:
     - "//..."
     test_flags:
     - "--test_tag_filters=-noci"
+    - "--test_output=streamed"
     test_targets:
     - "//..."
 
