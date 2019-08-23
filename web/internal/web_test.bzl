@@ -78,14 +78,23 @@ def _generate_noop_test(ctx, reason, status = 0):
         is_executable = True,
     )
 
-    runfiles = list(ctx.files._bash_runfile_helpers)
+    additional_runfiles = list(ctx.files._bash_runfile_helpers)
     if is_windows(ctx):
-        runfiles += [test]
+        additional_runfiles += [test]
         executable = create_windows_native_launcher_script(ctx, test)
     else:
         executable = test
 
-    return [DefaultInfo(executable = executable, runfiles = depset(runfiles))]
+    return [
+        DefaultInfo(
+            executable = executable,
+            runfiles = runfiles.collect(
+                ctx = ctx,
+                files = additional_runfiles,
+            ),
+        ),
+    ]
+
 
 def _generate_default_test(ctx):
     patch = ctx.actions.declare_file("%s.tmp.json" % ctx.label.name)
