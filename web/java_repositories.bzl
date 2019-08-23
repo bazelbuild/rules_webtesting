@@ -235,4 +235,3 @@ RULES_WEBTESTING_ARTIFACTS = [
     "org.seleniumhq.selenium:selenium-remote-driver:3.141.59",
     "com.google.guava:guava:28.0-jre",
 ]
-

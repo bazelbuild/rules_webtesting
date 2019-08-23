@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
-	"github.com/bazelbuild/rules_webtesting/go/httphelper"	
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"
 	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 	"github.com/tebeka/selenium"
