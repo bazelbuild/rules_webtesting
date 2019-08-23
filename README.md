@@ -1,7 +1,7 @@
 # Bazel Web Testing Rules
 
 [![Build Status](https://travis-ci.org/bazelbuild/rules_webtesting.svg?branch=master)](https://travis-ci.org/bazelbuild/rules_webtesting)
-[![Build status](https://badge.buildkite.com/d9c3974f925876394ca9d3e00670c0950b6f7ebf325412def7.svg?branch=master)](https://https://buildkite.com/bazel/rules-webtesting-saucelabs)
+[![Build status](https://badge.buildkite.com/d9c3974f925876394ca9d3e00670c0950b6f7ebf325412def7.svg?branch=master)](https://buildkite.com/bazel/rules-webtesting-saucelabs)
 
 Bazel rules and supporting code to allow testing against a browser with
 WebDriver.
