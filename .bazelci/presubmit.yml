@@ -7,7 +7,6 @@ platforms:
     test_flags:
     - "--test_tag_filters=-noci,-nobuildkite"
     - "--test_output=streamed"
-    - "--test_env=TUNNEL_IDENTIFIER=${TRAVIS_JOB_NUMBER}"    
     test_targets:
     - "//..."
   macos:
@@ -17,7 +16,6 @@ platforms:
     test_flags:
     - "--test_tag_filters=-noci,-nobuildkite"
     - "--test_output=streamed"
-    - "--test_env=TUNNEL_IDENTIFIER=${TRAVIS_JOB_NUMBER}"
     test_targets:
     - "//..."
   windows:
@@ -27,6 +25,5 @@ platforms:
     test_flags:
     - "--test_tag_filters=-noci,-nobuildkite"
     - "--test_output=streamed"
-    - "--test_env=TUNNEL_IDENTIFIER=${TRAVIS_JOB_NUMBER}"    
     test_targets:
     - "//..."
