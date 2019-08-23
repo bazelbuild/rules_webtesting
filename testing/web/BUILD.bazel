@@ -41,14 +41,14 @@ py_web_test_suite(
     tags = {
         "default": ["noci"],
         "chrome-win10": [
+            "exclusive",
             "sauce",
-            # TODO(DrMarcII): Identify why this is failing on travis.
-            "notravis",
         ],
         "chrome-win10-connect": [
-            "sauce",
+            "exclusive",
             "notravis",
             "nobuildkite",
+            "sauce",
         ],
     },
     deps = [":web"],

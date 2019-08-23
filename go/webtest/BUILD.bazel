@@ -38,7 +38,6 @@ go_web_test_suite(
         "webtest_test.go",
     ],
     browsers = [
-        "//browsers:chrome-external",
         "//browsers:chromium-local",
         "//browsers:firefox-local",
         "//browsers/sauce:chrome-win10",
@@ -48,15 +47,15 @@ go_web_test_suite(
     embed = [":go_default_library"],
     tags = {
         "default": ["noci"],
-        "chrome-external": [
-            "manual",
-            "noci",
-        ],
-        "chrome-win10": ["sauce"],
-        "chrome-win10-connect": [
+        "chrome-win10": [
+            "exclusive",
             "sauce",
+        ],
+        "chrome-win10-connect": [
+            "exclusive",
             "notravis",
             "nobuildkite",
+            "sauce",
         ],
     },
     deps = ["@com_github_tebeka_selenium//:go_default_library"],

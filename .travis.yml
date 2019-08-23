@@ -28,7 +28,7 @@ script:
       --output_base="${HOME}/.cache/bazel" \
       test \
       --test_tag_filters="${FILTERS}" \
-      --test_output=streamed \
+      --test_output=errors \
       --test_env=TUNNEL_IDENTIFIER="${TRAVIS_JOB_NUMBER}" \
       --test_env=BUILD_TAG="${TRAVIS_COMMIT}" \
       //...
