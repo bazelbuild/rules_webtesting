@@ -3,7 +3,7 @@
   "capabilities": {
     "browserName": "chrome",
     "platform": "Windows 10",
-    "version": "64.0",
+    "version": "76.0",
     "name": "%METADATA:LABEL%",
     "build": "%ENV:BUILD_TAG%",
     "tags": ["%METADATA:ENVIRONMENT%", "%METADATA:TEST_LABEL%", "%METADATA:BROWSER_LABEL%", "%METADATA:CONFIG_LABEL%"],

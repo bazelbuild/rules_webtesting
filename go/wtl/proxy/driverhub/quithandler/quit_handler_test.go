@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/bazelbuild/rules_webtesting/go/bazel"
+	"github.com/bazelbuild/rules_webtesting/go/httphelper"	
 	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 	"github.com/tebeka/selenium"
@@ -45,7 +46,12 @@ func TestMain(m *testing.M) {
 		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
 	}()
 
-	testpage = fmt.Sprintf("http://localhost:%d/testpage.html", port)
+	host, err := httphelper.FQDN()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	testpage = fmt.Sprintf("http://%s:%d/testpage.html", host, port)
 
 	os.Exit(m.Run())
 }

@@ -29,11 +29,14 @@ web_test_archive(
     archive = "@org_chromium_chromedriver//file",
     extract = "build",
     named_files = select({
-        "//common/conditions:windows": {
-            "CHROMEDRIVER": "chromedriver.exe",
+        "//common/conditions:linux": {
+            "CHROMEDRIVER": "chromedriver_linux64/chromedriver",
         },
-        "//conditions:default": {
-            "CHROMEDRIVER": "chromedriver",
+        "//common/conditions:mac": {
+            "CHROMEDRIVER": "chromedriver_mac64/chromedriver",
+        },
+        "//common/conditions:windows": {
+            "CHROMEDRIVER": "chromedriver_win32/chromedriver.exe",
         },
     }),
     visibility = ["//browsers:__subpackages__"],
