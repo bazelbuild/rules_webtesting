@@ -22,7 +22,7 @@ script:
     - |
       FILTERS="-notravis,-noci"
       if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
-        FILTERS="${FILTERS},-nosauce"
+        FILTERS="${FILTERS},-sauce"
       fi
       bazel \
       --output_base="${HOME}/.cache/bazel" \
