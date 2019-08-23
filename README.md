@@ -50,8 +50,9 @@ java_repositories()
 
 #### Using `rules_jvm_external`?
 
-If you're using `rules_jvm_external` to manage your dependencies, you can add the required artifacts
-directly to your `maven_install` instead of using `java_repositories`.
+If you're using `rules_jvm_external` to manage your dependencies, you can add
+the required artifacts directly to your `maven_install` instead of using
+`java_repositories`.
 
 ```bzl
 load("@io_bazel_rules_webtesting//web:java_repositories.bzl", "RULES_WEBTESTING_ARTIFACTS")

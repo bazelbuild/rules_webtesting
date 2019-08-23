@@ -48,6 +48,7 @@ py_web_test_suite(
         "chrome-win10-connect": [
             "sauce",
             "notravis",
+            "nobuildkite",
         ],
     },
     deps = [":web"],

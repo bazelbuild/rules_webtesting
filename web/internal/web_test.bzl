@@ -95,7 +95,6 @@ def _generate_noop_test(ctx, reason, status = 0):
         ),
     ]
 
-
 def _generate_default_test(ctx):
     patch = ctx.actions.declare_file("%s.tmp.json" % ctx.label.name)
     metadata.create_file(
