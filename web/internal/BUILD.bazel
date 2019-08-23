@@ -92,6 +92,7 @@ bzl_library(
         ":metadata",
         ":provider",
         ":runfiles",
+        ":windows_utils",
     ],
 )
 
@@ -150,4 +151,9 @@ bzl_library(
         ":constants",
         "//web",
     ],
+)
+
+bzl_library(
+    name = "windows_utils",
+    srcs = ["windows_utils.bzl"],
 )
