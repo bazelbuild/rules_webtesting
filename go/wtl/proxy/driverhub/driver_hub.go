@@ -210,7 +210,6 @@ func (h *WebDriverHub) routeToSession(w http.ResponseWriter, r *http.Request) {
 
 func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log.Print("Creating session\n\n")
 
 	if err := h.waitForHealthyEnv(ctx); err != nil {
 		sessionNotCreated(w, err)
@@ -243,8 +242,6 @@ func (h *WebDriverHub) createSession(w http.ResponseWriter, r *http.Request) {
 		sessionNotCreated(w, err)
 		return
 	}
-
-	log.Printf("Caps: %+v", caps)
 
 	var session *WebDriverSession
 
