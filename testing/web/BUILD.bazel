@@ -38,5 +38,23 @@ py_web_test_suite(
         "//browsers/sauce:chrome-win10",
         "//browsers/sauce:chrome-win10-connect",
     ],
+    tags = {
+        "chromium-local": [
+            "native",
+        ],
+        "chrome-win10": [
+            "exclusive",
+            "sauce",
+            "notravis",
+        ],
+        "chrome-win10-connect": [
+            "exclusive",
+            "noci",
+            "sauce",
+        ],
+        "firefox-local": [
+            "native",
+        ],
+    },
     deps = [":web"],
 )
