@@ -40,8 +40,7 @@ browser(
     required_tags = [
         "sauce",
         "exclusive",
-        "notravis",
-        "nobuildkite",
+        "noci",
     ],
     deps = ["//third_party/sauceconnect"],
 )

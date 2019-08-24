@@ -27,12 +27,18 @@ browser(
     name = "firefox-external",
     execution_requirements = {"requires-network": ""},
     metadata = "firefox-external.json",
+    required_tags = [
+        "external",
+    ],
 )
 
 browser(
     name = "chrome-external",
     execution_requirements = {"requires-network": ""},
     metadata = "chrome-external.json",
+    required_tags = [
+        "external",
+    ],
 )
 
 browser(
@@ -44,6 +50,9 @@ browser(
 browser(
     name = "chromium-local",
     metadata = "chromium-local.json",
+    required_tags = [
+        "native",
+    ],
     deps = [
         "//go/wsl",
         "//third_party/chromedriver",
@@ -58,6 +67,9 @@ browser(
         "//conditions:default": None,
     }),
     metadata = "firefox-local.json",
+    required_tags = [
+        "native",
+    ],
     deps = select({
         "//common/conditions:windows": [],
         "//conditions:default": [

@@ -40,19 +40,6 @@ go_web_test_suite(
         "//browsers/sauce:chrome-win10-connect",
     ],
     data = ["//testdata"],
-    tags = {
-        "default": ["noci"],
-        "chrome-win10": [
-            "exclusive",
-            "sauce",
-        ],
-        "chrome-win10-connect": [
-            "exclusive",
-            "notravis",
-            "nobuildkite",
-            "sauce",
-        ],
-    },
     deps = [
         "//go/bazel:go_default_library",
         "//go/httphelper:go_default_library",

@@ -20,7 +20,7 @@ before_install:
 
 script:
     - |
-      FILTERS="-notravis,-noci"
+      FILTERS="-noci,-native"
       if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
         FILTERS="${FILTERS},-sauce"
       fi

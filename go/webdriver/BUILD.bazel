@@ -44,18 +44,5 @@ go_web_test_suite(
         "//browsers/sauce:chrome-win10-connect",
     ],
     embed = [":go_default_library"],
-    tags = {
-        "default": ["noci"],
-        "chrome-win10": [
-            "exclusive",
-            "sauce",
-        ],
-        "chrome-win10-connect": [
-            "exclusive",
-            "notravis",
-            "nobuildkite",
-            "sauce",
-        ],
-    },
     deps = ["//go/webtest:go_default_library"],
 )

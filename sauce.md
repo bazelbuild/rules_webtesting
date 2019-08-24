@@ -1,5 +1,15 @@
 # Running Web Tests with Sauce Labs
 
+There are two Sauce browsers defined and used by tests.
+
+1.  //browsers/sauce:chrome-win10, requires that SauceConnect is already
+    running.
+
+2.  //browsers/sauce:chrome-win10-connect, will start an instance of
+    SauceConnect for each browser target.
+
+## //browsers/sauce:chrome-win10 tests
+
 Before starting the tests you need to export some environment variables and
 start Sauce Connect. You can dowload Sauce Connect at
 https://wiki.saucelabs.com/display/DOCS/Setting+Up+Sauce+Connect+Proxy
@@ -24,8 +34,16 @@ export TUNNEL_IDENTIFIER=<whatever you want>
 export BUILD_TAG=<whatever you want>
 ```
 
-Then to actually run the SauceLabs tests, use the following:
+Then to run the tests, use the following:
 
 ```sh
-bazel test --test_tag_filters=sauce,-notravis --test_output=streamed ...
+bazel test --test_tag_filters=chrome-win10 --test_output=streamed ...
+```
+
+## //browsers/sauce:chrome-win10-connect tests
+
+To run the tests, use the following:
+
+```sh
+bazel test --test_tag_filters=chrome-win10-connect --test_output=streamed ...
 ```

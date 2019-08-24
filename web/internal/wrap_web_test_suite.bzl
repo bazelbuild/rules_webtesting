@@ -14,7 +14,7 @@
 """Definition of wrap_web_test_suite."""
 
 load("//web:web.bzl", "web_test_suite")
-load(":constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
+load(":constants.bzl", "DEFAULT_TEST_SUITE_TAGS", "DEFAULT_WEB_TEST_SUITE_TAGS", "DEFAULT_WRAPPED_TEST_TAGS")
 
 def wrap_web_test_suite(
         name,
@@ -27,12 +27,12 @@ def wrap_web_test_suite(
         local = None,
         shard_count = None,
         size = None,
-        tags = None,
-        test_suite_tags = None,
+        tags = DEFAULT_WEB_TEST_SUITE_TAGS,
+        test_suite_tags = DEFAULT_TEST_SUITE_TAGS,
         timeout = None,
         visibility = None,
         web_test_data = None,
-        wrapped_test_tags = None,
+        wrapped_test_tags = DEFAULT_WRAPPED_TEST_TAGS,
         **remaining_keyword_args):
     """Defines a test_suite of web_test targets that wrap a given rule.
 
@@ -60,11 +60,6 @@ def wrap_web_test_suite(
         wrapped_test_tags: A list of test tag strings to use for the wrapped test
         **remaining_keyword_args: Arguments for the wrapped test target.
     """
-
-    # Check explicitly for None so that users can set this to the empty list
-    if wrapped_test_tags == None:
-        wrapped_test_tags = DEFAULT_WRAPPED_TEST_TAGS
-
     size = size or "large"
 
     wrapped_test_name = name + "_wrapped_test"

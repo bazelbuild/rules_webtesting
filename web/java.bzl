@@ -13,9 +13,10 @@
 # limitations under the License.
 """Web Test rules for Java."""
 
+load("//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
 load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 
-def java_web_test_suite(name, java_test_tags = None, test_class = None, **kwargs):
+def java_web_test_suite(name, java_test_tags = DEFAULT_WRAPPED_TEST_TAGS, test_class = None, **kwargs):
     """Defines a test_suite of web_test targets that wrap a java_test target.
 
     Args:
