@@ -14,14 +14,14 @@ platforms:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external"
+    - "--test_tag_filters=-noci,-sauce,-external,-native"
     test_targets:
     - "//..."
   windows:
-    sauce: true
+    sauce: false
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=chrome-win10"
+    - "--test_tag_filters=-noci,-sauce,-external,-native"
     test_targets:
     - "//..."
