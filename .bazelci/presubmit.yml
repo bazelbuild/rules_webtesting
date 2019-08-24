@@ -5,25 +5,23 @@ platforms:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-nobuildkite"
+    - "--test_tag_filters=-noci,-external,-native,-chrome-win10-connect"
     - "--test_output=streamed"
     test_targets:
     - "//..."
   macos:
-    sauce: true
+    sauce: false
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-nobuildkite"
-    - "--test_output=streamed"
+    - "--test_tag_filters=-noci,-sauce,-external,-native"
     test_targets:
     - "//..."
   windows:
-    sauce: true
+    sauce: false
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-nobuildkite"
-    - "--test_output=streamed"
+    - "--test_tag_filters=-noci,-sauce,-external,-native"
     test_targets:
     - "//..."

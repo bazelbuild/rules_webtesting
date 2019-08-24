@@ -25,11 +25,8 @@ java_web_test_suite(
         "//browsers:chromium-local",
         "//browsers:firefox-local",
         "//browsers/sauce:chrome-win10",
+        "//browsers/sauce:chrome-win10-connect",
     ],
-    tags = {
-        "default": ["noci"],
-        "chrome-win10": ["sauce"],
-    },
     deps = [
         "//java/com/google/testing/web",
         "@junit_junit",

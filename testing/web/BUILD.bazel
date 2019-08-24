@@ -38,18 +38,5 @@ py_web_test_suite(
         "//browsers/sauce:chrome-win10",
         "//browsers/sauce:chrome-win10-connect",
     ],
-    tags = {
-        "default": ["noci"],
-        "chrome-win10": [
-            "sauce",
-            # TODO(DrMarcII): Identify why this is failing on travis.
-            "notravis",
-        ],
-        "chrome-win10-connect": [
-            "sauce",
-            "notravis",
-            "nobuildkite",
-        ],
-    },
     deps = [":web"],
 )

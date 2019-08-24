@@ -17,7 +17,7 @@ load(
     "//web/internal:browser.bzl",
     _browser = "browser",
 )
-load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS")
+load("//web/internal:constants.bzl", "DEFAULT_TEST_SUITE_TAGS", "DEFAULT_WEB_TEST_SUITE_TAGS")
 load(
     "//web/internal:custom_browser.bzl",
     _custom_browser = "custom_browser",
@@ -51,7 +51,7 @@ load("@bazel_skylib//lib:types.bzl", "types")
 def web_test_suite(
         name,
         browsers,
-        test_suite_tags = None,
+        test_suite_tags = DEFAULT_TEST_SUITE_TAGS,
         visibility = None,
         **kwargs):
     """Defines a test_suite of web_test targets to be run.
@@ -69,11 +69,10 @@ def web_test_suite(
     if not browsers:
         fail("expected non-empty value for attribute 'browsers'")
 
-    # Check explicitly for None so that users can set this to the empty list.
-    if test_suite_tags == None:
-        test_suite_tags = DEFAULT_TEST_SUITE_TAGS
-
     tests = []
+
+    if "tags" not in kwargs:
+        kwargs["tags"] = DEFAULT_WEB_TEST_SUITE_TAGS
 
     for browser in browsers:  # pylint: disable=redefined-outer-name
         unqualified_browser = browser.split(":", 2)[1]
@@ -124,12 +123,20 @@ def custom_browser(testonly = True, **kwargs):
     """Wrapper around custom_browser to correctly set defaults."""
     _custom_browser(testonly = testonly, **kwargs)
 
-def web_test(config = None, launcher = None, size = None, **kwargs):
+def web_test(browser, config = None, launcher = None, size = None, **kwargs):
     """Wrapper around web_test to correctly set defaults."""
     config = config or str(Label("//web:default_config"))
     launcher = launcher or str(Label("//go/wtl/main"))
     size = size or "large"
-    _web_test(config = config, launcher = launcher, size = size, **kwargs)
+
+    unqualified_browser = browser.split(":", 2)[1]
+
+    if "tags" not in kwargs:
+        kwargs["tags"] = DEFAULT_WEB_TEST_SUITE_TAGS.get(unqualified_browser, [])
+
+    kwargs["tags"] = [unqualified_browser] + kwargs["tags"]
+
+    _web_test(browser = browser, config = config, launcher = launcher, size = size, **kwargs)
 
 def web_test_config(testonly = True, **kwargs):
     """Wrapper around web_test_config to correctly set defaults."""

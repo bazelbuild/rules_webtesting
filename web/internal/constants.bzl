@@ -16,3 +16,30 @@
 DEFAULT_WRAPPED_TEST_TAGS = ("manual", "noci")
 
 DEFAULT_TEST_SUITE_TAGS = ("manual",)
+
+DEFAULT_WEB_TEST_SUITE_TAGS = {
+    "chrome-external": [
+        "external",
+    ],
+    "chromium-local": [
+        "native",
+    ],
+    "chromium-local-1024x768": [
+        "native",
+    ],
+    "chrome-win10": [
+        "exclusive",
+        "sauce",
+    ],
+    "chrome-win10-connect": [
+        "exclusive",
+        "noci",
+        "sauce",
+    ],
+    "firefox-external": [
+        "external",
+    ],
+    "firefox-local": [
+        "native",
+    ],
+}

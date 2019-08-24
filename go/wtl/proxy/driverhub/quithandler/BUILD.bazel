@@ -35,13 +35,11 @@ go_web_test_suite(
     srcs = ["quit_handler_test.go"],
     browsers = [
         "//browsers:chromium-local",
+        "//browsers:firefox-local",
         "//browsers/sauce:chrome-win10",
+        "//browsers/sauce:chrome-win10-connect",
     ],
     data = ["//testdata"],
-    tags = {
-        "default": ["noci"],
-        "chrome-win10": ["sauce"],
-    },
     deps = [
         "//go/bazel:go_default_library",
         "//go/httphelper:go_default_library",
