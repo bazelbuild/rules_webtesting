@@ -22,7 +22,7 @@ web_test_named_executable(
     name = "wsl",
     alt_name = "WEBDRIVER_SERVER_LIGHT",
     executable = select({
-        "//common/conditions:linux": "main/linux_amd64_stripped/main",
+        "//common/conditions:linux": "main/linux_amd64_pure_stripped/main",
         "//common/conditions:mac": "main/darwin_amd64_pure_stripped/main",
         "//common/conditions:windows": "main/windows_amd64_pure_stripped/main.exe",
     }),
