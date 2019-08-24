@@ -18,10 +18,10 @@ platforms:
     test_targets:
     - "//..."
   windows:
-    sauce: false
+    sauce: true
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external"
+    - "--test_tag_filters=chrome-win10"
     test_targets:
     - "//..."
