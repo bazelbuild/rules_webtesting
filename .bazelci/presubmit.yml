@@ -19,9 +19,12 @@ platforms:
     - "//..."
   windows:
     sauce: false
+    build_flags:
+    - "--enable_runfiles"
     build_targets:
     - "//..."
     test_flags:
     - "--test_tag_filters=-noci,-sauce,-external,-native"
+    - "--enable_runfiles"
     test_targets:
     - "//..."
