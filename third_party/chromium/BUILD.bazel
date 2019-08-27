@@ -33,7 +33,7 @@ web_test_archive(
             "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
         },
         "//common/conditions:windows": {
-            "CHROMIUM": "chrome-win32/chrome.exe",
+            "CHROMIUM": "chrome-win/chrome.exe",
         },
     }),
     visibility = ["//browsers:__subpackages__"],
