@@ -22,7 +22,7 @@ def go_web_test_suite(name, go_test_tags = DEFAULT_WRAPPED_TEST_TAGS, **kwargs):
 
     Args:
         name: The base name of the test.
-        go_test_tags: A list of test tag strings to use for the dart_test target.
+        go_test_tags: A list of test tag strings to use for the go_test target.
         **kwargs: Arguments for wrapped_web_test_suite
     """
     wrap_web_test_suite(
