@@ -26,10 +26,10 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 web_test_repositories()
 ```
 
-We maintain predefined versioned browsers in 
+We maintain predefined versioned browsers in
 `@io_bazel_rules_webtesting//web/versioned:browsers-<version>.bzl` that can be
-referenced from `@io_bazel_rules_webtesting//browsers`. Note: these versions
-in these files are not locked in until the corresponding release has been created.
+referenced from `@io_bazel_rules_webtesting//browsers`. Note: these versions in
+these files are not locked in until the corresponding release has been created.
 
 To use, add the following to your WORKSPACE file:
 
