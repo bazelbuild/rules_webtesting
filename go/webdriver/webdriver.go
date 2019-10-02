@@ -96,6 +96,8 @@ type WebDriver interface {
 	PageSource(context.Context) (string, error)
 	// NavigateTo navigates the controlled browser to the specified URL.
 	NavigateTo(context.Context, *url.URL) error
+	// ExecuteCDPCommand sends a CDP command to ChromeDriver.
+	ExecuteCDPCommand(ctx context.Context, cmd string, params map[string]interface{}, value interface{}) error
 }
 
 // WebElement provides access to a specific DOM element in a WebDriver session.
@@ -714,4 +716,11 @@ func scriptTimeout(caps *capabilities.Capabilities) time.Duration {
 	}
 
 	return 0
+}
+
+func (d *webDriver) ExecuteCDPCommand(ctx context.Context, cmd string, params map[string]interface{}, value interface{}) error {
+	return d.post(ctx, "goog/cdp/execute", map[string]interface{}{
+		"cmd":    cmd,
+		"params": params,
+	}, value)
 }
