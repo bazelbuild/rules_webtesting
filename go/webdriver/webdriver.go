@@ -719,9 +719,8 @@ func scriptTimeout(caps *capabilities.Capabilities) time.Duration {
 }
 
 func (d *webDriver) ExecuteCDPCommand(ctx context.Context, cmd string, params map[string]interface{}, value interface{}) error {
-	err := d.post(ctx, "goog/cdp/execute", map[string]interface{}{
+	return d.post(ctx, "goog/cdp/execute", map[string]interface{}{
 		"cmd":    cmd,
 		"params": params,
 	}, value)
-	return err
 }
