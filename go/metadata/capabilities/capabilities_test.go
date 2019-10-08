@@ -268,6 +268,46 @@ func TestNormalize(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name: "strips underscore-prefixed caps",
+			args: map[string]interface{}{
+				"_comment": "stripped",
+				"comment":  "not stripped",
+				"nestedInMap": map[string]interface{}{
+					"_another": "stripped",
+					"another":  "not stripped",
+				},
+				"nestedInSlice": []interface{}{
+					map[string]interface{}{
+						"_onemore": "stripped",
+						"onemore":  "not stripped",
+					},
+					[]interface{}{
+						map[string]interface{}{
+							"_lastone": "stripped",
+							"lastone":  "not stripped",
+						},
+					},
+				},
+			},
+			want: map[string]interface{}{
+				"comment": "not stripped",
+				"nestedInMap": map[string]interface{}{
+					"another": "not stripped",
+				},
+				"nestedInSlice": []interface{}{
+					map[string]interface{}{
+						"onemore": "not stripped",
+					},
+					[]interface{}{
+						map[string]interface{}{
+							"lastone": "not stripped",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
