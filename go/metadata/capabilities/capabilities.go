@@ -149,10 +149,7 @@ func FromNewSessionArgs(args map[string]interface{}) (*Capabilities, error) {
 }
 
 func normalize(in map[string]interface{}) (map[string]interface{}, error) {
-	inCpy := map[string]interface{}{}
-	for k, v := range in {
-		inCpy[k] = v
-	}
+	inCpy := stripUnderscoreCapsFromMap(in)
 
 	out := map[string]interface{}{}
 	if err := normalizeLegacyGoogCapability(inCpy, out, "chromeOptions"); err != nil {
@@ -172,6 +169,39 @@ func normalize(in map[string]interface{}) (map[string]interface{}, error) {
 	}
 
 	return out, nil
+}
+
+func stripUnderscoreCapsFromMap(in map[string]interface{}) map[string]interface{} {
+	out := map[string]interface{}{}
+	for k, v := range in {
+		if strings.HasPrefix(k, "_") {
+			continue
+		}
+		switch t := v.(type) {
+		case map[string]interface{}:
+			v = stripUnderscoreCapsFromMap(t)
+		case []interface{}:
+			v = stripUnderscoreCapsFromSlice(t)
+		}
+		out[k] = v
+	}
+
+	return out
+}
+
+func stripUnderscoreCapsFromSlice(in []interface{}) []interface{} {
+	var out []interface{}
+	for _, v := range in {
+		switch t := v.(type) {
+		case map[string]interface{}:
+			v = stripUnderscoreCapsFromMap(t)
+		case []interface{}:
+			v = stripUnderscoreCapsFromSlice(t)
+		}
+		out = append(out, v)
+	}
+
+	return out
 }
 
 // normalizeLegacyGoogCapability duplicates and merges paramName from "in" to "out" with name "goog:"+paramName, deleting the entry from "in".
