@@ -491,6 +491,47 @@ func TestMerge(t *testing.T) {
 			},
 		},
 		{
+			name: "args -- removals",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"--anOption",
+					"--anOption=true",
+					"--optionToLeave=this",
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"REMOVE:--anOption",
+					"REMOVE:--noSuchOption",
+					"REMOVE:an option",
+					"-optionToLeave=that",
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"an option",
+					"--optionToLeave=this",
+					map[string]interface{}{
+						"some": "map",
+					},
+					"an option",
+					"REMOVE:an option",
+					"-optionToLeave=that",
+					map[string]interface{}{
+						"some": "map",
+					},
+				},
+			},
+		},
+		{
 			name: "chromeOptions to goog:chromeOptions",
 			input1: map[string]interface{}{
 				"chromeOptions": []interface{}{

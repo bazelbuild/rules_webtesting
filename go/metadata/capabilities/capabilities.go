@@ -723,13 +723,19 @@ func mergeLists(m1, m2 []interface{}) []interface{} {
 func mergeArgs(m1, m2 []interface{}) []interface{} {
 	m2Opts := map[string]bool{}
 
+	m2Copy := make([]interface{}, 0, len(m2))
 	for _, a := range m2 {
 		if arg, ok := a.(string); ok {
+			if strings.HasPrefix(arg, "REMOVE:--") {
+				m2Opts[arg[7:]] = true
+				continue // And leave arg out of m2Copy
+			}
 			if strings.HasPrefix(arg, "--") {
 				tokens := strings.Split(arg, "=")
 				m2Opts[tokens[0]] = true
 			}
 		}
+		m2Copy = append(m2Copy, a)
 	}
 
 	nl := []interface{}{}
@@ -747,7 +753,7 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 		nl = append(nl, a)
 	}
 
-	nl = append(nl, m2...)
+	nl = append(nl, m2Copy...)
 	return nl
 }
 
