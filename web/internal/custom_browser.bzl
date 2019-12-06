@@ -29,7 +29,7 @@ def _custom_browser_impl(ctx):
     ] + [ctx.attr.browser[WebTestInfo].metadata]
 
     if ctx.files.metadata:
-        metadata_files.append(ctx.file.metadata)
+        metadata_files.insert(0, ctx.file.metadata)
 
     patch = ctx.actions.declare_file("%s.tmp.json" % ctx.label.name)
     metadata.create_file(ctx = ctx, output = patch, browser_label = ctx.label)
