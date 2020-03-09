@@ -13,13 +13,16 @@
 # limitations under the License.
 """Web Test Launcher Debugger Front-End."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 import code
 import getpass
 import hashlib
 import json
 import socket
 import sys
-import urllib
+from six.moves import urllib
 
 
 class Debugger:
@@ -135,7 +138,7 @@ class Debugger:
 
 def collect_analytics():
   try:
-    urllib.urlopen(
+    urllib.request.urlopen(
         "http://www.google-analytics.com/collect?v=1&aip=1&tid=UA-52159295-3"
         "&t=screenview&cd=start&an=WTL+Debugger&uid=" +
         hashlib.md5(getpass.getuser()).hexdigest()).close
