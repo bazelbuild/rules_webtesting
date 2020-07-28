@@ -17,6 +17,7 @@ load("//web/internal:platform_http_file.bzl", "platform_http_file")
 
 def browser_repositories(firefox = False, chromium = False, sauce = False):
     """Sets up repositories for browsers defined in //browsers/....
+
     Args:
         firefox: Configure repositories for //browsers:firefox-native.
         chromium: Configure repositories for //browsers:chromium-native.
