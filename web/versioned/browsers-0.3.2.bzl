@@ -118,8 +118,8 @@ def org_mozilla_geckodriver():
             "https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz",
         ],
         macos_sha256 =
-            "6553195cd6f449e2b90b0bdfe174c6c3337ed571ac6d57a0db028ac5f306cca9",
+            "4739ef8f8af5d89bd4a8015788b4dc45c2f5f16b2fdc001254c9a92fe7261947",
         macos_urls = [
-            "https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-macos.tar.gz",
+            "https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-macos.tar.gz",
         ],
     )
