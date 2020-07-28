@@ -6,6 +6,7 @@
       "binary" : "%FILE:CHROMIUM%",
       "args" : [
         "--headless", 
+        "--no-sandbox",
         "--use-gl=swiftshader-webgl"
       ]
     },
