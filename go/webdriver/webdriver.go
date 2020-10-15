@@ -72,6 +72,10 @@ type WebDriver interface {
 	Screenshot(context.Context) (image.Image, error)
 	// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
 	ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error)
+	// ElementGetText gets the text of an element.
+	ElementGetText(ctx context.Context, el WebElement) (string, error)
+	// ElementSendKeys sends keys to the element.
+	ElementSendKeys(ctx context.Context, el WebElement, keys string) error
 	// WindowHandles returns a slice of the current window handles.
 	WindowHandles(context.Context) ([]string, error)
 	// CurrentWindowHandle returns the handle of the active window.
@@ -391,6 +395,23 @@ func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image
 		return nil, err
 	}
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
+}
+
+// ElementGetText gets the text of an element.
+func (d *webDriver) ElementGetText(ctx context.Context, el WebElement) (string, error) {
+	var value string
+	if err := d.get(ctx, fmt.Sprintf("element/%s/text", el.ID()), &value); err != nil {
+		return "", err
+	}
+	return value, nil
+}
+
+// ElementSendKeys sends keys to an element.
+func (d *webDriver) ElementSendKeys(ctx context.Context, el WebElement, keys string) error {
+	if err := d.post(ctx, fmt.Sprintf("element/%s/value", el.ID()), map[string]string{"text": keys}, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 // WindowHandles returns a slice of the current window handles.
