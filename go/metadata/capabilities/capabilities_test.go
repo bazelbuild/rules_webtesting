@@ -435,7 +435,6 @@ func TestMerge(t *testing.T) {
 					"an option",
 					"--anOption",
 					"--anOption=true",
-					"-anotherOption",
 					map[string]interface{}{
 						"some": "map",
 					},
@@ -450,7 +449,7 @@ func TestMerge(t *testing.T) {
 			},
 		},
 		{
-			name: "args -- redefines",
+			name: "overrides '--' prefixed args",
 			input1: map[string]interface{}{
 				"args": []interface{}{
 					"an option",
@@ -528,6 +527,31 @@ func TestMerge(t *testing.T) {
 					map[string]interface{}{
 						"some": "map",
 					},
+				},
+			},
+		},
+		{
+			name: "overrides '-' prefixed args",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"option",
+					"--anOption",
+					"-width=1024",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"option",
+					"--anOption",
+					"-width=2048",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"option",
+					"option",
+					"--anOption",
+					"-width=2048",
 				},
 			},
 		},
@@ -1600,3 +1624,4 @@ func TestMergeUnder(t *testing.T) {
 		})
 	}
 }
+

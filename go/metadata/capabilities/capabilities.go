@@ -720,6 +720,9 @@ func mergeLists(m1, m2 []interface{}) []interface{} {
 	return nl
 }
 
+// The mergeArgs function merges m1 and m2. For same argument exists in m1 and m2 and has
+// prefix "--" or "-", the argument in m2 will override m1; If the same argument does not
+// have prefix "--" or "-", then both same arguments in m1 and m2 will remain.
 func mergeArgs(m1, m2 []interface{}) []interface{} {
 	m2Opts := map[string]bool{}
 
@@ -730,7 +733,7 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 				m2Opts[arg[7:]] = true
 				continue // And leave arg out of m2Copy
 			}
-			if strings.HasPrefix(arg, "--") {
+			if strings.HasPrefix(arg, "-") {
 				tokens := strings.Split(arg, "=")
 				m2Opts[tokens[0]] = true
 			}
@@ -742,7 +745,7 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 
 	for _, a := range m1 {
 		if arg, ok := a.(string); ok {
-			if strings.HasPrefix(arg, "--") {
+			if strings.HasPrefix(arg, "-") {
 				tokens := strings.Split(arg, "=")
 				// Skip options from m1 that are redefined in m2
 				if m2Opts[tokens[0]] {
