@@ -155,7 +155,7 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 		if err := resolver.RecyclePorts(); err != nil {
 			log.Printf("Error recycling ports: %v", err)
 		}
-		return "", nil, err
+		return "", nil, fmt.Errorf("Error launching driver binary: %w", err)
 	}
 
 	s, err := d.NewSession(ctx, caps, w)
@@ -165,7 +165,7 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 		if err := d.Shutdown(ctx); err != nil {
 			log.Printf("Error shutting down driver: %v", err)
 		}
-		return "", nil, err
+		return "", nil, fmt.Errorf("Error requesting new session: %w", err)
 	}
 
 	return s, d, nil
