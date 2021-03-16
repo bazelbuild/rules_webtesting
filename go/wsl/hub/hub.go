@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path"
 	"strconv"
 	"strings"
 	"sync"
@@ -141,6 +143,10 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 		return "", nil, err
 	}
 
+	if err := maybeCreateNetLogDir(caps); err != nil {
+		return "", nil, fmt.Errorf("failed to create netlog directory: %v", err)
+	}
+
 	wslConfig, ok := caps.AlwaysMatch["google:wslConfig"].(map[string]interface{})
 
 	if !ok {
@@ -169,6 +175,27 @@ func (h *Hub) newSessionFromCaps(ctx context.Context, caps *capabilities.Capabil
 	}
 
 	return s, d, nil
+}
+
+func maybeCreateNetLogDir(caps *capabilities.Capabilities) error {
+	co, ok := caps.AlwaysMatch["goog:chromeOptions"]
+	if !ok {
+		return nil
+	}
+	args, ok := co.(map[string]interface{})["args"]
+	if !ok {
+		return nil
+	}
+	for _, v := range args.([]interface{}) {
+		vStr := v.(string)
+		if !strings.HasPrefix(vStr, "--log-net-log=") {
+			continue
+		}
+		p := vStr[len("--log-net-log="):] // Grab the value of the flag.
+		dir := path.Dir(p)
+		return os.Mkdir(dir, 0755)
+	}
+	return nil
 }
 
 func (h *Hub) quitSession(session string, driver *driver.Driver, w http.ResponseWriter, r *http.Request) {
