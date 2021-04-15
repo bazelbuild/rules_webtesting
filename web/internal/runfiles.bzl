@@ -26,7 +26,6 @@ def _collect(ctx, files = [], targets = []):
         rule, all transitive runfiles from targets, and all files from files.
     """
     transitive_runfiles_list = []
-    transitive_files = []
     default_runfiles = []
     data_runfiles = []
     for target in targets:
@@ -37,15 +36,14 @@ def _collect(ctx, files = [], targets = []):
         if hasattr(target, "data_runfiles"):
             data_runfiles.append(target.data_runfiles)
         if hasattr(target, "files"):
-            transitive_files.append(target.files)
+            transitive_runfiles_list.append(target.files)
 
-    dep_files = depset(transitive = transitive_files)
     transitive_runfiles = depset(transitive = transitive_runfiles_list)
 
     result = ctx.runfiles(
         collect_data = True,
         collect_default = True,
-        files = files + dep_files.to_list(),
+        files = files,
         transitive_files = transitive_runfiles,
     )
 
