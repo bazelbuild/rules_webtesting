@@ -56,7 +56,7 @@ def org_chromium_chromedriver():
         name = "org_chromium_chromedriver",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
         amd64_sha256 =
-            "f6b9852031d185739a2c1816508fe8158eb92782d13e831b8345957ef2506fe8",
+            "c8b8be2fc6835bd3003c16d73b9574242e215e81e9b3e01d6fed457988d052f4",
         amd64_urls = [
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/870763/chromedriver_linux64.zip",
         ],
@@ -66,7 +66,7 @@ def org_chromium_chromedriver():
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/870776/chromedriver_mac64.zip",
         ],
         windows_sha256 =
-            "cb19c5b53efc65be6f79421df0c9a226603b09cc959bc47991552c8820516588",
+            "038624e31c327c40df979d699e7c1bba0f322025277f9c875266258169a56faa",
         windows_urls = [
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/870788/chromedriver_win32.zip",
         ],
