@@ -76,7 +76,7 @@ def org_chromium_chromium():
         name = "org_chromium_chromium",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
         amd64_sha256 =
-            "0e303931d9c3e065a160f5d31f1178c647f0748fb0b58b1945b84b04fe1c1165",
+            "3a2ae26b7cc56018ea3435bbe22470a82c26340aac72330d6a87555bc3946ab1",
         amd64_urls = [
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/870763/chrome-linux.zip",
         ],
@@ -86,7 +86,7 @@ def org_chromium_chromium():
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/870776/chrome-mac.zip",
         ],
         windows_sha256 =
-            "08c6b7ec05cd8f172c2fe9d29ce26e3af9fdf4d04f76b5dd53d0236df0396377",
+            "c0ef527ab7e4776b43da164b96969350cc87f1d18de2f6dfc6b74781092fcce5",
         windows_urls = [
             "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/870788/chrome-win.zip",
         ],
