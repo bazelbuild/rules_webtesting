@@ -51,24 +51,31 @@ def com_saucelabs_sauce_connect():
         ],
     )
 
+# To update Chromium, do the following:
+# Step 1: Go to https://omahaproxy.appspot.com/
+# Step 2: Look for branch_base_position of current stable releases
+# Step 3: Go to https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/ etc to verify presence of that branch release for that platform.
+#         If no results, delete the last digit to broaden your search til you find a result.
+# Step 4: Verify both Chromium and ChromeDriver are released at that version.
+# Step 5: Update the URL to the new release.
 def org_chromium_chromedriver():
     platform_http_file(
         name = "org_chromium_chromedriver",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
         amd64_sha256 =
-            "f6b9852031d185739a2c1816508fe8158eb92782d13e831b8345957ef2506fe8",
+            "c8b8be2fc6835bd3003c16d73b9574242e215e81e9b3e01d6fed457988d052f4",
         amd64_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/768968/chromedriver_linux64.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/870763/chromedriver_linux64.zip",
         ],
         macos_sha256 =
             "aa0124085146556d5d32ad172670e5dcef79b7429380112ad02898047ba7a8b7",
         macos_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/768968/chromedriver_mac64.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/870776/chromedriver_mac64.zip",
         ],
         windows_sha256 =
-            "cb19c5b53efc65be6f79421df0c9a226603b09cc959bc47991552c8820516588",
+            "038624e31c327c40df979d699e7c1bba0f322025277f9c875266258169a56faa",
         windows_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/776896/chromedriver_win32.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/870788/chromedriver_win32.zip",
         ],
     )
 def org_chromium_chromium():
@@ -76,19 +83,19 @@ def org_chromium_chromium():
         name = "org_chromium_chromium",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
         amd64_sha256 =
-            "0e303931d9c3e065a160f5d31f1178c647f0748fb0b58b1945b84b04fe1c1165",
+            "3a2ae26b7cc56018ea3435bbe22470a82c26340aac72330d6a87555bc3946ab1",
         amd64_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/768968/chrome-linux.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/870763/chrome-linux.zip",
         ],
         macos_sha256 =
             "39118c96db1b3fdb0129f434912a329c5ca07d3a1c6c6cda673d3383d83e2f9a",
         macos_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/768968/chrome-mac.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/870776/chrome-mac.zip",
         ],
         windows_sha256 =
-            "08c6b7ec05cd8f172c2fe9d29ce26e3af9fdf4d04f76b5dd53d0236df0396377",
+            "c0ef527ab7e4776b43da164b96969350cc87f1d18de2f6dfc6b74781092fcce5",
         windows_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/776896/chrome-win.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/870788/chrome-win.zip",
         ],
     )
 
