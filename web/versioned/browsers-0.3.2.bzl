@@ -51,6 +51,13 @@ def com_saucelabs_sauce_connect():
         ],
     )
 
+# To update Chromium, do the following:
+# Step 1: Go to https://omahaproxy.appspot.com/
+# Step 2: Look for branch_base_position of current stable releases
+# Step 3: Go to https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/ etc to verify presence of that branch release for that platform.
+#         If no results, delete the last digit to broaden your search til you find a result.
+# Step 4: Verify both Chromium and ChromeDriver are released at that version.
+# Step 5: Update the URL to the new release.
 def org_chromium_chromedriver():
     platform_http_file(
         name = "org_chromium_chromedriver",
