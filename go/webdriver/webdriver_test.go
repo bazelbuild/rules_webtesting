@@ -16,15 +16,42 @@ package webdriver
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 )
+
+var testURL *url.URL
+
+func TestMain(m *testing.M) {
+	port, err := portpicker.PickUnusedPort()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dir, err := bazel.Runfile("testdata/")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go func() {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
+	}()
+
+	testURL, _ = url.Parse(fmt.Sprintf("http://localhost:%d/webdriver.html", port))
+
+	os.Exit(m.Run())
+}
 
 func TestCreateSessionAndQuit(t *testing.T) {
 	ctx := context.Background()
@@ -594,6 +621,117 @@ func TestSetWindowPosition(t *testing.T) {
 				t.Errorf("got rect == %+v, expected X: %v, Y: %v", rect, tc.x, tc.y)
 			}
 		})
+	}
+}
+
+func TestSwitchToFrame(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	if err := d.NavigateTo(ctx, testURL); err != nil {
+		t.Fatal(err)
+	}
+
+	// Initial context
+	assertInFrame(ctx, t, d, false)
+
+	// Switch to default content from initial context
+	if err := d.SwitchToFrame(ctx, nil); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, false)
+
+	// Switch to frame by index from initial context
+	if err := d.SwitchToFrame(ctx, 0); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, true)
+
+	// Switch to default content from frame
+	if err := d.SwitchToFrame(ctx, nil); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, false)
+
+	// Switch to frame by index (again) from initial context
+	if err := d.SwitchToFrame(ctx, 0); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, true)
+
+	// Switch to default content which is the parent of the current frame
+	if err := d.SwitchToParentFrame(ctx); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, false)
+}
+
+func assertInFrame(ctx context.Context, t *testing.T, d WebDriver, want bool) {
+	top := false
+	if err := d.ExecuteScript(ctx, "return window.self === window.top;", nil, &top); err != nil {
+		t.Fatal(err)
+	}
+	if top == want {
+		t.Errorf("inFrame = %t, but want %t", !top, want)
+	}
+}
+
+func TestSwitchToWindow(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	if err := d.NavigateTo(ctx, testURL); err != nil {
+		t.Fatal(err)
+	}
+
+	handle, err := d.CurrentWindowHandle(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Open a new window.
+	if err := d.ExecuteScript(ctx, "window.open();", nil, nil); err != nil {
+		t.Fatal(err)
+	}
+
+	// Get the handle of the new window.
+	handles, err := d.WindowHandles(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	newHandle := ""
+	for _, h := range handles {
+		if h != handle {
+			newHandle = h
+			break
+		}
+	}
+	if newHandle == "" {
+		t.Fatal("got no new handle, but want new handle")
+	}
+
+	// Switch the context to the new window.
+	if err := d.SwitchToWindow(ctx, newHandle); err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify the expected context switch has occurred.
+	handle, err = d.CurrentWindowHandle(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if handle != newHandle {
+		t.Errorf("driver.CurrentWindowHandle = %s, but want %s", handle, newHandle)
 	}
 }
 
