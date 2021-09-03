@@ -25,7 +25,7 @@ bzl_library(
     name = "browsers-0.3.1",
     srcs = ["browsers-0.3.1.bzl"],
     deps = [
-        "//web/internal:platform_http_file",
+        "//web:web",
     ],
 )
 
@@ -33,6 +33,14 @@ bzl_library(
     name = "browsers-0.3.2",
     srcs = ["browsers-0.3.2.bzl"],
     deps = [
-        "//web/internal:platform_http_file",
+        "//web:web",
+    ],
+)
+
+bzl_library(
+    name = "browsers-0.3.3",
+    srcs = ["browsers-0.3.3.bzl"],
+    deps = [
+        "//web:web",
     ],
 )

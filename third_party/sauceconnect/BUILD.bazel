@@ -14,25 +14,19 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "web_test_archive")
 
 licenses(["by_exception_only"])  # SauceLabs EULA
 
 exports_files(["license.html"])
 
-web_test_archive(
+alias(
     name = "sauceconnect",
     testonly = True,
-    archive = "@com_saucelabs_sauce_connect//file",
-    extract = "build",
-    named_files = select({
-        "//common/conditions:windows": {
-            "SAUCE_CONNECT": "bin/sc.exe",
-        },
-        "//conditions:default": {
-            "SAUCE_CONNECT": "bin/sc",
-        },
-    }),
-    strip_prefix = "sc-*",
+    actual = select({
+        "//common/conditions:linux_x64": "@com_saucelabs_sauce_connect_linux_x64//:metadata",
+        "//common/conditions:macos_x64": "@com_saucelabs_sauce_connect_macos_x64//:metadata",
+        "//common/conditions:windows_x64": "@com_saucelabs_sauce_connect_windows_x64//:metadata",
+        # TODO: Consider wiring up binaries for SauceConnect arm64 darwin if available.
+    }, no_match_error = "Sauce Connect is not yet supported for Darwin ARM64."),
     visibility = ["//browsers:__subpackages__"],
 )
