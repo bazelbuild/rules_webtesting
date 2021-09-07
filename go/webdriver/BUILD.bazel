@@ -28,9 +28,11 @@ go_library(
     importpath = "github.com/bazelbuild/rules_webtesting/go/webdriver",
     visibility = ["//go:__subpackages__"],
     deps = [
+        "//go/bazel:go_default_library",
         "//go/errors:go_default_library",
         "//go/healthreporter:go_default_library",
         "//go/metadata/capabilities:go_default_library",
+        "//go/portpicker:go_default_library",
     ],
 )
 
@@ -43,6 +45,7 @@ go_web_test_suite(
         "//browsers/sauce:chrome-win10",
         "//browsers/sauce:chrome-win10-connect",
     ],
+    data = ["//testdata"],
     embed = [":go_default_library"],
     deps = ["//go/webtest:go_default_library"],
 )
