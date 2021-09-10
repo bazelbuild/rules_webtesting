@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"net/url"
 	"os"
 	"strings"
@@ -39,10 +40,15 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	dir, err := bazel.Runfile("testdata/")
+	// Note: We resolve to a testdata file first and then retrieve compute the directory.
+	// This is necessary in order to support running this test on Windows. The runfile manifest
+	// only contains mappings for files, so there is no mapping for just the `testdata/` directory.
+	resolved_file, err := bazel.Runfile("io_bazel_rules_webtesting/testdata/BUILD.bazel")
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	dir := filepath.Dir(resolved_file)
 
 	go func() {
 		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))

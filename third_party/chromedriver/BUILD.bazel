@@ -14,7 +14,6 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "web_test_archive")
 
 licenses([
     "notice",
@@ -23,21 +22,14 @@ licenses([
 
 exports_files(["LICENSE"])
 
-web_test_archive(
+alias(
     name = "chromedriver",
     testonly = True,
-    archive = "@org_chromium_chromedriver//file",
-    extract = "build",
-    named_files = select({
-        "//common/conditions:linux": {
-            "CHROMEDRIVER": "chromedriver_linux64/chromedriver",
-        },
-        "//common/conditions:mac": {
-            "CHROMEDRIVER": "chromedriver_mac64/chromedriver",
-        },
-        "//common/conditions:windows": {
-            "CHROMEDRIVER": "chromedriver_win32/chromedriver.exe",
-        },
+    actual = select({
+        "//common/conditions:linux_x64": "@org_chromium_chromedriver_linux_x64//:metadata",
+        "//common/conditions:macos_x64": "@org_chromium_chromedriver_macos_x64//:metadata",
+        "//common/conditions:macos_arm64": "@org_chromium_chromedriver_macos_arm64//:metadata",
+        "//common/conditions:windows_x64": "@org_chromium_chromedriver_windows_x64//:metadata",
     }),
     visibility = ["//browsers:__subpackages__"],
 )

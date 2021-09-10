@@ -20,12 +20,8 @@ licenses(["notice"])  # Apache 2.0
 
 web_test_named_executable(
     name = "wsl",
-    alt_name = "WEBDRIVER_SERVER_LIGHT",
-    executable = select({
-        "//common/conditions:linux": "main/linux_amd64_pure_stripped/main",
-        "//common/conditions:mac": "main/darwin_amd64_pure_stripped/main",
-        "//common/conditions:windows": "main/windows_amd64_pure_stripped/main.exe",
-    }),
-    visibility = ["//visibility:public"],
     testonly = True,
+    alt_name = "WEBDRIVER_SERVER_LIGHT",
+    executable = "//go/wsl/main",
+    visibility = ["//visibility:public"],
 )
