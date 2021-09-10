@@ -41,7 +41,7 @@ def com_saucelabs_sauce_connect():
             "https://saucelabs.com/downloads/sc-4.5.3-linux.tar.gz",
         ],
         named_files = {
-            "SAUCE_CONNECT": "bin/sc",
+            "SAUCE_CONNECT": "sc-4.5.3-linux/bin/sc",
         },
     )
 
@@ -53,7 +53,7 @@ def com_saucelabs_sauce_connect():
             "https://saucelabs.com/downloads/sc-4.5.3-osx.zip",
         ],
         named_files = {
-            "SAUCE_CONNECT": "bin/sc",
+            "SAUCE_CONNECT": "sc-4.5.4-osx/bin/sc",
         },
     )
 
@@ -66,7 +66,7 @@ def com_saucelabs_sauce_connect():
             "https://saucelabs.com/downloads/sc-4.5.3-win32.zip",
         ],
         named_files = {
-            "SAUCE_CONNECT": "bin/sc.exe",
+            "SAUCE_CONNECT": "sc-4.5.4-win32/bin/sc.exe",
         },
     )
 

@@ -39,8 +39,13 @@ sh_test(
     name = "merger_test",
     srcs = ["merger_test.sh"],
     data = [
-        ":main",
+        "@bazel_tools//tools/bash/runfiles",
         "//testdata",
+        ":main",
     ],
+    # Pass the executable path so that the test can resolve the merger
+    # entry-point in a platform-agnostic way.
+    args = ["$(rootpath :main)"],
     tags = ["noci"],
+
 )
