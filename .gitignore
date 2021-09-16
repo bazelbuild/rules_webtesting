@@ -6,3 +6,4 @@ bazel-*
 user.bazelrc
 
 .idea/
+dist/
