@@ -16,6 +16,17 @@
 
 # Shell script for creating a release directory.
 
+copybaraBin=$(which copybara)
+
+# If Copybara is not available in the `PATH`, we try using Copybara
+# from a path where it is supposed to exist (Googlers-only).
+if [[ -z "${copybaraBin}" ]]; then
+  copybaraBin=/google/data/ro/teams/copybara/copybara
+fi
+
+cd "$(dirname $0)/.."
+pwd
+
 bazel build -c opt --stamp \
     --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 \
     //go/metadata/main \
@@ -40,4 +51,19 @@ bazel build -c opt --stamp \
     //go/wsl/main \
     //go/wtl/main
 
-copybara --folder-dir="$1" migrate tools/copy.bara.sky release .
+tmpDir="$PWD/dist"
+outputDir="${tmpDir}/release-artifact"
+archiveDir="${tmpDir}/rules_webtesting.tar.gz"
+
+# Create a temporary directory for storing the release artifacts.
+rm -Rf ${tmpDir}
+mkdir -p ${tmpDir}
+
+# Build the release artifact directory using the Copybara `release` workflow.
+${copybaraBin} --folder-dir="${outputDir}" migrate tools/copy.bara.sky "release" $PWD
+
+# Create the release output tarball.
+tar -cvzf ${archiveDir} -C ${outputDir} .
+
+echo "Release tarball has been stored in: ${archiveDir}"
+echo "Attach this tarball to the Github release entry."

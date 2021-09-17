@@ -47,7 +47,7 @@ core.workflow(
             "bazel-bin/go/wsl/main/main_*",
             "bazel-bin/go/wtl/main/main_*",
         ],
-        exclude = ["go/metadata/main/**", "**/*.runfiles_manifest"],
+        exclude = [".bazelrc", "go/metadata/main/**", "**/*.runfiles_manifest"],
     ),
     transformations = [
         core.move("bazel-bin/go/metadata/main", "go/metadata/main"),
