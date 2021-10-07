@@ -82,7 +82,7 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(path) == 3 && path[2] == "file" {
+	if (len(path) == 3 && path[2] == "file") || (len(path) == 4 && path[2] == "se" && path[3] == "file") {
 		h.uploader.ServeHTTP(w, r)
 		return
 	}
