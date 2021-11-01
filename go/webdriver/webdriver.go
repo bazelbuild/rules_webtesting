@@ -70,8 +70,12 @@ type WebDriver interface {
 	Capabilities() map[string]interface{}
 	// Screenshot takes a screenshot of the current browser window.
 	Screenshot(context.Context) (image.Image, error)
+	// ActiveElement returns the active element of the current browsing context's document element
+	ActiveElement(ctx context.Context) (WebElement, error)
 	// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
 	ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error)
+	// ElementGetAttribute gets the attribute of an element.
+	ElementGetAttribute(ctx context.Context, el WebElement, attribute string) (string, error)
 	// ElementGetText gets the text of an element.
 	ElementGetText(ctx context.Context, el WebElement) (string, error)
 	// ElementSendKeys sends keys to the element.
@@ -399,6 +403,16 @@ func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
 }
 
+// ActiveElement returns the active element of the current browsing context's document element
+func (d *webDriver) ActiveElement(ctx context.Context) (WebElement, error) {
+	var value map[string]interface{}
+	if err := d.get(ctx, "element/active", &value); err != nil {
+		return nil, err
+	}
+
+	return d.ElementFromMap(value)
+}
+
 // ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
 func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error) {
 	var value string
@@ -406,6 +420,15 @@ func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image
 		return nil, err
 	}
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
+}
+
+// ElementGetAttribute gets the attribute of an element.
+func (d *webDriver) ElementGetAttribute(ctx context.Context, el WebElement, attribute string) (string, error) {
+	var value string
+	if err := d.get(ctx, fmt.Sprintf("element/%s/attribute/%s", el.ID(), attribute), &value); err != nil {
+		return "", err
+	}
+	return value, nil
 }
 
 // ElementGetText gets the text of an element.
