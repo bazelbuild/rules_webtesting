@@ -32,7 +32,7 @@ import (
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 )
 
-var testURL *url.URL
+var testHostURL *url.URL
 
 func TestMain(m *testing.M) {
 	port, err := portpicker.PickUnusedPort()
@@ -54,7 +54,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
 	}()
 
-	testURL, _ = url.Parse(fmt.Sprintf("http://localhost:%d/webdriver.html", port))
+	testHostURL, _ = url.Parse(fmt.Sprintf("http://localhost:%d", port))
 
 	os.Exit(m.Run())
 }
@@ -277,6 +277,35 @@ func TestScreenshot(t *testing.T) {
 	}
 	if img == nil {
 		t.Fatal("got nil, expected an image.Image")
+	}
+}
+
+func TestActiveElement(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	testURL, _ := testURL("webdriver_autofocus.html")
+	if err := d.NavigateTo(ctx, testURL); err != nil {
+		t.Fatal(err)
+	}
+
+	e, err := d.ActiveElement(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id, err := d.ElementGetAttribute(ctx, e, "id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if id != "input" {
+		t.Fatalf("Expected 'input' but got '%v'", id)
 	}
 }
 
@@ -639,6 +668,7 @@ func TestSwitchToFrame(t *testing.T) {
 	}
 	defer d.Quit(ctx)
 
+	testURL, _ := testURL("webdriver.html")
 	if err := d.NavigateTo(ctx, testURL); err != nil {
 		t.Fatal(err)
 	}
@@ -696,6 +726,7 @@ func TestSwitchToWindow(t *testing.T) {
 	}
 	defer d.Quit(ctx)
 
+	testURL, _ := testURL("webdriver.html")
 	if err := d.NavigateTo(ctx, testURL); err != nil {
 		t.Fatal(err)
 	}
@@ -747,4 +778,13 @@ func wdAddress() string {
 		addr = addr + "/"
 	}
 	return addr
+}
+
+func testURL(filename string) (*url.URL, error) {
+	testURL, err := url.Parse(fmt.Sprintf("%s/%s", testHostURL, filename))
+	if err != nil {
+		return nil, err
+	}
+
+	return testURL, nil
 }
