@@ -24,6 +24,14 @@ package(
 
 licenses(["notice"])  # Apache 2.0
 
+# bazel_osx_p4deps specifies that set of dependencies needed to run Bazel on OS X.
+# Consumed by "exoblaze" (bazel for Google3) tests.
+filegroup(
+    name = "bazel_osx_p4deps",
+    srcs = glob(["**"]),
+    visibility = ["//tools/osx:__pkg__"],
+)
+
 web_test_config(
     name = "default_config",
     visibility = ["//visibility:public"],
