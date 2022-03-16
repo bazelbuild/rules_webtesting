@@ -180,7 +180,7 @@ func (m *Metadata) ToBytes() ([]byte, error) {
 	return json.MarshalIndent(m, "", "  ")
 }
 
-// GetFilePath returns the path to a file specified by web_test_archive,
+// GetFilePath returns the path to a file specified by platform_archive,
 // web_test_named_executable, or web_test_named_file.
 func (m *Metadata) GetFilePath(name string) (string, error) {
 	for _, a := range m.WebTestFiles {

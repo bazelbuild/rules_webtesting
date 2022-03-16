@@ -14,27 +14,18 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "web_test_archive")
-
 licenses(["by_exception_only"])
 
 exports_files(["LICENSE"])
 
-web_test_archive(
+alias(
     name = "chromium",
     testonly = True,
-    archive = "@org_chromium_chromium//file",
-    extract = "build",
-    named_files = select({
-        "//common/conditions:linux": {
-            "CHROMIUM": "chrome-linux/chrome",
-        },
-        "//common/conditions:mac": {
-            "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium",
-        },
-        "//common/conditions:windows": {
-            "CHROMIUM": "chrome-win/chrome.exe",
-        },
+    actual = select({
+        "//common/conditions:linux_x64": "@org_chromium_chromium_linux_x64//:metadata",
+        "//common/conditions:macos_x64": "@org_chromium_chromium_macos_x64//:metadata",
+        "//common/conditions:macos_arm64": "@org_chromium_chromium_macos_arm64//:metadata",
+        "//common/conditions:windows_x64": "@org_chromium_chromium_windows_x64//:metadata",
     }),
     visibility = ["//browsers:__subpackages__"],
 )

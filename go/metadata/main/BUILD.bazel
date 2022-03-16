@@ -15,6 +15,7 @@
 ################################################################################
 #
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//web/internal:executable_name.bzl", "get_platform_executable_name")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -31,14 +32,20 @@ go_binary(
     testonly = True,
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
+    out = get_platform_executable_name(),
 )
 
 sh_test(
     name = "merger_test",
     srcs = ["merger_test.sh"],
     data = [
-        ":main",
+        "@bazel_tools//tools/bash/runfiles",
         "//testdata",
+        ":main",
     ],
+    # Pass the executable path so that the test can resolve the merger
+    # entry-point in a platform-agnostic way.
+    args = ["$(rootpath :main)"],
     tags = ["noci"],
+
 )

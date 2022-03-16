@@ -43,14 +43,11 @@ core.workflow(
             "web/**",
 
             # binaries to include
-            "bazel-bin/go/metadata/main/*/main",
-            "bazel-bin/go/metadata/main/*/main.exe",
-            "bazel-bin/go/wsl/main/*/main",
-            "bazel-bin/go/wsl/main/*/main.exe",
-            "bazel-bin/go/wtl/main/*/main",
-            "bazel-bin/go/wtl/main/*/main.exe",
+            "bazel-bin/go/metadata/main/main_*",
+            "bazel-bin/go/wsl/main/main_*",
+            "bazel-bin/go/wtl/main/main_*",
         ],
-        exclude = ["go/metadata/main/**"],
+        exclude = [".bazelrc", "go/metadata/main/**", "**/*.runfiles_manifest"],
     ),
     transformations = [
         core.move("bazel-bin/go/metadata/main", "go/metadata/main"),
@@ -58,6 +55,7 @@ core.workflow(
         core.move("bazel-bin/go/wtl/main", "go/wtl/main"),
         core.move("build_files/metadata.BUILD", "go/metadata/main/BUILD.bazel"),
         core.move("build_files/wsl.BUILD", "go/wsl/BUILD.bazel"),
+        core.move("build_files/wsl_main.BUILD", "go/wsl/main/BUILD.bazel"),
         core.move("build_files/wtl.BUILD", "go/wtl/main/BUILD.bazel"),
     ],
 )

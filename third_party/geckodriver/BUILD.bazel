@@ -14,20 +14,20 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "web_test_archive")
 
 licenses(["reciprocal"])  # MPL 2.0
 
 exports_files(["LICENSE"])
 
-web_test_archive(
+alias(
     name = "geckodriver",
     testonly = True,
-    archive = "@org_mozilla_geckodriver//file",
-    extract = "build",
-    named_files = {
-        "GECKODRIVER": "geckodriver",
-    },
     tags = ["manual"],
+    actual = select({
+        "//common/conditions:linux_x64": "@org_mozilla_geckodriver_linux_x64//:metadata",
+        "//common/conditions:macos_x64": "@org_mozilla_geckodriver_macos_x64//:metadata",
+        "//common/conditions:macos_arm64": "@org_mozilla_geckodriver_macos_arm64//:metadata",
+        "//common/conditions:windows_x64": "@org_mozilla_geckodriver_windows_x64//:metadata",
+    }),
     visibility = ["//browsers:__subpackages__"],
 )

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Sets up repositories for use by rules_webtesting at version 0.3.1."""
+"""Sets up repositories for use by rules_webtesting at version 0.3.3."""
 
 load("//web:web.bzl", "platform_archive")
 
@@ -81,10 +81,10 @@ def org_chromium_chromedriver():
     platform_archive(
         name = "org_chromium_chromedriver_linux_x64",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
-        sha256 =
-            "c8b8be2fc6835bd3003c16d73b9574242e215e81e9b3e01d6fed457988d052f4",
+        sha256 = "1d2e73a19632031f5de876916e12b497d5b0e3dc83d1ce2fbe8665061adfd114",
         urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/870763/chromedriver_linux64.zip",
+            "https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/902390/chromedriver_linux64.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chromedriver_linux64.zip",
         ],
         named_files = {
             "CHROMEDRIVER": "chromedriver_linux64/chromedriver",
@@ -94,9 +94,23 @@ def org_chromium_chromedriver():
     platform_archive(
         name = "org_chromium_chromedriver_macos_x64",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
-        sha256 = "ad36367b3cfa825ec5528954ef07408e66d7873fa59aa8917f6893a8c062034b",
+        sha256 = "36cc50c5194767b043913534f6ec16a7d7a85636b319729a67ffff486b30a5f6",
         urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/870776/chromedriver_mac64.zip",
+            "https://storage.googleapis.com/chromium-browser-snapshots/Mac/902390/chromedriver_mac64.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chromedriver_mac_x64.zip",
+        ],
+        named_files = {
+            "CHROMEDRIVER": "chromedriver_mac64/chromedriver",
+        },
+    )
+
+    platform_archive(
+        name = "org_chromium_chromedriver_macos_arm64",
+        licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
+        sha256 = "1f100aacf4bab4b3ac4218ecf654b17d66f2e07dd455f887bb3d9aa8d21862e1",
+        urls = [
+            "https://storage.googleapis.com/chromium-browser-snapshots/Mac_Arm/902390/chromedriver_mac64.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chromedriver_mac_arm64.zip",
         ],
         named_files = {
             "CHROMEDRIVER": "chromedriver_mac64/chromedriver",
@@ -106,10 +120,10 @@ def org_chromium_chromedriver():
     platform_archive(
         name = "org_chromium_chromedriver_windows_x64",
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
-        sha256 =
-            "038624e31c327c40df979d699e7c1bba0f322025277f9c875266258169a56faa",
+        sha256 = "48392698f2ba338a0b9192f7c2154058a0b0b926aef0a5ef22aa6706b2bbc7b6",
         urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/870788/chromedriver_win32.zip",
+            "https://storage.googleapis.com/chromium-browser-snapshots/Win/902390/chromedriver_win32.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chromedriver_win32.zip",
         ],
         named_files = {
             "CHROMEDRIVER": "chromedriver_win32/chromedriver.exe",
@@ -120,9 +134,11 @@ def org_chromium_chromium():
     platform_archive(
         name = "org_chromium_chromium_linux_x64",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
-        sha256 = "3a2ae26b7cc56018ea3435bbe22470a82c26340aac72330d6a87555bc3946ab1",
+        # 94.0.4578.0
+        sha256 = "673ee08b4cfaff128ef0b4f7517acb6b6b25c9315fc6494ec328ab38aaf952d1",
         urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/870763/chrome-linux.zip",
+            "https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/902390/chrome-linux.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chrome-linux.zip",
         ],
         named_files = {
             "CHROMIUM": "chrome-linux/chrome",
@@ -132,9 +148,25 @@ def org_chromium_chromium():
     platform_archive(
         name = "org_chromium_chromium_macos_x64",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
-        sha256 = "667be4bd866e14b38fdb1b4d1f4c04b4f86e1af710082c30f78c3c5b52e5a34d",
+        sha256 = "75f6bd26744368cd0fcbbec035766dea82e34def60e938fb48630be6799d46c7",
+        # 94.0.4578.0
         urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/870776/chrome-mac.zip",
+            "https://storage.googleapis.com/chromium-browser-snapshots/Mac/902390/chrome-mac.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chrome-mac_x64.zip",
+        ],
+        named_files = {
+            "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/Chromium",
+        },
+    )
+
+    platform_archive(
+        name = "org_chromium_chromium_macos_arm64",
+        licenses = ["notice"],  # BSD 3-clause (maybe more?)
+        sha256 = "4845ce895d030aeb8bfd877a599f1f07d8c7a77d1e08513e80e60bb0093fca24",
+        # 94.0.4578.0
+        urls = [
+            "https://storage.googleapis.com/chromium-browser-snapshots/Mac_Arm/902390/chrome-mac.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chrome-mac_arm64.zip",
         ],
         named_files = {
             "CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/Chromium",
@@ -144,10 +176,11 @@ def org_chromium_chromium():
     platform_archive(
         name = "org_chromium_chromium_windows_x64",
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
-        sha256 =
-            "c0ef527ab7e4776b43da164b96969350cc87f1d18de2f6dfc6b74781092fcce5",
+        sha256 = "8919cd2f8a4676af4acc50d022b6a946a5b21a5fec4e078b0ebb0c8e18f1ce90",
+        # 94.0.4578.0
         urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win/870788/chrome-win.zip",
+            "https://storage.googleapis.com/chromium-browser-snapshots/Win/902390/chrome-win.zip",
+            "https://storage.googleapis.com/dev-infra-mirror/chromium/902390/chrome-win.zip",
         ],
         named_files = {
             "CHROMIUM": "chrome-win/chrome.exe",
@@ -158,10 +191,11 @@ def org_mozilla_firefox():
     platform_archive(
         name = "org_mozilla_firefox_linux_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 =
-            "284f58b5ee75daec5eaf8c994fe2c8b14aff6c65331e5deeaed6ba650673357c",
+        sha256 = "998607f028043b3780f296eee03027279ef059acab5b50f9754df2bd69ca42b3",
+        # Firefox v90.0.1
         urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/68.0.2/linux-x86_64/en-US/firefox-68.0.2.tar.bz2",
+            "https://ftp.mozilla.org/pub/firefox/releases/90.0.1/linux-x86_64/en-US/firefox-90.0.1.tar.bz2",
+            "https://storage.googleapis.com/dev-infra-mirror/mozilla/firefox/firefox-90.0.1.tar.bz2",
         ],
         named_files = {
             "FIREFOX": "firefox/firefox",
@@ -169,12 +203,31 @@ def org_mozilla_firefox():
     )
 
     platform_archive(
+        # Firefox has a launcher that conditionally starts x64/arm64
         name = "org_mozilla_firefox_macos_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 =
-            "173440ca6147c6e1eebbe36f332da2c4347e37269152ad55c431f6b0d7078862",
+        sha256 = "76c1b9c42b52c7e5be4c112a98b7d3762a18841367f778a179679ac0de751f05",
+        # Firefox v90.0.1
         urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/68.0.2/mac/en-US/Firefox%2068.0.2.dmg",
+            "https://ftp.mozilla.org/pub/firefox/releases/90.0.1/mac/en-US/Firefox%2090.0.1.dmg",
+            "https://storage.googleapis.com/dev-infra-mirror/mozilla/firefox/Firefox%2090.0.1.dmg",
+        ],
+        named_files = {
+            "FIREFOX": "Firefox.app/Contents/MacOS/firefox",
+        },
+    )
+
+    platform_archive(
+        # Firefox has a launcher that conditionally starts x64/arm64. This means that the
+        # x64 and arm64 repositories download the same binaries. We preserve separate
+        # repositories to allow for dedicated ARM/x64 binaries if needed in the future.
+        name = "org_mozilla_firefox_macos_arm64",
+        licenses = ["reciprocal"],  # MPL 2.0
+        sha256 = "76c1b9c42b52c7e5be4c112a98b7d3762a18841367f778a179679ac0de751f05",
+        # Firefox v90.0.1
+        urls = [
+            "https://ftp.mozilla.org/pub/firefox/releases/90.0.1/mac/en-US/Firefox%2090.0.1.dmg",
+            "https://storage.googleapis.com/dev-infra-mirror/mozilla/firefox/Firefox%2090.0.1.dmg",
         ],
         named_files = {
             "FIREFOX": "Firefox.app/Contents/MacOS/firefox",
@@ -185,10 +238,11 @@ def org_mozilla_geckodriver():
     platform_archive(
         name = "org_mozilla_geckodriver_linux_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 =
-            "03be3d3b16b57e0f3e7e8ba7c1e4bf090620c147e6804f6c6f3203864f5e3784",
+        sha256 = "ec164910a3de7eec71e596bd2a1814ae27ba4c9d112b611680a6470dbe2ce27b",
+        # Geckodriver v0.29.1
         urls = [
-            "https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz",
+            "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz",
+            "https://storage.googleapis.com/dev-infra-mirror/mozilla/geckodriver/0.29.1/geckodriver-v0.29.1-linux64.tar.gz",
         ],
         named_files = {
             "GECKODRIVER": "geckodriver",
@@ -198,10 +252,25 @@ def org_mozilla_geckodriver():
     platform_archive(
         name = "org_mozilla_geckodriver_macos_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 =
-            "4739ef8f8af5d89bd4a8015788b4dc45c2f5f16b2fdc001254c9a92fe7261947",
+        sha256 = "9929c804ad0157ca13fdafca808866c88815b658e7059280a9f08f7e70364963",
+        # Geckodriver v0.29.1
         urls = [
-            "https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-macos.tar.gz",
+            "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-macos.tar.gz",
+            "https://storage.googleapis.com/dev-infra-mirror/mozilla/geckodriver/0.29.1/geckodriver-v0.29.1-macos.tar.gz",
+        ],
+        named_files = {
+            "GECKODRIVER": "geckodriver",
+        },
+    )
+
+    platform_archive(
+        name = "org_mozilla_geckodriver_macos_arm64",
+        licenses = ["reciprocal"],  # MPL 2.0
+        sha256 = "a1ec058b930fbfb684e30071ea47eec61bc18acb489914a9e0d095ede6088eea",
+        # Geckodriver v0.29.1
+        urls = [
+            "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-macos-aarch64.tar.gz",
+            "https://storage.googleapis.com/dev-infra-mirror/mozilla/geckodriver/0.29.1/geckodriver-v0.29.1-macos-aarch64.tar.gz",
         ],
         named_files = {
             "GECKODRIVER": "geckodriver",

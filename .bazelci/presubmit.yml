@@ -1,11 +1,10 @@
 ---
 platforms:
   ubuntu1804:
-    sauce: true
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native"
+    - "--test_tag_filters=-noci,-external,-native,-sauce"
     - "--test_output=streamed"
     test_targets:
     - "//..."

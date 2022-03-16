@@ -70,8 +70,17 @@ bzl_library(
 )
 
 bzl_library(
-    name = "platform_http_file",
-    srcs = ["platform_http_file.bzl"],
+    name = "platform_archive",
+    srcs = ["platform_archive.bzl"],
+)
+
+bzl_library(
+    name = "platform_metadata",
+    srcs = ["platform_metadata.bzl"],
+    deps = [
+        ":metadata",
+        ":provider",
+    ],
 )
 
 bzl_library(
@@ -93,17 +102,6 @@ bzl_library(
         ":provider",
         ":runfiles",
         ":windows_utils",
-    ],
-)
-
-bzl_library(
-    name = "web_test_archive",
-    srcs = ["web_test_archive.bzl"],
-    deps = [
-        ":files",
-        ":metadata",
-        ":provider",
-        ":runfiles",
     ],
 )
 

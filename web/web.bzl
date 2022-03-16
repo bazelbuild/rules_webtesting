@@ -27,10 +27,6 @@ load(
     _web_test = "web_test",
 )
 load(
-    "//web/internal:web_test_archive.bzl",
-    _web_test_archive = "web_test_archive",
-)
-load(
     "//web/internal:web_test_config.bzl",
     _web_test_config = "web_test_config",
 )
@@ -47,6 +43,13 @@ load(
     _web_test_named_file = "web_test_named_file",
 )
 load("@bazel_skylib//lib:types.bzl", "types")
+
+load("//web/internal:platform_archive.bzl", _platform_archive = "platform_archive")
+load("//web/internal:platform_metadata.bzl", _platform_metadata = "platform_metadata")
+
+# Expose the following rules publicly.
+platform_archive = _platform_archive
+platform_metadata = _platform_metadata
 
 def web_test_suite(
         name,
@@ -149,22 +152,6 @@ def web_test_named_executable(testonly = True, **kwargs):
 def web_test_named_file(testonly = True, **kwargs):
     """Wrapper around web_test_named_file to correctly set defaults."""
     _web_test_named_file(testonly = testonly, **kwargs)
-
-def web_test_archive(extract_exe_host = None, extract_exe_target = None, testonly = True, **kwargs):
-    """Wrapper around web_test_archive to correctly set defaults."""
-    extract = select({
-        str(Label("//common/conditions:windows")): str(Label("//web/internal:extract.bat")),
-        str(Label("//conditions:default")): str(Label("//web/internal:extract.sh")),
-    })
-    extract_exe_host = extract_exe_host or extract
-    extract_exe_target = extract_exe_target or extract
-
-    _web_test_archive(
-        extract_exe_host = extract_exe_host,
-        extract_exe_target = extract_exe_target,
-        testonly = testonly,
-        **kwargs
-    )
 
 def web_test_files(testonly = True, **kwargs):
     """Wrapper around web_test_files to correctly set defaults."""

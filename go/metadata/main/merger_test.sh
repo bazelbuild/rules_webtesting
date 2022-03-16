@@ -16,43 +16,60 @@
 #
 ################################################################################
 #
+
+# --- begin runfiles.bash initialization v2 ---
+# Copy-pasted from the Bazel Bash runfiles library v2. We need to copy the runfile
+# helper code as we want to resolve Bazel targets through the runfiles (in order to
+# make the test work on windows where runfiles are not symlinked). The runfile
+# helpers expose a bash function called "rlocation" that can be used to resolve targets.
+# https://github.com/bazelbuild/bazel/blob/master/tools/bash/runfiles/runfiles.bash.
+set -uo pipefail; f=bazel_tools/tools/bash/runfiles/runfiles.bash
+source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
+source "$(grep -sm1 "^$f " "${RUNFILES_MANIFEST_FILE:-/dev/null}" | cut -f2- -d' ')" 2>/dev/null || \
+source "$0.runfiles/$f" 2>/dev/null || \
+source "$(grep -sm1 "^$f " "$0.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+{ echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
+# --- end runfiles.bash initialization v2 ---
+
 set +e
-printenv
 
 error=0
 
-# TODO(DrMarcII): Figure out how to not hard code this path.
-merger=$TEST_SRCDIR/$TEST_WORKSPACE/go/metadata/main/linux_amd64_stripped/main
+# The path to the merger is passed as `sh_test` attribute. This
+# allows us to access the merger in a platform-agnostic way.
+merger_root_path=${1}
+merger=$(rlocation $TEST_WORKSPACE/${merger_root_path})
 
 $merger --output $TEST_TMPDIR/out.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/chrome-linux.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/android-browser-gingerbread-nexus-s.json
+    $(rlocation $TEST_WORKSPACE/testdata/chrome-linux.json) \
+    $(rlocation $TEST_WORKSPACE/testdata/android-browser-gingerbread-nexus-s.json)
 
 diff -b $TEST_TMPDIR/out.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/merger-result.json
+    $(rlocation $TEST_WORKSPACE/testdata/merger-result.json)
 if [[ $? != 0 ]]; then
   echo "Merge of chrome-linux.json with android-browser-gingerbread-nexus-s.json didn't equal merger-result.json."
   error=1
 fi
 
 $merger --output $TEST_TMPDIR/out2.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json
+    $(rlocation $TEST_WORKSPACE/testdata/named-files1.json) \
+    $(rlocation $TEST_WORKSPACE/testdata/named-files1.json)
 if [[ $? != 0 ]]; then
   echo "Merge of named-files1.json with itself failed."
   error=1
 fi
 
 $merger --output $TEST_TMPDIR/out2.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files1.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/named-files2.json
+    $(rlocation $TEST_WORKSPACE/testdata/named-files1.json) \
+    $(rlocation $TEST_WORKSPACE/testdata/named-files2.json)
 if [[ $? == 0 ]]; then
   echo "Expected merge of named-files1.json with named-files2.json to fail."
   error=1
 fi
 
 $merger --output $TEST_TMPDIR/out2.json \
-    $TEST_SRCDIR/$TEST_WORKSPACE/testdata/bad-named-files.json
+    $(rlocation $TEST_WORKSPACE/testdata/bad-named-files.json)
 if [[ $? == 0 ]]; then
   echo "Expected load of bad-named-files.json to fail."
   error=1

@@ -16,15 +16,48 @@ package webdriver
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"net/http"
+	"path/filepath"
 	"net/url"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/bazelbuild/rules_webtesting/go/bazel"
 	"github.com/bazelbuild/rules_webtesting/go/metadata/capabilities"
+	"github.com/bazelbuild/rules_webtesting/go/portpicker"
 	"github.com/bazelbuild/rules_webtesting/go/webtest"
 )
+
+var testHostURL *url.URL
+
+func TestMain(m *testing.M) {
+	port, err := portpicker.PickUnusedPort()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Note: We resolve to a testdata file first and then retrieve compute the directory.
+	// This is necessary in order to support running this test on Windows. The runfile manifest
+	// only contains mappings for files, so there is no mapping for just the `testdata/` directory.
+	resolved_file, err := bazel.Runfile("io_bazel_rules_webtesting/testdata/BUILD.bazel")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dir := filepath.Dir(resolved_file)
+
+	go func() {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), http.FileServer(http.Dir(dir))))
+	}()
+
+	testHostURL, _ = url.Parse(fmt.Sprintf("http://localhost:%d", port))
+
+	os.Exit(m.Run())
+}
 
 func TestCreateSessionAndQuit(t *testing.T) {
 	ctx := context.Background()
@@ -244,6 +277,35 @@ func TestScreenshot(t *testing.T) {
 	}
 	if img == nil {
 		t.Fatal("got nil, expected an image.Image")
+	}
+}
+
+func TestActiveElement(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	testURL, _ := testURL("webdriver_autofocus.html")
+	if err := d.NavigateTo(ctx, testURL); err != nil {
+		t.Fatal(err)
+	}
+
+	e, err := d.ActiveElement(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id, err := d.ElementGetAttribute(ctx, e, "id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if id != "input" {
+		t.Fatalf("Expected 'input' but got '%v'", id)
 	}
 }
 
@@ -597,10 +659,132 @@ func TestSetWindowPosition(t *testing.T) {
 	}
 }
 
+func TestSwitchToFrame(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	testURL, _ := testURL("webdriver.html")
+	if err := d.NavigateTo(ctx, testURL); err != nil {
+		t.Fatal(err)
+	}
+
+	// Initial context
+	assertInFrame(ctx, t, d, false)
+
+	// Switch to default content from initial context
+	if err := d.SwitchToFrame(ctx, nil); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, false)
+
+	// Switch to frame by index from initial context
+	if err := d.SwitchToFrame(ctx, 0); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, true)
+
+	// Switch to default content from frame
+	if err := d.SwitchToFrame(ctx, nil); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, false)
+
+	// Switch to frame by index (again) from initial context
+	if err := d.SwitchToFrame(ctx, 0); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, true)
+
+	// Switch to default content which is the parent of the current frame
+	if err := d.SwitchToParentFrame(ctx); err != nil {
+		t.Fatal(err)
+	}
+	assertInFrame(ctx, t, d, false)
+}
+
+func assertInFrame(ctx context.Context, t *testing.T, d WebDriver, want bool) {
+	top := false
+	if err := d.ExecuteScript(ctx, "return window.self === window.top;", nil, &top); err != nil {
+		t.Fatal(err)
+	}
+	if top == want {
+		t.Errorf("inFrame = %t, but want %t", !top, want)
+	}
+}
+
+func TestSwitchToWindow(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	testURL, _ := testURL("webdriver.html")
+	if err := d.NavigateTo(ctx, testURL); err != nil {
+		t.Fatal(err)
+	}
+
+	handle, err := d.CurrentWindowHandle(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Open a new window.
+	if err := d.ExecuteScript(ctx, "window.open();", nil, nil); err != nil {
+		t.Fatal(err)
+	}
+
+	// Get the handle of the new window.
+	handles, err := d.WindowHandles(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	newHandle := ""
+	for _, h := range handles {
+		if h != handle {
+			newHandle = h
+			break
+		}
+	}
+	if newHandle == "" {
+		t.Fatal("got no new handle, but want new handle")
+	}
+
+	// Switch the context to the new window.
+	if err := d.SwitchToWindow(ctx, newHandle); err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify the expected context switch has occurred.
+	handle, err = d.CurrentWindowHandle(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if handle != newHandle {
+		t.Errorf("driver.CurrentWindowHandle = %s, but want %s", handle, newHandle)
+	}
+}
+
 func wdAddress() string {
 	addr := os.Getenv("WEB_TEST_WEBDRIVER_SERVER")
 	if !strings.HasSuffix(addr, "/") {
 		addr = addr + "/"
 	}
 	return addr
+}
+
+func testURL(filename string) (*url.URL, error) {
+	testURL, err := url.Parse(fmt.Sprintf("%s/%s", testHostURL, filename))
+	if err != nil {
+		return nil, err
+	}
+
+	return testURL, nil
 }

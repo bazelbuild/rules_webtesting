@@ -63,7 +63,7 @@ browser(
 browser(
     name = "firefox-local",
     disabled = select({
-        "//common/conditions:windows": "firefox not supported on windows",
+        "//common/conditions:windows_x64": "firefox not supported on windows",
         "//conditions:default": None,
     }),
     metadata = "firefox-local.json",
@@ -71,7 +71,7 @@ browser(
         "native",
     ],
     deps = select({
-        "//common/conditions:windows": [],
+        "//common/conditions:windows_x64": [],
         "//conditions:default": [
             "//go/wsl",
             "//third_party/firefox",

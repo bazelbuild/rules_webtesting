@@ -13,7 +13,6 @@
 # limitations under the License.
 """Defines external repositories needed by rules_webtesting."""
 
-load("//web/internal:platform_http_file.bzl", "platform_http_file")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 def web_test_repositories(**kwargs):
@@ -67,9 +66,9 @@ def should_create_repository(name, args):
 def bazel_skylib():
     http_archive(
         name = "bazel_skylib",
-        sha256 = "2ef429f5d7ce7111263289644d233707dba35e39696377ebab8b0bc701f7818e",
         urls = [
-            "https://storage.googleapis.com/bazel-mirror/github.com/bazelbuild/bazel-skylib/releases/download/0.8.0/bazel-skylib.0.8.0.tar.gz",
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/0.8.0/bazel-skylib.0.8.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
         ],
+        sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
     )

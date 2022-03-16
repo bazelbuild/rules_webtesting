@@ -70,8 +70,12 @@ type WebDriver interface {
 	Capabilities() map[string]interface{}
 	// Screenshot takes a screenshot of the current browser window.
 	Screenshot(context.Context) (image.Image, error)
+	// ActiveElement returns the active element of the current browsing context's document element
+	ActiveElement(ctx context.Context) (WebElement, error)
 	// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
 	ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error)
+	// ElementGetAttribute gets the attribute of an element.
+	ElementGetAttribute(ctx context.Context, el WebElement, attribute string) (string, error)
 	// ElementGetText gets the text of an element.
 	ElementGetText(ctx context.Context, el WebElement) (string, error)
 	// ElementSendKeys sends keys to the element.
@@ -80,6 +84,17 @@ type WebDriver interface {
 	WindowHandles(context.Context) ([]string, error)
 	// CurrentWindowHandle returns the handle of the active window.
 	CurrentWindowHandle(context.Context) (string, error)
+	// SwitchToFrame switches the current browsing context to:
+	// nil: the top window (first frame)
+	// int: the frame with the given index
+	// WebElement: not yet supported
+	SwitchToFrame(ctx context.Context, frame interface{}) error
+	// SwitchToParentFrame switches the current browsing context to the parent of
+	// the current browsing context.
+	SwitchToParentFrame(ctx context.Context) error
+	// SwitchToWindow switches the current browsing context to the window with
+	// the given handle.
+	SwitchToWindow(ctx context.Context, handle string) error
 	// ElementFromID returns a new WebElement object for the given id.
 	ElementFromID(string) WebElement
 	// ElementFromMap returns a new WebElement from a map representing a JSON object.
@@ -388,6 +403,16 @@ func (d *webDriver) Screenshot(ctx context.Context) (image.Image, error) {
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
 }
 
+// ActiveElement returns the active element of the current browsing context's document element
+func (d *webDriver) ActiveElement(ctx context.Context) (WebElement, error) {
+	var value map[string]interface{}
+	if err := d.get(ctx, "element/active", &value); err != nil {
+		return nil, err
+	}
+
+	return d.ElementFromMap(value)
+}
+
 // ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
 func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error) {
 	var value string
@@ -395,6 +420,15 @@ func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image
 		return nil, err
 	}
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
+}
+
+// ElementGetAttribute gets the attribute of an element.
+func (d *webDriver) ElementGetAttribute(ctx context.Context, el WebElement, attribute string) (string, error) {
+	var value string
+	if err := d.get(ctx, fmt.Sprintf("element/%s/attribute/%s", el.ID(), attribute), &value); err != nil {
+		return "", err
+	}
+	return value, nil
 }
 
 // ElementGetText gets the text of an element.
@@ -438,6 +472,31 @@ func (d *webDriver) CurrentWindowHandle(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return value, nil
+}
+
+func (d *webDriver) SwitchToFrame(ctx context.Context, frame interface{}) error {
+	body := map[string]interface{}{}
+	switch f := frame.(type) {
+	case int, nil:
+		body["id"] = f
+	default:
+		return fmt.Errorf("invalid type %T", frame)
+	}
+	return d.post(ctx, "frame", body, nil)
+}
+
+func (d *webDriver) SwitchToParentFrame(ctx context.Context) error {
+	return d.post(ctx, "frame/parent", map[string]interface{}{}, nil)
+}
+
+func (d *webDriver) SwitchToWindow(ctx context.Context, handle string) error {
+	body := make(map[string]string)
+	if d.W3C() {
+		body["handle"] = handle
+	} else {
+		body["name"] = handle
+	}
+	return d.post(ctx, "window", body, nil)
 }
 
 func (d *webDriver) GetWindowRect(ctx context.Context) (result Rectangle, err error) {
