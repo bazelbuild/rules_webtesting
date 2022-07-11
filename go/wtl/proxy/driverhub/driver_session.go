@@ -51,9 +51,9 @@ type WebDriverSession struct {
 	stopped bool
 }
 
-// A handlerProvider wraps another HandlerFunc to create a new HandlerFunc.
+// HandlerProvider wraps another HandlerFunc to create a new HandlerFunc.
 // If the second return value is false, then the provider did not construct a new HandlerFunc.
-type handlerProvider func(session *WebDriverSession, caps *capabilities.Capabilities, base HandlerFunc) (HandlerFunc, bool)
+type HandlerProvider func(session *WebDriverSession, caps *capabilities.Capabilities, base HandlerFunc) (HandlerFunc, bool)
 
 // HandlerFunc is a func for handling a request to a WebDriver session.
 type HandlerFunc func(context.Context, Request) (Response, error)
@@ -80,20 +80,23 @@ type Response struct {
 	Body []byte
 }
 
-var providers = []handlerProvider{}
+var providers = []HandlerProvider{}
 
 // HandlerProviderFunc adds additional handlers that will wrap any previously defined handlers.
 //
 // It is important to note that later added handlers will wrap earlier added handlers.
 // E.g. if you call as follows:
-//   HandlerProviderFunc(hp1)
-//   HandlerProviderFunc(hp2)
-//   HandlerProviderFunc(hp3)
+//
+//	HandlerProviderFunc(hp1)
+//	HandlerProviderFunc(hp2)
+//	HandlerProviderFunc(hp3)
 //
 // The generated handler will be constructed as follows:
-//   hp3(session, caps, hp2(session, caps, hp1(session, caps, base)))
+//
+//	hp3(session, caps, hp2(session, caps, hp1(session, caps, base)))
+//
 // where base is the a default function that forwards commands to WebDriver unchanged.
-func HandlerProviderFunc(provider handlerProvider) {
+func HandlerProviderFunc(provider HandlerProvider) {
 	providers = append(providers, provider)
 }
 
