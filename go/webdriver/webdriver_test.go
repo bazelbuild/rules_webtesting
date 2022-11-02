@@ -304,8 +304,40 @@ func TestActiveElement(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if id != "input" {
-		t.Fatalf("Expected 'input' but got '%v'", id)
+	if id != "input1" {
+		t.Fatalf("Expected 'input1' but got '%v'", id)
+	}
+}
+
+func TestKeyDownUp(t *testing.T) {
+	ctx := context.Background()
+
+	d, err := CreateSession(ctx, wdAddress(), 3, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer d.Quit(ctx)
+
+	testURL, _ := testURL("webdriver_autofocus.html")
+	if err := d.NavigateTo(ctx, testURL); err != nil {
+		t.Fatal(err)
+	}
+
+	d.KeyDown(ctx, TabKey)
+	d.KeyUp(ctx, TabKey)
+
+	e, err := d.ActiveElement(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id, err := d.ElementGetAttribute(ctx, e, "id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if id != "input2" {
+		t.Fatalf("Expected 'input2' but got '%v'", id)
 	}
 }
 
