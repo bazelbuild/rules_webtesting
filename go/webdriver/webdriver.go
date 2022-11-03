@@ -174,6 +174,8 @@ type WebDriver interface {
 	W3C() bool
 	// CurrentURL returns the URL that the current browser window is looking at.
 	CurrentURL(context.Context) (*url.URL, error)
+	// Title returns the document title of the current top-level browsing context.
+	Title(context.Context) (string, error)
 	// PageSource returns the source of the current browsing context active document.
 	PageSource(context.Context) (string, error)
 	// NavigateTo navigates the controlled browser to the specified URL.
@@ -438,6 +440,16 @@ func (d *webDriver) CurrentURL(ctx context.Context) (*url.URL, error) {
 		return current, errors.New(d.Name(), err)
 	}
 	return current, nil
+}
+
+// Title returns the document title of the current top-level browsing context.
+func (d *webDriver) Title(ctx context.Context) (string, error) {
+	var result string
+
+	if err := d.get(ctx, "title", &result); err != nil {
+		return "", err
+	}
+	return result, nil
 }
 
 // PageSource returns the source of the current browsing context active document.
