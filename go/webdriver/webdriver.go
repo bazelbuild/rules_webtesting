@@ -103,6 +103,15 @@ const (
 	MetaKey       = string('\ue03d')
 )
 
+// Locator strategies by which to search for elements
+const (
+	ByCSSSelector     = "css selector"
+	ByLinkText        = "link text"
+	ByPartialLinkText = "partial link text"
+	ByTagName         = "tag name"
+	ByXPath           = "xpath"
+)
+
 // WebDriver provides access to a running WebDriver session
 type WebDriver interface {
 	healthreporter.HealthReporter
@@ -133,12 +142,20 @@ type WebDriver interface {
 	KeyDown(ctx context.Context, keys string) error
 	// KeyUp releases depressed keys.
 	KeyUp(ctx context.Context, keys string) error
+	// FindElement returns the first WebElement with given strategy(using) and selector(value).
+	FindElement(ctx context.Context, by string, selector string) (WebElement, error)
+	// FindElements returns a slice of WebElements with given strategy(using) and selector(value).
+	FindElements(ctx context.Context, by string, selector string) ([]WebElement, error)
 	// ActiveElement returns the active element of the current browsing context's document element
 	ActiveElement(ctx context.Context) (WebElement, error)
 	// ElementScreenshot takes a screenshot of the visible region encompassed by the bounding rectangle of element.
 	ElementScreenshot(ctx context.Context, el WebElement) (image.Image, error)
+	// ElementGetTagName gets the tag name of an element.
+	ElementGetTagName(ctx context.Context, el WebElement) (string, error)
 	// ElementGetAttribute gets the attribute of an element.
 	ElementGetAttribute(ctx context.Context, el WebElement, attribute string) (string, error)
+	// ElementGetProperty gets the property of an element.
+	ElementGetProperty(ctx context.Context, el WebElement, property string) (string, error)
 	// ElementGetText gets the text of an element.
 	ElementGetText(ctx context.Context, el WebElement) (string, error)
 	// ElementSendKeys sends keys to the element.
@@ -162,6 +179,8 @@ type WebDriver interface {
 	ElementFromID(string) WebElement
 	// ElementFromMap returns a new WebElement from a map representing a JSON object.
 	ElementFromMap(map[string]interface{}) (WebElement, error)
+	// ElementsFromMaps returns a slice of WebElements from a slice of maps representing JSON objects.
+	ElementsFromMaps(m []map[string]interface{}) ([]WebElement, error)
 	// GetWindowRect returns the current windows size and location.
 	GetWindowRect(context.Context) (Rectangle, error)
 	// SetWindowRect sets the current window size and location.
@@ -182,6 +201,8 @@ type WebDriver interface {
 	NavigateTo(context.Context, *url.URL) error
 	// ExecuteCDPCommand sends a CDP command to ChromeDriver.
 	ExecuteCDPCommand(ctx context.Context, cmd string, params map[string]interface{}, value interface{}) error
+	// OnDoRequest registers a handler which is called on each command.
+	OnDoRequest(handler DoRequestHandler)
 }
 
 // WebElement provides access to a specific DOM element in a WebDriver session.
@@ -196,6 +217,8 @@ type WebElement interface {
 	// This will not scroll the element into the viewport first.
 	// Will return an error if the element is not in the viewport.
 	Bounds(ctx context.Context) (Rectangle, error)
+	// Find WebElements using the given strategy and selector.
+	FindElements(ctx context.Context, by string, selector string) ([]WebElement, error)
 }
 
 // Rectangle represents a rectangle with floating point precision.
@@ -223,6 +246,7 @@ type webDriver struct {
 	sessionID     string
 	capabilities  map[string]interface{}
 	client        *http.Client
+	handlers      []DoRequestHandler
 	scriptTimeout time.Duration
 	w3c           bool
 }
@@ -284,7 +308,7 @@ func CreateSession(ctx context.Context, addr string, attempts int, requestedCaps
 
 	for ; attempts > 0; attempts-- {
 		d, err := func() (*webDriver, error) {
-			respBody, err := post(ctx, client, c, reqBody, nil)
+			respBody, err := postReq(ctx, client, c, reqBody, nil)
 			if err != nil {
 				return nil, err
 			}
@@ -510,6 +534,34 @@ func (d *webDriver) keyAction(ctx context.Context, action string, keys string) e
 	}, nil)
 }
 
+// FindElement returns the first WebElement with given strategy(using) and selector(value).
+func (d *webDriver) FindElement(ctx context.Context, using string, value string) (WebElement, error) {
+	var response map[string]interface{}
+	body := map[string]interface{}{
+		"using": using,
+		"value": value,
+	}
+	if err := d.post(ctx, "element", body, &response); err != nil {
+		return nil, err
+	}
+
+	return d.ElementFromMap(response)
+}
+
+// FindElements returns a slice of WebElements with given strategy(using) and selector(value).
+func (d *webDriver) FindElements(ctx context.Context, using string, value string) ([]WebElement, error) {
+	var response []map[string]interface{}
+	body := map[string]interface{}{
+		"using": using,
+		"value": value,
+	}
+	if err := d.post(ctx, "elements", body, &response); err != nil {
+		return nil, err
+	}
+
+	return d.ElementsFromMaps(response)
+}
+
 // ActiveElement returns the active element of the current browsing context's document element
 func (d *webDriver) ActiveElement(ctx context.Context) (WebElement, error) {
 	var value map[string]interface{}
@@ -529,10 +581,28 @@ func (d *webDriver) ElementScreenshot(ctx context.Context, el WebElement) (image
 	return png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(value)))
 }
 
+// ElementGetTagName gets the tag name of an element.
+func (d *webDriver) ElementGetTagName(ctx context.Context, el WebElement) (string, error) {
+	var value string
+	if err := d.get(ctx, fmt.Sprintf("element/%s/name", el.ID()), &value); err != nil {
+		return "", err
+	}
+	return value, nil
+}
+
 // ElementGetAttribute gets the attribute of an element.
 func (d *webDriver) ElementGetAttribute(ctx context.Context, el WebElement, attribute string) (string, error) {
 	var value string
 	if err := d.get(ctx, fmt.Sprintf("element/%s/attribute/%s", el.ID(), attribute), &value); err != nil {
+		return "", err
+	}
+	return value, nil
+}
+
+// ElementGetProperty gets the property of an element.
+func (d *webDriver) ElementGetProperty(ctx context.Context, el WebElement, property string) (string, error) {
+	var value string
+	if err := d.get(ctx, fmt.Sprintf("element/%s/property/%s", el.ID(), property), &value); err != nil {
 		return "", err
 	}
 	return value, nil
@@ -662,7 +732,7 @@ func (d *webDriver) post(ctx context.Context, suffix string, body interface{}, v
 		return err
 	}
 
-	_, err = post(ctx, d.client, c, body, value)
+	_, err = d.postReq(ctx, d.client, c, body, value)
 	return err
 }
 
@@ -671,7 +741,7 @@ func (d *webDriver) get(ctx context.Context, suffix string, value interface{}) e
 	if err != nil {
 		return err
 	}
-	_, err = getReq(ctx, d.client, c, value)
+	_, err = d.getReq(ctx, d.client, c, value)
 	return err
 }
 
@@ -680,7 +750,7 @@ func (d *webDriver) delete(ctx context.Context, suffix string, value interface{}
 	if err != nil {
 		return err
 	}
-	_, err = deleteReq(ctx, d.client, c, value)
+	_, err = d.deleteReq(ctx, d.client, c, value)
 	return err
 }
 
@@ -741,6 +811,19 @@ func (d *webDriver) ElementFromMap(m map[string]interface{}) (WebElement, error)
 	return d.ElementFromID(id), nil
 }
 
+// ElementsFromMaps returns a slice of WebElements from a slice of maps representing JSON objects.
+func (d *webDriver) ElementsFromMaps(maps []map[string]interface{}) ([]WebElement, error) {
+	elems := make([]WebElement, len(maps))
+	for i, m := range maps {
+		elem, err := d.ElementFromMap(m)
+		if err != nil {
+			return nil, err
+		}
+		elems[i] = elem
+	}
+	return elems, nil
+}
+
 func command(addr *url.URL, endpoint ...string) (*url.URL, error) {
 	u, err := addr.Parse(path.Join(endpoint...))
 	if err != nil {
@@ -786,7 +869,16 @@ func processResponse(body io.Reader, value interface{}) (*jsonResp, error) {
 	return respBody, nil
 }
 
-func post(ctx context.Context, client *http.Client, command *url.URL, body interface{}, value interface{}) (*jsonResp, error) {
+func (d *webDriver) postReq(ctx context.Context, client *http.Client, command *url.URL, body interface{}, value interface{}) (*jsonResp, error) {
+	request, err := createPostReq(command, body)
+	if err != nil {
+		return nil, errors.NewPermanent(compName, err)
+	}
+
+	return d.doRequest(ctx, client, request, value)
+}
+
+func createPostReq(command *url.URL, body interface{}) (*http.Request, error) {
 	reqBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, errors.NewPermanent(compName, err)
@@ -800,21 +892,60 @@ func post(ctx context.Context, client *http.Client, command *url.URL, body inter
 	request.TransferEncoding = []string{"identity"}
 	request.Header.Set("Content-Type", "application/json; charset=utf-8")
 	request.ContentLength = int64(len(reqBody))
-
-	return doRequest(ctx, client, request, value)
+	return request, err
 }
 
-func deleteReq(ctx context.Context, client *http.Client, command *url.URL, value interface{}) (*jsonResp, error) {
+func (d *webDriver) deleteReq(ctx context.Context, client *http.Client, command *url.URL, value interface{}) (*jsonResp, error) {
 	request, err := http.NewRequest("DELETE", command.String(), nil)
 	if err != nil {
 		return nil, errors.NewPermanent(compName, err)
 	}
 
-	return doRequest(ctx, client, request, value)
+	return d.doRequest(ctx, client, request, value)
 }
 
-func getReq(ctx context.Context, client *http.Client, command *url.URL, value interface{}) (*jsonResp, error) {
+func (d *webDriver) getReq(ctx context.Context, client *http.Client, command *url.URL, value interface{}) (*jsonResp, error) {
 	request, err := http.NewRequest("GET", command.String(), nil)
+	if err != nil {
+		return nil, errors.NewPermanent(compName, err)
+	}
+
+	return d.doRequest(ctx, client, request, value)
+}
+
+// DoRequestHandler is a handler which gets called on each command.
+type DoRequestHandler func(request *http.Request, jsonResp *jsonResp, err error)
+
+func (d *webDriver) OnDoRequest(handler DoRequestHandler) {
+	d.handlers = append(d.handlers, handler)
+}
+
+func (d *webDriver) handleDoRequest(request *http.Request, jsonResp *jsonResp, err error) {
+	for _, h := range d.handlers {
+		h(request, jsonResp, err)
+	}
+}
+
+func (d *webDriver) doRequest(ctx context.Context, client *http.Client, request *http.Request, value interface{}) (*jsonResp, error) {
+	request.Header.Set("Cache-Control", "no-cache")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Accept-Encoding", "identity")
+	request = request.WithContext(ctx)
+	resp, err := client.Do(request)
+	if err != nil {
+		nerr := errors.New(compName, err)
+		d.handleDoRequest(request, nil, nerr)
+		return nil, nerr
+	}
+
+	defer resp.Body.Close()
+	r, err := processResponse(resp.Body, value)
+	d.handleDoRequest(request, r, err)
+	return r, err
+}
+
+func postReq(ctx context.Context, client *http.Client, command *url.URL, body interface{}, value interface{}) (*jsonResp, error) {
+	request, err := createPostReq(command, body)
 	if err != nil {
 		return nil, errors.NewPermanent(compName, err)
 	}
@@ -829,7 +960,8 @@ func doRequest(ctx context.Context, client *http.Client, request *http.Request, 
 	request = request.WithContext(ctx)
 	resp, err := client.Do(request)
 	if err != nil {
-		return nil, errors.New(compName, err)
+		nerr := errors.New(compName, err)
+		return nil, nerr
 	}
 
 	defer resp.Body.Close()
@@ -883,6 +1015,21 @@ return {"X": left, "Y": top, "Width": rect.width, "Height": rect.height};
 		log.Printf("Err: %v", err)
 	}
 	return bounds, err
+}
+
+// FindElement finds WebElements using the given strategy(using) and selector(value).
+func (e *webElement) FindElements(ctx context.Context, using string, value string) ([]WebElement, error) {
+	var response []map[string]interface{}
+	suffix := fmt.Sprintf("element/%s/elements", e.ID())
+	body := map[string]interface{}{
+		"using": using,
+		"value": value,
+	}
+	if err := e.driver.post(ctx, suffix, body, &response); err != nil {
+		return nil, err
+	}
+
+	return e.driver.ElementsFromMaps(response)
 }
 
 func scriptTimeout(caps *capabilities.Capabilities) time.Duration {
