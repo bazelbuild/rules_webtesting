@@ -103,6 +103,7 @@ def _generate_default_test(ctx):
         config_label = ctx.attr.config.label,
         label = ctx.label,
         test_label = ctx.attr.test.label,
+        tags = ctx.attr.tags.label,
     )
 
     metadata.merge_files(
