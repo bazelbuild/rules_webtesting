@@ -78,20 +78,19 @@ py_repositories()
 
 http_archive(
     name = "io_bazel_rules_scala",
-    sha256 = "ccf19e8f966022eaaca64da559c6140b23409829cb315f2eff5dc3e757fb6ad8",
-    strip_prefix = "rules_scala-e4560ac332e9da731c1e50a76af2579c55836a5c",
-    urls = [
-        "https://github.com/bazelbuild/rules_scala/archive/e4560ac332e9da731c1e50a76af2579c55836a5c.zip",
-    ],
+    sha256 = "cc590e644b2d5c6a87344af5e2c683017fdc85516d9d64b37f15d33badf2e84c",
+    strip_prefix = "rules_scala-6.1.0",
+    url = "https://github.com/bazelbuild/rules_scala/releases/download/v6.1.0/rules_scala-v6.1.0.tar.gz",
 )
 
 load("@io_bazel_rules_scala//:scala_config.bzl", "scala_config")
 
 scala_config()
 
-load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
+load("@io_bazel_rules_scala//scala:scala.bzl", "rules_scala_setup", "rules_scala_toolchain_deps_repositories")
 
-scala_repositories()
+rules_scala_setup()
+rules_scala_toolchain_deps_repositories(fetch_sources = True)
 
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 
@@ -106,5 +105,27 @@ load("@io_bazel_rules_scala//testing:scalatest.bzl", "scalatest_repositories", "
 
 scalatest_repositories()
 
-scalatest_toolchain()
+RULES_JVM_EXTERNAL_TAG = "5.3"
+RULES_JVM_EXTERNAL_SHA ="d31e369b854322ca5098ea12c69d7175ded971435e55c18dd9dd5f29cc5249ac"
 
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/releases/download/%s/rules_jvm_external-%s.tar.gz" % (RULES_JVM_EXTERNAL_TAG, RULES_JVM_EXTERNAL_TAG)
+)
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+maven_install(
+    artifacts = [
+        "org.scalatest:scalatest-wordspec_2.12:3.2.9",
+    ],
+    repositories = [
+        "https://maven.google.com",
+        "https://repo.maven.apache.org/maven2"
+    ],
+)
+
+# Register custom scalatest toolchain to include the required wordspec dependency
+register_toolchains('//:scalatest_toolchain')
