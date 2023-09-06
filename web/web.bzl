@@ -78,7 +78,7 @@ def web_test_suite(
         kwargs["tags"] = DEFAULT_WEB_TEST_SUITE_TAGS
 
     for browser in browsers:  # pylint: disable=redefined-outer-name
-        unqualified_browser = browser.split(":", 2)[1]
+        unqualified_browser = str(browser).split(":", 2)[1]
         test_name = name + "_" + unqualified_browser
 
         overridden_kwargs = _get_kwargs(unqualified_browser, kwargs)
@@ -132,7 +132,7 @@ def web_test(browser, config = None, launcher = None, size = None, **kwargs):
     launcher = launcher or str(Label("//go/wtl/main"))
     size = size or "large"
 
-    unqualified_browser = browser.split(":", 2)[1]
+    unqualified_browser = str(browser).split(":", 2)[1]
 
     if "tags" not in kwargs:
         kwargs["tags"] = DEFAULT_WEB_TEST_SUITE_TAGS.get(unqualified_browser, [])
