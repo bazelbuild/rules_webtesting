@@ -54,7 +54,7 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
 
-load("//web/versioned:browsers-0.3.4.bzl", "browser_repositories")
+load("//web/versioned:browsers-0.3.3.bzl", "browser_repositories")
 
 browser_repositories(
     chromium = True,
