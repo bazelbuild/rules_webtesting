@@ -81,7 +81,6 @@ def wrap_web_test_suite(
         name = name,
         args = args,
         browsers = browsers,
-        browser_overrides = browser_overrides,
         config = config,
         data = web_test_data,
         flaky = flaky,
