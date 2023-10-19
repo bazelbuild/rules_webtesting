@@ -87,7 +87,7 @@ custom_browser = rule(
             doc = "The metadata merger binary.",
             default = Label("//go/metadata/main"),
             allow_files = True,
-            cfg = "host",
+            cfg = "exec",
             executable = True,
         ),
         "environment": attr.string_dict(doc = "Map of environment variables-values to set."),
