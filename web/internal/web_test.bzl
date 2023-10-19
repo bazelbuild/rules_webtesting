@@ -187,7 +187,7 @@ web_test = rule(
             doc = "The metadata merger binary.",
             default = Label("//go/metadata/main"),
             allow_files = True,
-            cfg = "host",
+            cfg = "exec",
             executable = True,
         ),
         "noop_web_test_template": attr.label(
