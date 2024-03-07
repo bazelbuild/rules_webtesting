@@ -71,7 +71,7 @@ def com_saucelabs_sauce_connect():
     )
 
 # To update Chromium, do the following:
-# Step 1: Go to https://omahaproxy.appspot.com/
+# Step 1: Go to https://chromiumdash.appspot.com/
 # Step 2: Look for branch_base_position of current stable releases
 # Step 3: Go to https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/ etc to verify presence of that branch release for that platform.
 #         If no results, delete the last digit to broaden your search til you find a result.
