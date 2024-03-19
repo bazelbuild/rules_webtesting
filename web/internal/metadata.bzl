@@ -87,7 +87,7 @@ def _create_file(
 
     ctx.actions.write(
         output = output,
-        content = struct(**fields).to_json(),
+        content = json.encode(struct(**fields)),
         is_executable = False,
     )
 
