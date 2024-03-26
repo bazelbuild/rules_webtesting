@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -725,6 +726,10 @@ func mergeLists(m1, m2 []interface{}) []interface{} {
 // have prefix "--" or "-", then both same arguments in m1 and m2 will remain.
 func mergeArgs(m1, m2 []interface{}) []interface{} {
 	m2Opts := map[string]bool{}
+	leftFeatures := []string{}
+	rightFeatures := []string{}
+	leftBlinkFeatures := []string{}
+	rightBlinkFeatures := []string{}
 
 	m2Copy := make([]interface{}, 0, len(m2))
 	for _, a := range m2 {
@@ -735,6 +740,15 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 			}
 			if strings.HasPrefix(arg, "-") {
 				tokens := strings.Split(arg, "=")
+				// If config is "--enable/disable-features", we need to merge them with a specail algorithm, see function mergeFeatures.
+				if strings.Compare(tokens[0], "--enable-features") == 0 || strings.Compare(tokens[0], "--disable-features") == 0 {
+					rightFeatures = append(rightFeatures, arg)
+					continue
+					// If config is "--enable/disable-blink-features", we need to merge them with a specail algorithm, see function mergeFeatures.
+				} else if strings.Compare(tokens[0], "--enable-blink-features") == 0 || strings.Compare(tokens[0], "--disable-blink-features") == 0 {
+					rightBlinkFeatures = append(rightBlinkFeatures, arg)
+					continue
+				}
 				m2Opts[tokens[0]] = true
 			}
 		}
@@ -747,6 +761,13 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 		if arg, ok := a.(string); ok {
 			if strings.HasPrefix(arg, "-") {
 				tokens := strings.Split(arg, "=")
+				if strings.Compare(tokens[0], "--enable-features") == 0 || strings.Compare(tokens[0], "--disable-features") == 0 {
+					leftFeatures = append(leftFeatures, arg)
+					continue
+				} else if strings.Compare(tokens[0], "--enable-blink-features") == 0 || strings.Compare(tokens[0], "--disable-blink-features") == 0 {
+					leftBlinkFeatures = append(leftBlinkFeatures, arg)
+					continue
+				}
 				// Skip options from m1 that are redefined in m2
 				if m2Opts[tokens[0]] {
 					continue
@@ -755,11 +776,149 @@ func mergeArgs(m1, m2 []interface{}) []interface{} {
 		}
 		nl = append(nl, a)
 	}
+	for _, v := range mergeFeatures("features", leftFeatures, rightFeatures) {
+		nl = append(nl, v)
+	}
+	for _, v := range mergeFeatures("blink-features", leftBlinkFeatures, rightBlinkFeatures) {
+		nl = append(nl, v)
+	}
 
 	nl = append(nl, m2Copy...)
 	return nl
 }
 
+// mergeFeatures extract four important sets from input and return merged features of "--enable/disable-features" or "--enable/disable-blink-features".
+// An example:
+// 	Left Args: Enable: f1, f2; Disable: f2, f3
+//	Right Args: Enable: f4; Disable: f1, f3
+//
+//	1) disable-features is union of left-hand and right-hand disabled features
+//	f2,f3 U f1,f3 = f1,f2,f3
+//	2) enabled-features is union of left-hand and right-hand enabled features
+//	f1,f2 U f4 = f1,f2,f4
+//	3) remove right-hand enabled features from disabled features
+//	f1,f2,f3 - f4 = f1,f2,f3
+//	4) remove right-hand disabled features from enabled features
+//	f1,f2,f4 - f1,f3 = f2,f4
+//
+//	Final result is: Enable: f1,f2,f3; Disable: f2, f4.
+//
+//	Note: in this example, f2 will be kept in both sides, since chrome allow a feature to be enable and disabled as the same time.
+//	If this case happens, f2 will be considered disabled by default.
+func mergeFeatures(argName string, leftFeatures []string, rightFeatures []string) []string {
+	result := []string{}
+	if len(leftFeatures) == 0 && len(rightFeatures) == 0 {
+		return result
+	} else if len(leftFeatures) == 0 {
+		result = append(result, rightFeatures...)
+		return result
+	} else if len(rightFeatures) == 0 {
+		result = append(result, leftFeatures...)
+		return result
+	}
+	enableLeftFeatures := map[string]bool{}
+	enableRightFeatures := map[string]bool{}
+	disableLeftFeatures := map[string]bool{}
+	disableRightFeatures := map[string]bool{}
+	for _, arg := range leftFeatures {
+		tokens := strings.Split(arg, "=")
+		if strings.Compare(tokens[0], "--enable-"+argName) == 0 && tokens[1] != "" {
+			features := strings.Split(tokens[1], ",")
+			for _, f := range features {
+				enableLeftFeatures[f] = true
+			}
+		} else if strings.Compare(tokens[0], "--disable-"+argName) == 0 && tokens[1] != "" {
+			features := strings.Split(tokens[1], ",")
+			for _, f := range features {
+				disableLeftFeatures[f] = true
+			}
+		}
+	}
+	for _, arg := range rightFeatures {
+		tokens := strings.Split(arg, "=")
+		if strings.Compare(tokens[0], "--enable-"+argName) == 0 {
+			// if right enable feature value is empty, then clear all enable features.
+			if tokens[1] == "" {
+				enableLeftFeatures = map[string]bool{}
+				continue
+			}
+			features := strings.Split(tokens[1], ",")
+			for _, f := range features {
+				enableRightFeatures[f] = true
+			}
+		} else if strings.Compare(tokens[0], "--disable-"+argName) == 0 {
+			// if right disable feature value is empty, then clear all disable features.
+			if tokens[1] == "" {
+				disableLeftFeatures = map[string]bool{}
+				continue
+			}
+			features := strings.Split(tokens[1], ",")
+			for _, f := range features {
+				disableRightFeatures[f] = true
+			}
+		}
+	}
+
+	result = append(result, mergeSingleTypeFeatures(argName, enableLeftFeatures, enableRightFeatures, disableLeftFeatures, disableRightFeatures)...)
+	return result
+}
+
+// mergeSingleTypeFeatures return merged result of one type of features, the input feature could be "--enable/disable-features" or "--enable/disable-blink-features".
+func mergeSingleTypeFeatures(argName string, enableLeftFeatures map[string]bool, enableRightFeatures map[string]bool, disableLeftFeatures map[string]bool, disableRightFeatures map[string]bool) []string {
+	result := []string{}
+	enableFeatures := map[string]bool{}
+	disableFeatures := map[string]bool{}
+	// Step 1: union enable-features and union disable-features.
+	for f := range enableLeftFeatures {
+		enableFeatures[f] = true
+	}
+	for f := range enableRightFeatures {
+		enableFeatures[f] = true
+	}
+	for f := range disableLeftFeatures {
+		disableFeatures[f] = true
+	}
+	for f := range disableRightFeatures {
+		disableFeatures[f] = true
+	}
+	// Step 2: remove right-hand enabled features from unioned disabled features and remove right-hand disabled features from unioned enabled features.
+	for f := range enableRightFeatures {
+		if !disableRightFeatures[f] && disableFeatures[f] {
+			delete(disableFeatures, f)
+		}
+	}
+	for f := range disableRightFeatures {
+		if !enableRightFeatures[f] && enableFeatures[f] {
+			delete(enableFeatures, f)
+		}
+	}
+	// Step 3: generate final result with sorted features from union enable-features and union disable-features.
+	if len(enableFeatures) > 0 {
+		sortedEnableFeatures := []string{}
+		for f := range enableFeatures {
+			sortedEnableFeatures = append(sortedEnableFeatures, f)
+		}
+		sort.Strings(sortedEnableFeatures)
+		s := "--enable-" + argName + "="
+		for _, sf := range sortedEnableFeatures {
+			s = s + sf + ","
+		}
+		result = append(result, s[0:len(s)-1])
+	}
+	if len(disableFeatures) > 0 {
+		sortedDisableFeatures := []string{}
+		for f := range disableFeatures {
+			sortedDisableFeatures = append(sortedDisableFeatures, f)
+		}
+		sort.Strings(sortedDisableFeatures)
+		s := "--disable-" + argName + "="
+		for _, sf := range sortedDisableFeatures {
+			s = s + sf + ","
+		}
+		result = append(result, s[0:len(s)-1])
+	}
+	return result
+}
 // CanReuseSession returns true if the "google:canReuseSession" is set.
 func CanReuseSession(caps *Capabilities) bool {
 	reuse, _ := caps.AlwaysMatch["google:canReuseSession"].(bool)

@@ -585,6 +585,192 @@ func TestMerge(t *testing.T) {
 	}
 }
 
+func TestMergeFeatures(t *testing.T) {
+	testCases := []struct {
+		name   string
+		input1 map[string]interface{}
+		input2 map[string]interface{}
+		result map[string]interface{}
+	}{
+		{
+			name: "merge features that only exist on one side",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--disable-blink-features=f3,f5",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2",
+					"--disable-blink-features=f3,f5",
+				},
+			},
+		},
+		{
+			name: "merge only --enable-feature and disable-blink-feature",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2",
+					"--disable-blink-features=f3,f5",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f4",
+					"--disable-blink-features=f3,f5",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2,f4",
+					"--disable-blink-features=f3,f5",
+				},
+			},
+		},
+		{
+			name: "merge --enable/disable-feature with a left hand side feature stated both in enable and disable, result should keep both if none of them is covered by right side args",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f3",
+					"--disable-features=f3,f4",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f4",
+					"--disable-features=f1,f5",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f3,f4",
+					"--disable-features=f1,f3,f5",
+				},
+			},
+		},
+		{
+			name: "merge --enable/disable-feature with a right hand side feature stated both in enable and disable, result should keep both",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2,f4",
+					"--disable-features=f3,f4",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f4",
+					"--disable-features=f4,f5",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2,f4",
+					"--disable-features=f3,f4,f5",
+				},
+			},
+		},
+		{
+			name: "merge both --enable/disable-feature and --enable/disable-blink-feature",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2",
+					"--disable-features=f3,f4",
+					"--enable-blink-features=f1",
+					"--disable-blink-features=f3",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f4",
+					"--disable-features=f1,f5",
+					"--enable-blink-features=f3",
+					"--disable-blink-features=f1",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f2,f4",
+					"--disable-features=f1,f3,f5",
+					"--enable-blink-features=f3",
+					"--disable-blink-features=f1",
+				},
+			},
+		},
+		{
+			name: "merge only --enable/disable-feature with a feature stated twice in one place",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f1,f2",
+					"--disable-features=f3",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f4",
+					"--disable-features=f3",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f2,f4",
+					"--disable-features=f3",
+				},
+			},
+		},
+		{
+			name: "merge only --enable-feature with a feature has empty value",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f4,f1",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f4",
+				},
+			},
+		},
+		{
+			name: "merge only --enable-feature with a feature has empty value on the right",
+			input1: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=f1,f4",
+					"--disable-features=f1,f3",
+				},
+			},
+			input2: map[string]interface{}{
+				"args": []interface{}{
+					"--enable-features=",
+					"--disable-features=f2,f5",
+				},
+			},
+			result: map[string]interface{}{
+				"args": []interface{}{
+					"--disable-features=f1,f2,f3,f5",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if result := Merge(tc.input1, tc.input2); !reflect.DeepEqual(tc.result, result) {
+				t.Errorf("Got Merge(%+v, %+v) == %+v, expected %+v", tc.input1, tc.input2, result, tc.result)
+			}
+		})
+	}
+}
+
 func TestFromNewSessionArgs(t *testing.T) {
 	testCases := []struct {
 		name    string
