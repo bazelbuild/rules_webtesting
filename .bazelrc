@@ -13,3 +13,6 @@ test --local_test_jobs=5
 # the sandbox strategy is used anyway and runfile forests are not needed.
 # Related Bazel bug: https://github.com/bazelbuild/bazel/issues/4327.
 build --nobuild_runfile_links
+
+# Fail if a glob doesn't match anything (https://github.com/bazelbuild/bazel/issues/8195)
+build --incompatible_disallow_empty_glob

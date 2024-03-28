@@ -17,9 +17,9 @@
 package com.google.testing.web;
 
 import org.openqa.selenium.WebDriver
-import org.scalatest._
+import org.scalatest.wordspec._
 
-class WebTestTest extends WordSpec {
+class WebTestTest extends AnyWordSpec {
 
   "A WebDriver" should {
     "start and stop" in {

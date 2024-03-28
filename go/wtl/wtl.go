@@ -75,7 +75,7 @@ func RegisterEnvProviderFunc(name string, p envProvider) {
 func Run(d diagnostics.Diagnostics, testPath, mdPath string, httpPort, httpsPort, debuggerPort int) int {
 	ctx := context.Background()
 
-	testTerminated := make(chan os.Signal)
+	testTerminated := make(chan os.Signal, 1)
 	signal.Notify(testTerminated, syscall.SIGTERM, syscall.SIGINT)
 
 	proxyStarted := make(chan error)

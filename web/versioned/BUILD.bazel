@@ -44,3 +44,11 @@ bzl_library(
         "//web:web",
     ],
 )
+
+bzl_library(
+    name = "browsers-0.3.4",
+    srcs = ["browsers-0.3.4.bzl"],
+    deps = [
+        "//web:web",
+    ],
+)
