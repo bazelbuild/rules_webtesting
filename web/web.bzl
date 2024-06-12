@@ -110,8 +110,11 @@ def _get_kwargs(browser, in_kwargs):
                 out_kwargs[k] = v["default"]
         else:
             out_kwargs[k] = v
-
-    if not out_kwargs["tags"]:
+    if "tags" not in out_kwargs:
+        fail("expeted \"default\" or \"{browser}\" dict key in tags argument.".format(
+            browser = browser,
+        ))
+    elif not out_kwargs["tags"]:
         out_kwargs["tags"] = ["browser:" + browser]
     else:
         out_kwargs["tags"] = ["browser:" + browser] + out_kwargs["tags"]
