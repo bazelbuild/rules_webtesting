@@ -23,24 +23,24 @@ package(
 
 licenses(["notice"])  # Apache 2.0
 
-browser(
-    name = "chrome-win10",
-    execution_requirements = {"requires-network": ""},
-    metadata = "chrome-win10.json",
-    required_tags = [
-        "sauce",
-        "exclusive",
-    ],
-)
+# browser(
+#     name = "chrome-win10",
+#     execution_requirements = {"requires-network": ""},
+#     metadata = "chrome-win10.json",
+#     required_tags = [
+#         "sauce",
+#         "exclusive",
+#     ],
+# )
 
-browser(
-    name = "chrome-win10-connect",
-    execution_requirements = {"requires-network": ""},
-    metadata = "chrome-win10-connect.json",
-    required_tags = [
-        "sauce",
-        "exclusive",
-        "noci",
-    ],
-    deps = ["//third_party/sauceconnect"],
-)
+# browser(
+#     name = "chrome-win10-connect",
+#     execution_requirements = {"requires-network": ""},
+#     metadata = "chrome-win10-connect.json",
+#     required_tags = [
+#         "sauce",
+#         "exclusive",
+#         "noci",
+#     ],
+#     deps = ["//third_party/sauceconnect"],
+# )

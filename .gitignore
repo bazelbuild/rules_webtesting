@@ -4,6 +4,7 @@ bazel-*
 *.pyc
 .vs/*
 user.bazelrc
+MODULE.bazel.lock
 
 .idea/
 dist/

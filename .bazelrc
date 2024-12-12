@@ -4,6 +4,8 @@ test --test_env=SAUCE_ACCESS_KEY
 test --test_env=TUNNEL_IDENTIFIER
 test --test_env=BUILD_TAG
 test --local_test_jobs=5
+test --test_tag_filters=-noci,-sauce,-external,-native
+build --build_tag_filters=-noci,-sauce,-external,-native
 
 # Do not build runfile forests by default. If an execution strategy relies on runfile
 # forests, the forest is created on-demand. See: https://github.com/bazelbuild/bazel/issues/6627
