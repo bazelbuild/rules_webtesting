@@ -28,7 +28,7 @@ import (
 )
 
 // DefaultWorkspace is the name of the default Bazel workspace.
-var DefaultWorkspace = "io_bazel_rules_webtesting"
+var DefaultWorkspace = "_main"
 
 // Runfile returns an absolute path to the specified file in the runfiles directory of the running target.
 // It searches the current working directory, RunfilesPath() directory, and RunfilesPath()/TestWorkspace().

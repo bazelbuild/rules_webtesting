@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 	// Note: We resolve to a testdata file first and then retrieve compute the directory.
 	// This is necessary in order to support running this test on Windows. The runfile manifest
 	// only contains mappings for files, so there is no mapping for just the `testdata/` directory.
-	resolved_file, err := bazel.Runfile("io_bazel_rules_webtesting/testdata/BUILD.bazel")
+	resolved_file, err := bazel.Runfile("rules_webtesting/testdata/BUILD.bazel")
 	if err != nil {
 		log.Fatal(err)
 	}
