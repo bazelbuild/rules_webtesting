@@ -55,7 +55,6 @@ pip.parse(
 use_repo(pip, "rules_webtesting_py_deps")
 
 ##### Browsers dependencies #####
-
 browser_repositories = use_extension("//web/versioned:browsers-0.3.3.bzl", "browser_repositories_extension")
 use_repo(
     browser_repositories,
