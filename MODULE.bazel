@@ -40,7 +40,7 @@ maven.install(
         "org.scalatest:scalatest-compatible:3.2.19",
         "org.scalatest:scalatest-core_2.13:3.2.19",
         "org.scalatest:scalatest-flatspec_2.13:3.2.19",
-        "org.scalatest:scalatest-matchers_core_2.13:3.2.19",
+        "org.scalatest:scalatest-matchers-core_2.13:3.2.19",
         "org.scalatest:scalatest-mustmatchers_2.13:3.2.19",
     ],
 )
