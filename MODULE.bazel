@@ -34,6 +34,7 @@ maven.install(
         "com.google.guava:guava:33.2.1-jre",
         "org.seleniumhq.selenium:selenium-remote-driver:4.27.0",
         "org.seleniumhq.selenium:selenium-api:4.27.0",
+        "junit:junit:4.13.2",
     ],
 )
 use_repo(maven, "maven")
