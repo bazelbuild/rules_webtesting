@@ -36,14 +36,15 @@ maven.install(
         "org.seleniumhq.selenium:selenium-api:4.27.0",
         "junit:junit:4.13.2",
         "org.scalactic:scalactic_2.13:3.2.19",
-        "org.scalatest.scalatest_2.13:3.2.19",
+        "org.scalatest:scalatest_2.13:3.2.19",
         "org.scalatest:scalatest-compatible:3.2.19",
         "org.scalatest:scalatest-core_2.13:3.2.19",
-        "org.scalatest.scalatest-flatspec_2.13:3.2.19",
-        "org.scalatest.scalatest-matchers_core_2.13:3.2.19",
-        "org.scalatest.scalatest-mustmatchers_2.13:3.2.19",
+        "org.scalatest:scalatest-flatspec_2.13:3.2.19",
+        "org.scalatest:scalatest-matchers_core_2.13:3.2.19",
+        "org.scalatest:scalatest-mustmatchers_2.13:3.2.19",
     ],
 )
+
 use_repo(maven, "maven")
 
 ##### Python dependencies #####
