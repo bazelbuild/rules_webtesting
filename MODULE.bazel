@@ -53,6 +53,7 @@ pip.parse(
     hub_name = "rules_webtesting_py_deps",
     python_version = "3.11",
     requirements_lock = "//:requirements_lock.txt",
+    requirements_windows = "requirements_lock_windows.txt",
 )
 use_repo(pip, "rules_webtesting_py_deps")
 
