@@ -56,12 +56,7 @@ use_repo(pip, "rules_webtesting_py_deps")
 
 ##### Scala dependencies #####
 
-register_toolchains(
-    # "@io_bazel_rules_scala//scala:unused_dependency_checker_error_toolchain",
-    # "@io_bazel_rules_scala//test/proto:scalapb_toolchain",
-    "@io_bazel_rules_scala//test/toolchains:java21_toolchain_definition",
-    dev_dependency = True,
-)
+register_toolchains('//:scalatest_toolchain')
 
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web/versioned:browsers-0.3.3.bzl", "browser_repositories_extension")
