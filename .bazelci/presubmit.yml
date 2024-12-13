@@ -1,15 +1,13 @@
 ---
 platforms:
-  ubuntu1804:
+  ubuntu2204:
     build_targets:
     - "//..."
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
-    - "--test_output=streamed"
     test_targets:
     - "//..."
   macos:
-    sauce: false
     build_targets:
     - "//..."
     test_flags:
@@ -17,7 +15,6 @@ platforms:
     test_targets:
     - "//..."
   windows:
-    sauce: false
     build_flags:
     - "--enable_runfiles"
     build_targets:
