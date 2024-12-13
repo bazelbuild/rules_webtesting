@@ -2,6 +2,8 @@ module(name = "rules_webtesting", repo_name = "io_bazel_rules_webtesting")
 
 bazel_dep(name = "rules_go", version = "0.51.0-rc1", repo_name = "io_bazel_rules_go")
 bazel_dep(name = "rules_scala", version = "", repo_name = "io_bazel_rules_scala")
+# TODO: Switch to a release version once it's available in BCR.
+# Otherwise, the root module has to declare the same override.
 git_override(
     module_name = "rules_scala",
     remote = "https://github.com/mbland/rules_scala",
