@@ -15,7 +15,7 @@
 ################################################################################
 #
 load("@bazel_gazelle//:def.bzl", "gazelle")
-# load("@io_bazel_rules_scala//scala:scala.bzl", "setup_scala_testing_toolchain")
+load("@python_versions//3.11:defs.bzl", "compile_pip_requirements")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -26,13 +26,8 @@ gazelle(
     prefix = "github.com/bazelbuild/rules_webtesting",
 )
 
-# setup_scala_testing_toolchain(
-#     name = "scalatest_toolchain",
-#     scalatest_classpath = [
-#         "@maven//:org_scalatest_scalatest_wordspec_2_12",
-#         "@io_bazel_rules_scala_scalactic",
-#     	"@io_bazel_rules_scala_scalatest",
-#     	"@io_bazel_rules_scala_scalatest_compatible",
-#     	"@io_bazel_rules_scala_scalatest_core",
-#     ],
-# )
+compile_pip_requirements(
+    name = "requirements",
+    requirements_in = "requirements.in",
+    requirements_txt = "requirements_lock.txt",
+)

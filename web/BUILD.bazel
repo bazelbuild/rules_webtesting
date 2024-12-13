@@ -39,50 +39,15 @@ bzl_library(
 )
 
 bzl_library(
-    name = "go_repositories",
-    srcs = ["go_repositories.bzl"],
-    deps = [
-        ":repositories",
-        # should depend on @bazel_gazelle//:deps.bzl
-    ],
-)
-
-bzl_library(
     name = "java",
     srcs = ["java.bzl"],
     deps = ["//web/internal:wrap_web_test_suite"],
 )
 
 bzl_library(
-    name = "java_repositories",
-    srcs = ["java_repositories.bzl"],
-    deps = [
-        ":repositories",
-        # should depend on "@bazel_tools//tools/build_defs/repo:lib",
-    ],
-)
-
-bzl_library(
     name = "py",
     srcs = ["py.bzl"],
     deps = ["//web/internal:wrap_web_test_suite"],
-)
-
-bzl_library(
-    name = "py_repositories",
-    srcs = ["py_repositories.bzl"],
-    deps = [
-        ":repositories",
-        # should depend on "@bazel_tools//tools/build_defs/repo:lib",
-    ],
-)
-
-bzl_library(
-    name = "repositories",
-    srcs = ["repositories.bzl"],
-    deps = [
-        # should depend on "@bazel_tools//tools/build_defs/repo:lib",
-    ],
 )
 
 bzl_library(

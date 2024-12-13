@@ -276,3 +276,10 @@ def org_mozilla_geckodriver():
             "GECKODRIVER": "geckodriver",
         },
     )
+
+def _browser_repositories_extension(ctx):
+    # TODO: This can be configured in MODULE.bazel via module extension tags.
+    browser_repositories(firefox = True, chromium = True, sauce = True)
+    return ctx.extension_metadata(reproducible = True)
+
+browser_repositories_extension = module_extension(implementation = _browser_repositories_extension)
