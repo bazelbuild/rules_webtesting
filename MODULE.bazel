@@ -3,24 +3,13 @@ module(
     version = "0.4.0",
 )
 
-bazel_dep(name = "rules_go", version = "0.51.0-rc1", repo_name = "io_bazel_rules_go")
-bazel_dep(name = "rules_scala", version = "", repo_name = "io_bazel_rules_scala")
-
-# TODO: Switch to a release version once it's available in BCR.
-# Otherwise, the root module has to declare the same override.
-git_override(
-    module_name = "rules_scala",
-    commit = "7fb52c7fc2ef8f7670feb73c0a9869715bdc40b8",
-    remote = "https://github.com/mbland/rules_scala",
-)
-
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
-bazel_dep(name = "gazelle", version = "0.40.0", repo_name = "bazel_gazelle")
 bazel_dep(name = "platforms", version = "0.0.10")
-bazel_dep(name = "rules_jvm_external", version = "6.6")
-bazel_dep(name = "rules_python", version = "1.0.0")
 
 ##### Go dependencies #####
+bazel_dep(name = "rules_go", version = "0.51.0-rc1", repo_name = "io_bazel_rules_go")
+bazel_dep(name = "gazelle", version = "0.40.0", repo_name = "bazel_gazelle")
+
 go_deps = use_extension("@bazel_gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
 
@@ -32,6 +21,8 @@ use_repo(
 )
 
 ##### Java dependencies #####
+bazel_dep(name = "rules_jvm_external", version = "6.6")
+
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 maven.install(
     artifacts = [
@@ -44,6 +35,8 @@ maven.install(
 use_repo(maven, "maven")
 
 ##### Python dependencies #####
+bazel_dep(name = "rules_python", version = "1.0.0")
+
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
     is_default = True,
@@ -61,6 +54,15 @@ pip.parse(
 use_repo(pip, "rules_webtesting_py_deps")
 
 ##### Scala dependencies #####
+bazel_dep(name = "rules_scala", repo_name = "io_bazel_rules_scala")
+
+# TODO: Switch to a release version once it's available in BCR.
+# Otherwise, the root module has to declare the same override.
+git_override(
+    module_name = "rules_scala",
+    commit = "7fb52c7fc2ef8f7670feb73c0a9869715bdc40b8",
+    remote = "https://github.com/mbland/rules_scala",
+)
 
 scala_deps = use_extension(
     "@io_bazel_rules_scala//scala/extensions:deps.bzl",
