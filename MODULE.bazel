@@ -76,7 +76,8 @@ scala_deps.toolchains(
 )
 
 ##### Browsers dependencies #####
-browser_repositories = use_extension("//web/versioned:browsers-0.3.3.bzl", "browser_repositories_extension")
+browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
+browser_repositories.version(version = "0.3.3")
 use_repo(
     browser_repositories,
     "com_saucelabs_sauce_connect_linux_x64",
@@ -87,7 +88,7 @@ use_repo(
     "org_chromium_chromedriver_macos_x64",
     "org_chromium_chromedriver_windows_x64",
     "org_chromium_chromium_linux_x64",
-    "org_chromium_chromium_macos_arm64",
+    "org_chromium_chromium_macos_arm64", # Only available in 0.3.3
     "org_chromium_chromium_macos_x64",
     "org_chromium_chromium_windows_x64",
     "org_mozilla_firefox_linux_x64",
