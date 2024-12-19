@@ -44,7 +44,7 @@ def _browser_repositories_extension(ctx):
     else:
         # Go through modules in the dependency graph and choose the highest version.
         for mod in ctx.modules:
-            for tag in mod.tags.version:
+            for tag in mod.tags.install:
                 if parse_version(tag.version) > parse_version(version):
                     version = tag.version
 
@@ -60,9 +60,9 @@ def _browser_repositories_extension(ctx):
     # Mark this module extension as reproducible, so it doesn't appear in lockfile.
     return ctx.extension_metadata(reproducible = True)
 
-# The `version` tag can be used by any module to specify the version of browsers version.
+# The `install` tag can be used by any module to specify the version of browsers version.
 # If multiple versions are specified, the highest one is chosen.
-version = tag_class(
+install = tag_class(
     attrs = {
         "version": attr.string(mandatory = True),
     },
@@ -78,7 +78,7 @@ override_version = tag_class(
 browser_repositories_extension = module_extension(
     implementation = _browser_repositories_extension,
     tag_classes = {
-        "version": version,
+        "install": install,
         "override_version": override_version,
     }
 )

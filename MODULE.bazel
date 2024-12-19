@@ -77,7 +77,7 @@ scala_deps.toolchains(
 
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
-browser_repositories.version(version = "0.3.3")
+browser_repositories.install(version = "0.3.3")
 use_repo(
     browser_repositories,
     "com_saucelabs_sauce_connect_linux_x64",
