@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@io_bazel_rules_webtesting//web/internal:metadata.bzl", "metadata")
-load("@io_bazel_rules_webtesting//web/internal:provider.bzl", "WebTestInfo")
+load("//web/internal:metadata.bzl", "metadata")
+load("//web/internal:provider.bzl", "WebTestInfo")
 
 def _label_to_manifest_path(label):
     """Converts the specified label to a manifest path"""

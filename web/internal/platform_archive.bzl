@@ -25,7 +25,7 @@ def _platform_archive_impl(ctx):
         result_zip_name = "_converted_file_%s.zip" % ctx.attr.name
 
         ctx.download(urls, download_file_name, sha256)
-        ctx.execute([ctx.path(Label("@io_bazel_rules_webtesting//web/internal:convert_dmg.sh")), download_file_name, result_zip_name])
+        ctx.execute([ctx.path(Label("@rules_webtesting//web/internal:convert_dmg.sh")), download_file_name, result_zip_name])
         ctx.extract(result_zip_name)
 
         ctx.delete(result_zip_name)
@@ -40,7 +40,7 @@ def _platform_archive_impl(ctx):
     # `BUILD.bazel` file that exposes the archive files, together with the specified
     # named files using the `platform_metadata` rule.
     ctx.file("BUILD.bazel", content = """
-load("@io_bazel_rules_webtesting//web:web.bzl", "platform_metadata")
+load("@rules_webtesting//web:web.bzl", "platform_metadata")
 
 licenses(%s)
 

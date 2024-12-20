@@ -29,7 +29,7 @@ java_web_test_suite(
     ],
     deps = [
         "//java/com/google/testing/web",
-        "@junit_junit",
-        "@org_seleniumhq_selenium_selenium_api",
+        "@maven//:junit_junit",
+        "@maven//:org_seleniumhq_selenium_selenium_api",
     ],
 )

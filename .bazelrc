@@ -1,3 +1,5 @@
+common --noenable_workspace
+
 # For running sauce-based configs.
 test --test_env=SAUCE_USERNAME
 test --test_env=SAUCE_ACCESS_KEY

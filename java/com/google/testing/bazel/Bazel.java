@@ -32,7 +32,7 @@ public class Bazel {
   private static final String TEST_SRCDIR = "TEST_SRCDIR";
   private static final String TEST_TMPDIR = "TEST_TMPDIR";
   private static final String TEST_WORKSPACE = "TEST_WORKSPACE";
-  private static final String DEFAULT_WORKSPACE = "io_bazel_rules_webtesting";
+  private static final String DEFAULT_WORKSPACE = "_main";
 
   private final Path runfilesDir;
   private final Optional<Path> testTmpDir;

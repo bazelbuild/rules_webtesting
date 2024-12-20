@@ -15,22 +15,13 @@
 
 load("//web:web.bzl", "platform_archive")
 
-def browser_repositories(firefox = False, chromium = False, sauce = False):
-    """Sets up repositories for browsers defined in //browsers/....
-
-    Args:
-        firefox: Configure repositories for //browsers:firefox-native.
-        chromium: Configure repositories for //browsers:chromium-native.
-        sauce: Configure repositories for //browser/sauce:chrome-win10-connect.
-    """
-    if chromium:
-        org_chromium_chromedriver()
-        org_chromium_chromium()
-    if firefox:
-        org_mozilla_firefox()
-        org_mozilla_geckodriver()
-    if sauce:
-        com_saucelabs_sauce_connect()
+def browser_repositories():
+    """Sets up repositories for browsers defined in //browsers/.... """
+    org_chromium_chromedriver()
+    org_chromium_chromium()
+    org_mozilla_firefox()
+    org_mozilla_geckodriver()
+    com_saucelabs_sauce_connect()
 
 def com_saucelabs_sauce_connect():
     platform_archive(
