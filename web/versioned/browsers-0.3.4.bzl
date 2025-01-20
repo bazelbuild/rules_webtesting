@@ -186,7 +186,21 @@ def org_mozilla_firefox():
     )
 
     platform_archive(
-        name = "org_mozilla_firefox_macos",
+        name = "org_mozilla_firefox_macos_x64",
+        licenses = ["reciprocal"],  # MPL 2.0
+        sha256 = "c06c4e58179acaf55d05c3be41d0d4cdd68f811a75322a39557d91121aa2ef74",
+        # Firefox v97.0
+        urls = [
+            "https://ftp.mozilla.org/pub/firefox/releases/97.0/mac/en-US/Firefox%2097.0.dmg",
+            "https://storage.googleapis.com/dev-infra-mirror/firefox/97.0/mac_x64/browser-bin.dmg",
+        ],
+        named_files = {
+            "FIREFOX": "Firefox.app/Contents/MacOS/firefox",
+        },
+    )
+
+    platform_archive(
+        name = "org_mozilla_firefox_macos_arm64",
         licenses = ["reciprocal"],  # MPL 2.0
         sha256 = "c06c4e58179acaf55d05c3be41d0d4cdd68f811a75322a39557d91121aa2ef74",
         # Firefox v97.0
