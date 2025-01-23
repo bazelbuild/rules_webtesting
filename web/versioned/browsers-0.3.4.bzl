@@ -200,6 +200,9 @@ def org_mozilla_firefox():
     )
 
     platform_archive(
+        # Firefox has a launcher that conditionally starts x64/arm64. This means that the
+        # x64 and arm64 repositories download the same binaries. We preserve separate
+        # repositories to allow for dedicated ARM/x64 binaries if needed in the future.
         name = "org_mozilla_firefox_macos_arm64",
         licenses = ["reciprocal"],  # MPL 2.0
         sha256 = "c06c4e58179acaf55d05c3be41d0d4cdd68f811a75322a39557d91121aa2ef74",
