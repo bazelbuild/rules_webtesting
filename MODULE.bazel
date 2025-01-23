@@ -3,14 +3,31 @@ module(
     version = "0.4.0",
 )
 
-bazel_dep(name = "bazel_skylib", version = "1.7.1")
-bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(
+    name = "bazel_skylib",
+    version = "1.7.1",
+)
+
+bazel_dep(
+    name = "platforms",
+    version = "0.0.10",
+)
 
 ##### Go dependencies #####
-bazel_dep(name = "rules_go", version = "0.51.0-rc1", repo_name = "io_bazel_rules_go")
-bazel_dep(name = "gazelle", version = "0.40.0", repo_name = "bazel_gazelle")
+bazel_dep(
+    name = "rules_go",
+    version = "0.51.0-rc1",
+    repo_name = "io_bazel_rules_go",
+)
+
+bazel_dep(
+    name = "gazelle",
+    version = "0.40.0",
+    repo_name = "bazel_gazelle",
+)
 
 go_deps = use_extension("@bazel_gazelle//:extensions.bzl", "go_deps")
+
 go_deps.from_file(go_mod = "//:go.mod")
 
 # All *direct* Go dependencies of the module have to be listed explicitly.
@@ -21,9 +38,13 @@ use_repo(
 )
 
 ##### Java dependencies #####
-bazel_dep(name = "rules_jvm_external", version = "6.6")
+bazel_dep(
+    name = "rules_jvm_external",
+    version = "6.6",
+)
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+
 maven.install(
     artifacts = [
         "com.google.guava:guava:33.2.1-jre",
@@ -32,35 +53,46 @@ maven.install(
         "junit:junit:4.13.2",
     ],
 )
+
 use_repo(maven, "maven")
 
 ##### Python dependencies #####
-bazel_dep(name = "rules_python", version = "1.0.0")
+bazel_dep(
+    name = "rules_python",
+    version = "1.0.0",
+)
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+
 python.toolchain(
     is_default = True,
     python_version = "3.11",
 )
+
 use_repo(python, "python_3_11", "python_versions")
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+
 pip.parse(
     hub_name = "rules_webtesting_py_deps",
     python_version = "3.11",
     requirements_lock = "//:requirements_lock.txt",
     requirements_windows = "requirements_lock_windows.txt",
 )
+
 use_repo(pip, "rules_webtesting_py_deps")
 
 ##### Scala dependencies #####
-bazel_dep(name = "rules_scala", repo_name = "io_bazel_rules_scala")
+bazel_dep(
+    name = "rules_scala",
+    repo_name = "io_bazel_rules_scala",
+)
 
 # TODO: Switch to a release version once it's available in BCR.
 # Otherwise, the root module has to declare the same override.
 git_override(
     module_name = "rules_scala",
-    commit = "7fb52c7fc2ef8f7670feb73c0a9869715bdc40b8",
+    commit = "031fb0d3a63467d87f25397eb8e23faa57d1d3a6",
     remote = "https://github.com/mbland/rules_scala",
 )
 
@@ -68,16 +100,20 @@ scala_deps = use_extension(
     "@io_bazel_rules_scala//scala/extensions:deps.bzl",
     "scala_deps",
 )
+
 scala_deps.settings(
     fetch_sources = True,
 )
+
 scala_deps.toolchains(
     scalatest = True,
 )
 
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
-browser_repositories.install(version = "0.3.3")
+
+browser_repositories.install(version = "0.3.4")
+
 use_repo(
     browser_repositories,
     "com_saucelabs_sauce_connect_linux_x64",
@@ -88,7 +124,7 @@ use_repo(
     "org_chromium_chromedriver_macos_x64",
     "org_chromium_chromedriver_windows_x64",
     "org_chromium_chromium_linux_x64",
-    "org_chromium_chromium_macos_arm64", # Only available in 0.3.3
+    "org_chromium_chromium_macos_arm64",  # Only available in 0.3.3
     "org_chromium_chromium_macos_x64",
     "org_chromium_chromium_windows_x64",
     "org_mozilla_firefox_linux_x64",
