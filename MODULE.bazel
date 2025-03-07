@@ -82,31 +82,6 @@ pip.parse(
 
 use_repo(pip, "rules_webtesting_py_deps")
 
-##### Scala dependencies #####
-#bazel_dep(
-#    name = "rules_scala",
-#    repo_name = "io_bazel_rules_scala",
-#)
-
-# TODO: Switch to a release version once it's available in BCR.
-# Otherwise, the root module has to declare the same override.
-#git_override(
-#    module_name = "rules_scala",
-#    commit = "219e63983e8e483e66ebf70372969ba227382001",
-#    remote = "https://github.com/mbland/rules_scala",
-#)
-#
-#scala_deps = use_extension(
-#    "@io_bazel_rules_scala//scala/extensions:deps.bzl",
-#    "scala_deps",
-#)
-#scala_deps.settings(
-#    fetch_sources = True,
-#)
-#scala_deps.toolchains(
-#    scalatest = True,
-#)
-
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
 
