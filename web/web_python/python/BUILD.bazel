@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2024 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,16 @@
 #
 ################################################################################
 #
-load("//web:java.bzl", "java_web_test_suite")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_webtesting//web:web.bzl", "web_test_config")
 
-licenses(["notice"])  # Apache 2.0
+package(
+    default_testonly = True,
+    default_visibility = ["//visibility:public"],
+)
 
-java_web_test_suite(
-    name = "WebTestTest",
-    srcs = ["WebTestTest.java"],
-    browsers = [
-        "//browsers:chromium-local",
-        "//browsers:firefox-local",
-        "//browsers/sauce:chrome-win10",
-        "//browsers/sauce:chrome-win10-connect",
-    ],
-    deps = [
-        "//java/com/google/testing/web",
-        "@maven//:junit_junit",
-        "@maven//:org_seleniumhq_selenium_selenium_api",
-    ],
+bzl_library(
+    name = "py",
+    srcs = ["py.bzl"],
+    deps = ["@rules_webtesting//web/internal:wrap_web_test_suite"],
 )

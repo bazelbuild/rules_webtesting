@@ -1,3 +1,5 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,6 @@
 ################################################################################
 #
 load(":web.bzl", "web_test_config")
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 package(
     default_testonly = True,
@@ -27,15 +28,6 @@ licenses(["notice"])  # Apache 2.0
 web_test_config(
     name = "default_config",
     visibility = ["//visibility:public"],
-)
-
-bzl_library(
-    name = "go",
-    srcs = ["go.bzl"],
-    deps = [
-        "//web/internal:wrap_web_test_suite",
-        # should depend on @io_bazel_rules_go//go:def.bzl
-    ],
 )
 
 bzl_library(
@@ -51,23 +43,14 @@ bzl_library(
 )
 
 bzl_library(
-    name = "scala",
-    srcs = ["scala.bzl"],
-    deps = [
-        "//web/internal:wrap_web_test_suite",
-        # should depend on @io_bazel_rules_scala//scala:scala.bzl
-    ],
-)
-
-bzl_library(
     name = "web",
     srcs = ["web.bzl"],
     deps = [
         "//web/internal:browser",
         "//web/internal:constants",
-        "//web/internal:platform_metadata",
-        "//web/internal:platform_archive",
         "//web/internal:custom_browser",
+        "//web/internal:platform_archive",
+        "//web/internal:platform_metadata",
         "//web/internal:web_test",
         "//web/internal:web_test_config",
         "//web/internal:web_test_files",
