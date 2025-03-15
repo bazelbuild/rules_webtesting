@@ -14,7 +14,7 @@
 """Browser provisioning and information API.
 
 Provision a browser:
-  from testing.web import webtest
+  from pythontests import webtest
 
   driver = webtest.new_webdriver_session()
 

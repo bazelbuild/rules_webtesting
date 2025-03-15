@@ -31,18 +31,6 @@ web_test_config(
 )
 
 bzl_library(
-    name = "java",
-    srcs = ["java.bzl"],
-    deps = ["//web/internal:wrap_web_test_suite"],
-)
-
-bzl_library(
-    name = "py",
-    srcs = ["py.bzl"],
-    deps = ["//web/internal:wrap_web_test_suite"],
-)
-
-bzl_library(
     name = "web",
     srcs = ["web.bzl"],
     deps = [
