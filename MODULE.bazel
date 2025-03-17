@@ -56,32 +56,6 @@ maven.install(
 
 use_repo(maven, "maven")
 
-##### Python dependencies #####
-#bazel_dep(
-#    name = "rules_python",
-#    version = "1.0.0",
-#)
-#
-#python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-#
-#python.toolchain(
-#    is_default = True,
-#    python_version = "3.11",
-#)
-#
-#use_repo(python, "python_3_11", "python_versions")
-#
-#pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-#
-#pip.parse(
-#    hub_name = "rules_webtesting_py_deps",
-#    python_version = "3.11",
-#    requirements_lock = "//:requirements_lock.txt",
-#    requirements_windows = "requirements_lock_windows.txt",
-#)
-#
-#use_repo(pip, "rules_webtesting_py_deps")
-
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
 
