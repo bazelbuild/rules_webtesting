@@ -3,28 +3,14 @@ module(
     version = "0.4.0",
 )
 
-bazel_dep(
-    name = "bazel_skylib",
-    version = "1.7.1",
-)
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
 
-bazel_dep(
-    name = "platforms",
-    version = "0.0.10",
-)
+bazel_dep(name = "platforms", version = "0.0.10")
 
 ##### Go dependencies #####
-bazel_dep(
-    name = "rules_go",
-    version = "0.51.0-rc1",
-    repo_name = "io_bazel_rules_go",
-)
+bazel_dep(name = "rules_go", version = "0.51.0-rc1", repo_name = "io_bazel_rules_go")
 
-bazel_dep(
-    name = "gazelle",
-    version = "0.40.0",
-    repo_name = "bazel_gazelle",
-)
+bazel_dep(name = "gazelle", version = "0.40.0", repo_name = "bazel_gazelle")
 
 go_deps = use_extension("@bazel_gazelle//:extensions.bzl", "go_deps")
 
@@ -38,10 +24,7 @@ use_repo(
 )
 
 ##### Java dependencies #####
-bazel_dep(
-    name = "rules_jvm_external",
-    version = "6.6",
-)
+bazel_dep(name = "rules_jvm_external",version = "6.6")
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 
@@ -58,9 +41,7 @@ use_repo(maven, "maven")
 
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
-
 browser_repositories.install(version = "0.3.4")
-
 use_repo(
     browser_repositories,
     "com_saucelabs_sauce_connect_linux_x64",
@@ -71,7 +52,7 @@ use_repo(
     "org_chromium_chromedriver_macos_x64",
     "org_chromium_chromedriver_windows_x64",
     "org_chromium_chromium_linux_x64",
-    "org_chromium_chromium_macos_arm64",  # Only available in 0.3.3
+    "org_chromium_chromium_macos_arm64", # Only available in 0.3.3
     "org_chromium_chromium_macos_x64",
     "org_chromium_chromium_windows_x64",
     "org_mozilla_firefox_linux_x64",

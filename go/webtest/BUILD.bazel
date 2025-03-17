@@ -16,7 +16,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 #
 ################################################################################
 #
-load("@rules_webtesting//go/web:go.bzl", "go_web_test_suite")
+load("//go/web:go.bzl", "go_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
@@ -27,8 +27,8 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_tebeka_selenium//:go_default_library",
-        "@rules_webtesting//go/bazel:go_default_library",
-        "@rules_webtesting//go/metadata:go_default_library",
+        "//go/bazel:go_default_library",
+        "//go/metadata:go_default_library",
     ],
 )
 

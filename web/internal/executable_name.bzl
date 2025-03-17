@@ -22,8 +22,8 @@ def get_platform_executable_name():
     release output, where the binaries can be referenced using the known file names.
     """
     return select({
-        "@rules_webtesting//common/conditions:linux_x64": "main_linux_x64",
-        "@rules_webtesting//common/conditions:macos_x64": "main_darwin_x64",
-        "@rules_webtesting//common/conditions:macos_arm64": "main_darwin_arm64",
-        "@rules_webtesting//common/conditions:windows_x64": "main_windows_x64.exe",
+        "//common/conditions:linux_x64": "main_linux_x64",
+        "//common/conditions:macos_x64": "main_darwin_x64",
+        "//common/conditions:macos_arm64": "main_darwin_arm64",
+        "//common/conditions:windows_x64": "main_windows_x64.exe",
     })
