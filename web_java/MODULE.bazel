@@ -9,7 +9,7 @@ bazel_dep(
 
 local_path_override(
     module_name = "rules_webtesting",
-    path = "../..",
+    path = "..",
 )
 
 bazel_dep(

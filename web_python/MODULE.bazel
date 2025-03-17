@@ -1,5 +1,5 @@
 module(
-    name = "rules_webtesting_web_java",
+    name = "rules_webtesting_web_python",
     version = "0.4.0",
 )
 
@@ -14,7 +14,7 @@ bazel_dep(
 
 local_path_override(
     module_name = "rules_webtesting",
-    path = "../..",
+    path = "..",
 )
 
 bazel_dep(
