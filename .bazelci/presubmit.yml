@@ -26,10 +26,26 @@ platforms:
     - "//..."
 tasks:
   web_scala_ubuntu2004:
-    name: "Scala workspace for web"
+    name: "Scala workspace for web in ubuntun"
     platform: ubuntu2004
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: ["//..."]
     test_targets: ["//..."]
+    working_directory: web_scala
+  web_scala_macos:
+    name: "Scala workspace for web in macos"
+    platform: macos
+    test_flags:
+    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    build_targets: [ "//..." ]
+    test_targets: [ "//..." ]
+    working_directory: web_scala
+  web_scala_windows:
+    name: "Scala workspace for web in windows"
+    platform: windows
+    test_flags:
+    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    build_targets: [ "//..." ]
+    test_targets: [ "//..." ]
     working_directory: web_scala
