@@ -3,42 +3,24 @@ platforms:
   ubuntu2204:
     build_targets:
     - "//..."
-    - "-//web_java:all"
-    - "-//web_python:all"
-    - "-//web_scala:all"
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     test_targets:
     - "//..."
-    - "-//web_java:all"
-    - "-//web_python:all"
-    - "-//web_scala:all"
   macos:
     build_targets:
     - "//..."
-    - "-//web_java:all"
-    - "-//web_python:all"
-    - "-//web_scala:all"
     test_flags:
     - "--test_tag_filters=-noci,-sauce,-external,-native"
     test_targets:
     - "//..."
-    - "-//web_java:all"
-    - "-//web_python:all"
-    - "-//web_scala:all"
   windows:
     build_flags:
     - "--enable_runfiles"
     build_targets:
     - "//..."
-    - "-//web_java:all"
-    - "-//web_python:all"
-    - "-//web_scala:all"
     test_flags:
     - "--test_tag_filters=-noci,-sauce,-external,-native"
     - "--enable_runfiles"
     test_targets:
     - "//..."
-    - "-//web_java:all"
-    - "-//web_python:all"
-    - "-//web_scala:all"
