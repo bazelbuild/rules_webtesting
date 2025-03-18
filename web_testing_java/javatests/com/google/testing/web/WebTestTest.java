@@ -14,7 +14,7 @@
 //
 // //////////////////////////////////////////////////////////////////////////////
 //
-package webtests.com.google.testing.web;
+package com.google.testing.web;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

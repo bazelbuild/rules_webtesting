@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for web.web_python.pythontests."""
+"""Tests for testing.web.webtest."""
 
 import unittest
 
-from webtests import webtest
+from testing.web import webtest
 
 class BrowserTest(unittest.TestCase):
 

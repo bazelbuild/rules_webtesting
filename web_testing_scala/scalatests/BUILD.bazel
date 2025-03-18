@@ -1,4 +1,4 @@
-# Copyright 2025 Google Inc.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,49 +14,22 @@
 #
 ################################################################################
 #
-load("//web:py.bzl", "py_web_test_suite")
+load("//web:scala.bzl", "scala_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
-py_library(
-    name = "web",
-    testonly = True,
-    srcs = glob(
-        ["*.py"],
-        exclude = ["*_test.py"],
-    ),
-    visibility = ["//visibility:public"],
-    deps = [
-        "@rules_webtesting_py_deps//selenium",
-    ],
-)
-
-py_web_test_suite(
-    name = "webtest_test",
-    srcs = ["webtest_test.py"],
+scala_web_test_suite(
+    name = "WebTestTest",
+    srcs = ["WebTestTest.scala"],
     browsers = [
         "@rules_webtesting//browsers:chromium-local",
         "@rules_webtesting//browsers:firefox-local",
         "@rules_webtesting//browsers/sauce:chrome-win10",
         "@rules_webtesting//browsers/sauce:chrome-win10-connect",
     ],
-    tags = {
-        "chromium-local": [
-            "native",
-        ],
-        "chrome-win10": [
-            "exclusive",
-            "sauce",
-            "notravis",
-        ],
-        "chrome-win10-connect": [
-            "exclusive",
-            "noci",
-            "sauce",
-        ],
-        "firefox-local": [
-            "native",
-        ],
-    },
-    deps = [":web"],
+    deps = [
+        "@maven//:junit_junit",
+        "@maven//:org_seleniumhq_selenium_selenium_api",
+        "@rules_webtesting//java/com/google/testing/web",
+    ],
 )

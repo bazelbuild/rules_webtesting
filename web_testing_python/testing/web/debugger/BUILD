@@ -1,4 +1,4 @@
-# Copyright 2025 Google Inc.
+# Copyright 2017 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,9 @@
 #
 ################################################################################
 #
-load("//web:java.bzl", "java_web_test_suite")
-
 licenses(["notice"])  # Apache 2.0
 
-java_web_test_suite(
-    name = "WebTestTest",
-    srcs = ["WebTestTest.java"],
-    browsers = [
-        "@rules_webtesting//browsers:chromium-local",
-        "@rules_webtesting//browsers:firefox-local",
-        "@rules_webtesting//browsers/sauce:chrome-win10",
-        "@rules_webtesting//browsers/sauce:chrome-win10-connect",
-    ],
-    deps = [
-        "@maven//:junit_junit",
-        "@maven//:org_seleniumhq_selenium_selenium_api",
-        "@rules_webtesting//java/com/google/testing/web",
-    ],
+py_binary(
+    name = "debugger",
+    srcs = glob(["*.py"]),
 )
