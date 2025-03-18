@@ -15,7 +15,7 @@
 
 import unittest
 
-from pythontests import webtest
+from webtests import webtest
 
 class BrowserTest(unittest.TestCase):
 

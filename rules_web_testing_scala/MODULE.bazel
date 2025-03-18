@@ -1,5 +1,5 @@
 module(
-    name = "rules_webtesting_web_scala",
+    name = "rules_web_testing_scala",
     version = "0.4.0",
 )
 

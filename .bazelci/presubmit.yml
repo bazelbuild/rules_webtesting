@@ -33,46 +33,46 @@ tasks:
     build_targets: ["//..."]
     test_targets: ["//..."]
     working_directory: web_scala
-  web_scala_macos:
+  rules_web_testing_scala_macos:
     name: "Scala workspace for web in macos"
     platform: macos
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_scala
-  web_scala_windows:
+    working_directory: rules_web_testing_scala
+  rules_web_testing_scala_windows:
     name: "Scala workspace for web in windows"
     platform: windows
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_scala
-  web_java_ubuntu2004:
+    working_directory: rules_web_testing_scala
+  rules_web_testing_java_ubuntu2004:
     name: "Java workspace for web in ubuntu"
     platform: ubuntu2004
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_java
-  web_java_macos:
+    working_directory: rules_web_testing_java
+  rules_web_testing_java_macos:
     name: "Java workspace for web in macos"
     platform: macos
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_java
-  web_java_windows:
+    working_directory: rules_web_testing_java
+  rules_web_testing_java_windows:
     name: "Java workspace for web in windows"
     platform: windows
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_java
+    working_directory: rules_web_testing_java
   web_python_ubuntu2004:
     name: "Python workspace for web in ubuntu"
     platform: ubuntu2004
@@ -80,20 +80,20 @@ tasks:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_python
-  web_python_macos:
+    working_directory: rules_web_testing_python
+  rules_web_testing_python_macos:
     name: "Python workspace for web in macos"
     platform: macos
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_python
-  web_python_windows:
+    working_directory: rules_web_testing_python
+  rules_web_testing_python_windows:
     name: "Python workspace for web in windows"
     platform: windows
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     build_targets: [ "//..." ]
     test_targets: [ "//..." ]
-    working_directory: web_python
+    working_directory: rules_web_testing_python

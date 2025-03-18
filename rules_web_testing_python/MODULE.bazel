@@ -1,5 +1,5 @@
 module(
-    name = "rules_webtesting_web_python",
+    name = "rules_web_testing_python",
     version = "0.4.0",
 )
 

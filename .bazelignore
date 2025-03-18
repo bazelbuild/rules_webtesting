@@ -1,3 +1,3 @@
-web_java
-web_python
-web_scala
+rules_web_testing_java
+rules_web_testing_python
+rules_web_testing_scala
