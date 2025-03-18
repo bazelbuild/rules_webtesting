@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.openqa.selenium.WebDriver;
-import com.google.testing.web.WebTest;
 
 @RunWith(JUnit4.class)
 public class WebTestTest {
