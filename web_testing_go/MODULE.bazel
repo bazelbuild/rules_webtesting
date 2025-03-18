@@ -1,0 +1,24 @@
+module(
+    name = "rules_web_testing_go",
+    version = "0.4.0",
+)
+
+bazel_dep(
+    name = "rules_webtesting",
+)
+
+local_path_override(
+    module_name = "rules_webtesting",
+    path = "..",
+)
+
+bazel_dep(
+    name = "bazel_skylib",
+    version = "1.7.1",
+)
+
+bazel_dep(
+    name = "rules_go",
+    version = "0.51.0-rc1",
+    repo_name = "io_bazel_rules_go",
+)

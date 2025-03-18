@@ -13,9 +13,9 @@
 # limitations under the License.
 """Web Test rules for Go."""
 
-load("//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
-load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 load("@io_bazel_rules_go//go:def.bzl", "go_test")
+load("@rules_webtesting//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
+load("@rules_webtesting//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 
 def go_web_test_suite(name, go_test_tags = DEFAULT_WRAPPED_TEST_TAGS, **kwargs):
     """Defines a test_suite of web_test targets that wrap a go_test target.

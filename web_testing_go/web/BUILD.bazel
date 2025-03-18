@@ -15,7 +15,7 @@
 ################################################################################
 #
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("//web:web.bzl", "web_test_config")
+load("@rules_webtesting//web:web.bzl", "web_test_config")
 
 package(
     default_testonly = True,
@@ -26,7 +26,7 @@ bzl_library(
     name = "go",
     srcs = ["go.bzl"],
     deps = [
-        "//web/internal:wrap_web_test_suite",
+        "@rules_webtesting//web/internal:wrap_web_test_suite",
         # should depend on @io_bazel_rules_go//go:def.bzl
     ],
 )

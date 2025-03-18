@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-load("//go/web:go.bzl", "go_web_test_suite")
+load("@rules_web_testing_go//web:go.bzl", "go_web_test_suite")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 licenses(["notice"])  # Apache 2.0
