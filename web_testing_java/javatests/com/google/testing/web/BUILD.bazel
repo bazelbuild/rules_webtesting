@@ -28,8 +28,8 @@ java_web_test_suite(
         "@rules_webtesting//browsers/sauce:chrome-win10-connect",
     ],
     deps = [
+        "//java/com/google/testing/web",
         "@maven//:junit_junit",
         "@maven//:org_seleniumhq_selenium_selenium_api",
-        "@rules_webtesting//java/com/google/testing/web",
     ],
 )
