@@ -29,22 +29,6 @@ go_deps.from_file(go_mod = "//:go.mod")
 # All *direct* Go dependencies of the module have to be listed explicitly.
 use_repo(go_deps, "com_github_gorilla_mux", "com_github_tebeka_selenium")
 
-##### Java dependencies #####
-bazel_dep(name = "rules_jvm_external", version = "6.6")
-
-maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
-
-maven.install(
-    artifacts = [
-        "com.google.guava:guava:33.2.1-jre",
-        "org.seleniumhq.selenium:selenium-remote-driver:4.27.0",
-        "org.seleniumhq.selenium:selenium-api:4.27.0",
-        "junit:junit:4.13.2",
-    ],
-)
-
-use_repo(maven, "maven")
-
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
 
