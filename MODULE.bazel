@@ -60,7 +60,7 @@ use_repo(
     "org_chromium_chromedriver_macos_x64",
     "org_chromium_chromedriver_windows_x64",
     "org_chromium_chromium_linux_x64",
-    "org_chromium_chromium_macos_arm64",  # Only available in 0.3.3
+    "org_chromium_chromium_macos_arm64", # Only available in 0.3.3
     "org_chromium_chromium_macos_x64",
     "org_chromium_chromium_windows_x64",
     "org_mozilla_firefox_linux_x64",
