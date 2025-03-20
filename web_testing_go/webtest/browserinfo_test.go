@@ -1,1 +1,1 @@
-/usr/local/google/home/mollyibot/rules_webtesting03132/go/webtest/browserinfo_test.go
+../../go/webtest/browserinfo_test.go

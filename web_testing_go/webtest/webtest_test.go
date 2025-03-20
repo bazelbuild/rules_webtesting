@@ -1,1 +1,1 @@
-/usr/local/google/home/mollyibot/rules_webtesting03132/go/webtest/webtest_test.go
+../../go/webtest/webtest_test.go
