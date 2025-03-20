@@ -19,7 +19,7 @@ load("@rules_webtesting//web:web.bzl", "web_test_config")
 
 package(
     default_testonly = True,
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//go:__subpackages__"],
 )
 
 bzl_library(

@@ -7,10 +7,14 @@ WebDriver.
 
 ## Configure your Bazel project
 
-For all languages, you need to add the following to your MODULE.bazel file:
+For each language , you need to add the following to your MODULE.bazel file:
 
 ```bzl
-bazel_dep(name = "rules_webtesting", version = "0.4.0")
+bazel_dep(name = "rules_webtesting_${language}", version = "0.4.0")
+```
+For example for Java:
+```bzl
+bazel_dep(name = "rules_webtesting_java", version = "0.4.0")
 ```
 
 ## Write your tests
