@@ -81,7 +81,7 @@ import (
     "testing"
 
     "github.com/tebeka/selenium"
-    "github.com/bazelbuild/rules_webtesting/go/webtest"
+    "github.com/bazelbuild/rules_web_testing_go/webtest"
 )
 
 func TestWebApp(t *testing.T) {
@@ -104,7 +104,7 @@ In your BUILD files, load the correct language specific build rule and create a
 test target using it:
 
 ```bzl
-load("@rules_webtesting//web:py.bzl", "py_web_test_suite")
+load("@rules_web_testing_python//web:py.bzl", "py_web_test_suite")
 
 py_web_test_suite(
     name = "browser_test",
