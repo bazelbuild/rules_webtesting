@@ -4,7 +4,7 @@ tasks:
     name: "rules_web_testing_go in ubuntu"
     platform: ubuntu2004
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: ["..."]
     test_targets: ["..."]
     working_directory: web_testing_go
@@ -12,7 +12,7 @@ tasks:
     name: "rules_web_testing_go in macos"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: ["..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_go
@@ -20,7 +20,7 @@ tasks:
     name: "rules_web_testing_go in windows"
     platform: windows
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_go
@@ -28,7 +28,7 @@ tasks:
     name: "rules_web_testing_scala in ubuntu"
     platform: ubuntu2004
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: ["..."]
     test_targets: ["..."]
     working_directory: web_testing_scala
@@ -36,7 +36,7 @@ tasks:
     name: "rules_web_testing_scala in macos"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_scala
@@ -44,7 +44,7 @@ tasks:
     name: "rules_web_testing_scala in windows"
     platform: windows
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_scala
@@ -52,7 +52,7 @@ tasks:
     name: "rules_web_testing_java in ubuntu"
     platform: ubuntu2004
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -60,7 +60,7 @@ tasks:
     name: "rules_web_testing_java in macos"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -68,7 +68,7 @@ tasks:
     name: "rules_web_testing_java in windows"
     platform: windows
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -76,7 +76,7 @@ tasks:
     name: "rules_web_testing_python in ubuntu"
     platform: ubuntu2004
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
@@ -84,7 +84,7 @@ tasks:
     name: "rules_web_testing_python in macos"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
@@ -92,7 +92,7 @@ tasks:
     name: "rules_web_testing_python in windows"
     platform: windows
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
