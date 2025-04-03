@@ -4,14 +4,14 @@ platforms:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce"
+    - "--test_tag_filters=-noci,-external,-native,-sauce"
     test_targets:
     - "//..."
   macos:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce"
+    - "--test_tag_filters=-noci,-sauce,-external,-native"
     test_targets:
     - "//..."
   windows:
@@ -20,7 +20,7 @@ platforms:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce"
+    - "--test_tag_filters=-noci,-sauce,-external,-native"
     - "--enable_runfiles"
     test_targets:
     - "//..."
