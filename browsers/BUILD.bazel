@@ -50,9 +50,6 @@ browser(
 browser(
     name = "chromium-local",
     metadata = "chromium-local.json",
-    required_tags = [
-        "native",
-    ],
     deps = [
         "//go/wsl",
         "//third_party/chromedriver",
@@ -67,9 +64,6 @@ browser(
         "//conditions:default": None,
     }),
     metadata = "firefox-local.json",
-    required_tags = [
-        "native",
-    ],
     deps = select({
         "//common/conditions:windows_x64": [],
         "//conditions:default": [

@@ -2,25 +2,25 @@
 platforms:
   ubuntu2204:
     build_targets:
-    - "//..."
+    - "..."
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
-    - "//..."
+    - "..."
   macos:
     build_targets:
-    - "//..."
+    - "..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
-    - "//..."
+    - "..."
   windows:
     build_flags:
     - "--enable_runfiles"
     build_targets:
-    - "//..."
+    - "..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
+    - "--test_tag_filters=-noci,-sauce"
     - "--enable_runfiles"
     test_targets:
-    - "//..."
+    - "..."
