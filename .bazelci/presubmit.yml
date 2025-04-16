@@ -3,6 +3,8 @@ tasks:
   web_testing_go_ubuntu2004:
     name: "rules_web_testing_go in ubuntu"
     platform: ubuntu2004
+    shell_commands:
+    - "apt policy libxcb1"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     build_targets: ["..."]
