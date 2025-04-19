@@ -35,14 +35,16 @@ py_web_test_suite(
     name = "webtest_test",
     srcs = ["webtest_test.py"],
     browsers = [
-        "//browsers:chromium-local",
-        "//browsers:firefox-local",
-        "//browsers/sauce:chrome-win10",
-        "//browsers/sauce:chrome-win10-connect",
+        "@rules_webtesting//browsers:chromium-local",
+        "@rules_webtesting//browsers:firefox-local",
+        "@rules_webtesting//browsers/sauce:chrome-win10",
+        "@rules_webtesting//browsers/sauce:chrome-win10-connect",
     ],
     tags = {
         "chromium-local": [
             "native",
+            "sauce",
+            "notravis",
         ],
         "chrome-win10": [
             "exclusive",
