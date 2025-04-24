@@ -14,32 +14,13 @@
 #
 ################################################################################
 #
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-go_library(
-    name = "go_default_library",
-    srcs = [
-        "metadata.go",
-        "web_test_files.go",
-    ],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata",
+filegroup(
+    name = "testdata",
+    srcs = glob(["*"]),
     visibility = ["//visibility:public"],
-    deps = [
-        "//go/bazel:go_default_library",
-        "//go/httphelper:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
-    ],
-)
-
-go_test(
-    name = "go_default_test",
-    srcs = [
-        "extension_test.go",
-        "metadata_test.go",
-    ],
-    data = ["@rules_webtesting//testdata"],
-    embed = [":go_default_library"],
-    deps = ["@rules_webtesting//go/bazel:go_default_library"],
 )

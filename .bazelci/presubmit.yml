@@ -1,17 +1,82 @@
 ---
 platforms:
   ubuntu2204:
+    shell_commands:
+    - "sudo apt -y update && sudo apt -y install  libasound2"
+    - "sudo apt -y update && sudo apt -y install  libatk-bridge2.0-0"
+    - "sudo apt -y update && sudo apt -y install  libatk1.0-0"
+    - "sudo apt -y update && sudo apt -y install  libc6"
+    - "sudo apt -y update && sudo apt -y install  libcairo2"
+    - "sudo apt -y update && sudo apt -y install  libcups2"
+    - "sudo apt -y update && sudo apt -y install  libdbus-1-3"
+    - "sudo apt -y update && sudo apt -y install  libdbus-glib-1-2"
+    - "sudo apt -y update && sudo apt -y install  libexpat1"
+    - "sudo apt -y update && sudo apt -y install  libfontconfig1"
+    - "sudo apt -y update && sudo apt -y install  libgbm1"
+    - "sudo apt -y update && sudo apt -y install  libgcc1"
+    - "sudo apt -y update && sudo apt -y install  libglib2.0-0"
+    - "sudo apt -y update && sudo apt -y install  libgtk-3-0"
+    - "sudo apt -y update && sudo apt -y install  libnspr4"
+    - "sudo apt -y update && sudo apt -y install  libnss3"
+    - "sudo apt -y update && sudo apt -y install  libpango-1.0-0"
+    - "sudo apt -y update && sudo apt -y install  libpangocairo-1.0-0"
+    - "sudo apt -y update && sudo apt -y install  libstdc++6"
+    - "sudo apt -y update && sudo apt -y install  libx11-6"
+    - "sudo apt -y update && sudo apt -y install  libx11-xcb1"
+    - "sudo apt -y update && sudo apt -y install  libxcb1"
+    - "sudo apt -y update && sudo apt -y install  libxcomposite1"
+    - "sudo apt -y update && sudo apt -y install  libxcursor1"
+    - "sudo apt -y update && sudo apt -y install  libxdamage1"
+    - "sudo apt -y update && sudo apt -y install  libxext6"
+    - "sudo apt -y update && sudo apt -y install  libxfixes3"
+    - "sudo apt -y update && sudo apt -y install  libxi6"
+    - "sudo apt -y update && sudo apt -y install  libxrandr2"
+    - "sudo apt -y update && sudo apt -y install  libxrender1"
+    - "sudo apt -y update && sudo apt -y install  libxss1"
+    - "sudo apt -y update && sudo apt -y install  libxtst6"
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
   macos:
+    shell_commands:
+    - "brew update && brew install  libasound2"
+    - "brew update && brew install  libatk-bridge2.0-0"
+    - "brew update && brew install  libatk1.0-0"
+    - "brew update && brew install  libc6"
+    - "brew update && brew install libcairo2"
+    - "brew update && brew install libcups2"
+    - "brew update && brew install libdbus-1-3"
+    - "brew update && brew install libexpat1"
+    - "brew update && brew install libfontconfig1"
+    - "brew update && brew install libgbm1"
+    - "brew update && brew install libgcc1"
+    - "brew update && brew install libglib2.0-0"
+    - "brew update && brew install libgtk-3-0"
+    - "brew update && brew install libnspr4"
+    - "brew update && brew install libnss3"
+    - "brew update && brew install libpango-1.0-0"
+    - "brew update && brew install libpangocairo-1.0-0"
+    - "brew update && brew install libstdc++6"
+    - "brew update && brew install libx11-6"
+    - "brew update && brew install libx11-xcb1"
+    - "brew update && brew install libxcb1"
+    - "brew update && brew install libxcomposite1"
+    - "brew update && brew install libxcursor1"
+    - "brew update && brew install libxdamage1"
+    - "brew update && brew install libxext6"
+    - "brew update && brew install libxfixes3"
+    - "brew update && brew install libxi6"
+    - "brew update && brew install libxrandr2"
+    - "brew update && brew install libxrender1"
+    - "brew update && brew install libxss1"
+    - "brew update && brew install libxtst6"
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
   windows:
@@ -20,7 +85,7 @@ platforms:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
+    - "--test_tag_filters=-noci,-sauce"
     - "--enable_runfiles"
     test_targets:
     - "//..."
