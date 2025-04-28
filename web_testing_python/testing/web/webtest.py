@@ -1,3 +1,4 @@
+
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,9 +25,8 @@ Provision a browser with capabilities:
 """
 import os
 
-from selenium import webdriver
-from selenium.webdriver.remote.client_config import ClientConfig
-from selenium.webdriver.remote.remote_connection import RemoteConnection
+from selenium.webdriver.remote import remote_connection
+from selenium.webdriver.remote import webdriver
 
 
 def new_webdriver_session(capabilities=None):
@@ -40,20 +40,14 @@ def new_webdriver_session(capabilities=None):
     A new WebDriver connected to a browser defined by the web test
     environment.
   """
-  os.environ["LANG"] = "en_US.UTF-8"
+  capabilities = capabilities or {}
   address = os.environ['WEB_TEST_WEBDRIVER_SERVER'].rstrip('/')
+
   # Set the timeout for WebDriver http requests so that the socket default
   # timeout is not used.
-  client_config = ClientConfig(remote_server_addr=address, timeout=450)
-  executor = RemoteConnection(
-      client_config=client_config,
-  )
+  remote_connection.RemoteConnection.set_timeout(450)
 
-  options = webdriver.ChromeOptions()
-  # options = webdriver.FirefoxOptions()
-  options.add_argument('--headless')
-  options.add_argument("--no-sandbox")
-  return webdriver.Remote(command_executor=executor, options=options)
+  return webdriver.WebDriver(address, desired_capabilities=capabilities)
 
 
 def http_address():
