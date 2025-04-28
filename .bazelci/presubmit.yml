@@ -1,30 +1,28 @@
 ---
-platforms:
-  tasks:
-    web_testing_python_ubuntu2004:
-      name: "rules_web_testing_python in ubuntu"
-      platform: ubuntu2004
-      shell_commands:
-      - "sudo apt -y update && sudo apt -y install libxcb1"
-      test_flags:
-      - "--test_tag_filters=-noci,-sauce"
-      build_targets: [ "..." ]
-      test_targets: [ "..." ]
-      working_directory: web_testing_python
-    web_testing_python_macos:
-      name: "rules_web_testing_python in macos"
-      platform: macos
-      test_flags:
-      - "--test_tag_filters=-noci,-sauce"
-      build_targets: [ "..." ]
-      test_targets: [ "..." ]
-      working_directory: web_testing_python
-    web_testing_python_windows:
-      name: "rules_web_testing_python in windows"
-      platform: windows
-
-      test_flags:
-      - "--test_tag_filters=-noci,-sauce"
-      build_targets: [ "..." ]
-      test_targets: [ "..." ]
-      working_directory: web_testing_python
+tasks:
+  web_testing_python_ubuntu2004:
+    name: "rules_web_testing_python in ubuntu"
+    platform: ubuntu2004
+    shell_commands:
+    - "sudo apt -y update && sudo apt -y install libxcb1"
+    test_flags:
+    - "--test_tag_filters=-noci,-sauce"
+    build_targets: [ "..." ]
+    test_targets: [ "..." ]
+    working_directory: web_testing_python
+  web_testing_python_macos:
+    name: "rules_web_testing_python in macos"
+    platform: macos
+    test_flags:
+    - "--test_tag_filters=-noci,-sauce"
+    build_targets: [ "..." ]
+    test_targets: [ "..." ]
+    working_directory: web_testing_python
+  web_testing_python_windows:
+    name: "rules_web_testing_python in windows"
+    platform: windows
+    test_flags:
+    - "--test_tag_filters=-noci,-sauce"
+    build_targets: [ "..." ]
+    test_targets: [ "..." ]
+    working_directory: web_testing_python
