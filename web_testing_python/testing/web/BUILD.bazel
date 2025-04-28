@@ -49,7 +49,7 @@ py_web_test_suite(
             "exclusive",
         ],
         "chrome-win10-connect": [
-            "exclusive",g
+            "exclusive",
         ],
         "firefox-local": [
             "native",
