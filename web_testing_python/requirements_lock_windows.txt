@@ -148,6 +148,6 @@ wsproto==1.2.0 \
 selenium==4.31.0 \
     --hash=sha256:441cffc436a2e6659fe3cfb012692435652efd38b0d368d16f661a5db47825f5 \
     --hash=sha256:7b8b8d5e424d7133cb7aa656263b19ac505ec26d65c0f921a696e7e2c5ccd95b
-     # via -r requirements.in
+     # via -r rgequirements.in
 sniffio==1.3.1 \
     --hash=sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2 \
