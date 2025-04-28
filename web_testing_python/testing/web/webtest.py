@@ -40,7 +40,7 @@ def new_webdriver_session(capabilities=None):
     A new WebDriver connected to a browser defined by the web test
     environment.
   """
-
+  os.environ["LANG"] = "en_US.UTF-8"
   address = os.environ['WEB_TEST_WEBDRIVER_SERVER'].rstrip('/')
   # Set the timeout for WebDriver http requests so that the socket default
   # timeout is not used.
@@ -50,6 +50,8 @@ def new_webdriver_session(capabilities=None):
   )
 
   options = webdriver.ChromeOptions()
+  # options = webdriver.FirefoxOptions()
+  options.add_argument('--headless')
   options.add_argument("--no-sandbox")
   return webdriver.Remote(command_executor=executor, options=options)
 
