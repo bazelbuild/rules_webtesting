@@ -49,8 +49,8 @@ def new_webdriver_session(capabilities=None):
       client_config=client_config,
   )
 
-  options = webdriver.ChromeOptions()
-  # options = webdriver.FirefoxOptions()
+  # options = webdriver.ChromeOptions()
+  options = webdriver.FirefoxOptions()
   options.add_argument('--headless')
   options.add_argument("--no-sandbox")
   return webdriver.Remote(command_executor=executor, options=options)
