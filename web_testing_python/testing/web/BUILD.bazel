@@ -43,13 +43,18 @@ py_web_test_suite(
     tags = {
         "chromium-local": [
             "native",
-
+            "sauce",
+            "notravis",
         ],
         "chrome-win10": [
             "exclusive",
+            "sauce",
+            "notravis",
         ],
         "chrome-win10-connect": [
             "exclusive",
+            "noci",
+            "sauce",
         ],
         "firefox-local": [
             "native",
