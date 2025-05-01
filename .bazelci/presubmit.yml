@@ -44,7 +44,7 @@ tasks:
     name: "rules_web_testing_go in macos"
     platform: macos
     shell_commands:
-    - "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+    - "sudo /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
     - "brew update && brew install libasound2"
     - "brew update && brew install libatk-bridge2.0-0"
     - "brew update && brew install  libatk1.0-0"
