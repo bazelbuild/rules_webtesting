@@ -45,6 +45,7 @@ tasks:
     platform: macos
     shell_commands:
     - "mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew"
+    - ""
     - "brew update && brew install libasound2"
     - "brew update && brew install libatk-bridge2.0-0"
     - "brew update && brew install  libatk1.0-0"
