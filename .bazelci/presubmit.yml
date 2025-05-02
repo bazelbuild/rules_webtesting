@@ -5,7 +5,7 @@ tasks:
     platform: ubuntu2004
     shell_commands:
     - "sudo apt -y update && sudo apt -y install  libasound2"
-    - "sudo apt -y update && sudo apt -y install  dbus"
+    - "sudo apt -y update && sudo apt -y install  libdbus-glib-1-2"
     - "sudo apt -y update && sudo apt -y install  libatk-bridge2.0-0"
     - "sudo apt -y update && sudo apt -y install  libatk1.0-0"
     - "sudo apt -y update && sudo apt -y install  libc6"
