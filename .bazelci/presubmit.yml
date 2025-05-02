@@ -10,6 +10,7 @@ tasks:
     - "sudo apt -y update && sudo apt -y install  libc6"
     - "sudo apt -y update && sudo apt -y install  libcairo2"
     - "sudo apt -y update && sudo apt -y install  libcups2"
+    - "sudo apt -y update && sudo apt -y install  libdbus-1-3"
     - "sudo apt -y update && sudo apt -y install  libexpat1"
     - "sudo apt -y update && sudo apt -y install  libfontconfig1"
     - "sudo apt -y update && sudo apt -y install  libgbm1"
