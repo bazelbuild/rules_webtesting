@@ -36,7 +36,6 @@ tasks:
     - "sudo apt -y update && sudo apt -y install  libxrender1"
     - "sudo apt -y update && sudo apt -y install  libxss1"
     - "sudo apt -y update && sudo apt -y install  libxtst6"
-    - "sudo apt -y update && sudo apt -y install  gtk3"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     build_targets: ["..."]
@@ -212,7 +211,6 @@ tasks:
     - "sudo apt -y update && sudo apt -y install  libxrender1"
     - "sudo apt -y update && sudo apt -y install  libxss1"
     - "sudo apt -y update && sudo apt -y install  libxtst6"
-    - "sudo apt -y update && sudo apt -y install  gtk3"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     build_targets: [ "..." ]
