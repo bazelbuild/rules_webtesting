@@ -11,8 +11,7 @@
       "port":"%WSLPORT:WSL%",
       "args": [
         "--port=%WSLPORT:WSL%",
-        "--host=%WSL:HOST_IP%",
-        "--marionette-port=%WSLPORT:MARIONETTE%"
+        "--host=%WSL:HOST_IP%"
       ],
       "status": true,
       "shutdown": false
