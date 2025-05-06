@@ -39,6 +39,7 @@ tasks:
     - "sudo apt install libgtk-3-0"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: ["..."]
     test_targets: ["..."]
     working_directory: web_testing_go
@@ -82,6 +83,7 @@ tasks:
     - "brew install  libxtst6"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: ["..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_go
@@ -90,6 +92,7 @@ tasks:
     platform: windows
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_go
@@ -131,6 +134,7 @@ tasks:
     - "sudo apt -y install  libxtst6"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: ["..."]
     test_targets: ["..."]
     working_directory: web_testing_scala
@@ -139,6 +143,7 @@ tasks:
     platform: macos
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_scala
@@ -147,6 +152,7 @@ tasks:
     platform: windows
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_scala
@@ -157,6 +163,7 @@ tasks:
     - "sudo apt -y install libxcb1"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -165,6 +172,7 @@ tasks:
     platform: macos
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -173,6 +181,7 @@ tasks:
     platform: windows
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -214,6 +223,7 @@ tasks:
     - "sudo apt -y install  libxtst6"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
@@ -222,6 +232,7 @@ tasks:
     platform: macos
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
@@ -230,6 +241,7 @@ tasks:
     platform: windows
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
+    - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
