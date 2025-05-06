@@ -191,7 +191,7 @@ def org_mozilla_firefox():
         sha256 = "c06c4e58179acaf55d05c3be41d0d4cdd68f811a75322a39557d91121aa2ef74",
         # Firefox v97.0
         urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/129.0/mac/en-US/Firefox%20129.0.dmg"
+            "https://ftp.mozilla.org/pub/firefox/releases/129.0/mac/en-US/Firefox%20129.0.dmg",
             "https://storage.googleapis.com/dev-infra-mirror/firefox/129.0/mac_x64/browser-bin.dmg",
         ],
         named_files = {
