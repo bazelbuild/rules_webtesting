@@ -3,6 +3,8 @@ tasks:
   web_testing_go_ubuntu2004:
     name: "rules_web_testing_go in ubuntu"
     platform: ubuntu2004
+    environment:
+      HOME: /root
     shell_commands:
     - "sudo apt -y update && sudo apt -y install  libasound2"
     - "sudo apt -y install  libdbus-glib-1-2"
@@ -40,6 +42,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: ["..."]
     test_targets: ["..."]
     working_directory: web_testing_go
@@ -84,6 +87,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: ["..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_go
@@ -93,6 +97,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_go
@@ -135,6 +140,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: ["..."]
     test_targets: ["..."]
     working_directory: web_testing_scala
@@ -144,6 +150,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_scala
@@ -153,6 +160,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_scala
@@ -164,6 +172,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -173,6 +182,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -182,6 +192,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
@@ -224,6 +235,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
@@ -233,6 +245,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
@@ -242,6 +255,7 @@ tasks:
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
+    - "test_env HOME=/root"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_python
