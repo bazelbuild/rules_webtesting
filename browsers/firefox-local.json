@@ -15,6 +15,9 @@
         "--marionette-port=%WSLPORT:MARIONETTE%",
         "-vv"
       ],
+      "env": {
+        "HOME": "%ENV:TEST_TMPDIR%"
+      },
       "status": true,
       "shutdown": false
     }
