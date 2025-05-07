@@ -220,12 +220,9 @@ def org_mozilla_geckodriver():
     platform_archive(
         name = "org_mozilla_geckodriver_linux_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "12c37f41d11ed982b7be43d02411ff2c75fb7a484e46966d000b47d1665baa88",
-        # Geckodriver v0.30.0
-        urls = [
-            "https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz",
-            "https://storage.googleapis.com/dev-infra-mirror/firefox/97.0/linux_x64/driver-bin.tar.gz",
-        ],
+        sha256 = "7fdd8007d22a6f44caa6929a3d74bbd6a00984d88be50255153671bd201e5493",
+        # Geckodriver v0.31.0
+        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz"],
         named_files = {
             "GECKODRIVER": "geckodriver",
         },
@@ -234,12 +231,9 @@ def org_mozilla_geckodriver():
     platform_archive(
         name = "org_mozilla_geckodriver_macos_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "560ba192666c1fe8796404153cfdf2d12551515601c4b3937aabcba6ee300f8c",
-        # Geckodriver v0.30.0
-        urls = [
-            "https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-macos.tar.gz",
-            "https://storage.googleapis.com/dev-infra-mirror/firefox/97.0/mac_x64/driver-bin.tar.gz",
-        ],
+        sha256 = "4da5c6effe987e0c9049c69c7018e70a9d79f3c6119657def2cc0c3419f885e6",
+        # Geckodriver v0.31.0
+        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-macos.tar.gz"],
         named_files = {
             "GECKODRIVER": "geckodriver",
         },
@@ -248,12 +242,9 @@ def org_mozilla_geckodriver():
     platform_archive(
         name = "org_mozilla_geckodriver_macos_arm64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "895bc2146edaea434d57a3b5d9a141be5cb3c5f8e8804916bd4869978ddfd4db",
-        # Geckodriver v0.30.0
-        urls = [
-            "https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-macos-aarch64.tar.gz",
-            "https://storage.googleapis.com/dev-infra-mirror/firefox/97.0/mac_arm64/driver-bin.tar.gz",
-        ],
+        sha256 = "bfd3974b313be378087f4e7bc4c90128e67dc042647181b4c4ac302b1b88de7f",
+        # Geckodriver v0.31.0
+        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-macos-aarch64.tar.gz"],
         named_files = {
             "GECKODRIVER": "geckodriver",
         },
