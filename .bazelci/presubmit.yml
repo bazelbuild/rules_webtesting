@@ -100,7 +100,7 @@ tasks:
     name: "rules_web_testing_scala in ubuntu"
     platform: ubuntu2004
     shell_commands:
-    - "sudo apt -y install  libasound2"
+    - "sudo apt -y update && sudo apt -y install  libasound2"
     - "sudo apt -y install  libdbus-glib-1-2"
     - "sudo apt -y install  libatk-bridge2.0-0"
     - "sudo apt -y install  libatk1.0-0"
@@ -132,6 +132,7 @@ tasks:
     - "sudo apt -y install  libxrender1"
     - "sudo apt -y install  libxss1"
     - "sudo apt -y install  libxtst6"
+    - "sudo apt install libgtk-3-0"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
@@ -221,6 +222,7 @@ tasks:
     - "sudo apt -y install  libxrender1"
     - "sudo apt -y install  libxss1"
     - "sudo apt -y install  libxtst6"
+    - "sudo apt install libgtk-3-0"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     - "--test_timeout=60"
