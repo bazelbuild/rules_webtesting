@@ -14,11 +14,7 @@
 # limitations under the License.
 
 # Script that can be used by CI server for testing j2cl builds.
-set -e
-
-echo "meow"
-exit 0
-
+set -ex
 sudo apt -y update && sudo apt -y install  libasound2
 sudo apt -y install  libdbus-glib-1-2
 sudo apt -y install  libatk-bridge2.0-0
