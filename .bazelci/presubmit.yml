@@ -37,15 +37,6 @@ tasks:
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_go
-  web_testing_go_macos:
-    name: "rules_web_testing_go in macos"
-    platform: macos
-    test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
-    - "--test_timeout=60"
-    build_targets: [ "..." ]
-    test_targets: [ "..." ]
-    working_directory: web_testing_go
   web_testing_go_windows:
     name: "rules_web_testing_go in windows"
     platform: windows
@@ -63,15 +54,6 @@ tasks:
     - "sh ../setup.sh"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
-    - "--test_timeout=60"
-    build_targets: [ "..." ]
-    test_targets: [ "..." ]
-    working_directory: web_testing_scala
-  web_testing_scala_macos:
-    name: "rules_web_testing_scala in macos"
-    platform: macos
-    test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
     - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
@@ -96,15 +78,6 @@ tasks:
     build_targets: [ "..." ]
     test_targets: [ "..." ]
     working_directory: web_testing_java
-  web_testing_java_macos:
-    name: "rules_web_testing_java in macos"
-    platform: macos
-    test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
-    - "--test_timeout=60"
-    build_targets: [ "..." ]
-    test_targets: [ "..." ]
-    working_directory: web_testing_java
   web_testing_java_windows:
     name: "rules_web_testing_java in windows"
     platform: windows
@@ -121,15 +94,6 @@ tasks:
     - "sh ../setup.sh"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
-    - "--test_timeout=60"
-    build_targets: [ "..." ]
-    test_targets: [ "..." ]
-    working_directory: web_testing_python
-  web_testing_python_macos:
-    name: "rules_web_testing_python in macos"
-    platform: macos
-    test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
     - "--test_timeout=60"
     build_targets: [ "..." ]
     test_targets: [ "..." ]
