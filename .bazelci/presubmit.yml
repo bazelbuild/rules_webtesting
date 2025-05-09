@@ -7,6 +7,20 @@ tasks:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
+    - "-//go/webdriver:go_default_test_chromium-local"
+    - "-//go/webdriver:go_default_test_firefox-local"
+    - "-//go/webtest:go_default_test_chromium-local"
+    - "-//go/webtest:go_default_test_firefox-local"
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local"
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local"
+    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local"
+    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_firefox-local"
+    - "-//javatests/com/google/testing/web:WebTestTest_chromium-local"
+    - "-//javatests/com/google/testing/web:WebTestTest_firefox-local"
+    - "-//scalatests/com/google/testing/web:WebTestTest_chromium-local"
+    - "-//scalatests/com/google/testing/web:WebTestTest_firefox-local"
+    - "//testing/web:webtest_test_chromium-local"
+    - "-//testing/web:webtest_test_firefox-local"
   web_testing_macos:
     name: "rules_webtesting test in ubuntu"
     platform: macos
@@ -14,6 +28,20 @@ tasks:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
+    - "-//go/webdriver:go_default_test_chromium-local"
+    - "-//go/webdriver:go_default_test_firefox-local"
+    - "-//go/webtest:go_default_test_chromium-local"
+    - "-//go/webtest:go_default_test_firefox-local"
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local"
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local"
+    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local"
+    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_firefox-local"
+    - "-//javatests/com/google/testing/web:WebTestTest_chromium-local"
+    - "-//javatests/com/google/testing/web:WebTestTest_firefox-local"
+    - "-//scalatests/com/google/testing/web:WebTestTest_chromium-local"
+    - "-//scalatests/com/google/testing/web:WebTestTest_firefox-local"
+    - "//testing/web:webtest_test_chromium-local"
+    - "-//testing/web:webtest_test_firefox-local"
   web_testing_windows:
     name: "rules_webtesting test in windows"
     platform: windows
@@ -26,3 +54,7 @@ tasks:
     - "--enable_runfiles"
     test_targets:
     - "//..."
+    - "-//go/webdriver:go_default_test_chromium-local"
+    - "-//go/webtest:go_default_test_chromium-local"
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local"
+    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local"
