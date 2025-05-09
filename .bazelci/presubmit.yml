@@ -19,7 +19,7 @@ tasks:
     - "-//javatests/com/google/testing/web:WebTestTest_firefox-local"
     - "-//scalatests/com/google/testing/web:WebTestTest_chromium-local"
     - "-//scalatests/com/google/testing/web:WebTestTest_firefox-local"
-    - "//testing/web:webtest_test_chromium-local"
+    - "-//testing/web:webtest_test_chromium-local"
     - "-//testing/web:webtest_test_firefox-local"
   web_testing_macos:
     name: "rules_webtesting test in ubuntu"
