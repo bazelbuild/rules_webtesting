@@ -14,22 +14,19 @@
 #
 ################################################################################
 #
-load("//web:java.bzl", "java_web_test_suite")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_webtesting//web:web.bzl", "web_test_config")
 
-licenses(["notice"])  # Apache 2.0
+package(
+    default_testonly = True,
+    default_visibility = ["//go:__subpackages__"],
+)
 
-java_web_test_suite(
-    name = "WebTestTest",
-    srcs = ["WebTestTest.java"],
-    browsers = [
-        "//browsers:chromium-local",
-        "//browsers:firefox-local",
-        "//browsers/sauce:chrome-win10",
-        "//browsers/sauce:chrome-win10-connect",
-    ],
+bzl_library(
+    name = "go",
+    srcs = ["go.bzl"],
     deps = [
-        "//java/com/google/testing/web",
-        "@maven//:junit_junit",
-        "@maven//:org_seleniumhq_selenium_selenium_api",
+        "@rules_webtesting//web/internal:wrap_web_test_suite",
+        # should depend on @io_bazel_rules_go//go:def.bzl
     ],
 )

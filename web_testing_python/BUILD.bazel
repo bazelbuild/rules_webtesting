@@ -14,31 +14,15 @@
 #
 ################################################################################
 #
-load("//web:web.bzl", "web_test_files", "web_test_config")
-
-package(default_testonly = True)
+load("@python_versions//3.11:defs.bzl", "compile_pip_requirements")
 
 licenses(["notice"])  # Apache 2.0
 
-filegroup(
-    name = "testdata",
-    srcs = glob(["*"]),
-    visibility = ["//visibility:public"],
-)
+exports_files(["LICENSE"])
 
-web_test_files(
-    name = "keys",
-    files = {
-        "key.pem": "PROXY_TLS_KEY",
-        "cert.pem": "PROXY_TLS_CERT",
-    },
-)
-
-web_test_config(
-    name = "https",
-    visibility = ["//:__subpackages__"],
-    deps = [
-        ":keys",
-        "//web:default_config",
-    ],
+compile_pip_requirements(
+    name = "requirements",
+    requirements_in = "requirements.in",
+    requirements_txt = "requirements_lock.txt",
+    requirements_windows = "requirements_lock_windows.txt",
 )

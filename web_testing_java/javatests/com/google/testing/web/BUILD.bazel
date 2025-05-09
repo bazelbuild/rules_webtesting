@@ -14,32 +14,22 @@
 #
 ################################################################################
 #
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("//web:java.bzl", "java_web_test_suite")
 
 licenses(["notice"])  # Apache 2.0
 
-go_library(
-    name = "go_default_library",
-    srcs = [
-        "metadata.go",
-        "web_test_files.go",
+java_web_test_suite(
+    name = "WebTestTest",
+    srcs = ["WebTestTest.java"],
+    browsers = [
+        "@rules_webtesting//browsers:chromium-local",
+        "@rules_webtesting//browsers:firefox-local",
+        "@rules_webtesting//browsers/sauce:chrome-win10",
+        "@rules_webtesting//browsers/sauce:chrome-win10-connect",
     ],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata",
-    visibility = ["//visibility:public"],
     deps = [
-        "//go/bazel:go_default_library",
-        "//go/httphelper:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
+        "//java/com/google/testing/web",
+        "@maven//:junit_junit",
+        "@maven//:org_seleniumhq_selenium_selenium_api",
     ],
-)
-
-go_test(
-    name = "go_default_test",
-    srcs = [
-        "extension_test.go",
-        "metadata_test.go",
-    ],
-    data = ["@rules_webtesting//testdata"],
-    embed = [":go_default_library"],
-    deps = ["@rules_webtesting//go/bazel:go_default_library"],
 )

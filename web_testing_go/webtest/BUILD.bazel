@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2017 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,32 +14,36 @@
 #
 ################################################################################
 #
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("//web:go.bzl", "go_web_test_suite")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 licenses(["notice"])  # Apache 2.0
 
 go_library(
     name = "go_default_library",
-    srcs = [
-        "metadata.go",
-        "web_test_files.go",
-    ],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/metadata",
+    srcs = ["webtest.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/web_testing_go/webtest",
     visibility = ["//visibility:public"],
     deps = [
-        "//go/bazel:go_default_library",
-        "//go/httphelper:go_default_library",
-        "//go/metadata/capabilities:go_default_library",
+        "@rules_webtesting//go/bazel:go_default_library",
+        "@rules_webtesting//go/metadata:go_default_library",
+        "@com_github_tebeka_selenium//:go_default_library",
     ],
 )
 
-go_test(
+go_web_test_suite(
     name = "go_default_test",
     srcs = [
-        "extension_test.go",
-        "metadata_test.go",
+        "browserinfo_test.go",
+        "webtest_test.go",
     ],
-    data = ["@rules_webtesting//testdata"],
+    browsers = [
+        "@rules_webtesting//browsers:chromium-local",
+        "@rules_webtesting//browsers:firefox-local",
+        "@rules_webtesting//browsers/sauce:chrome-win10",
+        "@rules_webtesting//browsers/sauce:chrome-win10-connect",
+    ],
+    data = ["//testdata"],
     embed = [":go_default_library"],
-    deps = ["@rules_webtesting//go/bazel:go_default_library"],
+    deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )

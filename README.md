@@ -7,10 +7,14 @@ WebDriver.
 
 ## Configure your Bazel project
 
-For all languages, you need to add the following to your MODULE.bazel file:
+For each language , you need to add the following to your MODULE.bazel file:
 
 ```bzl
-bazel_dep(name = "rules_webtesting", version = "0.4.0")
+bazel_dep(name = "rules_webtesting_${language}", version = "0.4.0")
+```
+For example for Java:
+```bzl
+bazel_dep(name = "rules_webtesting_java", version = "0.4.0")
 ```
 
 ## Write your tests
@@ -77,7 +81,7 @@ import (
     "testing"
 
     "github.com/tebeka/selenium"
-    "github.com/bazelbuild/rules_webtesting/go/webtest"
+    "github.com/bazelbuild/rules_web_testing_go/webtest"
 )
 
 func TestWebApp(t *testing.T) {
@@ -100,7 +104,7 @@ In your BUILD files, load the correct language specific build rule and create a
 test target using it:
 
 ```bzl
-load("@rules_webtesting//web:py.bzl", "py_web_test_suite")
+load("@rules_web_testing_python//web:py.bzl", "py_web_test_suite")
 
 py_web_test_suite(
     name = "browser_test",
