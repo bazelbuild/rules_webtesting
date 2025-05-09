@@ -7,15 +7,13 @@
       "args" : [
         "--headless",
         "--no-sandbox",
-        "--use-gl=swiftshader-webgl",
-        "--enable-logging=stderr",
-        "--v=1"
+        "--use-gl=swiftshader-webgl"
       ]
     },
     "google:wslConfig": {
       "binary": "%FILE:CHROMEDRIVER%",
       "port":"%WSLPORT:WSL%",
-      "args": ["--port=%WSLPORT:WSL%","--verbose"],
+      "args": ["--port=%WSLPORT:WSL%"],
       "status": true,
       "shutdown": true
     }
