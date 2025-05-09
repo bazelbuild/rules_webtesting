@@ -43,7 +43,7 @@ go_web_test_suite(
         "@rules_webtesting//browsers/sauce:chrome-win10",
         "@rules_webtesting//browsers/sauce:chrome-win10-connect",
     ],
-    data = ["@rules_webtesting//testdata"],
+    data = ["//testdata"],
     embed = [":go_default_library"],
     deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )
