@@ -14,8 +14,11 @@
         "--host=%WSL:HOST_IP%",
         "--marionette-port=%WSLPORT:MARIONETTE%"
       ],
+      "env": {
+        "HOME": "%ENV:TEST_TMPDIR%"
+      },
       "status": true,
       "shutdown": false
     }
   }
-} 
+}
