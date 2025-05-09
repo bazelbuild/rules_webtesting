@@ -1,20 +1,22 @@
 ---
-platforms:
-  ubuntu2204:
-    build_targets:
-    - "//..."
+tasks:
+  web_testing_ubuntu2004:
+    name: "rules_webtesting test in ubuntu"
+    platform: ubuntu2004
     test_flags:
     - "--test_tag_filters=-noci,-external,-native,-sauce"
     test_targets:
     - "//..."
-  macos:
-    build_targets:
-    - "//..."
+  web_testing_macos:
+    name: "rules_webtesting test in ubuntu"
+    platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
+    - "--test_tag_filters=-noci,-external,-native,-sauce"
     test_targets:
     - "//..."
-  windows:
+  web_testing_windows:
+    name: "rules_webtesting test in windows"
+    platform: windows
     build_flags:
     - "--enable_runfiles"
     build_targets:
