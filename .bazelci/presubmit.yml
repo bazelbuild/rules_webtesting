@@ -4,14 +4,14 @@ tasks:
     name: "rules_webtesting test in ubuntu"
     platform: ubuntu2004
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
   web_testing_macos:
     name: "rules_webtesting test in ubuntu"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-external,-native,-sauce"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
   web_testing_windows:
@@ -22,7 +22,7 @@ tasks:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce,-external,-native"
+    - "--test_tag_filters=-noci,-sauce"
     - "--enable_runfiles"
     test_targets:
     - "//..."
