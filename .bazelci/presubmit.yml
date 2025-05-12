@@ -9,10 +9,10 @@ tasks:
     - "//..."
     - "-//go/webdriver:go_default_test_chromium-local" # Unable to locate "rules_webtesting/testdata/BUILD.bazel" in TEST_SRCDIR or RUNFILES_MANIFEST_FILE
     - "-//go/webdriver:go_default_test_firefox-local" # Unable to locate "rules_webtesting/testdata/BUILD.bazel" in TEST_SRCDIR or RUNFILES_MANIFEST_FILE
-    - "-//go/webtest:go_default_test_chromium-local" # Missing shared libs libxcb.so.1
-    - "-//go/webtest:go_default_test_firefox-local" # Missing shared libs libgtk-3.so.0:
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Missing shared libs libxcb.so.1
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local" # Missing shared libs libgtk-3.so.0
+    - "-//go/webtest:go_default_test_chromium-local" # Missing shared libs
+    - "-//go/webtest:go_default_test_firefox-local" # Missing shared libs
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Missing shared libs
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local" # Missing shared libs
     - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local" # Missing Missing shared libs
     - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_firefox-local" # Missing shared libs
     - "-//javatests/com/google/testing/web:WebTestTest_chromium-local" # Missing shared libs

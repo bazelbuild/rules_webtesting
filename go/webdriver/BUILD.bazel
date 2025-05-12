@@ -45,7 +45,7 @@ go_web_test_suite(
         "//browsers/sauce:chrome-win10",
         "//browsers/sauce:chrome-win10-connect",
     ],
-    data = ["//testdata"],
+    data = ["@rules_webtesting//testdata"],
     embed = [":go_default_library"],
     deps = ["//go/webtest:go_default_library"],
 )
