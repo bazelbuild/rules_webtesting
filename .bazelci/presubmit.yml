@@ -7,8 +7,8 @@ tasks:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
-    - "-//go/webdriver:go_default_test_chromium-local" # Unable to locate "rules_webtesting/testdata/BUILD.bazel" in TEST_SRCDIR or RUNFILES_MANIFEST_FILE
-    - "-//go/webdriver:go_default_test_firefox-local" # Unable to locate "rules_webtesting/testdata/BUILD.bazel" in TEST_SRCDIR or RUNFILES_MANIFEST_FILE
+    - "-//go/webdriver:go_default_test_chromium-local" # Missing shared libs
+    - "-//go/webdriver:go_default_test_firefox-local" # Missing shared libs
     - "-//go/webtest:go_default_test_chromium-local" # Missing shared libs
     - "-//go/webtest:go_default_test_firefox-local" # Missing shared libs
     - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Missing shared libs
@@ -28,11 +28,11 @@ tasks:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
-    - "-//go/webdriver:go_default_test_chromium-local" # Unable to locate "rules_webtesting/testdata/BUILD.bazel" in TEST_SRCDIR or RUNFILES_MANIFEST_FILE
-    - "-//go/webdriver:go_default_test_firefox-local" # Unable to locate "rules_webtesting/testdata/BUILD.bazel" in TEST_SRCDIR or RUNFILES_MANIFEST_FILE
-    - "-//go/webtest:go_default_test_chromium-local" # Chrome crashes for unknown reason
+    - "-//go/webdriver:go_default_test_chromium-local" # Chrome crashes for unknown reason.
+    - "-//go/webdriver:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
+    - "-//go/webtest:go_default_test_chromium-local" # Chrome crashes for unknown reason.
     - "-//go/webtest:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Chrome crashes for unknown reason
+    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Chrome crashes for unknown reason.
     - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
     - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local" # Chrome crashes for unknown reason
     - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
