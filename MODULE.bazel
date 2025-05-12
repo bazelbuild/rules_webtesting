@@ -56,17 +56,6 @@ use_repo(pip, "rules_webtesting_py_deps")
 ##### Scala dependencies #####
 bazel_dep(name = "rules_scala", version = "7.0.0", repo_name = "io_bazel_rules_scala")
 
-scala_deps = use_extension(
-    "@io_bazel_rules_scala//scala/extensions:deps.bzl",
-    "scala_deps",
-)
-scala_deps.settings(
-    fetch_sources = True,
-)
-scala_deps.toolchains(
-    scalatest = True,
-)
-
 ##### Browsers dependencies #####
 browser_repositories = use_extension("//web:extension.bzl", "browser_repositories_extension")
 browser_repositories.install(version = "0.3.4")
