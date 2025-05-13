@@ -4,44 +4,16 @@ tasks:
     name: "rules_webtesting test in ubuntu"
     platform: ubuntu2004
     test_flags:
-    - "--test_tag_filters=-noci,-sauce"
+    - "--test_tag_filters=-noci,-sauce, -chromium-local,-firefox-local" # Disble chromium-local and firefox-local for missing shared libs
     test_targets:
     - "//..."
-    - "-//go/webdriver:go_default_test_chromium-local" # Missing shared libs
-    - "-//go/webdriver:go_default_test_firefox-local" # Missing shared libs
-    - "-//go/webtest:go_default_test_chromium-local" # Missing shared libs
-    - "-//go/webtest:go_default_test_firefox-local" # Missing shared libs
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Missing shared libs
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local" # Missing shared libs
-    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local" # Missing Missing shared libs
-    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_firefox-local" # Missing shared libs
-    - "-//javatests/com/google/testing/web:WebTestTest_chromium-local" # Missing shared libs
-    - "-//javatests/com/google/testing/web:WebTestTest_firefox-local" # Missing shared libs
-    - "-//scalatests/com/google/testing/web:WebTestTest_chromium-local" # Missing shared libs
-    - "-//scalatests/com/google/testing/web:WebTestTest_firefox-local" # Missing shared libs
-    - "-//testing/web:webtest_test_chromium-local" # Missing shared libs
-    - "-//testing/web:webtest_test_firefox-local" # Missing shared libs
   web_testing_macos:
     name: "rules_webtesting test in ubuntu"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-sauce"
+    - "--test_tag_filters=-noci,-sauce,-chromium-local,-firefox-local" # Disble chromium-local for Chrome crashes for unknown reason and firefox-local for the access was denied while trying to open files in the profile directory
     test_targets:
     - "//..."
-    - "-//go/webdriver:go_default_test_chromium-local" # Chrome crashes for unknown reason.
-    - "-//go/webdriver:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
-    - "-//go/webtest:go_default_test_chromium-local" # Chrome crashes for unknown reason.
-    - "-//go/webtest:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Chrome crashes for unknown reason.
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
-    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local" # Chrome crashes for unknown reason
-    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_firefox-local" # Access was denied while trying to open files in the profile directory.
-    - "-//javatests/com/google/testing/web:WebTestTest_chromium-local" # Chrome crashes for unknown reason
-    - "-//javatests/com/google/testing/web:WebTestTest_firefox-local" # Access was denied while trying to open files in the profile directoy.
-    - "-//scalatests/com/google/testing/web:WebTestTest_chromium-local" # Chrome crashes for unknown reason
-    - "-//scalatests/com/google/testing/web:WebTestTest_firefox-local" # Access was denied while trying to open files in the profile directoy.
-    - "-//testing/web:webtest_test_chromium-local" # Chrome crashes for unknown reason
-    - "-//testing/web:webtest_test_firefox-local" # Access was denied while trying to open files in the profile directoy.
   web_testing_windows:
     name: "rules_webtesting test in windows"
     platform: windows
@@ -50,11 +22,7 @@ tasks:
     build_targets:
     - "//..."
     test_flags:
-    - "--test_tag_filters=-noci,-sauce"
+    - "--test_tag_filters=-noci,-sauce,-chromium-local,-firefox-local" # for not able to find runfile "testdata/" in manifest
     - "--enable_runfiles"
     test_targets:
     - "//..."
-    - "-//go/webdriver:go_default_test_chromium-local" # cannot find runfile "testdata/" in manifest
-    - "-//go/webtest:go_default_test_chromium-local" # cannot find runfile "testdata/" in manifest
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # cannot find runfile "testdata/" in manifest
-    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local" # cannot find runfile "testdata/" in manifest
