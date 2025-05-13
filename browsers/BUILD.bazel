@@ -52,7 +52,6 @@ browser(
     metadata = "chromium-local.json",
     required_tags = [
         "native",
-        "chromium-local-macos"
     ],
     deps = [
         "//go/wsl",
@@ -70,7 +69,6 @@ browser(
     metadata = "firefox-local.json",
     required_tags = [
         "native",
-        "firefox-local-macos"
     ],
     deps = select({
         "//common/conditions:windows_x64": [],
