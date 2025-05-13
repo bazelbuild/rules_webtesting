@@ -4,7 +4,7 @@ tasks:
     name: "rules_webtesting test in ubuntu"
     platform: ubuntu2004
     test_flags:
-    - "--test_tag_filters=-noci,-sauces"
+    - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
     - "-//go/webdriver:go_default_test_chromium-local" # Missing shared libs
