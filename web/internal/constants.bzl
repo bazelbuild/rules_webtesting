@@ -23,7 +23,7 @@ DEFAULT_WEB_TEST_SUITE_TAGS = {
     ],
     "chromium-local": [
         "native",
-        "chromium-local-macos"
+        "chromium-local"
     ],
     "chromium-local-1024x768": [
         "native",
@@ -42,6 +42,6 @@ DEFAULT_WEB_TEST_SUITE_TAGS = {
     ],
     "firefox-local": [
         "native",
-        "firefox-local-macos"
+        "firefox-local"
     ],
 }
