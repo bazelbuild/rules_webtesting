@@ -25,7 +25,7 @@ tasks:
     name: "rules_webtesting test in macos"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-sauce, -chromium-local,-firefox-local"
+    - "--test_tag_filters=-noci,-sauce"
     build_targets:
     - "//..."
     test_targets:
