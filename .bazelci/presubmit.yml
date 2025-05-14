@@ -22,12 +22,12 @@ tasks:
     - "-//testing/web:webtest_test_chromium-local" # Missing shared libs
     - "-//testing/web:webtest_test_firefox-local" # Missing shared libs
   web_testing_macos:
-    name: "rules_webtesting test in ubuntu"
+    name: "rules_webtesting test in macos"
     platform: macos
+    build_targets:
+    - "//..."
     test_flags:
     - "--test_tag_filters=-noci,-sauce, -chromium-local,-firefox-local"
-    test_targets:
-    - "//..."
   web_testing_windows:
     name: "rules_webtesting test in windows"
     platform: windows
