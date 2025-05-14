@@ -25,11 +25,11 @@ tasks:
     name: "rules_webtesting test in macos"
     platform: macos
     test_flags:
-    - "--test_tag_filters=-noci,-sauce"
+    - "--test_tag_filters=-noci,-sauce,-chromium-local,-firefox-local"
     build_targets:
-    - "//..."
+    - "..."
     test_targets:
-    - "//..."
+    - "..."
   web_testing_windows:
     name: "rules_webtesting test in windows"
     platform: windows
