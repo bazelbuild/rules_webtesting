@@ -3,8 +3,7 @@ tasks:
   web_testing_ubuntu2004:
     name: "rules_webtesting test in ubuntu"
     platform: ubuntu2004
-    shell_commands:
-    - "sh ./.bazelci/setup.sh"
+    shell_commands: "sh ./.bazelci/setup.sh"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
