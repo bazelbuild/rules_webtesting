@@ -13,38 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Script that can be used by CI server for testing j2cl builds.
+# Script that can be used by CI server for testing rules_webtesting builds.
 set -ex
-sudo apt -y update && sudo apt -y install  libasound2
-sudo apt -y install  libdbus-glib-1-2
-sudo apt -y install  libatk-bridge2.0-0
-sudo apt -y install  libatk1.0-0
-sudo apt -y install  libc6
-sudo apt -y install  libcairo2
-sudo apt -y install  libcups2
-sudo apt -y install  libdbus-1-3
-sudo apt -y install  libexpat1
-sudo apt -y install  libfontconfig1
-sudo apt -y install  libgbm1
-sudo apt -y install  libgcc1
-sudo apt -y install  libglib2.0-0
-sudo apt -y install  libgtk-3-0
-sudo apt -y install  libnspr4
-sudo apt -y install  libnss3
-sudo apt -y install  libpango-1.0-0
-sudo apt -y install  libpangocairo-1.0-0
-sudo apt -y install  libstdc++6
-sudo apt -y install  libx11-6
-sudo apt -y install  libx11-xcb1
-sudo apt -y install  libxcb1
-sudo apt -y install  libxcomposite1
-sudo apt -y install  libxcursor1
-sudo apt -y install  libxdamage1
-sudo apt -y install  libxext6
-sudo apt -y install  libxfixes3
-sudo apt -y install  libxi6
-sudo apt -y install  libxrandr2
-sudo apt -y install  libxrender1
-sudo apt -y install  libxss1
-sudo apt -y install  libxtst6
-sudo apt install libgtk-3-0
+sudo apt -y update && sudo apt -y install libasound2 libdbus-glib-1-2 \
+libatk-bridge2.0-0  libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
+libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 \
+libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 \
+libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 \
+libxrandr2 libxrender1 libxss1 libxtst6 libgtk-3-0
