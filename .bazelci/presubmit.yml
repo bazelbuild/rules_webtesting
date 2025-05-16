@@ -3,24 +3,12 @@ tasks:
   web_testing_ubuntu2004:
     name: "rules_webtesting test in ubuntu"
     platform: ubuntu2004
+    shell_commands:
+    - "sh ./.bazelci/setup_ubuntu.sh"
     test_flags:
     - "--test_tag_filters=-noci,-sauce"
     test_targets:
     - "//..."
-    - "-//go/webdriver:go_default_test_chromium-local" # Missing shared libs
-    - "-//go/webdriver:go_default_test_firefox-local" # Missing shared libs
-    - "-//go/webtest:go_default_test_chromium-local" # Missing shared libs
-    - "-//go/webtest:go_default_test_firefox-local" # Missing shared libs
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_chromium-local" # Missing shared libs
-    - "-//go/wtl/proxy/driverhub/quithandler:go_default_test_firefox-local" # Missing shared libs
-    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_chromium-local" # Missing Missing shared libs
-    - "-//go/wtl/proxy/driverhub/scripttimeout:go_default_test_firefox-local" # Missing shared libs
-    - "-//javatests/com/google/testing/web:WebTestTest_chromium-local" # Missing shared libs
-    - "-//javatests/com/google/testing/web:WebTestTest_firefox-local" # Missing shared libs
-    - "-//scalatests/com/google/testing/web:WebTestTest_chromium-local" # Missing shared libs
-    - "-//scalatests/com/google/testing/web:WebTestTest_firefox-local" # Missing shared libs
-    - "-//testing/web:webtest_test_chromium-local" # Missing shared libs
-    - "-//testing/web:webtest_test_firefox-local" # Missing shared libs
   web_testing_macos:
     name: "rules_webtesting test in macos"
     platform: macos
