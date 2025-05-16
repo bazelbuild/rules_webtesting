@@ -14,10 +14,8 @@
 # limitations under the License.
 
 # Script that can be used by CI server for testing rules_webtesting builds.
-set -ex
 
-sudo apt -y update
-sudo apt -y install libasound2 \
+sudo apt -y update && sudo apt -y install libasound2 \
 libdbus-glib-1-2 \
 libatk-bridge2.0-0 \
 libatk1.0-0 \
