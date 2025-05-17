@@ -22,6 +22,6 @@ go_library(
     name = "go_default_library",
     srcs = ["bazel.go"],
     importpath = "github.com/bazelbuild/rules_webtesting/go/bazel",
-    visibility = ["//go:__subpackages__"],
+    visibility = ["//visibility:public"],
     deps = ["//go/cmdhelper:go_default_library"],
 )

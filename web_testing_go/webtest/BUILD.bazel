@@ -14,36 +14,36 @@
 #
 ################################################################################
 #
-load("//go/web:go.bzl", "go_web_test_suite")
+load("//web:go.bzl", "go_web_test_suite")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 licenses(["notice"])  # Apache 2.0
 
 go_library(
     name = "go_default_library",
-    srcs = ["script_timeout.go"],
-    importpath = "github.com/bazelbuild/rules_webtesting/go/wtl/proxy/driverhub/scripttimeout",
-    visibility = ["//go/wtl:__subpackages__"],
+    srcs = ["webtest.go"],
+    importpath = "github.com/bazelbuild/rules_webtesting/web_testing_go/webtest",
+    visibility = ["//visibility:public"],
     deps = [
-        "//go/metadata/capabilities:go_default_library",
-        "//go/wtl/proxy/driverhub:go_default_library",
+        "@rules_webtesting//go/bazel:go_default_library",
+        "@rules_webtesting//go/metadata:go_default_library",
+        "@com_github_tebeka_selenium//:go_default_library",
     ],
 )
 
 go_web_test_suite(
     name = "go_default_test",
-    srcs = ["script_timeout_test.go"],
+    srcs = [
+        "browserinfo_test.go",
+        "webtest_test.go",
+    ],
     browsers = [
-        "//browsers:chromium-local",
-        "//browsers:firefox-local",
-        "//browsers/sauce:chrome-win10",
-        "//browsers/sauce:chrome-win10-connect",
+        "@rules_webtesting//browsers:chromium-local",
+        "@rules_webtesting//browsers:firefox-local",
+        "@rules_webtesting//browsers/sauce:chrome-win10",
+        "@rules_webtesting//browsers/sauce:chrome-win10-connect",
     ],
     data = ["//testdata"],
-    deps = [
-        "//go/bazel:go_default_library",
-        "//go/portpicker:go_default_library",
-        "//go/webtest:go_default_library",
-        "@com_github_tebeka_selenium//:go_default_library",
-    ],
+    embed = [":go_default_library"],
+    deps = ["@com_github_tebeka_selenium//:go_default_library"],
 )

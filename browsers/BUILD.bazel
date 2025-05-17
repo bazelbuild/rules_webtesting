@@ -50,9 +50,6 @@ browser(
 browser(
     name = "chromium-local",
     metadata = "chromium-local.json",
-    required_tags = [
-        "native",
-    ],
     deps = [
         "//go/wsl",
         "//third_party/chromedriver",

@@ -11,27 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Web Test rules for Python."""
+"""Web Test rules for Go."""
 
-load("//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
-load("//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+load("@rules_webtesting//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
+load("@rules_webtesting//web/internal:wrap_web_test_suite.bzl", "wrap_web_test_suite")
 
-def py_web_test_suite(name, py_test_tags = DEFAULT_WRAPPED_TEST_TAGS, main = None, **kwargs):
-    """Defines a test_suite of web_test targets that wrap a py_test target.
+def go_web_test_suite(name, go_test_tags = DEFAULT_WRAPPED_TEST_TAGS, **kwargs):
+    """Defines a test_suite of web_test targets that wrap a go_test target.
 
     Args:
         name: The base name of the test.
-        py_test_tags: A list of test tag strings to use for the py_test target.
-        main: Optional; default computed from name.
+        go_test_tags: A list of test tag strings to use for the go_test target.
         **kwargs: Arguments for wrapped_web_test_suite
     """
-    if main == None:
-        main = name + ".py"
-
     wrap_web_test_suite(
         name = name,
-        main = main,
-        rule = native.py_test,
-        wrapped_test_tags = py_test_tags,
+        rule = go_test,
+        wrapped_test_tags = go_test_tags,
         **kwargs
     )

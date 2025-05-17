@@ -1,4 +1,4 @@
-# Copyright 2018 Google Inc.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,13 @@
 #
 ################################################################################
 #
-load("//web:scala.bzl", "scala_web_test_suite")
+
+package(default_testonly = True)
 
 licenses(["notice"])  # Apache 2.0
 
-scala_web_test_suite(
-    name = "WebTestTest",
-    srcs = ["WebTestTest.scala"],
-    browsers = [
-        "//browsers:chromium-local",
-        "//browsers:firefox-local",
-        "//browsers/sauce:chrome-win10",
-        "//browsers/sauce:chrome-win10-connect",
-    ],
-    deps = [
-        "//java/com/google/testing/web",
-        "@maven//:junit_junit",
-        "@maven//:org_seleniumhq_selenium_selenium_api",
-    ],
+filegroup(
+    name = "testdata",
+    srcs = glob(["*"]),
+    visibility = ["//visibility:public"],
 )
