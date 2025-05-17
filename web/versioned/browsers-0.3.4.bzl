@@ -174,10 +174,11 @@ def org_mozilla_firefox():
     platform_archive(
         name = "org_mozilla_firefox_linux_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "878a042f49ee34314bde9ca70a0f93c0941c247c72f17b87d904024bef2b27ad",
+        sha256 = "3d0f74790fe6ff5e38324222ab0c47e10edb31970ed67c6dd7a1c84e7017d1a5",
         # Firefox v97.0
         urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/129.0/linux-x86_64/en-US/firefox-129.0.tar.bz2",
+            "https://ftp.mozilla.org/pub/firefox/releases/97.0/linux-x86_64/en-US/firefox-97.0.tar.bz2",
+            "https://storage.googleapis.com/dev-infra-mirror/firefox/97.0/linux_x64/browser-bin.tar.bz2",
         ],
         named_files = {
             "FIREFOX": "firefox/firefox",
@@ -187,10 +188,11 @@ def org_mozilla_firefox():
     platform_archive(
         name = "org_mozilla_firefox_macos_x64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "4b86e9de2b26339b30342a1ef3be1e3914d70921f81fd67bc9c63595823051f1",
+        sha256 = "c06c4e58179acaf55d05c3be41d0d4cdd68f811a75322a39557d91121aa2ef74",
         # Firefox v97.0
         urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/129.0/mac/en-US/Firefox%20129.0.dmg",
+            "https://ftp.mozilla.org/pub/firefox/releases/97.0/mac/en-US/Firefox%2097.0.dmg",
+            "https://storage.googleapis.com/dev-infra-mirror/firefox/97.0/mac_x64/browser-bin.dmg",
         ],
         named_files = {
             "FIREFOX": "Firefox.app/Contents/MacOS/firefox",
@@ -203,10 +205,11 @@ def org_mozilla_firefox():
         # repositories to allow for dedicated ARM/x64 binaries if needed in the future.
         name = "org_mozilla_firefox_macos_arm64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "4b86e9de2b26339b30342a1ef3be1e3914d70921f81fd67bc9c63595823051f1",
+        sha256 = "c06c4e58179acaf55d05c3be41d0d4cdd68f811a75322a39557d91121aa2ef74",
         # Firefox v97.0
         urls = [
-            "https://ftp.mozilla.org/pub/firefox/releases/129.0/mac/en-US/Firefox%20129.0.dmg",
+            "https://ftp.mozilla.org/pub/firefox/releases/97.0/mac/en-US/Firefox%2097.0.dmg",
+            "https://storage.googleapis.com/dev-infra-mirror/firefox/97.0/mac_x64/browser-bin.dmg",
         ],
         named_files = {
             "FIREFOX": "Firefox.app/Contents/MacOS/firefox",

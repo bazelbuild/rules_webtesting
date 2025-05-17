@@ -13,7 +13,6 @@
         "--port=%WSLPORT:WSL%",
         "--host=%WSL:HOST_IP%",
         "--marionette-port=%WSLPORT:MARIONETTE%",
-        "-vv"
       ],
       "env": {
         "HOME": "%ENV:TEST_TMPDIR%"
