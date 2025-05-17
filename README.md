@@ -10,6 +10,9 @@ WebDriver.
 For each language that is used by your project, you need to add the corresponding sub module to your MODULE.bazel file:
 
 ```bzl
+bazel_dep(name = "rules_webtesting", version = "0.4.0")
+```
+```bzl
 bazel_dep(name = "rules_webtesting_${language}", version = "0.4.0")
 ```
 For example for Java:
