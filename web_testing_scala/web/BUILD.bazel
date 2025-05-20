@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc.
+# Copyright 2025 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,35 +14,19 @@
 #
 ################################################################################
 #
-load(":web.bzl", "web_test_config")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_webtesting//web:web.bzl", "web_test_config")
 
 package(
     default_testonly = True,
     default_visibility = ["//visibility:public"],
 )
 
-licenses(["notice"])  # Apache 2.0
-
-web_test_config(
-    name = "default_config",
-    visibility = ["//visibility:public"],
-)
-
 bzl_library(
-    name = "web",
-    srcs = ["web.bzl"],
+    name = "scala",
+    srcs = ["scala.bzl"],
     deps = [
-        "//web/internal:browser",
-        "//web/internal:constants",
-        "//web/internal:custom_browser",
-        "//web/internal:platform_archive",
-        "//web/internal:platform_metadata",
-        "//web/internal:web_test",
-        "//web/internal:web_test_config",
-        "//web/internal:web_test_files",
-        "//web/internal:web_test_named_executable",
-        "//web/internal:web_test_named_file",
-        "@bazel_skylib//lib:types",
+        "@rules_webtesting//web/internal:wrap_web_test_suite",
+        # should depend on @io_bazel_rules_scala//scala:scala.bzl
     ],
 )
