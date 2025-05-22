@@ -1,0 +1,1 @@
+../../.bazelci/setup_ubuntu.sh
