@@ -5,7 +5,7 @@ bcr_test_module:
       name: "rules_web_testing_python in ubuntu"
       platform: ubuntu2004
       shell_commands:
-      - "sh ../../.bazelci/setup_ubuntu.sh"
+      - "sh setup_ubuntu.sh"
       test_flags:
       - "--test_tag_filters=-noci,-sauce"
       build_targets: [ "//..." ]
