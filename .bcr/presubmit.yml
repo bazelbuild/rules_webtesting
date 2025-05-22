@@ -4,7 +4,7 @@ bcr_test_module:
       name: "rules_webtesting test in ubuntu"
       platform: ubuntu2004
       shell_commands:
-      - "sh ./.bazelci/setup_ubuntu.sh"
+      - "sh .g/.bazelci/setup_ubuntu.sh"
       test_flags:
       - "--test_tag_filters=-noci,-sauce"
       test_targets:
