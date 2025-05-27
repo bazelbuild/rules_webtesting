@@ -1,0 +1,15 @@
+{
+  "homepage": "https://github.com/bazelbuild/rules_webtesting",
+  "maintainers": [
+    {
+      "name": "Michael Rea",
+      "email": "mtrea@google.com",
+      "github": "mtrea"
+    }
+  ],
+  "repository": [
+    "github:bazelbuild/rules_webtesting"
+  ],
+  "versions": [],
+  "yanked_versions": {}
+}
