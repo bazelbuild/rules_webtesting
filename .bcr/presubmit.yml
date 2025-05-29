@@ -1,4 +1,5 @@
 bcr_test_module:
+  bazel: [7.x, 8.x]
   tasks:
     web_testing_ubuntu2004:
       name: "rules_webtesting test in ubuntu"

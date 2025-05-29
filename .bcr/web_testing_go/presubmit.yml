@@ -1,4 +1,5 @@
 bcr_test_module:
+  bazel: [7.x, 8.x]
   module_path: ""
   tasks:
     # Only run web_testing_go tests on linux but not macos and windows
