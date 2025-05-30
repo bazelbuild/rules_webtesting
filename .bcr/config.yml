@@ -1,5 +1,0 @@
-# See https://github.com/bazel-contrib/publish-to-bcr#a-note-on-release-automation
-fixedReleaser:
-  login: mollyibot
-  email: mollyibot@google.com
-moduleRoots: [".", "web_testing_go", "web_testing_java", "web_testing_python", "web_testing_scala"]

@@ -1,5 +1,0 @@
-{
-  "integrity": "",
-  "strip_prefix": "{REPO}-{VERSION}/web_testing_scala",
-  "url": "https://github.com/{OWNER}/{REPO}/releases/download/{TAG}/rules_webtesting-{TAG}.tar.gz"
-}
