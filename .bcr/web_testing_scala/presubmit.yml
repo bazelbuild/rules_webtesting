@@ -1,11 +1,14 @@
 bcr_test_module:
-  module_path: "."
+  module_path: ""
+  matrix:
+    bazel: [7.x, 8.x]
   tasks:
     web_testing_scala_ubuntu2004:
       name: "rules_web_testing_scala in ubuntu"
       platform: ubuntu2004
+      bazel: ${{ bazel }}
       shell_commands:
-      - "sh setup_ubuntu.sh"
+      - "sh ./bazelci/setup_ubuntu.sh"
       test_flags:
       - "--test_tag_filters=-noci,-sauce"
       build_targets: [ "//..." ]
@@ -13,6 +16,7 @@ bcr_test_module:
     web_testing_scala_windows:
       name: "rules_web_testing_scala in windows"
       platform: windows
+      bazel: ${{ bazel }}
       test_flags:
       - "--test_tag_filters=-noci,-sauce"
       build_targets: [ "//..." ]

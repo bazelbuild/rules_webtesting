@@ -1,8 +1,11 @@
 bcr_test_module:
+  matrix:
+    bazel: [ 7.x, 8.x ]
   tasks:
     web_testing_ubuntu2004:
       name: "rules_webtesting test in ubuntu"
       platform: ubuntu2004
+      bazel: ${{ bazel }}
       shell_commands:
       - "sh ./.bazelci/setup_ubuntu.sh"
       test_flags:
@@ -12,6 +15,7 @@ bcr_test_module:
     web_testing_macos:
       name: "rules_webtesting test in macos"
       platform: macos
+      bazel: ${{ bazel }}
       test_flags:
       - "--test_tag_filters=-noci,-sauce,-chromium-local,-firefox-local"
       build_targets:
@@ -21,6 +25,7 @@ bcr_test_module:
     web_testing_windows:
       name: "rules_webtesting test in windows"
       platform: windows
+      bazel: ${{ bazel }}
       build_flags:
       - "--enable_runfiles"
       build_targets:
