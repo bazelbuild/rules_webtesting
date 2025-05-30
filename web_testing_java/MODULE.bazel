@@ -17,6 +17,8 @@ bazel_dep(
     version = "1.7.1",
 )
 
+bazel_dep(name = "rules_java", version = "7.2.0")
+
 bazel_dep(
     name = "rules_jvm_external",
     version = "6.6",
