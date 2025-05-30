@@ -13,7 +13,7 @@
     }
   ],
   "repository": [
-    "github:bazelbuild/rules_webtesting"
+    "github:mollyibot/rules_webtesting"
   ],
   "versions": [],
   "yanked_versions": {}
