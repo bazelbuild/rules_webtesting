@@ -1,14 +1,19 @@
 {
-  "homepage": "https://github.com/bazelbuild/rules_webtesting",
+  "homepage": "https://github.com/mollyibot/rules_webtesting",
   "maintainers": [
     {
       "name": "Michael Rea",
       "email": "mtrea@google.com",
       "github": "mtrea"
+    },
+    {
+      "name": "Yuan Tian",
+      "email": "mollyibot@google.com",
+      "github": "mollyibot"
     }
   ],
   "repository": [
-    "github:bazelbuild/rules_webtesting"
+    "github:mollyibot/rules_webtesting"
   ],
   "versions": [],
   "yanked_versions": {}
