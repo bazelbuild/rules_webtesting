@@ -50,4 +50,3 @@ sudo apt -y install libasound2 \
                     libxss1 \
                     libxtst6 \
                     libgtk-3-0
-
