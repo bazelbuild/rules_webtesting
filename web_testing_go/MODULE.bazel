@@ -1,10 +1,11 @@
 module(
     name = "rules_web_testing_go",
-    version = "0.4.0",
+    version = "0.4.1",
 )
 
 bazel_dep(
     name = "rules_webtesting",
+    version = "0.4.1",
 )
 
 local_path_override(
