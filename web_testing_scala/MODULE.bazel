@@ -5,11 +5,7 @@ module(
 
 bazel_dep(
     name = "rules_webtesting",
-)
-
-local_path_override(
-    module_name = "rules_webtesting",
-    path = "..",
+    version = "0.4.0",
 )
 
 bazel_dep(
