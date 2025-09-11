@@ -1,5 +1,7 @@
 # Bazel Web Testing Rules
 
+NOTE: This project is no longer being updated.
+
 [![Build status](https://badge.buildkite.com/d9c3974f925876394ca9d3e00670c0950b6f7ebf325412def7.svg?branch=master)](https://buildkite.com/bazel/rules-webtesting-saucelabs)
 
 Bazel rules and supporting code to allow testing against a browser with
