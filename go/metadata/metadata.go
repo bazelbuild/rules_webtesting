@@ -50,6 +50,8 @@ type Metadata struct {
 	DebuggerPort int `json:"debuggerPort,omitempty"`
 	// A list of WebTestFiles with named files in them.
 	WebTestFiles []*WebTestFiles `json:"webTestFiles,omitempty"`
+	// A list of tags.
+	Tags []string `json:"tags,omitempty"`
 	// An object for any additional metadata fields on this object.
 	Extension `json:"extension,omitempty"`
 }
@@ -107,6 +109,23 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		return nil, err
 	}
 
+	// Merged tags are the concatenated list of unique tags. Note that it is
+	// important that order is preserved.
+	var tags []string
+	tagMap := make(map[string]bool)
+	for _, t := range m1.Tags {
+		if !tagMap[t] {
+			tags = append(tags, t)
+			tagMap[t] = true
+		}
+	}
+	for _, t := range m2.Tags {
+		if !tagMap[t] {
+			tags = append(tags, t)
+			tagMap[t] = true
+		}
+	}
+
 	extension := m1.Extension
 	if extension == nil {
 		extension = m2.Extension
@@ -127,6 +146,7 @@ func Merge(m1, m2 *Metadata) (*Metadata, error) {
 		ConfigLabel:  configLabel,
 		DebuggerPort: debuggerPort,
 		WebTestFiles: webTestFiles,
+		Tags:         tags,
 		Extension:    extension,
 	}, nil
 }

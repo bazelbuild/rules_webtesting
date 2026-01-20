@@ -49,6 +49,7 @@ def _create_file(
         label = None,
         test_label = None,
         web_test_files = None,
+        tags = None,
         extension = None):
     """Generates a web_test metadata file with specified contents.
 
@@ -80,6 +81,8 @@ def _create_file(
         fields["testLabel"] = str(test_label)
     if web_test_files:
         fields["webTestFiles"] = web_test_files
+    if tags:
+        fields["tags"] = tags
     if extension:
         if type(extension) == type({}):
             extension = struct(**extension)
